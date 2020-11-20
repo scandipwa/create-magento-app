@@ -1,0 +1,17 @@
+{
+    "cSpell.enableFiletypes": [
+        "!json"
+    ],
+    "cSpell.words": [
+        "CRACO",
+        "Listr",
+        "Magento",
+        "REBEM",
+        "Scandiweb",
+        "scandipwa"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "debug.javascript.autoAttachFilter": "onlyWithFlag"
+}

@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "CMA",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/node_modules/create-magento-app/index.js",
+            "args": [
+                "runtime-packages/cma"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "CSA",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/node_modules/create-scandipwa-app/index.js",
+            "args": [
+                "runtime-packages/csa"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "PORT": 3003,
+                "BROWSER": "none"
+            },
+            "cwd": "${workspaceFolder}/runtime-packages/test",
+            "program": "${workspaceFolder}/node_modules/@scandipwa/scandipwa-scripts/bin/scandipwa-scripts.js",
+            "args": [
+                "start"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Build",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "PORT": 3003
+            },
+            "cwd": "${workspaceFolder}/runtime-packages/test",
+            "program": "${workspaceFolder}/node_modules/@scandipwa/scandipwa-scripts/bin/scandipwa-scripts.js",
+            "args": [
+                "build"
+            ]
+        }
+    ]
+}
