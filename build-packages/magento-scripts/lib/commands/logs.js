@@ -8,7 +8,7 @@ module.exports = (yargs) => {
         const services = Object.keys(containers);
 
         if (services.includes(argv.scope)) {
-            const { result } = await execAsyncSpawn(`docker logs ${containers[argv.scope].name}`, {
+            const { result } = await execAsyncSpawn(`docker logs ${containers[argv.scope].name} -f`, {
                 withCode: true
             });
 
