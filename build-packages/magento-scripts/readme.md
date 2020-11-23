@@ -14,6 +14,12 @@ To use commands such as `composer`, `magento` and `php` with correct version run
 ```
 This will open bash with correct aliases to `php`, `magento` and `composer`.
 
+To open logs use command `logs` with one of the scopes: `redis`, `mysql`, `elasticsearch`, `nginx` or `magento`.
+```bash
+> yarn/npm run logs nginx
+> // nginx logs
+```
+
 ## Requirements
 
 - [Docker](https://docs.docker.com/get-docker/) ^19
