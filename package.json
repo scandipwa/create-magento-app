@@ -12,7 +12,8 @@
         "eslint": "^6.6.0",
         "fs-extra": "^9.0.1",
         "husky": "^4.3.0",
-        "lerna": "^3.22.1"
+        "lerna": "^3.22.1",
+        "@scandipwa/eslint-config": "0.1.2"
     },
     "husky": {
         "hooks": {
