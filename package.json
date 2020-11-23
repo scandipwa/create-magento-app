@@ -29,6 +29,7 @@
     },
     "workspaces": [
         "build-packages/*",
-        "runtime-packages/*"
+        "runtime-packages/*",
+        "test/*"
     ]
 }
