@@ -76,14 +76,15 @@ const getAvailablePorts = {
  * @returns {Promise<{app: number, fpm: number, mysql: number, redis: number, elasticsearch: number}>}
  */
 const getCachedPorts = {
-    task: async () => {
+    task: async (ctx) => {
         const portConfigExists = await pathExists(portConfigPath);
 
         if (portConfigExists) {
-            return JSON.parse(await fs.promises.readFile(portConfigPath, 'utf8'));
+            ctx.ports = JSON.parse(await fs.promises.readFile(portConfigPath, 'utf8'));
+            return;
         }
 
-        return null;
+        throw new Error('Cached ports not found');
     }
 };
 
