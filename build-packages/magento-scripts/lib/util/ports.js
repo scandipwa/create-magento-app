@@ -43,10 +43,13 @@ const getAvailablePorts = {
                 })
             ));
 
-            if (ctx.port && ports.app !== ctx.port) {
-                throw new Error(`Port ${ctx.port} is not available`);
-            } else if (ctx.port) {
-                ports.app = ctx.port;
+            if (ctx.port) {
+                const isPortAvailable = (await getPort({ port: ctx.port })) === ctx.port;
+                if (!isPortAvailable) {
+                    throw new Error(`Port ${ctx.port} is not available`);
+                } else {
+                    ports.app = ctx.port;
+                }
             }
 
             await savePortsConfig(ports);
@@ -61,10 +64,13 @@ const getAvailablePorts = {
             })
         ));
 
-        if (ctx.port && availablePorts.app !== ctx.port) {
-            throw new Error(`Port ${ctx.port} is not available`);
-        } else if (ctx.port) {
-            availablePorts.app = ctx.port;
+        if (ctx.port) {
+            const isPortAvailable = (await getPort({ port: ctx.port })) === ctx.port;
+            if (!isPortAvailable) {
+                throw new Error(`Port ${ctx.port} is not available`);
+            } else {
+                availablePorts.app = ctx.port;
+            }
         }
 
         await savePortsConfig(availablePorts);
