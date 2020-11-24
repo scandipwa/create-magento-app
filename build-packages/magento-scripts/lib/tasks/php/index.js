@@ -12,8 +12,18 @@ const installPhp = {
         const phpBinExists = await pathExists(php.binPath);
 
         if (phpBinExists) {
-            task.title = `Using PHP version ${php.version}`;
-            return;
+            task.title = `Using PHP version ${php.version}, checking extensions...`;
+
+            return task.newListr([
+                configure
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                rendererOptions: {
+                    collapse: false
+                },
+                ctx
+            });
         }
 
         task.title = `Installing PHP ${php.version}`;
@@ -24,6 +34,7 @@ const installPhp = {
 
             if (versionRegex.test(phpVersions)) {
                 task.skip();
+                // eslint-disable-next-line consistent-return
                 return;
             }
         } catch (e) {

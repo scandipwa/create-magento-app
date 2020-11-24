@@ -1,20 +1,33 @@
 /* eslint-disable no-param-reassign */
 const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+// const macosVersion = require('macos-version');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const compile = {
     title: 'Compiling PHP',
     task: async ({ config: { php } }, task) => {
-        let phpCompileCommand = `phpbrew install -j $(nproc) ${ php.version } \
-        +bz2 +bcmath +ctype +curl -intl +dom +filter +hash \
+        let phpCompileCommand;
+        if (os.platform() === 'darwin') {
+            phpCompileCommand = `phpbrew install -j $(sysctl -n hw.ncpu) ${php.version} +bz2="$(brew --prefix bzip2)" \
+            +bcmath +ctype +curl -intl +dom +filter +hash +json +mbstring +openssl="$(brew --prefix openssl)" +xml \
+            +mysql +pdo +soap +xmlrpc +xml \
+            +zip +fpm +gd -- \
+            --with-zlib-dir=$(brew --prefix zlib) \
+            --with-iconv=$(brew --prefix libiconv) \
+            --enable-zip \
+            --with-gd=shared`;
+        } else {
+            phpCompileCommand = `phpbrew install -j $(${os.platform() === 'darwin' ? 'sysctl -n hw.logicalcpu' : 'nproc'}}) ${ php.version } \
+        +bz2 +bcmath +ctype +curl +intl +dom +filter +hash +sockets \
         +iconv +json +mbstring +openssl +xml +mysql \
         +pdo +soap +xmlrpc +xml +zip +fpm +gd \
         -- --with-freetype-dir=/usr/include/freetype2 --with-openssl=/usr/ \
         --with-gd=shared --with-jpeg-dir=/usr/ --with-png-dir=/usr/`;
 
-        if (os.platform() === 'linux' && os.dist.includes('Manjaro')) {
-            phpCompileCommand += ' --with-libdir=lib64';
+            if (os.dist.includes('Manjaro')) {
+                phpCompileCommand += ' --with-libdir=lib64';
+            }
         }
         try {
             await execAsyncSpawn(

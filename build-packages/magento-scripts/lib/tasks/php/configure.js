@@ -28,7 +28,7 @@ const configure = {
             }
         } catch (e) {
             task.report(e);
-            throw new Error('Something went wrong during the extension installation.');
+            throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
         }
     },
     options: {

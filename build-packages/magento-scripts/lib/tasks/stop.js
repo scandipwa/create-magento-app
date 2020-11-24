@@ -14,7 +14,10 @@ const stop = {
         rendererOptions: {
             collapse: false
         },
-        ctx
+        ctx: {
+            ...ctx,
+            throwMagentoVersionMissing: true
+        }
     })
 };
 

@@ -1,11 +1,11 @@
 const magentoVersionConfigs = {
     '2.4.1': {
         php: {
-            version: '7.3.22',
+            version: '7.4.12',
             extensions: [
                 {
-                    name: 'gd',
-                    options: '--with-gd=shared --with-jpeg-dir=/usr/ --with-png-dir=/usr/ --with-freetype-dir=/usr/'
+                    name: 'gd'
+                    // options: '--with-gd=shared --with-jpeg-dir=/usr/ --with-png-dir=/usr/ --with-freetype-dir=/usr/'
                 },
                 { name: 'intl' },
                 { name: 'openssl' },

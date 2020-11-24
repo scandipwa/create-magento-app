@@ -5,7 +5,7 @@ const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
 const getApplicationConfig = require('./application');
 
-const platforms = ['linux'];
+const platforms = ['linux', 'darwin'];
 
 // TODO: ask for this version?
 const magentoVersion = '2.4.1';
