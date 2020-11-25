@@ -4,7 +4,6 @@
     "version": "independent",
     "packages": [
         "build-packages/*",
-        "runtime-packages/*",
-        "test/*"
+        "runtime-packages/*"
     ]
 }
