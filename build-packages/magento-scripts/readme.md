@@ -1,4 +1,6 @@
-# create-magento-app
+# magento-scripts
+
+This package contains scripts and configuration used by Create Magento App by [Create Magento App](https://github.com/scandipwa/create-magento-app).
 
 ## Usage
 
