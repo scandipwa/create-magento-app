@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
@@ -27,15 +27,21 @@ const installMagento = {
         const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
         await runComposerCommand(
             `create-project \
-        --repository=https://repo.magento.com/ magento/project-community-edition=${magentoVersion} \
-        --no-install \
-        "${tempDir}"`,
-            { magentoVersion }
+            --repository=https://repo.magento.com/ \
+            --no-install \
+            magento/project-community-edition=${magentoVersion} \
+            "${tempDir}"`,
+            {
+                magentoVersion,
+                callback: (t) => {
+                    task.output = t;
+                }
+            }
         );
 
         await execAsyncSpawn(`mv ${path.join(tempDir, 'composer.json')} ${process.cwd()}`);
 
-        await fs.promises.rmdir(tempDir);
+        await fs.promises.rmdir(tempDir, { recursive: true });
 
         await runComposerCommand('install',
             {
