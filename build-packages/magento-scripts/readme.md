@@ -110,16 +110,12 @@ brew install zlib \
     curl \
     libpng \
     gd \
-    freetype
+    freetype \
+    oniguruma
 ```
 Then you need to run this:
 ```sh
 sudo xcode-select -switch /Applications/Xcode.app
-```
-
-If you are using XCode 12 you'll need additionally install `oniguruma` package.
-```sh
-brew install oniguruma
 ```
 
 Additional libraries:  
