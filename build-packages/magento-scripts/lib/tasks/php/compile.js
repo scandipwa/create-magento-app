@@ -18,7 +18,7 @@ const compile = {
             --enable-zip \
             --with-gd=shared`;
         } else {
-            phpCompileCommand = `phpbrew install -j $(${os.platform() === 'darwin' ? 'sysctl -n hw.logicalcpu' : 'nproc'}}) ${ php.version } \
+            phpCompileCommand = `phpbrew install -j $(nproc) ${ php.version } \
         +bz2 +bcmath +ctype +curl +intl +dom +filter +hash +sockets \
         +iconv +json +mbstring +openssl +xml +mysql \
         +pdo +soap +xmlrpc +xml +zip +fpm +gd \
