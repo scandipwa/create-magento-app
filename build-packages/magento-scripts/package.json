@@ -1,6 +1,6 @@
 {
     "name": "@scandipwa/magento-scripts",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "main": "./index.js",
     "license": "OSL-3.0",
     "bin": {
@@ -9,14 +9,14 @@
     "dependencies": {
         "@scandipwa/scandipwa-dev-utils": "^0.0.11",
         "async-exit-hook": "^2.0.1",
-        "eta": "^1.11.0",
-        "listr2": "3.2.2",
         "enquirer": "2.3.6",
+        "eta": "^1.11.0",
         "get-port": "^5.1.1",
         "getos": "^3.2.1",
+        "listr2": "3.2.2",
         "macos-version": "^5.2.0",
-        "yargs": "16.1.1",
-        "semver": "7.3.2"
+        "semver": "7.3.2",
+        "yargs": "16.1.1"
     },
     "publishConfig": {
         "access": "public"
