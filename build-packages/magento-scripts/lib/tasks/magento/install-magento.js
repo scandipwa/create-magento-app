@@ -27,14 +27,22 @@ const installMagento = {
             throw new Error('Composer.json file not found');
         }
 
-        await runComposerCommand('install',
-            {
-                magentoVersion,
-                callback: (t) => {
-                    task.output = t;
-                }
-            });
+        try {
+            await runComposerCommand('install',
+                {
+                    magentoVersion,
+                    callback: (t) => {
+                        task.output = t;
+                    }
+                });
+        } catch (e) {
+            if (e.message.includes('man-in-the-middle attack')) {
+                throw new Error(`Probably you haven't setup pubkeys in composer.
+                Please run composer diagnose in cli to get mode.\n\n${e}`);
+            }
 
+            throw new Error(`Unexpected error during composer install.\n\n${e}`);
+        }
         task.title = 'Magento installed!';
     },
     options: {
