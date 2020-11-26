@@ -4,7 +4,6 @@ const path = require('path');
 const { config } = require('../../config');
 
 const magentoFiles = [
-    '.editorconfig',
     '.htaccess',
     '.htaccess.sample',
     '.php_cs.dist',
@@ -42,6 +41,10 @@ const removeMagento = {
         if (appPathExists && ctx.force) {
             await Promise.all(magentoFiles.map(async (fileName) => {
                 const filePath = path.join(config.magentoDir, fileName);
+                const fileExists = await pathExists(filePath);
+                if (!fileExists) {
+                    return;
+                }
                 const file = await fs.promises.stat(filePath);
                 if (file.isFile()) {
                     await fs.promises.unlink(filePath);

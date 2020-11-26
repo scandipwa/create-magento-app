@@ -1,7 +1,7 @@
 const magentoVersionConfigs = {
     '2.4.1': {
         php: {
-            version: '7.4.12',
+            version: '7.4.11',
             extensions: [
                 {
                     name: 'gd',

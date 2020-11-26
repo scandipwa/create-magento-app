@@ -14,17 +14,21 @@ const getMagentoVersion = {
             if (ctx.throwMagentoVersionMissing) {
                 throw e;
             }
-            magentoVersion = await task.prompt({
-                type: 'Select',
-                message: 'Choose Magento Version',
-                name: 'magentoVersion',
-                choices: allVersions.map((version) => (
-                    {
-                        name: version,
-                        message: version
-                    }
-                ))
-            });
+            if (allVersions.length === 1) {
+                magentoVersion = allVersions[0];
+            } else {
+                magentoVersion = await task.prompt({
+                    type: 'Select',
+                    message: 'Choose Magento Version',
+                    name: 'magentoVersion',
+                    choices: allVersions.map((version) => (
+                        {
+                            name: version,
+                            message: version
+                        }
+                    ))
+                });
+            }
         }
 
         ctx.magentoVersion = magentoVersion;
