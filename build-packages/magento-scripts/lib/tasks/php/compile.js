@@ -10,7 +10,9 @@ const compile = {
     task: async ({ config: { php } }, task) => {
         let phpCompileCommand;
         if (os.platform() === 'darwin') {
-            phpCompileCommand = `phpbrew install -j $(sysctl -n hw.ncpu) ${php.version} +bz2="$(brew --prefix bzip2)" \
+            phpCompileCommand = `export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/icu4c/lib/pkgconfig && \
+            export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl@1.1/lib/pkgconfig && \
+            phpbrew install -j $(sysctl -n hw.ncpu) ${php.version} +bz2="$(brew --prefix bzip2)" \
             +bcmath +ctype +curl +intl=$(brew --prefix icu4c) +dom +filter +hash +json +mbstring +openssl="$(brew --prefix openssl)" +xml \
             +mysql +pdo +soap +xmlrpc +xml \
             +zip +fpm +gd -- \
