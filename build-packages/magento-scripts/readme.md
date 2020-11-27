@@ -119,10 +119,5 @@ brew install zlib \
     icu4c
 ```
 
-You'll need to add this line to your .bashrc/.zshrc file to be able properly compile intl extension.
-```bash
-export PKG_CONFIG_PATH="/usr/local/opt/icu4c/lib/pkgconfig"
-```
-
 Additional libraries:  
 - Installed PHP with json extension.  
