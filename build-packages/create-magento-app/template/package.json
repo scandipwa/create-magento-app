@@ -5,7 +5,8 @@
     "scripts": {
         "start": "magento-scripts start",
         "stop": "magento-scripts stop",
-        "cli": "magento-scripts cli"
+        "cli": "magento-scripts cli",
+        "logs": "magento-scripts logs"
     },
     "scandipwa": {
         "type": "magento"
