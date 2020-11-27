@@ -98,7 +98,8 @@ module.exports = (app, config) => {
                 'bootstrap.memory_lock': true,
                 'xpack.security.enabled': false,
                 'discovery.type': 'single-node',
-                ES_JAVA_OPTS: '"-Xms512m -Xmx512m"'
+                ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
+                'xpack.ml.enabled': false
             },
             network: network.name,
             image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch }`,
