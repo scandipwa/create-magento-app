@@ -6,6 +6,7 @@ const getComposerConfig = require('./composer');
 const getApplicationConfig = require('./application');
 
 const platforms = ['linux', 'darwin'];
+const darwinMinimalVersion = '10.5';
 
 // TODO: ask for this version?
 const magentoVersion = '2.4.1';
@@ -49,5 +50,6 @@ module.exports = {
     php,
     composer,
     docker,
-    platforms
+    platforms,
+    darwinMinimalVersion
 };

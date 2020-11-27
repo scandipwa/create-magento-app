@@ -1,6 +1,7 @@
 const os = require('os');
+const macosVersion = require('macos-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { platforms } = require('../../config');
+const { platforms, darwinMinimalVersion } = require('../../config');
 
 const checkPlatform = {
     title: 'Checking platform',
@@ -11,6 +12,13 @@ const checkPlatform = {
             throw new Error(
                 `Your current OS platform is ${ logger.style.misc(currentPlatform) }.
                 Unfortunately, currently we only support ${ platforms.map((platform) => logger.style.misc(platform)).join(',') }.`
+            );
+        }
+
+        if (macosVersion.isMacOS && !macosVersion.isGreaterThanOrEqualTo(darwinMinimalVersion)) {
+            throw new Error(
+                'Please update your system!',
+                `MacOS bellow version ${ logger.style.misc(darwinMinimalVersion) } is not supported.`
             );
         }
     }
