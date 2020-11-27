@@ -1,6 +1,11 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
-module.exports = async ({ ports, magentoVersion, app }) => {
+module.exports = async ({
+    ports,
+    magentoVersion,
+    app,
+    output
+}) => {
     await runMagentoCommand(`setup:install \
         --admin-firstname='${ app.first_name }' \
         --admin-lastname='${ app.last_name }' \
@@ -10,10 +15,12 @@ module.exports = async ({ ports, magentoVersion, app }) => {
         --search-engine='elasticsearch7' \
         --elasticsearch-host='localhost' \
         --elasticsearch-port='${ ports.elasticsearch }'`, {
-        magentoVersion
+        magentoVersion,
+        callback: output
     });
 
     await runMagentoCommand('cache:enable', {
-        magentoVersion
+        magentoVersion,
+        callback: output
     });
 };

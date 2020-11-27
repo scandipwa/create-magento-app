@@ -17,7 +17,14 @@ const migrateDatabase = {
             break;
         }
         case 1: {
-            await installMagento({ ports, magentoVersion, app });
+            await installMagento({
+                ports,
+                magentoVersion,
+                app,
+                output(t) {
+                    task.output = t;
+                }
+            });
             break;
         }
         case 2: {
