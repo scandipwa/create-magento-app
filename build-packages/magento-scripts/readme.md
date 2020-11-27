@@ -38,6 +38,8 @@ For Mac
 
 ```sh
 apt-get install \
+    libcurl4-openssl-dev \
+    libonig-dev \
     libjpeg-dev \
     libjpeg8-dev \
     libjpeg-turbo8-dev \
@@ -55,7 +57,8 @@ apt-get install \
     libxslt-dev \
     php-cli \
     php-bz2 \
-    pkg-config
+    pkg-config \
+    autoconf
 ```
 
 ### Mint Linux
