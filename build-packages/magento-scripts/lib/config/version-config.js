@@ -3,14 +3,9 @@ const magentoVersionConfigs = {
         php: {
             version: '7.4.11',
             extensions: [
-                {
-                    name: 'gd',
-                    options: '--with-gd=shared --with-jpeg-dir=/usr/ --with-png-dir=/usr/ --with-freetype-dir=/usr/'
-                },
-                {
-                    name: 'intl'
-                    // macOptions: '--with-icu-dir=$(brew --prefix icu4c)'
-                },
+                { name: 'gd' },
+                { name: 'intl' },
+                { name: 'zlib' },
                 { name: 'openssl' },
                 { name: 'sockets' },
                 { name: 'SimpleXML' }
