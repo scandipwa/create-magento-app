@@ -46,7 +46,7 @@ const migrateDatabase = {
         }
     },
     options: {
-        bottomBar: 10
+        bottomBar: 15
     }
 };
 
