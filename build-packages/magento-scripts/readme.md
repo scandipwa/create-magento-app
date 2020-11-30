@@ -22,6 +22,8 @@ To open logs use command `logs` with one of the scopes: `redis`, `mysql`, `elast
 > // nginx logs
 ```
 
+> NOTE: you can use shortcuts for logs! Like `yarn logs m` will show `mysql` logs, `yarn logs ma` will show `magento` logs and e.t.c.
+
 ## Requirements
 
 - [Docker](https://docs.docker.com/get-docker/) ^19
