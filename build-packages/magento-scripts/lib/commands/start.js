@@ -35,6 +35,16 @@ module.exports = (yargs) => {
                 nargs: 1
             }
         );
+
+        yargs.option(
+            'no-open',
+            {
+                alias: 'n',
+                describe: 'Do not open browser after command finished',
+                type: 'boolean',
+                default: false
+            }
+        );
     }, async (args = {}) => {
         const listrTasks = [
             start

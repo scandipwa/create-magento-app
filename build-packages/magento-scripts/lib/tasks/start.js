@@ -30,7 +30,12 @@ const start = {
         setupMagento,
         {
             title: 'Open browser',
-            task: async ({ ports }) => {
+            task: async ({ ports, noOpenBrowser }, task) => {
+                if (noOpenBrowser) {
+                    task.skip();
+                    return;
+                }
+
                 openBrowser(`http://localhost:${ports.app}`);
             }
         }
