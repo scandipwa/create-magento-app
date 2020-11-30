@@ -2,6 +2,13 @@
 
 This package contains scripts and configuration used by Create Magento App by [Create Magento App](https://github.com/scandipwa/create-magento-app).
 
+## Overview
+
+What this package does:
+- Compiles correct php with all necessary extensions to run Magento on your system.
+- Organize services required to run Magento on your system, such as Nginx, Redis, MySQL and Elasticsearch, in docker containers with forwarded ports to host system.
+- Allows you to run multiple M2 projects simultaneously on the same machine without ports/files/context overlapping.
+
 ## Usage
 
 ```bash
@@ -31,8 +38,8 @@ To open logs use command `logs` with one of the scopes: `redis`, `mysql`, `elast
 
 For Mac
 - MacOS 10.5 and newer
-- Xcode 11. You can find it [here](https://developer.apple.com/download/more/) ([Why 11?](https://github.com/Homebrew/homebrew-core/pull/61820#issuecomment-702787649))  
-- [Homebrew](https://brew.sh/)  
+- Xcode 11 and newer You can find it.
+- [Homebrew](https://brew.sh/)
 
 ## Dependencies
 
