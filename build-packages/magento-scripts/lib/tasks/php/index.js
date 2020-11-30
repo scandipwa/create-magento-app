@@ -4,6 +4,7 @@ const { pathExists } = require('fs-extra');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const compile = require('./compile');
 const configure = require('./configure');
+const updatePhpBrew = require('./update-phpbrew');
 
 const installPhp = {
     title: 'Install PHP',
@@ -50,6 +51,7 @@ const installPhp = {
 
         // eslint-disable-next-line consistent-return
         return task.newListr([
+            updatePhpBrew,
             compile,
             configure
         ], {
