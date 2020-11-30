@@ -57,7 +57,7 @@ module.exports = (app, config) => {
 
     const getContainers = (ports = {}) => ({
         nginx: {
-            ports: [`${ ports.app }:80`],
+            ports: [`127.0.0.1:${ ports.app }:80`],
             mountVolumes: [
                 `${ volumes.nginx.name }:/etc/nginx/conf.d`,
                 `${ volumes.appPub.name }:${path.join(magentoDir, 'pub')}`,
@@ -65,9 +65,10 @@ module.exports = (app, config) => {
             ],
             restart: 'on-failure:5',
             // TODO: use connect instead
-            network: 'host',
+            network: network.name,
             image: `nginx:${ nginx }`,
-            name: `${ prefix }_nginx`
+            name: `${ prefix }_nginx`,
+            command: "nginx -g 'daemon off;'"
         },
         redis: {
             ports: [`127.0.0.1:${ ports.redis }:6379`],
@@ -87,7 +88,7 @@ module.exports = (app, config) => {
                 MYSQL_PASSWORD: 'magento',
                 MYSQL_DATABASE: 'magento'
             },
-            network: 'host',
+            network: network.name,
             image: `mysql:${ mysql }`,
             name: `${ prefix }_mysql`
         },
