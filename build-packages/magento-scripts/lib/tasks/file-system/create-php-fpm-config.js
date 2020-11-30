@@ -4,7 +4,7 @@ const setConfigFile = require('../../util/set-config');
 
 const createPhpFpmConfig = {
     title: 'Setting php-fpm config',
-    task: async ({ ports, config: { php } }, task) => {
+    task: async ({ ports, config: { php } }) => {
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,
@@ -13,8 +13,7 @@ const createPhpFpmConfig = {
                 overwrite: true
             });
         } catch (e) {
-            task.report(e);
-            throw new Error('Unexpected error accrued during php-fpm config creation');
+            throw new Error(`Unexpected error accrued during php-fpm config creation\n\n${e}`);
         }
     }
 };

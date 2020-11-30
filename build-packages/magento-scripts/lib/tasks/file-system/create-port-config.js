@@ -4,17 +4,16 @@ const setConfigFile = require('../../util/set-config');
 
 const createPortConfig = {
     title: 'Setting port config',
-    task: async (ctx, subTask) => {
+    task: async ({ ports }) => {
         try {
             await setConfigFile({
                 configPathname: path.join(config.cacheDir, 'port-config.json'),
                 template: path.join(config.templateDir, 'port-config.template.json'),
-                ports: ctx.ports,
+                ports,
                 overwrite: true
             });
         } catch (e) {
-            subTask.report(e);
-            throw new Error('Unexpected error accrued during port config creation');
+            throw new Error(`Unexpected error accrued during port config creation\n\n${e}`);
         }
     }
 };

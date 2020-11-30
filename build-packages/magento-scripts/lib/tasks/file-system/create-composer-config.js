@@ -4,7 +4,7 @@ const { composerConfig } = require('../../config/composer-config');
 
 const createComposerConfig = {
     title: 'Setting composer.json',
-    task: async ({ config: { config }, magentoVersion }, task) => {
+    task: async ({ config: { config }, magentoVersion }) => {
         try {
             await setConfigFile({
                 configPathname: path.join(config.magentoDir, 'composer.json'),
@@ -15,8 +15,7 @@ const createComposerConfig = {
                 }
             });
         } catch (e) {
-            task.report(e);
-            throw new Error('Unexpected error accrued during composer.json config creation');
+            throw new Error(`Unexpected error accrued during composer.json config creation\n\n${e}`);
         }
     }
 };

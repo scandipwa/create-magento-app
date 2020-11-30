@@ -5,7 +5,7 @@ const macosVersion = require('macos-version');
 
 const createNginxConfig = {
     title: 'Setting nginx config',
-    task: async ({ ports }, task) => {
+    task: async ({ ports }) => {
         try {
             await setConfigFile({
                 configPathname: path.join(config.cacheDir, 'nginx', 'conf.d', 'default.conf'),
@@ -19,8 +19,7 @@ const createNginxConfig = {
                 }
             });
         } catch (e) {
-            task.report(e);
-            throw new Error('Unexpected error accrued during nginx config creation');
+            throw new Error(`Unexpected error accrued during nginx config creation\n\n${e}`);
         }
     }
 };

@@ -4,7 +4,7 @@ const setConfigFile = require('../../util/set-config');
 
 const createPhpConfig = {
     title: 'Setting PHP config',
-    task: async ({ config: { php } }, task) => {
+    task: async ({ config: { php } }) => {
         try {
             await setConfigFile({
                 configPathname: php.iniPath,
@@ -12,8 +12,7 @@ const createPhpConfig = {
                 overwrite: true
             });
         } catch (e) {
-            task.report(e);
-            throw new Error('Unexpected error accrued during php.ini config creation');
+            throw new Error(`Unexpected error accrued during php.ini config creation\n\n${e}`);
         }
     }
 };
