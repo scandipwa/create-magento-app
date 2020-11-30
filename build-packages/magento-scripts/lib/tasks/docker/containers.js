@@ -11,7 +11,8 @@ const run = (options) => {
         restart,
         network,
         name,
-        entrypoint
+        entrypoint,
+        command = ''
     } = options;
 
     const restartArg = restart && `--restart ${ restart }`;
@@ -37,7 +38,8 @@ const run = (options) => {
         mountVolumesArgs,
         envArgs,
         entrypointArg,
-        image
+        image,
+        command
     ].filter(Boolean).join(' ');
 
     return execAsyncSpawn(dockerCommand);
