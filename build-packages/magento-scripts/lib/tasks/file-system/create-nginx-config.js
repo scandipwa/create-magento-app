@@ -1,6 +1,7 @@
 const path = require('path');
 const { config } = require('../../config');
 const setConfigFile = require('../../util/set-config');
+const macosVersion = require('macos-version');
 
 const createNginxConfig = {
     title: 'Setting nginx config',
@@ -13,7 +14,8 @@ const createNginxConfig = {
                 ports,
                 overwrite: true,
                 templateArgs: {
-                    mageRoot: config.magentoDir
+                    mageRoot: config.magentoDir,
+                    hostMachine: macosVersion.isMacOS ? 'host.docker.internal' : '127.0.0.1'
                 }
             });
         } catch (e) {
