@@ -2,7 +2,7 @@ const composerConfig = {
     '2.4.1': {
         version: '2.4.1',
         require: {
-            'magento/product-community-edition': '2.4.1',
+            'magento/product-community-edition': '^2.4.1',
             'magento/composer-root-update-plugin': '~1.0'
         },
         'require-dev': {

@@ -22,7 +22,7 @@ const getInstalledMagentoVersion = async () => {
         throw new Error('No magento/product-community-edition dependency found in composer.json');
     }
 
-    return composerData.require['magento/product-community-edition'];
+    return composerData.require['magento/product-community-edition'].replace(/\^/i, '');
 };
 
 module.exports = getInstalledMagentoVersion;
