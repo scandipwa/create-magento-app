@@ -7,15 +7,16 @@ module.exports = (yargs) => {
         const containers = docker.getContainers();
         const services = Object.keys(containers);
 
-        if (services.includes(argv.scope)) {
-            await execAsyncSpawn(`docker logs ${containers[argv.scope].name} -f`, {
+        if (services.includes(argv.scope) || services.some((service) => service.includes(argv.scope))) {
+            const containerName = containers[argv.scope] ? argv.scope : Object.keys(containers).find((key) => key.includes(argv.scope));
+            await execAsyncSpawn(`docker logs ${containers[containerName].name} -f`, {
                 callback: logger.log
             });
 
             return;
         }
 
-        if (argv.scope === 'magento') {
+        if (argv.scope === 'magento' || 'magento'.includes(argv.scope)) {
             await execAsyncSpawn('tail -f var/log/system.log', {
                 callback: logger.log
             });
