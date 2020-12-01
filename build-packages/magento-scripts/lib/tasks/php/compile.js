@@ -110,7 +110,7 @@ const compile = {
                 const command = getInstallDependenciesCommand();
 
                 throw new Error(`Looks like you haven't installed some dependency.
-                Here's a command to install all required dependencies: ${command}`);
+                Here's a command to install all required dependencies: ${command}\n\n\n${e}`);
             }
             throw new Error(
                 `Failed to compile the required PHP version.
