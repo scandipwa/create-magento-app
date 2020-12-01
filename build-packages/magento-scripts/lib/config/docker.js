@@ -1,4 +1,5 @@
 const path = require('path');
+const macosVersion = require('macos-version');
 
 module.exports = (app, config) => {
     const {
@@ -65,7 +66,7 @@ module.exports = (app, config) => {
             ],
             restart: 'on-failure:5',
             // TODO: use connect instead
-            network: network.name,
+            network: macosVersion.isMacOS ? network.name : 'host',
             image: `nginx:${ nginx }`,
             name: `${ prefix }_nginx`,
             command: "nginx -g 'daemon off;'"
@@ -88,7 +89,7 @@ module.exports = (app, config) => {
                 MYSQL_PASSWORD: 'magento',
                 MYSQL_DATABASE: 'magento'
             },
-            network: network.name,
+            network: macosVersion.isMacOS ? network.name : 'host',
             image: `mysql:${ mysql }`,
             name: `${ prefix }_mysql`
         },
