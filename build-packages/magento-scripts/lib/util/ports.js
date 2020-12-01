@@ -90,7 +90,9 @@ const getCachedPorts = {
             return;
         }
 
-        throw new Error('Cached ports not found');
+        ctx.ports = defaultPorts;
+
+        // throw new Error('Cached ports not found');
     }
 };
 

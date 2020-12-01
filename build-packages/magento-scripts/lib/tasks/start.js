@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
-const { getAvailablePorts } = require('../util/ports');
+const { getAvailablePorts, getCachedPorts } = require('../util/ports');
 const openBrowser = require('../util/open-browser');
 
 const { installComposer } = require('./composer');
-const { startServices } = require('./docker');
+const { startServices, stopServices } = require('./docker');
 const { installPhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
@@ -18,9 +18,11 @@ const start = {
     task: async (ctx, task) => task.newListr([
         createCacheFolder,
         checkRequirements,
-        getAvailablePorts,
         getMagentoVersion,
         getAppConfig,
+        getCachedPorts,
+        stopServices,
+        getAvailablePorts,
         installPhp,
         installComposer,
         prepareFileSystem,
@@ -30,8 +32,8 @@ const start = {
         setupMagento,
         {
             title: 'Open browser',
-            task: async ({ ports, noOpenBrowser }, task) => {
-                if (noOpenBrowser) {
+            task: async ({ ports, noOpen }, task) => {
+                if (noOpen) {
                     task.skip();
                     return;
                 }
