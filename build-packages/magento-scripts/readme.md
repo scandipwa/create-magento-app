@@ -64,6 +64,7 @@ apt-get install \
     libssl-dev \
     libxml2-dev \
     libxslt-dev \
+    libonig-dev \
     php-cli \
     php-bz2 \
     pkg-config \
@@ -89,6 +90,7 @@ apt-get install \
     libssl-dev \
     libxml2-dev \
     libxslt-dev \
+    libonig-dev \
     php-cli \
     php-bz2 \
     pkg-config \
@@ -98,20 +100,22 @@ apt-get install \
 
 ### CentsOS / Fedora
 ```sh
-yum install openssl-devel \
+yum install --enablerepo=PowerTools openssl-devel \
     libjpeg-turbo-devel \
     libpng-devel \
     gd-devel \
     libicu libicu-devel \
     libzip-devel \
-    libtool-ltdl-devel
+    libtool-ltdl-devel \
+    oniguruma-devel
 ```
 
 ### Arch
 ```sh
 pamac install freetype2 \
     lib32-freetype2 \
-    openssl
+    openssl \
+    oniguruma
 ```
 
 ### MacOS
