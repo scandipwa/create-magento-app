@@ -3,6 +3,7 @@ const os = require('os');
 const osPlatform = require('../../util/os-platform');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const getInstallDependenciesCommand = require('../../util/install-dependencies-command');
 
 const compileOptions = {
     linux: {
@@ -105,8 +106,12 @@ const compile = {
                 }
             );
         } catch (e) {
-            task.report(e);
+            if (e.message.includes('installed software in a non-standard prefix.')) {
+                const command = getInstallDependenciesCommand();
 
+                throw new Error(`Looks like you haven't installed some dependency.
+                Here's a command to install all required dependencies: ${command}`);
+            }
             throw new Error(
                 `Failed to compile the required PHP version.
                 Tried compiling the PHP version ${ logger.style.misc(php.version) }.
