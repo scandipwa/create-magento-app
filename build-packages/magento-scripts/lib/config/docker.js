@@ -89,7 +89,7 @@ module.exports = (app, config) => {
                 MYSQL_PASSWORD: 'magento',
                 MYSQL_DATABASE: 'magento'
             },
-            network: macosVersion.isMacOS ? network.name : 'host',
+            network: network.name,
             image: `mysql:${ mysql }`,
             name: `${ prefix }_mysql`
         },
