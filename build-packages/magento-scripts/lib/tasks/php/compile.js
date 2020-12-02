@@ -106,7 +106,7 @@ const compile = {
                 }
             );
         } catch (e) {
-            if (e.message.includes('installed software in a non-standard prefix.')) {
+            if (e.includes('installed software in a non-standard prefix.')) {
                 const command = getInstallDependenciesCommand();
 
                 throw new Error(`Looks like you haven't installed some dependency.
