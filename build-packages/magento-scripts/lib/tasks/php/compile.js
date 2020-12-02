@@ -107,10 +107,10 @@ const compile = {
             );
         } catch (e) {
             if (e.includes('installed software in a non-standard prefix.')) {
-                const command = getInstallDependenciesCommand();
+                const command = await getInstallDependenciesCommand();
 
                 throw new Error(`Looks like you haven't installed some dependency.
-                Here's a command to install all required dependencies: ${command}\n\n\n${e}`);
+                Use this command to install all required dependencies:\n${command}\n\n\n${e}`);
             }
             throw new Error(
                 `Failed to compile the required PHP version.
