@@ -1,0 +1,12 @@
+# action.yml
+name: 'Hello World'
+description: 'Greet someone and record the time'
+inputs:
+  COMPOSER_AUTH:  # id of input
+    description: 'Composer auth credentials'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.COMPOSER_AUTH }}
