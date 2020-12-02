@@ -15,7 +15,7 @@ const getAppConfig = {
             task.skip('App config already created');
             return;
         }
-        const configType = await task.prompt({
+        const configType = !process.stdin.isTTY ? 'default' : await task.prompt({
             type: 'Select',
             message: 'How do you want to create config for magento?',
             choices: [
