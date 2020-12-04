@@ -63,15 +63,16 @@ RUN source $HOME/.phpbrew/bashrc
 WORKDIR /usr/src/app/
 
 ADD ./build-packages/ /usr/src/app/build-packages/
-ADD ./.yarn /usr/src/app/
+ADD ./.yarn /usr/src/app/.yarn/
 ADD ./package.json /usr/src/app/
 ADD ./lerna.json /usr/src/app/
 ADD ./yarn.lock /usr/src/app/
+ADD ./.yarnrc /usr/src/app/
 
 ARG COMPOSER_AUTH
 ENV COMPOSER_AUTH=${COMPOSER_AUTH}
 
-RUN npm i yarn@1.18.0 -g
+RUN npm i yarn -g
 # Setup lerna workspace
 RUN yarn
 
