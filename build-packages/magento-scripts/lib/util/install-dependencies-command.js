@@ -24,9 +24,19 @@ const getInstallDependenciesCommand = async () => {
         case 'Arch Linux':
         case 'Manjaro': {
             return `pamac install ${ ['freetype2',
-                'lib32-freetype2',
                 'openssl',
-                'oniguruma'].join(' ')}`;
+                'oniguruma',
+                'libxslt',
+                'bzip2',
+                'libjpeg',
+                'libpng',
+                'icu',
+                'libxml2',
+                'autoconf',
+                'libzip',
+                'sqlite',
+                'readline',
+                'perl'].join(' ')}`;
         }
         case 'Fedora':
         case 'CentOS': {

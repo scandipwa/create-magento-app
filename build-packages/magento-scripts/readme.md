@@ -113,9 +113,19 @@ yum install --enablerepo=PowerTools openssl-devel \
 ### Arch
 ```sh
 pamac install freetype2 \
-    lib32-freetype2 \
     openssl \
-    oniguruma
+    oniguruma \
+    libxslt \
+    bzip2 \
+    libjpeg-turbo \
+    libpng \
+    icu \
+    libxml2 \
+    autoconf \
+    libzip \
+    sqlite \
+    readline \
+    perl
 ```
 
 ### MacOS
