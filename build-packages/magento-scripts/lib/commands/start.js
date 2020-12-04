@@ -45,6 +45,15 @@ module.exports = (yargs) => {
                 default: false
             }
         );
+
+        yargs.option(
+            'test-run',
+            {
+                describe: 'Run cma in test mode. After original command is done it will stop services and cleanup folder.',
+                type: 'boolean',
+                default: false
+            }
+        );
     }, async (args = {}) => {
         const listrTasks = [
             start
@@ -53,9 +62,13 @@ module.exports = (yargs) => {
         if (args.restart) {
             listrTasks.unshift(stop);
         }
+
+        if (args.testRun) {
+            listrTasks.push(stop);
+        }
         const tasks = new Listr(listrTasks, {
             exitOnError: true,
-            ctx: { ...args },
+            ctx: { force: args.testRun, ...args },
             concurrent: false,
             rendererOptions: { collapse: false }
         });
