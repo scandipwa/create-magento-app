@@ -1,6 +1,4 @@
-# Container image that runs your code
-FROM ubuntu:20.10
-
+FROM linuxmintd/mint20.1-amd64:latest
 SHELL ["/bin/bash", "-c"]
 
 USER root

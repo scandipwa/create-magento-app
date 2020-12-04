@@ -9,3 +9,9 @@ arch:
 
 run-arch:
 	docker run -e COMPOSER_AUTH -v /var/run/docker.sock:/var/run/docker.sock cma/arch:1
+
+mint:
+	docker build -t cma/mint:1 --build-arg COMPOSER_AUTH=$COMPOSER_AUTH -f ./docker-actions/mint/Dockerfile .
+
+run-mint:
+	docker run -e COMPOSER_AUTH -v /var/run/docker.sock:/var/run/docker.sock cma/mint:1

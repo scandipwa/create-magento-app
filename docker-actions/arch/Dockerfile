@@ -10,8 +10,16 @@ WORKDIR /usr/tempdir/
 # Update deps
 RUN pacman -Sy --noconfirm
 
+# Install sudo
+RUN pacman -S --needed --noconfirm sudo
+
+# Allow the nobody passwordless sudo
+RUN printf 'nobody ALL=(ALL) ALL\n' | tee -a /etc/sudoers
+
+USER nobody
+
 # Install os deps
-RUN pacman -S curl git --noconfirm
+RUN pacman -S curl git base-devel --noconfirm
 
 # Install docker
 RUN pacman -S docker --noconfirm
@@ -25,13 +33,15 @@ RUN pacman -S --noconfirm freetype2 \
 RUN curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n && bash n 14.15.1
 
 # Install PHPBrew
+# Clone and build a package
 RUN git clone https://aur.archlinux.org/phpbrew.git
+# RUN chown -R builduser ./phpbrew
 WORKDIR /usr/tempdir/phpbrew
-RUN makepkg -si
+RUN sudo makepkg -S --noconfirm
 
+RUN source $HOME/.phpbrew/bashrc
 RUN phpbrew init
 RUN phpbrew lookup-prefix ubuntu
-RUN source $HOME/.phpbrew/bashrc
 
 WORKDIR /usr/src/app/
 
@@ -54,4 +64,4 @@ RUN ./build-packages/create-magento-app/index.js runtime-packages/cma
 WORKDIR /usr/src/app/runtime-packages/cma
 
 # Start project
-CMD yarn start --no-open
+CMD yarn start --no-open --test-run
