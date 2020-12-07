@@ -13,7 +13,7 @@ module.exports = async ({
         --admin-user='${ app.user }' \
         --admin-password='${ app.password }' \
         --search-engine='elasticsearch7' \
-        --elasticsearch-host='localhost' \
+        --elasticsearch-host='127.0.0.1' \
         --elasticsearch-port='${ ports.elasticsearch }'`, {
         magentoVersion,
         callback: output
