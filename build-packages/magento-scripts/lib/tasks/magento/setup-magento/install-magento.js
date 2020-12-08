@@ -1,26 +1,31 @@
+/* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../../util/run-magento');
 
-module.exports = async ({
-    ports,
-    magentoVersion,
-    app,
-    output
-}) => {
-    await runMagentoCommand(`setup:install \
+const installMagento = {
+    title: 'Installing magento...',
+    task: async ({ magentoVersion, magentoConfig: app }, task) => {
+        await runMagentoCommand(`setup:install \
         --admin-firstname='${ app.first_name }' \
         --admin-lastname='${ app.last_name }' \
         --admin-email='${ app.email }' \
         --admin-user='${ app.user }' \
-        --admin-password='${ app.password }' \
-        --search-engine='elasticsearch7' \
-        --elasticsearch-host='127.0.0.1' \
-        --elasticsearch-port='${ ports.elasticsearch }'`, {
-        magentoVersion,
-        callback: output
-    });
+        --admin-password='${ app.password }'`, {
+            magentoVersion,
+            callback: (t) => {
+                task.output = t;
+            }
+        });
 
-    await runMagentoCommand('cache:enable', {
-        magentoVersion,
-        callback: output
-    });
+        await runMagentoCommand('cache:enable', {
+            magentoVersion,
+            callback: (t) => {
+                task.output = t;
+            }
+        });
+    },
+    options: {
+        bottomBar: 15
+    }
 };
+
+module.exports = installMagento;
