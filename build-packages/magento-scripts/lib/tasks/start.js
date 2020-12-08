@@ -7,7 +7,7 @@ const { startServices, stopServices } = require('./docker');
 const { installPhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
-const { startPhpFpm } = require('./php-fpm');
+const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
 const getMagentoVersion = require('./magento/get-magento-version');
@@ -22,14 +22,15 @@ const start = {
         getAppConfig,
         getCachedPorts,
         stopServices,
+        stopPhpFpm,
         getAvailablePorts,
         installPhp,
         installComposer,
         prepareFileSystem,
         installMagento,
-        startPhpFpm,
         startServices,
         setupMagento,
+        startPhpFpm,
         {
             title: 'Open browser',
             task: async ({ ports, noOpen }, task) => {
