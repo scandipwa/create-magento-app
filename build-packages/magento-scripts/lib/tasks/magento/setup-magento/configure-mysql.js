@@ -1,4 +1,6 @@
+/* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../../util/run-magento');
+const sleep = require('../../../util/sleep');
 const waitForIt = require('../../../util/wait-for-it');
 
 module.exports = {
@@ -16,10 +18,12 @@ module.exports = {
             host: '127.0.0.1',
             port: ports.mysql,
             output: (t) => {
-                // eslint-disable-next-line no-param-reassign
                 task.output = t;
             }
         });
+
+        // TODO connect to mysql logs and continue work after message reserved:
+        // mysqld: ready for connections.
 
         // TODO: handle error
         await runMagentoCommand(`setup:config:set \
@@ -30,8 +34,13 @@ module.exports = {
         --backend-frontname='${ app.adminuri }' \
         -n`, {
             throwNonZeroCode: false,
-            magentoVersion
+            magentoVersion,
+            callback: (t) => {
+                task.output = t;
+            }
         });
+
+        await sleep(3000);
     },
     options: {
         bottomBar: 10
