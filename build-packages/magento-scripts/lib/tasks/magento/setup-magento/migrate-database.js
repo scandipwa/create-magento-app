@@ -1,10 +1,12 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../../util/run-magento');
 const installMagento = require('./install-magento');
 
 const migrateDatabase = {
     title: 'Migrating database',
-    task: async ({ ports, magentoVersion, magentoConfig: app }, task) => {
+    task: async (ctx, task) => {
+        const { magentoVersion } = ctx;
         const { code } = await runMagentoCommand('setup:db:status', {
             magentoVersion,
             throwNonZeroCode: false
@@ -17,15 +19,13 @@ const migrateDatabase = {
             break;
         }
         case 1: {
-            await installMagento({
-                ports,
-                magentoVersion,
-                app,
-                output(t) {
-                    task.output = t;
-                }
+            return task.newListr([
+                installMagento
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                ctx
             });
-            break;
         }
         case 2: {
             task.output = 'Upgrading magento';
