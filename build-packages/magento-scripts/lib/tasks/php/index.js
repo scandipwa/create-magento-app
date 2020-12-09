@@ -39,13 +39,11 @@ const installPhp = {
                 return;
             }
         } catch (e) {
-            task.report(e);
-
             throw new Error(
                 `Failed to extract the list of installed PHP versions.
                 Possibly, you forgot to setup PHPBrew?
                 Follow these instruction: ${ logger.style.link('https://phpbrew.github.io/phpbrew/#setting-up') }
-                Otherwise, See error details in the output above.`
+                Otherwise, See error details in the output below.\n\n${e}`
             );
         }
 

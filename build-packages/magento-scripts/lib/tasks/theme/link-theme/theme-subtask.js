@@ -21,11 +21,9 @@ const themeSubtask = {
             });
             task.output = 'redis is set for persistent query!';
         } catch (e) {
-            task.report(e);
-
             throw new Error(
                 `Unexpected error while setting redis for pq!.
-                See ERROR log above.`
+                See ERROR log below.\n\n${e}`
             );
         }
     }

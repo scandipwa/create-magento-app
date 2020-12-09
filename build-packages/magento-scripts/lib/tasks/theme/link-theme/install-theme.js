@@ -12,11 +12,9 @@ const installTheme = {
                 }
             });
         } catch (e) {
-            task.report(e);
-
             throw new Error(
                 `Unexpected error while installing theme.
-                See ERROR log above.`
+                See ERROR log below.\n\n${e}`
             );
         }
     }

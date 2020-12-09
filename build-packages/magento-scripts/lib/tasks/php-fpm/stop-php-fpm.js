@@ -28,11 +28,9 @@ const stopPhpFpmTask = {
                 return;
             }
 
-            task.report(e);
-
             throw new Error(
                 `Unexpected error while stopping php-fpm.
-                See ERROR log above.`
+                See ERROR log below.\n\n${e}`
             );
         }
     },

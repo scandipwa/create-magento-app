@@ -12,11 +12,9 @@ const upgradeMagento = {
                 }
             });
         } catch (e) {
-            task.report(e);
-
             throw new Error(
                 `Unexpected error while upgrading magento.
-                See ERROR log above.`
+                See ERROR log below.\n\n${e}`
             );
         }
     }

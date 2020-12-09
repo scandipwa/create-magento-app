@@ -12,11 +12,9 @@ const themeSymlink = {
                 }
             });
         } catch (e) {
-            task.report(e);
-
             throw new Error(
                 `Unexpected error while configuring theme symbolic link.
-                See ERROR log above.`
+                See ERROR log above.\n\n${e}`
             );
         }
     }

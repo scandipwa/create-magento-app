@@ -14,8 +14,7 @@ const startPhpFpm = {
                 }
             );
         } catch (e) {
-            task.report(e);
-            throw new Error('Error during php-fpm start');
+            throw new Error(`Error during php-fpm start\n\n${e}`);
         }
     },
     options: {
