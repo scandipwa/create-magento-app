@@ -1,6 +1,5 @@
 const net = require('net');
-
-const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
+const sleep = require('./sleep');
 
 const connectToHostPort = ({ host, port }) => new Promise((resolve, reject) => {
     const socket = net.createConnection({ host, port, timeout: 15 * 1000 });
@@ -24,19 +23,19 @@ const waitForIt = async ({
 }) => {
     const startTime = Date.now();
     let connected = false;
+    output(`Waiting for ${name} at ${host}:${port}...`);
     while (!connected) {
         try {
             // eslint-disable-next-line no-await-in-loop
             await Promise.race([
-                sleep(15).then(() => {
+                sleep(300).then(() => {
                     throw new Error('Connection timeout');
                 }),
                 connectToHostPort({ host, port })
             ]);
             connected = true;
-        } catch {
-            output(`Waiting for ${name} at ${host}:${port}...`);
-        }
+        // eslint-disable-next-line no-empty
+        } catch {}
     }
 
     const endTime = Date.now();
