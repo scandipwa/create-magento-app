@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
 const { pathExists } = require('fs-extra');
+const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const getComposerVersion = async ({ composer, php }) => {
@@ -26,20 +27,14 @@ const installComposer = {
             task.title = 'Installing Composer';
             await createComposerDir({ composer });
             try {
-                await execAsyncSpawn(
-                    `${ php.binPath } -r "copy('https://getcomposer.org/composer-1.phar', '${ composer.binPath }');"`
-                );
+                await downloadFile('https://getcomposer.org/composer-1.phar', {
+                    destination: composer.binPath
+                });
             } catch (e) {
-                task.report(
-                    new Error(
-                        'Unexpected issue, while installing composer.',
-                        'Please see the error log below.'
-                    )
+                throw new Error(
+                    `Unexpected issue, while installing composer.
+                    Please see the error log below.\n\n${e}`
                 );
-                throw e;
-                // logger.note(
-                //     'We would appreciate an issue on GitHub :)'
-                // );
             }
         }
 
