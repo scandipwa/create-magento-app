@@ -1,8 +1,10 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
+const os = require('os');
+const fs = require('fs');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
-const { pathExists } = require('fs-extra');
+const moveFile = require('../../util/move-file');
 
 const installMagento = {
     title: 'Installing Magento',
@@ -22,10 +24,22 @@ const installMagento = {
         }
 
         task.title = 'Creating Magento project...';
-        const composerJsonExists = await pathExists(path.join(config.magentoDir, 'composer.json'));
-        if (!composerJsonExists) {
-            throw new Error('Composer.json file not found');
-        }
+
+        const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
+        await runComposerCommand(
+            `create-project \
+        --repository=https://repo.magento.com/ magento/project-community-edition=${magentoVersion} \
+        --no-install \
+        "${tempDir}"`,
+            { magentoVersion }
+        );
+
+        await moveFile({
+            from: path.join(tempDir, 'composer.json'),
+            to: path.join(process.cwd(), 'composer.json')
+        });
+
+        await fs.promises.rmdir(tempDir);
 
         try {
             await runComposerCommand('install',
