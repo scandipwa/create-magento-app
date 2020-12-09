@@ -2,6 +2,7 @@
 const runMagentoCommand = require('../../../util/run-magento');
 const sleep = require('../../../util/sleep');
 const waitForIt = require('../../../util/wait-for-it');
+const waitForLogs = require('../../../util/wait-for-logs');
 
 module.exports = {
     title: 'Setting mysql magento database credentials',
@@ -11,7 +12,7 @@ module.exports = {
         config: { docker },
         magentoConfig: app
     }, task) => {
-        const { mysql: { env } } = docker.getContainers(ports);
+        const { mysql: { env, name } } = docker.getContainers(ports);
 
         await waitForIt({
             name: 'mysql',
@@ -24,6 +25,19 @@ module.exports = {
 
         // TODO connect to mysql logs and continue work after message reserved:
         // mysqld: ready for connections.
+
+        const beforeMysqlReadyTime = Date.now();
+
+        await waitForLogs({
+            containerName: name,
+            matchText: 'mysqld: ready for connections.'
+        });
+
+        const afterMysqlReadyTime = Date.now();
+
+        const mysqlStartupTime = afterMysqlReadyTime - beforeMysqlReadyTime;
+
+        await sleep(mysqlStartupTime);
 
         // TODO: handle error
         await runMagentoCommand(`setup:config:set \
@@ -39,8 +53,6 @@ module.exports = {
                 task.output = t;
             }
         });
-
-        await sleep(3000);
     },
     options: {
         bottomBar: 10
