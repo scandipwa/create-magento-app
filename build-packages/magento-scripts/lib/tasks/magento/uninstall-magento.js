@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../util/run-magento');
 const { config: { magentoDir } } = require('../../config');
-const { pathExists } = require('fs-extra');
+const pathExists = require('../../util/path-exists');
 
 const uninstallMagento = {
     title: 'Uninstall Magento App',

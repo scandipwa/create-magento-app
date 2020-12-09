@@ -1,6 +1,6 @@
 const eta = require('eta');
 const fs = require('fs');
-const { pathExists } = require('fs-extra');
+const pathExists = require('./path-exists');
 
 const setConfigFile = async ({
     configPathname,

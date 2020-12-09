@@ -2,8 +2,8 @@
 const getPort = require('get-port');
 const path = require('path');
 const fs = require('fs');
-const { pathExists } = require('fs-extra');
 const { config } = require('../config');
+const pathExists = require('./path-exists');
 
 const portConfigPath = path.join(config.cacheDir, 'port-config.json');
 

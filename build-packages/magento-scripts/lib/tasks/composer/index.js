@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
-const { pathExists } = require('fs-extra');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const pathExists = require('../../util/path-exists');
 
 const getComposerVersion = async ({ composer, php }) => {
     const composerVersionOutput = await execAsyncSpawn(`${php.binPath} ${composer.binPath} --version --no-ansi`);

@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { config } = require('../config');
-const { pathExists } = require('fs-extra');
+const pathExists = require('./path-exists');
 
 const defaultConfig = {
     magento: {

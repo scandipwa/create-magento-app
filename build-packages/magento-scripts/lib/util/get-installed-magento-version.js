@@ -1,6 +1,6 @@
-const { pathExists } = require('fs-extra');
 const fs = require('fs');
 const path = require('path');
+const pathExists = require('./path-exists');
 
 const getComposerData = async (composerPath) => {
     const composerExists = await pathExists(composerPath);

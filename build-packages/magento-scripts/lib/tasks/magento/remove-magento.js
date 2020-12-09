@@ -1,7 +1,7 @@
-const { pathExists } = require('fs-extra');
 const fs = require('fs');
 const path = require('path');
 const { config } = require('../../config');
+const pathExists = require('../../util/path-exists');
 
 const magentoFiles = [
     '.htaccess',

@@ -1,6 +1,6 @@
-const { pathExists } = require('fs-extra');
 const fs = require('fs');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const pathExists = require('../../util/path-exists');
 
 const getProcessId = async (fpmPidFilePath) => {
     const pidExists = await pathExists(fpmPidFilePath);

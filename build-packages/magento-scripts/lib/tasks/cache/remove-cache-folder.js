@@ -1,6 +1,6 @@
 const fs = require('fs');
-const { pathExists } = require('fs-extra');
 const { config } = require('../../config');
+const pathExists = require('../../util/path-exists');
 
 const removeCacheFolder = {
     title: 'Cleaning cache',

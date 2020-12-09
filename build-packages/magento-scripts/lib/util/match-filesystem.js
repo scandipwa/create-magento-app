@@ -1,5 +1,5 @@
-const { pathExists } = require('fs-extra');
 const path = require('path');
+const pathExists = require('./path-exists');
 
 /**
  * Check file system structure to detect possible unfinished installation

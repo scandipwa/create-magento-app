@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
 const fs = require('fs');
-const { pathExists } = require('fs-extra');
 const themeSymlink = require('./theme-symlink');
 const installTheme = require('./install-theme');
 const themeSubtask = require('./theme-subtask');
 const upgradeMagento = require('./upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const { getCachedPorts } = require('../../../util/ports');
+const pathExists = require('../../../util/path-exists');
 
 const getComposerData = async (composerPath) => {
     const composerExists = await pathExists(composerPath);
