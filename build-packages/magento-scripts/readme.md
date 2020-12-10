@@ -142,7 +142,8 @@ brew install zlib \
     gd \
     freetype \
     oniguruma \
-    icu4c
+    icu4c \
+    libzip
 ```
 
 Additional libraries:  
