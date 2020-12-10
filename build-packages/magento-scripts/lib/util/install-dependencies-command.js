@@ -11,6 +11,7 @@ const getInstallDependenciesCommand = async () => {
         return `brew install ${ ['zlib',
             'bzip2',
             'libiconv',
+            'libzip',
             'curl',
             'libpng',
             'gd',
