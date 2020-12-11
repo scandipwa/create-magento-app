@@ -3,6 +3,7 @@ const fs = require('fs');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
+const prestissimoInstall = require('./prestissimo-install');
 
 const getComposerVersion = async ({ composer, php }) => {
     const composerVersionOutput = await execAsyncSpawn(`${php.binPath} ${composer.binPath} --version --no-ansi`);
@@ -19,8 +20,8 @@ const createComposerDir = async ({ composer }) => {
 
 const installComposer = {
     title: 'Installing composer',
-    task: async ({ config }, task) => {
-        const { composer, php } = config;
+    task: async (ctx, task) => {
+        const { composer, php } = ctx.config;
         const hasComposerInCache = await pathExists(composer.binPath);
 
         if (!hasComposerInCache) {
@@ -40,6 +41,14 @@ const installComposer = {
 
         const composerVersion = await getComposerVersion({ composer, php });
         task.title = `Using composer version ${composerVersion}`;
+
+        return task.newListr([
+            prestissimoInstall
+        ], {
+            concurrent: false,
+            exitOnError: true,
+            ctx
+        });
     }
 };
 
