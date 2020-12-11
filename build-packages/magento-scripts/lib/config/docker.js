@@ -58,6 +58,7 @@ module.exports = (app, config) => {
 
     const getContainers = (ports = {}) => ({
         nginx: {
+            _: 'Nginx',
             ports: [`127.0.0.1:${ ports.app }:80`],
             mountVolumes: [
                 `${ volumes.nginx.name }:/etc/nginx/conf.d`,
@@ -68,18 +69,28 @@ module.exports = (app, config) => {
             // TODO: use connect instead
             network: macosVersion.isMacOS ? network.name : 'host',
             image: `nginx:${ nginx }`,
+            imageDetails: {
+                name: 'nginx',
+                tag: nginx
+            },
             name: `${ prefix }_nginx`,
             command: "nginx -g 'daemon off;'"
         },
         redis: {
+            _: 'Redis',
             ports: [`127.0.0.1:${ ports.redis }:6379`],
             mounts: [`source=${ volumes.redis.name },target=/data`],
             // TODO: use connect instead
             network: network.name,
             image: `redis:${ redis }`,
+            imageDetails: {
+                name: 'redis',
+                tag: redis
+            },
             name: `${ prefix }_redis`
         },
         mysql: {
+            _: 'MySQL',
             ports: [`127.0.0.1:${ ports.mysql }:3306`],
             mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
             env: {
@@ -91,9 +102,14 @@ module.exports = (app, config) => {
             },
             network: network.name,
             image: `mysql:${ mysql }`,
+            imageDetails: {
+                name: 'mysql',
+                tag: mysql
+            },
             name: `${ prefix }_mysql`
         },
         elasticsearch: {
+            _: 'ElasticSearch',
             ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
             mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
             env: {
@@ -105,6 +121,10 @@ module.exports = (app, config) => {
             },
             network: network.name,
             image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch }`,
+            imageDetails: {
+                name: 'docker.elastic.co/elasticsearch/elasticsearch',
+                tag: elasticsearch
+            },
             name: `${ prefix }_elasticsearch`
         }
     });
