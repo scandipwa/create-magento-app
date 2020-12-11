@@ -14,9 +14,6 @@ const startServices = {
             ], {
                 concurrent: true,
                 exitOnError: true,
-                rendererOptions: {
-                    collapse: false
-                },
                 ctx
             })
         },
