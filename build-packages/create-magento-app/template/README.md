@@ -9,18 +9,9 @@
 
 ## Available Scripts
 
-### **start**
+### `npm start` or `yarn start`
 
-```bash
-npm start
-# or
-npm run start
-
-# with yarn you can use options
-yarn start [OPTIONS]
-```
-
-What this command does:
+This command executes a local deployment of your Magento 2 application. It does it in following steps:
 - Prepare your project for Magento 2.
 - Install and compile correct PHP version with required extensions to run Magento 2.
 - Deploy services, Redis, MySQL, ElasticSearch and Nginx, in Docker containers for Magento 2.
@@ -28,50 +19,32 @@ What this command does:
 - Setup Magento 2.
 - Open browser with up and running Magento 2 store.
 
-Command options: (works only with **yarn**)
-- **port** - A port to run store on.
+**Command options**:
+- **port** - A port to run your application on. *By default CMA will select a random available port.*
 
-By default CMA will pic random available port. 
+    ```bash
+    yarn start --port <port> # for Yarn
+    npm run start -- --port <port> # for NPM
+    ```
 
-Alias: **p**
-
-Example:
-```bash
-yarn start --port <port>
-```
 - **no-open** - Disable auto-open of a browser window at the end of workflow.
 
-Alias: **n**
+    ```bash
+    yarn start --no-open # for Yarn
+    npm run start -- --no-open # for NPM
+    ```
 
-Example:
-```bash
-yarn start --no-open
-```
+### `npm run stop` or `yarn stop`
 
----
-
-### **stop**
-
-```bash
-npm run stop
-```
-
-What this command does:
+This command stops a local deployment of your Magento 2 application. It does it in following steps:
 - Gracefully stops PHP-FPM with running Magento.
 - Gracefully stops Docker containers.
 
----
+### `npm run cli` or `yarn cli`
 
-### **cli**
+Opens a new instance of Bash with aliases for PHP, Composer and Magento used in CMA project.
 
-```bash
-npm run cli
-```
-
-What this command does:
-- Open a new instance of Bash with aliases for PHP, Composer and Magento used in CMA project.
-
-Usage example:
+**Usage example**:
 ```bash
 npm run cli
 
@@ -93,29 +66,20 @@ m se:up
 > ...magento upgrade output
 ```
 
----
+### `npm run logs -- <scope>` or `yarn logs <scope>`
 
-### **logs**
+Gives simple access to logs from Nginx, Redis, MySQL and ElasticSearch containers and Magento.
 
->NOTE: Works only with **yarn**
+This command attaches logs from chosen service to your terminal so to exit press `CTRL + C`.
 
-```bash
-yarn logs <scope>
-```
+**Available scopes**:
+- `mysql`
+- `nginx`
+- `redis`
+- `elasticsearch`
+- `magento`
 
-What this command does:
-- Gives simple access to logs from Nginx, Redis, MySQL and ElasticSearch containers and Magento.
-
-This command attaches logs from chosen service to your terminal so to exit press **CTRL + C**.
-
-Available scope:
-- mysql
-- nginx
-- redis
-- elasticsearch
-- magento
-
-Usage example:
+**Usage example**:
 ```bash
 yarn logs nginx
 
@@ -139,22 +103,13 @@ yarn logs ma # or magento
 > ... magento logs
 ```
 
----
+### `npm run link <theme path>` or `yarn link <theme path>`
 
-### **link**
+Installs ScandiPWA as a Magento Theme from your specified folder.
 
->NOTE: Works only with **yarn**
-
+**Usage example**:
 ```bash
-yarn link <theme path>
-```
-
-What this command does:
-- Install ScandiPWA as a Magento Theme from your specified folder.
-
-Usage example:
-```bash
-yarn link <path/to/my/scandipwa-app>
+yarn link ./path/to/my/scandipwa-app
 ```
 
 ---
