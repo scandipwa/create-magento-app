@@ -1,0 +1,229 @@
+# Getting Started with Create Magneto App
+
+## Installation
+
+- [On Linux](#installation-on-linux)
+- [On Mac](#installation-on-mac)
+
+> Currently Create Magneto App **does not support Windows platform**.
+
+## Available Scripts
+
+<!-- TODO: implement -->
+
+---
+
+### Installation on Linux
+
+#### 1. Install platform-specific dependencies:
+
+```bash
+# UBUNTU
+apt-get install \
+    libcurl4-openssl-dev \
+    libonig-dev \
+    libjpeg-dev \
+    libjpeg8-dev \
+    libjpeg-turbo8-dev \
+    libpng-dev \
+    libicu-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libssl-dev \
+    build-essential \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libonig-dev \
+    php-cli \
+    php-bz2 \
+    pkg-config \
+    autoconf
+
+# Linux Mint
+apt-get install \
+    libjpeg-dev \
+    libjpeg8-dev \
+    libjpeg-turbo8-dev \
+    libpng-dev \
+    libicu-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libssl-dev \
+    build-essential \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libonig-dev \
+    php-cli \
+    php-bz2 \
+    pkg-config \
+    autoconf \
+    libcurl4-openssl-dev
+
+# CENTOS / FEDORA
+yum install --enablerepo=PowerTools \
+    openssl-devel \
+    libjpeg-turbo-devel \
+    libpng-devel \
+    gd-devel \
+    libicu libicu-devel \
+    libzip-devel \
+    libtool-ltdl-devel \
+    oniguruma-devel
+
+# ARCH
+pacman -S freetype2 \
+    openssl \
+    oniguruma \
+    libxslt \
+    bzip2 \
+    libjpeg-turbo \
+    libpng \
+    icu \
+    libxml2 \
+    autoconf \
+    libzip \
+    sqlite \
+    readline \
+    perl
+```
+
+#### 2. Install Docker
+
+You can follow [official installation guide from Docker](https://docs.docker.com/engine/install/ubuntu/) or use commands below:
+```bash
+# Download installation script
+curl -fsSL https://get.docker.com -o get-docker.sh
+
+# Run installation script
+sudo bash get-docker.sh
+
+# Add your user to the “docker” group to run docker without root.
+sudo usermod -aG docker $USER
+
+# After that you'll need to logout and login to your account or,
+# you can temporarily enable group changes by running command below
+newgrp docker
+```
+
+#### 3. Install PHPBrew
+
+To install PHPBrew on linux you will need to follows [installation](https://github.com/phpbrew/phpbrew#installation) instructions or use commands below:
+
+```bash
+# Download PHPBrew
+curl -L -O https://github.com/phpbrew/phpbrew/releases/latest/download/phpbrew.phar
+
+# Make it executable
+chmod +x phpbrew.phar
+
+# Move PHPBrew binary to system folder.
+sudo mv phpbrew.phar /usr/local/bin/phpbrew
+
+# Initialize PHPBrew
+phpbrew init
+```
+
+#### 4. Prepare the environment
+
+`COMPOSER_AUTH` is an environment variable that is used to authenticate your Magento project on Magento Composer Repository which contains Magento dependencies. TO obtain it:
+
+1. Go to https://marketplace.magento.com/customer/accessKeys/
+> NOTE: you have to be authorized.
+2. Generate Access Key pair.
+3. Replace `<public key>` and `<private key>` with your public and private key.
+```bash
+export COMPOSER_AUTH='{"http-basic":{"repo.magento.com": {"username": "<public key>", "password": "<private key>"}}}'
+```
+4. Add result result from steps above to your `.bashrc` or `.zshrc`.
+5. Reload terminal.
+
+#### 5. Start your application
+
+```bash
+yarn start # for Yarn
+npm start # for NPM
+```
+
+### Installation on Mac
+
+#### 1. Install Brew
+
+Brew can be installed from [official website](https://brew.sh/) or you can copy-paste this command in your mac terminal:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+#### 2. Install MacOS Dependencies
+
+Run command below to install required system dependencies.
+
+```bash
+brew install zlib \
+    bzip2 \
+    libiconv \
+    curl \
+    libpng \
+    gd \
+    freetype \
+    oniguruma \
+    icu4c \
+    libzip
+```
+
+#### 3. Install Docker for Mac
+
+Download and install Docker Desktop for Mac following the [official installation guide](https://docs.docker.com/docker-for-mac/install/).
+
+#### 4. Install PHPBrew
+
+PHPBrew is used to compile PHP with required extensions to run Magento 2 on your system.
+
+```bash
+# Install XCode
+xcode-select --install
+
+# Install PHPBrew dependencies
+brew install autoconf pkg-config
+
+# Download PHPBrew
+curl -L -O https://github.com/phpbrew/phpbrew/releases/latest/download/phpbrew.phar
+
+# Make it executable
+chmod +x phpbrew.phar
+
+# Move PHPBrew binary to system folder.
+sudo mv phpbrew.phar /usr/local/bin/phpbrew
+
+# Initialize PHPBrew
+phpbrew init
+```
+
+#### 5. Prepare the environment
+
+`COMPOSER_AUTH` is an environment variable that is used to authenticate your Magento project on Magento Composer Repository which contains Magento dependencies. TO obtain it:
+
+1. Go to https://marketplace.magento.com/customer/accessKeys/
+> NOTE: you have to be authorized.
+2. Generate Access Key pair.
+3. Replace `<public key>` and `<private key>` with your public and private key.
+```bash
+export COMPOSER_AUTH='{"http-basic":{"repo.magento.com": {"username": "<public key>", "password": "<private key>"}}}'
+```
+4. Add result result from steps above to your `.bashrc` or `.zshrc`.
+5. Reload terminal.
+
+#### 6. Start your application
+
+```bash
+yarn start # for Yarn
+npm start # for NPM
+```
