@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const run = (options) => {
@@ -50,6 +51,36 @@ const stop = async (containers) => {
     await execAsyncSpawn(`docker container rm ${containers.join(' ')}`);
 };
 
+const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
+
+const pullContainers = {
+    title: 'Pulling container images',
+    task: async ({ config: { docker } }, task) => {
+        const containers = Object.values(docker.getContainers());
+        const containerFilters = containers
+            .map((container) => `-f=reference='${container.imageDetails.name}:${container.imageDetails.tag}'`)
+            .join(' ');
+        const existingImages = await execAsyncSpawn(`docker images ${containerFilters}`);
+        const missingContainerImages = containers.filter((container) => !existingImages.split('\n')
+            .some((line) => line.includes(container.imageDetails.name) && line.includes(container.imageDetails.tag)));
+
+        if (missingContainerImages.length === 0) {
+            task.skip();
+            return;
+        }
+
+        return task.newListr(
+            missingContainerImages.map((container) => ({
+                title: `Pulling ${container._} image`,
+                task: async () => pull(`${container.imageDetails.name}:${container.imageDetails.tag}`)
+            })), {
+                concurrent: true,
+                exitOnError: true
+            }
+        );
+    }
+};
+
 const startContainers = {
     title: 'Starting containers',
     task: async ({ ports, config: { docker } }, task) => {
@@ -89,5 +120,6 @@ const stopContainers = {
 
 module.exports = {
     startContainers,
-    stopContainers
+    stopContainers,
+    pullContainers
 };

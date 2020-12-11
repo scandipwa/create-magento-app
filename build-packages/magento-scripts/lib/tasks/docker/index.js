@@ -5,8 +5,21 @@ const volumes = require('./volumes');
 const startServices = {
     title: 'Starting docker services',
     task: async (ctx, task) => task.newListr([
-        network.createNetwork,
-        volumes.createVolumes,
+        {
+            title: 'Prepare services',
+            task: (ctx, task) => task.newListr([
+                network.createNetwork,
+                volumes.createVolumes,
+                containers.pullContainers
+            ], {
+                concurrent: true,
+                exitOnError: true,
+                rendererOptions: {
+                    collapse: false
+                },
+                ctx
+            })
+        },
         containers.startContainers
     ], {
         concurrent: false,
