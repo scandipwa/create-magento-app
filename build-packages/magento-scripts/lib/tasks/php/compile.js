@@ -110,10 +110,10 @@ const compile = {
                 const command = await getInstallDependenciesCommand();
 
                 throw new Error(`Looks like you haven't installed some dependency.
-Use this command to install all required dependencies:\n\n${command}
+Use this command to install all required dependencies:\n\n${logger.style.command(command)}
 
 Output truncated, you can access all of the logs by running command:\n
-cat ~/.phpbrew/build/php-${php.version}/build.log\n`);
+${logger.style.command(`cat ~/.phpbrew/build/php-${php.version}/build.log`)}\n`);
             }
             throw new Error(
                 `Failed to compile the required PHP version.

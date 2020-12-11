@@ -77,9 +77,7 @@ module.exports = (yargs) => {
             await tasks.run();
             process.exit(0);
         } catch (e) {
-            tasks.err.forEach((error) => {
-                logger.error(error.message);
-            });
+            logger.error(e.message);
             process.exit(1);
         }
     });
