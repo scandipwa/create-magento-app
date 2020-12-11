@@ -114,9 +114,9 @@ yarn link ./path/to/my/scandipwa-app
 
 ---
 
-### Installation on Linux
+## Installation on Linux
 
-#### 1. Install platform-specific dependencies:
+### 1. Install platform-specific dependencies:
 
 ```bash
 # UBUNTU
@@ -196,7 +196,7 @@ pacman -S freetype2 \
     perl
 ```
 
-#### 2. Install Docker
+### 2. Install Docker
 
 You can follow [official installation guide from Docker](https://docs.docker.com/engine/install/ubuntu/) or use commands below:
 ```bash
@@ -214,7 +214,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-#### 3. Install PHPBrew
+### 3. Install PHPBrew
 
 To install PHPBrew on linux you will need to follows [installation](https://github.com/phpbrew/phpbrew#installation) instructions or use commands below:
 
@@ -232,7 +232,7 @@ sudo mv phpbrew.phar /usr/local/bin/phpbrew
 phpbrew init
 ```
 
-#### 4. Prepare the environment
+### 4. Prepare the environment
 
 `COMPOSER_AUTH` is an environment variable that is used to authenticate your Magento project on Magento Composer Repository which contains Magento dependencies. TO obtain it:
 
@@ -246,16 +246,16 @@ export COMPOSER_AUTH='{"http-basic":{"repo.magento.com": {"username": "<public k
 4. Add result result from steps above to your `.bashrc` or `.zshrc`.
 5. Reload terminal.
 
-#### 5. Start your application
+### 5. Start your application
 
 ```bash
 yarn start # for Yarn
 npm start # for NPM
 ```
 
-### Installation on Mac
+## Installation on Mac
 
-#### 1. Install Brew
+### 1. Install Brew
 
 Brew can be installed from [official website](https://brew.sh/) or you can copy-paste this command in your mac terminal:
 
@@ -263,7 +263,7 @@ Brew can be installed from [official website](https://brew.sh/) or you can copy-
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-#### 2. Install MacOS Dependencies
+### 2. Install MacOS Dependencies
 
 Run command below to install required system dependencies.
 
@@ -280,11 +280,11 @@ brew install zlib \
     libzip
 ```
 
-#### 3. Install Docker for Mac
+### 3. Install Docker for Mac
 
 Download and install Docker Desktop for Mac following the [official installation guide](https://docs.docker.com/docker-for-mac/install/).
 
-#### 4. Install PHPBrew
+### 4. Install PHPBrew
 
 PHPBrew is used to compile PHP with required extensions to run Magento 2 on your system.
 
@@ -308,7 +308,7 @@ sudo mv phpbrew.phar /usr/local/bin/phpbrew
 phpbrew init
 ```
 
-#### 5. Prepare the environment
+### 5. Prepare the environment
 
 `COMPOSER_AUTH` is an environment variable that is used to authenticate your Magento project on Magento Composer Repository which contains Magento dependencies. TO obtain it:
 
@@ -322,7 +322,7 @@ export COMPOSER_AUTH='{"http-basic":{"repo.magento.com": {"username": "<public k
 4. Add result result from steps above to your `.zshrc`.
 5. Reload terminal.
 
-#### 6. Start your application
+### 6. Start your application
 
 ```bash
 yarn start # for Yarn
