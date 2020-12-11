@@ -48,6 +48,8 @@ Example:
 yarn start --no-open
 ```
 
+---
+
 ### **stop**
 
 ```bash
@@ -57,6 +59,8 @@ npm run stop
 What this command does:
 - Gracefully stops PHP-FPM with running Magento.
 - Gracefully stops Docker containers.
+
+---
 
 ### **cli**
 
@@ -88,6 +92,8 @@ magento setup:upgrade
 m se:up
 > ...magento upgrade output
 ```
+
+---
 
 ### **logs**
 
@@ -133,6 +139,8 @@ yarn logs ma # or magento
 > ... magento logs
 ```
 
+---
+
 ### **link**
 
 >NOTE: Works only with **yarn**
@@ -148,7 +156,6 @@ Usage example:
 ```bash
 yarn link <path/to/my/scandipwa-app>
 ```
-
 
 ---
 
