@@ -2,7 +2,7 @@ const { Listr } = require('listr2');
 const linkTheme = require('../tasks/theme/link-theme');
 
 module.exports = (yargs) => {
-    yargs.command('link', 'Link with ScandiPWA application.', () => {}, async () => {
+    yargs.command('link <theme path>', 'Link with ScandiPWA application.', () => {}, async () => {
         const tasks = new Listr([
             linkTheme
         ], {
