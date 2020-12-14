@@ -16,7 +16,7 @@ const config = {
     prefix: path.parse(process.cwd()).name,
     magentoDir: process.cwd(),
     templateDir: path.join(__dirname, 'templates'),
-    cacheDir: path.join(process.cwd(), 'node_modules', '.create-scandipwa-app-cache')
+    cacheDir: path.join(process.cwd(), 'node_modules', '.create-magento-app-cache')
 };
 
 const versionConfig = magentoVersionConfigs[magentoVersion];
