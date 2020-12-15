@@ -8,6 +8,7 @@ const setDeploymentMode = require('./set-deployment-mode');
 const setBaseUrl = require('./set-base-url');
 const postDeploy = require('./post-deploy');
 const disable2fa = require('./disable-2fa');
+const setUrlRewrite = require('./set-url-rewrite');
 
 const setupMagento = {
     title: 'Setup magento',
@@ -20,6 +21,7 @@ const setupMagento = {
         createAdmin,
         setDeploymentMode,
         setBaseUrl,
+        setUrlRewrite,
         postDeploy,
         disable2fa
     ], {
