@@ -17,6 +17,9 @@ const upgradeMagento = {
                 See ERROR log below.\n\n${e}`
             );
         }
+    },
+    options: {
+        bottomBar: 10
     }
 };
 
