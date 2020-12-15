@@ -36,7 +36,7 @@ module.exports = (yargs) => {
             await tasks.run();
             process.exit(0);
         } catch (e) {
-            logger.error(e.message);
+            logger.error(e.message || e);
             process.exit(1);
         }
     });
