@@ -4,9 +4,10 @@ const {
     defaultConfig,
     saveApplicationConfig
 } = require('../util/application-config');
+const sleep = require('../util/sleep');
 
 const getAppConfig = {
-    title: 'Checking app config',
+    title: 'Checking app config (skip in 5 sec)',
     task: async (ctx, task) => {
         const configExists = await getApplicationConfig();
         if (configExists) {
@@ -15,24 +16,33 @@ const getAppConfig = {
             task.skip('App config already created');
             return;
         }
-        const configType = !process.stdin.isTTY ? 'default' : await task.prompt({
-            type: 'Select',
-            message: 'How do you want to create config for magento?',
-            choices: [
-                {
-                    message: 'Use default values (recommended)',
-                    name: 'default'
-                },
-                {
-                    message: 'Let me choose custom options.',
-                    name: 'custom'
-                },
-                {
-                    message: 'I\'ll create config later myself.',
-                    name: 'cancel'
+        const configType = !process.stdin.isTTY ? 'default' : await Promise.race([
+            task.prompt({
+                type: 'Select',
+                message: 'How do you want to create config for magento?',
+                choices: [
+                    {
+                        message: 'Use default values (recommended)',
+                        name: 'default'
+                    },
+                    {
+                        message: 'Let me choose custom options.',
+                        name: 'custom'
+                    },
+                    {
+                        message: 'I\'ll create config later myself.',
+                        name: 'cancel'
+                    }
+                ]
+            }), (async () => {
+                for (let i = 5; i !== 0; i--) {
+                    // eslint-disable-next-line no-await-in-loop
+                    await sleep(1000);
+                    task.title = `Checking app config (skip in ${i} sec)`;
                 }
-            ]
-        });
+                task.cancelPrompt();
+                return 'default';
+            })()]);
 
         if (configType === 'custom') {
             const magentoConfig = await task.prompt([
