@@ -1,10 +1,11 @@
+/* eslint-disable no-param-reassign */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const checkPhpbrew = {
     title: 'Checking phpbrew',
-    task: async () => {
-        const { code } = await execAsyncSpawn('phpbrew -v', {
+    task: async (ctx) => {
+        const { code, result } = await execAsyncSpawn('phpbrew --version', {
             withCode: true
         });
 
@@ -16,6 +17,10 @@ const checkPhpbrew = {
             When completed, try running this script again.`
             );
         }
+
+        const phpBrewVersion = result.match(/phpbrew - ([\d.]+)/i)[1];
+
+        ctx.phpBrewVersion = phpBrewVersion;
     }
 };
 

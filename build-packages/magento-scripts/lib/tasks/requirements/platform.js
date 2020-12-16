@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const os = require('os');
 const macosVersion = require('macos-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
@@ -5,7 +6,7 @@ const { platforms, darwinMinimalVersion } = require('../../config');
 
 const checkPlatform = {
     title: 'Checking platform',
-    task: async () => {
+    task: async (ctx) => {
         const currentPlatform = os.platform();
 
         if (!platforms.includes(currentPlatform)) {
@@ -21,6 +22,9 @@ const checkPlatform = {
                 `MacOS bellow version ${ logger.style.misc(darwinMinimalVersion) } is not supported.`
             );
         }
+
+        ctx.platform = currentPlatform;
+        ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
     }
 };
 

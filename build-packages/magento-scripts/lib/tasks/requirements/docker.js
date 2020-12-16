@@ -33,6 +33,8 @@ const checkDocker = {
         const dockerVersion = await getDockerVersion();
 
         task.title = `Using docker version ${dockerVersion}`;
+
+        ctx.dockerVersion = dockerVersion;
     }
 };
 
