@@ -60,6 +60,10 @@ module.exports = (app, config) => {
         nginx: {
             _: 'Nginx',
             ports: [`127.0.0.1:${ ports.app }:80`],
+            // TODO implement containers healhcheck
+            // healthCheck: {
+            //     cmd: ''
+            // },
             mountVolumes: [
                 `${ volumes.nginx.name }:/etc/nginx/conf.d`,
                 `${ volumes.appPub.name }:${path.join(magentoDir, 'pub')}`,

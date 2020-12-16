@@ -13,7 +13,8 @@ const run = (options) => {
         network,
         name,
         entrypoint,
-        command = ''
+        command = '',
+        healthCheck
     } = options;
 
     const restartArg = restart && `--restart ${ restart }`;
@@ -25,6 +26,7 @@ const run = (options) => {
     const envArgs = Object.entries(env).map(([key, value]) => `--env ${ key }=${ value }`).join(' ');
     const nameArg = name && `--name ${name}`;
     const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
+    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} "${value}"`).join(' ');
 
     const dockerCommand = [
         'docker',
@@ -39,6 +41,7 @@ const run = (options) => {
         mountVolumesArgs,
         envArgs,
         entrypointArg,
+        healthCheckArg,
         image,
         command
     ].filter(Boolean).join(' ');
