@@ -1,6 +1,6 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
-const linkTheme = require('../tasks/theme/link-theme');
+const { linkTheme } = require('../tasks/theme');
 
 module.exports = (yargs) => {
     yargs.command('link <theme path>', 'Link with ScandiPWA application.', () => {}, async (args) => {
