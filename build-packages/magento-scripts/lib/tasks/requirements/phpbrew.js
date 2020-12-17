@@ -4,7 +4,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const checkPhpbrew = {
     title: 'Checking phpbrew',
-    task: async (ctx) => {
+    task: async (ctx, task) => {
         const { code, result } = await execAsyncSpawn('phpbrew --version', {
             withCode: true
         });
@@ -21,6 +21,7 @@ const checkPhpbrew = {
         const phpBrewVersion = result.match(/phpbrew - ([\d.]+)/i)[1];
 
         ctx.phpBrewVersion = phpBrewVersion;
+        task.title = `Using PHPBrew version ${phpBrewVersion}`;
     }
 };
 

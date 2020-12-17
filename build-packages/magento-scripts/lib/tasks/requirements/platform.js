@@ -6,7 +6,7 @@ const { platforms, darwinMinimalVersion } = require('../../config');
 
 const checkPlatform = {
     title: 'Checking platform',
-    task: async (ctx) => {
+    task: async (ctx, task) => {
         const currentPlatform = os.platform();
 
         if (!platforms.includes(currentPlatform)) {
@@ -25,6 +25,8 @@ const checkPlatform = {
 
         ctx.platform = currentPlatform;
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
+
+        task.title = `Running on ${currentPlatform} ${ctx.platformVersion}`;
     }
 };
 
