@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
@@ -26,7 +27,7 @@ const run = (options) => {
     const envArgs = Object.entries(env).map(([key, value]) => `--env ${ key }=${ value }`).join(' ');
     const nameArg = name && `--name ${name}`;
     const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
-    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} "${value}"`).join(' ');
+    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
 
     const dockerCommand = [
         'docker',
@@ -121,8 +122,35 @@ const stopContainers = {
     }
 };
 
+// eslint-disable-next-line max-len
+const getContainerStatus = async (containerName) => {
+    try {
+        return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State.Health}}' ${containerName}`));
+    } catch {
+        return null;
+    }
+};
+
+const statusContainers = {
+    task: async (ctx) => {
+        const { config: { docker }, ports } = ctx;
+        const containers = Object.values(docker.getContainers(ports));
+
+        ctx.containers = await Promise.all(
+            containers.map(async (container) => ({
+                ...container,
+                status: await getContainerStatus(container.name)
+            }))
+        );
+    },
+    options: {
+        bottomBar: 10
+    }
+};
+
 module.exports = {
     startContainers,
     stopContainers,
-    pullContainers
+    pullContainers,
+    statusContainers
 };

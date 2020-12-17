@@ -8,10 +8,10 @@ const prettyStatus = async ({
     phpBrewVersion,
     platform,
     platformVersion,
-    magentoConfig
+    magentoConfig,
+    containers
 }) => {
     const strings = [];
-    const containers = config.docker.getContainers(ports);
     const separator = () => strings.push(`>${'-'.repeat(30)}`);
 
     separator();
@@ -36,7 +36,8 @@ const prettyStatus = async ({
 
     Object.values(containers).forEach((container) => {
         const containerString = [];
-        containerString.push(logger.style.code(container._));
+        containerString.push(logger.style.misc(container._));
+        containerString.push(`Status: ${container.status && container.status.Status === 'healthy' ? `✅ ${logger.style.file('running')}` : logger.style.code(container.status.Status)}`);
         containerString.push(`Name: ${logger.style.misc(container.name)}`);
         containerString.push(`Image: ${logger.style.file(container.image)}`);
         containerString.push(`Network: ${logger.style.link(container.network)}`);

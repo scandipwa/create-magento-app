@@ -60,10 +60,9 @@ module.exports = (app, config) => {
         nginx: {
             _: 'Nginx',
             ports: [`127.0.0.1:${ ports.app }:80`],
-            // TODO implement containers healhcheck
-            // healthCheck: {
-            //     cmd: ''
-            // },
+            healthCheck: {
+                cmd: 'service nginx status'
+            },
             mountVolumes: [
                 `${ volumes.nginx.name }:/etc/nginx/conf.d`,
                 `${ volumes.appPub.name }:${path.join(magentoDir, 'pub')}`,
@@ -82,6 +81,9 @@ module.exports = (app, config) => {
         },
         redis: {
             _: 'Redis',
+            healthCheck: {
+                cmd: 'redis-cli ping'
+            },
             ports: [`127.0.0.1:${ ports.redis }:6379`],
             mounts: [`source=${ volumes.redis.name },target=/data`],
             // TODO: use connect instead
@@ -95,6 +97,9 @@ module.exports = (app, config) => {
         },
         mysql: {
             _: 'MySQL',
+            healthCheck: {
+                cmd: 'service mysql status'
+            },
             ports: [`127.0.0.1:${ ports.mysql }:3306`],
             mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
             env: {
@@ -114,6 +119,9 @@ module.exports = (app, config) => {
         },
         elasticsearch: {
             _: 'ElasticSearch',
+            healthCheck: {
+                cmd: 'curl --silent --fail localhost:9200/_cluster/health || exit 1'
+            },
             ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
             mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
             env: {

@@ -5,6 +5,7 @@ const { getCachedPorts } = require('../util/ports');
 
 const { prettyStatus } = require('../tasks/status');
 const { checkRequirements } = require('../tasks/requirements');
+const { statusContainers } = require('../tasks/docker/containers');
 const getAppConfig = require('../config/get-config');
 
 module.exports = (yargs) => {
@@ -13,7 +14,8 @@ module.exports = (yargs) => {
             checkRequirements,
             getAppConfig,
             getMagentoVersion,
-            getCachedPorts
+            getCachedPorts,
+            statusContainers
         ], {
             concurrent: false,
             exitOnError: true,
