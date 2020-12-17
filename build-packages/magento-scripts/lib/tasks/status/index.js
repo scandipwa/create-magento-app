@@ -37,7 +37,19 @@ const prettyStatus = async ({
     Object.values(containers).forEach((container) => {
         const containerString = [];
         containerString.push(logger.style.misc(container._));
-        containerString.push(`Status: ${container.status && container.status.Status === 'healthy' ? `✅ ${logger.style.file('running')}` : logger.style.code(container.status.Status)}`);
+
+        let containerStatus;
+        if (container.status) {
+            if (container.status.Status === 'healthy') {
+                containerStatus = `✅ ${logger.style.file('running')}`;
+            } else {
+                containerStatus = logger.style.code(container.status.Status);
+            }
+        } else {
+            containerStatus = logger.style.code('stopped');
+        }
+
+        containerString.push(`Status: ${containerStatus}`);
         containerString.push(`Name: ${logger.style.misc(container.name)}`);
         containerString.push(`Image: ${logger.style.file(container.image)}`);
         containerString.push(`Network: ${logger.style.link(container.network)}`);
