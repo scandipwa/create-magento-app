@@ -8,7 +8,8 @@ const magentoVersionConfigs = {
                 { name: 'zlib' },
                 { name: 'openssl' },
                 { name: 'sockets' },
-                { name: 'SimpleXML' }
+                { name: 'SimpleXML' },
+                { name: 'xdebug' }
             ]
         },
         nginx: '1.18.0',

@@ -4,11 +4,12 @@ const setConfigFile = require('../../util/set-config');
 
 const createPhpConfig = {
     title: 'Setting PHP config',
-    task: async ({ config: { php } }) => {
+    task: async ({ config: { php }, debug, ports }) => {
         try {
             await setConfigFile({
                 configPathname: php.iniPath,
-                template: path.join(config.templateDir, 'php.template.ini'),
+                template: path.join(config.templateDir, debug ? 'php.xdebug.template.ini' : 'php.template.ini'),
+                ports,
                 overwrite: true
             });
         } catch (e) {
