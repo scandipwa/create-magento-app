@@ -24,6 +24,16 @@ module.exports = (yargs) => {
                 default: false
             }
         );
+
+        yargs.option(
+            'debug',
+            {
+                alias: 'd',
+                describe: 'Enable PHP xdebug.',
+                type: 'boolean',
+                default: false
+            }
+        );
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,
@@ -31,6 +41,10 @@ module.exports = (yargs) => {
             concurrent: false,
             rendererOptions: { collapse: false }
         });
+
+        if (args.debug) {
+            logger.warn('You are running in debug mode. Magento setup will be slow.');
+        }
 
         try {
             await tasks.run();
