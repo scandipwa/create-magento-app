@@ -47,7 +47,6 @@ module.exports = {
         --db-password='${ env.MYSQL_PASSWORD }' \
         --backend-frontname='${ app.adminuri }' \
         -n`, {
-            throwNonZeroCode: false,
             magentoVersion,
             callback: (t) => {
                 task.output = t;

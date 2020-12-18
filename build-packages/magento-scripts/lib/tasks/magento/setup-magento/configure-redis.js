@@ -19,7 +19,6 @@ module.exports = {
         --cache-backend-redis-port='${ ports.redis }' \
         --cache-backend-redis-db='0' \
         -n`, {
-            throwNonZeroCode: false,
             magentoVersion
         });
 
@@ -32,7 +31,6 @@ module.exports = {
         --session-save-redis-db='1' \
         --session-save-redis-disable-locking='1' \
         -n`, {
-            throwNonZeroCode: false,
             magentoVersion
         });
     },

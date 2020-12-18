@@ -20,7 +20,6 @@ module.exports = {
         --admin-email='${ app.email }' \
         --admin-user='${ app.user }' \
         --admin-password='${ app.password }'`, {
-            throwNonZeroCode: false,
             magentoVersion
         });
     }
