@@ -19,6 +19,7 @@ const savePortsConfig = async (ports) => {
 const defaultPorts = {
     app: 80,
     fpm: 9000,
+    xdebug: 9111,
     mysql: 3306,
     redis: 6379,
     elasticsearch: 9200
@@ -96,4 +97,4 @@ const getCachedPorts = {
     }
 };
 
-module.exports = { getAvailablePorts, getCachedPorts };
+module.exports = { getAvailablePorts, getCachedPorts, savePortsConfig };
