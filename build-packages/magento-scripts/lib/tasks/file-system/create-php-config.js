@@ -10,7 +10,10 @@ const createPhpConfig = {
                 configPathname: php.iniPath,
                 template: path.join(config.templateDir, debug ? 'php.xdebug.template.ini' : 'php.template.ini'),
                 ports,
-                overwrite: true
+                overwrite: true,
+                templateArgs: {
+                    mageRoot: config.magentoDir
+                }
             });
         } catch (e) {
             throw new Error(`Unexpected error accrued during php.ini config creation\n\n${e}`);
