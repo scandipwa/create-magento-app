@@ -4,9 +4,20 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const startPhpFpm = {
     title: 'Starting php-fpm',
     task: async ({ config: { php } }, task) => {
+        const phpIniPathArg = `--php-ini ${php.iniPath}`;
+        const phpFpmConfPathArg = `--fpm-config ${php.fpmConfPath}`;
+        const phpFpmPidFilePathArg = `--pid ${php.fpmPidFilePath}`;
+        // const phpFpmXdebugArg = 'export XDEBUG_SESSION=PHPSTORM';
+
+        const command = [
+            phpIniPathArg,
+            phpFpmConfPathArg,
+            phpFpmPidFilePathArg
+        ].filter(Boolean);
+
         try {
             await execAsyncSpawn(
-                `${php.fpmBinPath} --php-ini ${php.iniPath} --fpm-config ${php.fpmConfPath} --pid ${php.fpmPidFilePath} "$@"`,
+                `${php.fpmBinPath} ${command.join(' ')} "$@"`,
                 {
                     callback: (t) => {
                         task.output = t;
