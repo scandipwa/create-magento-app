@@ -8,10 +8,11 @@ const createPhpConfig = {
         try {
             await setConfigFile({
                 configPathname: php.iniPath,
-                template: path.join(config.templateDir, debug ? 'php.xdebug.template.ini' : 'php.template.ini'),
+                template: path.join(config.templateDir, 'php.template.ini'),
                 ports,
                 overwrite: true,
                 templateArgs: {
+                    debug,
                     mageRoot: config.magentoDir
                 }
             });
