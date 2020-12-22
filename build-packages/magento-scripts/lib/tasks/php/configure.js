@@ -21,7 +21,7 @@ const configure = {
                 // eslint-disable-next-line no-await-in-loop
                 await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
                 phpbrew use ${ php.version } && \
-                phpbrew ext install ${ extension.name }${ options ? ` -- ${ options }` : ''}`,
+                phpbrew ext install ${ extension.name }${ extension.version ? extension.version : ''}${ options ? ` -- ${ options }` : ''}`,
                 {
                     callback: (t) => {
                         task.output = t;
