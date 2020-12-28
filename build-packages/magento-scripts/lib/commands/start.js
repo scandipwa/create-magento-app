@@ -47,7 +47,12 @@ module.exports = (yargs) => {
         }
 
         try {
-            await tasks.run();
+            const { ports, magentoConfig } = await tasks.run();
+
+            logger.logN();
+            logger.log(`Web location: ${logger.style.link(`http://localhost:${ports.app}/`)}`);
+            logger.log(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfig.adminuri}`)}`);
+            logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfig.user)} - ${logger.style.misc(magentoConfig.password)}`);
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
