@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
-const getPort = require('get-port');
+const portfinder = require('portfinder');
+// const macosVersion = require('macos-version');
 const path = require('path');
 const fs = require('fs');
 const { config } = require('../config');
 const pathExists = require('./path-exists');
+
+const { getPortPromise: getPort } = portfinder;
 
 const portConfigPath = path.join(config.cacheDir, 'port-config.json');
 
