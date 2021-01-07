@@ -93,7 +93,8 @@ module.exports = (app, config) => {
                 name: 'redis',
                 tag: redis
             },
-            name: `${ prefix }_redis`
+            name: `${ prefix }_redis`,
+            connectCommand: ['redis-cli']
         },
         mysql: {
             _: 'MySQL',
