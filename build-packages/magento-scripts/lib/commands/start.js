@@ -34,6 +34,15 @@ module.exports = (yargs) => {
                 default: false
             }
         );
+
+        yargs.option(
+            'skip-setup', {
+                alias: 's',
+                describe: 'Skip Magento setup',
+                type: 'boolean',
+                default: false
+            }
+        );
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,

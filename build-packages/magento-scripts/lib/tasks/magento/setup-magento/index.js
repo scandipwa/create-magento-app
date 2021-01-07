@@ -12,6 +12,7 @@ const setUrlRewrite = require('./set-url-rewrite');
 
 const setupMagento = {
     title: 'Setup magento',
+    skip: ({ skipSetup }) => skipSetup,
     task: async (ctx, task) => task.newListr([
         flushRedisConfig,
         configureMysql,
