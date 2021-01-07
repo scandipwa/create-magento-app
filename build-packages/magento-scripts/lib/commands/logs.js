@@ -25,5 +25,6 @@ module.exports = (yargs) => {
         }
 
         logger.error(`No service found "${argv.scope}"`);
+        process.exit(1);
     });
 };
