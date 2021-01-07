@@ -12,7 +12,8 @@ const commands = [
     require('./lib/commands/start'),
     require('./lib/commands/stop'),
     require('./lib/commands/cleanup'),
-    require('./lib/commands/status')
+    require('./lib/commands/status'),
+    require('./lib/commands/connect')
 ];
 
 process.title = 'Create Magento App';

@@ -9,7 +9,8 @@
         "cli": "magento-scripts cli",
         "logs": "magento-scripts logs",
         "link": "magento-scripts link",
-        "status": "magento-scripts status"
+        "status": "magento-scripts status",
+        "connect": "magentp-scripts connect"
     },
     "scandipwa": {
         "type": "magento"
