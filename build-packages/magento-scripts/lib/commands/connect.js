@@ -3,7 +3,7 @@ const { docker } = require('../config');
 const connect = require('../tasks/connect');
 
 module.exports = (yargs) => {
-    yargs.command('connect <container name> <shell>', 'Connect to docker container', () => {}, async (argv) => {
+    yargs.command('connect <container name> <command>', 'Connect to docker container', () => {}, async (argv) => {
         const containers = docker.getContainers();
         const services = Object.keys(containers);
 
@@ -14,7 +14,7 @@ module.exports = (yargs) => {
 
             await connect({
                 containerName: name,
-                shell: argv.shell
+                command: argv.command
             });
 
             return;
