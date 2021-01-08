@@ -1,4 +1,4 @@
-![Create ScandiPWA app](https://user-images.githubusercontent.com/29531824/104035486-dc8ed280-51da-11eb-9fc5-a41aeaaabb07.png)
+![Create Magneto app](https://user-images.githubusercontent.com/29531824/104042050-9dfd1600-51e2-11eb-9d96-b8e34b754235.png)
 
 A zero-configuration tool-chain which allows for front-end application theming, extension and translation.
 
