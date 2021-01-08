@@ -41,8 +41,8 @@ const start = {
         installPrestissimo,
         installMagento,
         startServices,
-        startPhpFpm,
         setupMagento,
+        startPhpFpm,
         {
             title: 'Open browser',
             task: async ({ ports, noOpen }, task) => {
