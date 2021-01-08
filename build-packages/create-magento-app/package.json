@@ -1,7 +1,7 @@
 {
     "name": "create-magento-app",
     "description": "Global command used by CMA.",
-    "version": "1.0.6-alpha.0",
+    "version": "1.0.6",
     "main": "./index.js",
     "bin": "./index.js",
     "license": "OSL-3.0",
