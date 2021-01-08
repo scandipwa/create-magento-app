@@ -7,13 +7,13 @@ A zero-configuration tool-chain which allows to deploy Magento 2 application in 
 
 ## Most important features
 
-### Conflict-less design :handshaking:
+### Conflict-less design 🤝
 
 The application will automatically select free ports. It will never let services previously installed on your machine down!
 
 **Screwed a local installation?** Worry not, Create Magento App will set you up!
 
-### Easy debugging :bug:
+### Easy debugging 🐛
 
 The powerful [XDebug tool](https://docs.create-magento-app.com/usage-guide/enabling-xdebug) is a single command-line option flag away from you!
 
