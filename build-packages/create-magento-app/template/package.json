@@ -17,8 +17,5 @@
     },
     "dependencies": {
         "@scandipwa/magento-scripts": "<%= scandipwaBeScriptsVersion %>"
-    },
-    "eslintConfig": {
-        "extends": "@scandipwa"
     }
 }
