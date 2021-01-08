@@ -18,7 +18,7 @@
         "getos": "^3.2.1",
         "listr2": "3.2.2",
         "macos-version": "^5.2.0",
-        "portfinder": "^1.0.28",
+        "portscanner": "^2.2.0",
         "semver": "7.3.2",
         "yargs": "16.1.1"
     },

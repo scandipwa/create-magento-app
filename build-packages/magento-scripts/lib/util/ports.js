@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
-const portfinder = require('portfinder');
-// const macosVersion = require('macos-version');
+const portscanner = require('portscanner');
 const path = require('path');
 const fs = require('fs');
 const { config } = require('../config');
 const pathExists = require('./path-exists');
 
-const { getPortPromise: getPort } = portfinder;
+// const { getPortPromise: getPort } = portfinder;
+
+const getPort = async (port) => portscanner.findAPortNotInUse(port, port + 999);
 
 const portConfigPath = path.join(config.cacheDir, 'port-config.json');
 
@@ -42,13 +43,13 @@ const getAvailablePorts = {
 
             const ports = Object.fromEntries(await Promise.all(
                 Object.entries(portConfig).map(async ([name, port]) => {
-                    const availablePort = await getPort({ port });
+                    const availablePort = await getPort(port);
                     return [name, availablePort];
                 })
             ));
 
             if (ctx.port) {
-                const isPortAvailable = (await getPort({ port: ctx.port })) === ctx.port;
+                const isPortAvailable = (await getPort(ctx.port)) === ctx.port;
                 if (!isPortAvailable) {
                     throw new Error(`Port ${ctx.port} is not available`);
                 } else {
@@ -63,13 +64,13 @@ const getAvailablePorts = {
 
         const availablePorts = Object.fromEntries(await Promise.all(
             Object.entries(defaultPorts).map(async ([name, port]) => {
-                const availablePort = await getPort({ port });
+                const availablePort = await getPort(port);
                 return [name, availablePort];
             })
         ));
 
         if (ctx.port) {
-            const isPortAvailable = (await getPort({ port: ctx.port })) === ctx.port;
+            const isPortAvailable = (await getPort(ctx.port)) === ctx.port;
             if (!isPortAvailable) {
                 throw new Error(`Port ${ctx.port} is not available`);
             } else {
