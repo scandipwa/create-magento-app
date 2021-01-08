@@ -15,7 +15,8 @@ const createNginxConfig = {
                 overwrite: true,
                 templateArgs: {
                     mageRoot: config.magentoDir,
-                    hostMachine: macosVersion.isMacOS ? 'host.docker.internal' : '127.0.0.1'
+                    hostMachine: macosVersion.isMacOS ? 'host.docker.internal' : '127.0.0.1',
+                    hostPort: macosVersion.isMacOS ? 80 : ports.app
                 }
             });
         } catch (e) {
