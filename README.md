@@ -1,6 +1,6 @@
 ![Create Magneto app](https://user-images.githubusercontent.com/29531824/104042050-9dfd1600-51e2-11eb-9d96-b8e34b754235.png)
 
-A zero-configuration tool-chain which allows for front-end application theming, extension and translation.
+A zero-configuration tool-chain which allows to deploy Magento 2 application in minutes!
 
 - [Creating an App](https://docs.create-magento-app.com/getting-started/getting-started) – How to create a new app.
 - [Available commands](https://docs.create-magento-app.com/getting-started/available-commands) – Learn how to use apps bootstrapped with Create Magento App.
