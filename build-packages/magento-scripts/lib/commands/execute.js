@@ -1,9 +1,9 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { docker } = require('../config');
-const connect = require('../tasks/connect');
+const executeInContainer = require('../tasks/execute');
 
 module.exports = (yargs) => {
-    yargs.command('connect <container name> [commands...]', 'Connect to docker container', () => {}, async (argv) => {
+    yargs.command('exec <container name> [commands...]', 'Execute command in docker container', () => {}, async (argv) => {
         const containers = docker.getContainers();
         const services = Object.keys(containers);
 
@@ -22,7 +22,7 @@ module.exports = (yargs) => {
                     argv.commands.push('bash');
                 }
             }
-            await connect({
+            await executeInContainer({
                 containerName: container.name,
                 commands: argv.commands
             });

@@ -1,7 +1,7 @@
 // const path = require('path');
 const { spawn } = require('child_process');
 
-const connect = ({ containerName, commands }) => {
+const executeInContainer = ({ containerName, commands }) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode');
         process.exit(1);
@@ -21,4 +21,4 @@ const connect = ({ containerName, commands }) => {
     });
 };
 
-module.exports = connect;
+module.exports = executeInContainer;
