@@ -1,45 +1,65 @@
-# Create ScandiPWA app
+![Create ScandiPWA app](https://user-images.githubusercontent.com/29531824/104035486-dc8ed280-51da-11eb-9fc5-a41aeaaabb07.png)
 
-## Before you start
+A zero-configuration tool-chain which allows for front-end application theming, extension and translation.
 
-1. Make sure `yarn` is installed on your local system. If not, follow [official installation guide](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
-2. Make sure to enable "workspaces" in Yarn configuration: `yarn config set workspaces-experimental true`
+- [Creating an App](https://docs.create-magento-app.com/getting-started/getting-started) – How to create a new app.
+- [Available commands](https://docs.create-magento-app.com/getting-started/available-commands) – Learn how to use apps bootstrapped with Create Magento App.
 
-## Development
+## Most important features
 
-1. Run `yarn`, wait until it completes installing dependencies
-2. Bootstrap project: `yarn cma`
-3. Enter folder with `cd runtime-packages/cma` and run `yarn start`
+### Conflict-less design :handshaking:
 
-## Magento-like build
+The application will automatically select free ports. It will never let services previously installed on your machine down!
 
-1. To build the Project in Magento mode, go to `cd package/test`
-2. Run build in Magento mode - `yarn build --magento`.
+**Screwed a local installation?** Worry not, Create Magento App will set you up!
+
+### Easy debugging :bug:
+
+The powerful [XDebug tool](https://docs.create-magento-app.com/usage-guide/enabling-xdebug) is a single command-line option flag away from you!
+
+## Creating an App
+
+**You’ll need to have Node >= 12 on your local development machine**. You can use [n](https://www.npmjs.com/package/n) to switch Node versions between different projects.
+
+**You’ll need to install platform specific dependencies** for [Linux](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-linux) and [MacOS](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos).
+
+To create a new app, you may choose one of the following methods:
+
+#### NPX
+
+```bash
+npx create-magento-app my-app
+```
+
+[npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher
+
+#### NPM
+
+```bash
+npm init magento-app my-app
+```
+
+`npm init <initializer>` is available in npm 6+
+
+#### Yarn
+
+```bash
+yarn create magento-app my-app
+```
+
+`yarn create` is available in Yarn 0.25+
 
 
-## Features TODO:
+## Contribution
 
-- Deal with service-worker, find a way to change it
+We'd love to have your helping hand on `create-magento-app`! See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on what we're looking for and how to get started.
 
-> **IMPORTANT**: add notice for not enabled, but used extensions
+Thanks to these **awesome** :heart: people for contribution!
 
-- Implement custom logger (after compile)
+<a href="https://github.com/scandipwa/create-magento-app/graphs/contributors">
+<img src="https://contributors-img.web.app/image?repo=scandipwa/create-magento-app" />
+</a>
 
-## Publish instructions
+## License
 
-- Run `yarn compile:lockfile`, commit result
-- Run `lerna publish`
-
-## Version 3 support changes
-
-### No more `scandipwa.json` file
-
-The file `scandipwa.json` has been moved and merged with `package.json`. Now, you must use `scandipwa` field inside `package.json`. What fields are avilable there?
-
-- `parentTheme` **[optional]** - specify which NPM package is a parent theme of your package.
-- `themeAlias` **[optional]** - specify which alias to use, if your theme is installed as parent theme. In example, core theme has an alias `Source`.
-- `composer` **[optional]** - specify composer dependencies, the root package will be validate to incude the proper version, use format: `"<COMPOSER PACKAGE NAME>": "<VALID SEMVER RANGE>"`.
-- `extensions` **[optional]** - specify a list of packages to be used as extensions. You can enable and disable (overriding parent theme values), use format: `"<NPM PACKAGE NAME>": true`.
-- `provide` **[optional]** - the provisioned paths. This is useful if extension implements an entry-point file (`src/index.js`, `src/registerServiceWorker.js`) or any other path, discoverable by fallback mechanism.
-- `preference` **[optional]** - define a module to "preference" (by specifying preference, you make program use your module instead of preference). Commonly used to implement `@virtual-module` modules.
-- `build` **[optional]** - the configuration for the build. Extension can modify webpack configuration and run some scripts before the application start-up. The allowed fields inside are: `before` relative path to function to run before the build, and the `cracoPlugins` - an array of relative path to script.
+Create Magento App is open source software licensed as [OSL-3.0](./LICENSE).
