@@ -1,7 +1,7 @@
 const flushRedisConfig = require('./flush-redis-config');
-const configureMysql = require('./configure-mysql');
+const waitingForMysql = require('./waiting-for-mysql');
+const waitingForRedis = require('./waiting-for-redis');
 const migrateDatabase = require('./migrate-database');
-const configureRedis = require('./configure-redis');
 const configureElasticsearch = require('./configure-elasticsearch');
 const createAdmin = require('./create-admin');
 const setDeploymentMode = require('./set-deployment-mode');
@@ -15,8 +15,8 @@ const setupMagento = {
     skip: ({ skipSetup }) => skipSetup,
     task: async (ctx, task) => task.newListr([
         flushRedisConfig,
-        configureRedis,
-        configureMysql,
+        waitingForRedis,
+        waitingForMysql,
         migrateDatabase,
         configureElasticsearch,
         createAdmin,
