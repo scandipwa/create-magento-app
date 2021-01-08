@@ -15,8 +15,8 @@ const setupMagento = {
     skip: ({ skipSetup }) => skipSetup,
     task: async (ctx, task) => task.newListr([
         flushRedisConfig,
-        configureMysql,
         configureRedis,
+        configureMysql,
         migrateDatabase,
         configureElasticsearch,
         createAdmin,
