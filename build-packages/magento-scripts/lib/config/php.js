@@ -20,7 +20,7 @@ module.exports = (app, config) => {
 
     return {
         binPath: path.join(phpVersionDir, 'bin', 'php'),
-        iniPath: path.join(phpVersionDir, 'etc', 'php.ini'),
+        iniPath: path.join(cacheDir, 'php.ini'),
         fpmBinPath: path.resolve(phpVersionDir, 'sbin', 'php-fpm'),
         fpmConfPath: path.resolve(cacheDir, 'php-fpm.conf'),
         fpmPidFilePath: path.join(cacheDir, 'php-fpm.pid'),
