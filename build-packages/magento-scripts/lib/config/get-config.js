@@ -7,7 +7,7 @@ const {
 const sleep = require('../util/sleep');
 
 const getAppConfig = {
-    title: 'Checking app config (skip in 5 sec)',
+    title: 'Checking app config (300 sec left...)',
     task: async (ctx, task) => {
         const configExists = await getApplicationConfig();
         if (configExists) {
@@ -16,6 +16,19 @@ const getAppConfig = {
             task.skip('App config already created');
             return;
         }
+        let promptSkipper = false;
+        const timer = async () => {
+            for (let i = 5 * 60; i !== 0; i--) {
+                // eslint-disable-next-line no-await-in-loop
+                await sleep(1000);
+                if (promptSkipper) {
+                    return null;
+                }
+                task.title = `Checking app config (${i} sec left...)`;
+            }
+            task.cancelPrompt();
+            return 'default';
+        };
         const configType = !process.stdin.isTTY ? 'default' : await Promise.race([
             task.prompt({
                 type: 'Select',
@@ -34,17 +47,13 @@ const getAppConfig = {
                         name: 'cancel'
                     }
                 ]
-            }), (async () => {
-                for (let i = 5; i !== 0; i--) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await sleep(1000);
-                    task.title = `Checking app config (skip in ${i} sec)`;
-                }
-                task.cancelPrompt();
-                return 'default';
-            })()]);
+            }),
+            timer()]);
+
+        promptSkipper = true;
 
         if (configType === 'custom') {
+            task.title = 'User have chosen custom Magento config...';
             const magentoConfig = await task.prompt([
                 {
                     type: 'Input',
@@ -100,6 +109,7 @@ const getAppConfig = {
             ctx.magentoConfig = magentoConfig;
             task.title = 'Config created!';
         } else if (configType === 'default') {
+            task.title = 'User have chosen default Magento config.';
             await saveApplicationConfig(defaultConfig);
             const { magento } = defaultConfig;
             ctx.magentoConfig = magento;

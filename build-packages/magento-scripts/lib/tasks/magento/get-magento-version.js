@@ -5,7 +5,7 @@ const getInstalledMagentoVersion = require('../../util/get-installed-magento-ver
 const sleep = require('../../util/sleep');
 
 const getMagentoVersion = {
-    title: 'Getting magento version (skip in 5 sec)',
+    title: 'Getting magento version (300 sec left...)',
     task: async (ctx, task) => {
         let magentoVersion;
 
@@ -18,6 +18,20 @@ const getMagentoVersion = {
             if (allVersions.length === 1) {
                 magentoVersion = allVersions[0];
             } else {
+                let promptSkipper = false;
+                const timer = async () => {
+                    for (let i = 5 * 60; i !== 0; i--) {
+                        // eslint-disable-next-line no-await-in-loop
+                        await sleep(1000);
+                        if (promptSkipper) {
+                            return null;
+                        }
+                        task.title = `Checking app config (${i} sec left...)`;
+                    }
+                    task.cancelPrompt();
+                    return allVersions[0];
+                };
+
                 magentoVersion = await Promise.race([
                     task.prompt({
                         type: 'Select',
@@ -30,16 +44,10 @@ const getMagentoVersion = {
                             }
                         ))
                     }),
-                    (async () => {
-                        for (let i = 5; i !== 0; i--) {
-                            // eslint-disable-next-line no-await-in-loop
-                            await sleep(1000);
-                            task.title = `Checking app config (skip in ${i} sec)`;
-                        }
-                        task.cancelPrompt();
-                        return allVersions[0];
-                    })()
+                    timer()
                 ]);
+
+                promptSkipper = true;
             }
         }
 
