@@ -10,7 +10,7 @@
         "logs": "magento-scripts logs",
         "link": "magento-scripts link",
         "status": "magento-scripts status",
-        "exec": "magentp-scripts exec"
+        "exec": "magento-scripts exec"
     },
     "scandipwa": {
         "type": "magento"
