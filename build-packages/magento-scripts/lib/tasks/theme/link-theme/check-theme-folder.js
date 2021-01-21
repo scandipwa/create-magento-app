@@ -1,17 +1,8 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
-const fs = require('fs');
+const getJsonfileData = require('../../../util/get-jsonfile-data');
 const pathExists = require('../../../util/path-exists');
 
-const getComposerData = async (composerPath) => {
-    const composerExists = await pathExists(composerPath);
-
-    if (!composerExists) {
-        return null;
-    }
-
-    return JSON.parse(await fs.promises.readFile(composerPath, 'utf-8'));
-};
 const checkThemeFolder = {
     task: async (ctx, task) => {
         const { themepath } = ctx;
@@ -32,7 +23,7 @@ const checkThemeFolder = {
             absoluteThemePath = themepath;
         }
 
-        const composerData = await getComposerData(path.join(absoluteThemePath, 'composer.json'));
+        const composerData = await getJsonfileData(path.join(absoluteThemePath, 'composer.json'));
 
         if (!composerData) {
             throw new Error(`composer.json file not found in "${themepath}"`);
