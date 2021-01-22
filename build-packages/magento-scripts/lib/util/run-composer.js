@@ -17,7 +17,7 @@ const runComposerCommand = async (command, options = {}) => {
         composer,
         config: { magentoDir }
     } = getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} ${composer.binPath} ${command}`, {
+    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${composer.binPath} ${command}`, {
         ...options,
         cwd: magentoDir,
         withCode: true

@@ -16,7 +16,7 @@ const runMagentoCommand = async (command, options = {}) => {
         php,
         config: { magentoDir }
     } = getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} ${magento.binPath} ${command}`, {
+    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${magento.binPath} ${command}`, {
         ...options,
         cwd: magentoDir,
         withCode: true
