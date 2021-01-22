@@ -5,7 +5,7 @@ const macosVersion = require('macos-version');
 const configure = {
     title: 'Configuring PHP extensions',
     task: async ({ config: { php } }, task) => {
-        const loadedModules = await execAsyncSpawn(`${ php.binPath } -m`);
+        const loadedModules = await execAsyncSpawn(`${ php.binPath } -c ${php.iniPath} -m`);
         const missingExtensions = php.extensions.filter(({ name }) => !loadedModules.includes(name));
 
         if (missingExtensions.length === 0) {

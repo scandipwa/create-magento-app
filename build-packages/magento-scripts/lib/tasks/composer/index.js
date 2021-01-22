@@ -6,7 +6,7 @@ const pathExists = require('../../util/path-exists');
 const installPrestissimo = require('./install-prestissimo');
 
 const getComposerVersion = async ({ composer, php }) => {
-    const composerVersionOutput = await execAsyncSpawn(`${php.binPath} ${composer.binPath} --version --no-ansi`);
+    const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.initPath} ${composer.binPath} --version --no-ansi`);
     const composerVersion = composerVersionOutput.match(/Composer version ([\d.]+)/i)[1];
     return composerVersion;
 };
