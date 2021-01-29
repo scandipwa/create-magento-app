@@ -45,13 +45,13 @@ const execAsyncSpawn = (command, {
         });
         childProcess.on('close', (code) => {
             if (withCode) {
-                resolve({ code, result: stdout });
+                resolve({ code, result: stdout.trim() });
                 return;
             }
             if (code > 0) {
-                reject(stdout);
+                reject(stdout.trim());
             } else {
-                resolve(stdout);
+                resolve(stdout.trim());
             }
         });
     });
