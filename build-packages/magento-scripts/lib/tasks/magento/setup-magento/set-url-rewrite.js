@@ -1,6 +1,7 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
 const setUrlRewrite = {
+    title: 'Setting up url-rewrites',
     task: async ({ magentoVersion }, task) => {
         const { result } = await runMagentoCommand('config:show  web/seo/use_rewrites', {
             throwNonZeroCode: false,
