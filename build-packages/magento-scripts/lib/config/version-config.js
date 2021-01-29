@@ -9,12 +9,12 @@ const magentoVersionConfigs = {
                 { name: 'openssl' },
                 { name: 'sockets' },
                 { name: 'SimpleXML' },
-                { name: 'xdebug', version: '3.0.1' }
+                { name: 'xdebug', version: '3.0.2' }
             ]
         },
         nginx: '1.18.0',
         redis: 'alpine',
-        mysql: '5.7',
+        mysql: '8.0',
         elasticsearch: '7.6.2'
     }
 };
