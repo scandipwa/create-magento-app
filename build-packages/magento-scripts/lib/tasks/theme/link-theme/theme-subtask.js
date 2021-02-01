@@ -5,9 +5,8 @@ const runMagentoCommand = require('../../../util/run-magento');
  * TODO move this block inside theme folder as post installation command
  */
 const themeSubtask = {
+    title: 'Setting up redis for persisted queries',
     task: async ({ ports }, task) => {
-        task.output = 'Setting up redis...';
-
         try {
             await runMagentoCommand(`setup:config:set \
         --pq-host=localhost \
@@ -19,7 +18,6 @@ const themeSubtask = {
                     task.output = t;
                 }
             });
-            task.output = 'redis is set for persistent query!';
         } catch (e) {
             throw new Error(
                 `Unexpected error while setting redis for pq!.
