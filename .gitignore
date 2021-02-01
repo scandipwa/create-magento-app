@@ -26,6 +26,8 @@ runtime-packages/csa*
 runtime-packages/csa/**/*
 runtime-packages/cma*
 runtime-packages/cma/**/*
+.eslintcache
+# themes/*
 
 # build specifc files
 lerna-debug.log
