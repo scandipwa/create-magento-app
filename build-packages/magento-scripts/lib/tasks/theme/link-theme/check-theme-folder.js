@@ -4,9 +4,9 @@ const getJsonfileData = require('../../../util/get-jsonfile-data');
 const pathExists = require('../../../util/path-exists');
 
 const checkThemeFolder = {
-    task: async (ctx, task) => {
+    title: 'Checking theme folder',
+    task: async (ctx) => {
         const { themepath } = ctx;
-        task.output = 'Checking theme folder';
 
         let absoluteThemePath = path.join(process.cwd(), themepath);
 

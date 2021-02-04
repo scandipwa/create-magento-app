@@ -12,6 +12,16 @@ const execAsync = (command, options) => new Promise((resolve, reject) => {
     exec(command, options, (err, stdout) => (err ? reject(err) : resolve(stdout)));
 });
 
+/**
+ * Execute bash command in child process
+ * @param {String} command Bash command
+ * @param {Object} param1
+ * @param {Boolean} param1.logOutput Log output to console using logger
+ * @param {Boolean} param1.withCode
+ * @param {String} param1.cwd
+ * @param {() => {}} param1.callback
+ * @returns {Promise<string>}
+ */
 const execAsyncSpawn = (command, {
     callback = () => {},
     logOutput = false,
