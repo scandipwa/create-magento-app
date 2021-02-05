@@ -1,5 +1,4 @@
-const path = require('path');
-const { config } = require('../../config');
+const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
 const createPhpConfig = {
@@ -8,12 +7,12 @@ const createPhpConfig = {
         try {
             await setConfigFile({
                 configPathname: php.iniPath,
-                template: path.join(config.templateDir, 'php.template.ini'),
+                template: php.iniTemplatePath,
                 ports,
                 overwrite: true,
                 templateArgs: {
                     debug,
-                    mageRoot: config.magentoDir
+                    mageRoot: baseConfig.magentoDir
                 }
             });
         } catch (e) {

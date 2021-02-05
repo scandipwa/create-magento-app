@@ -5,7 +5,7 @@ const themeSubtask = require('./theme-subtask');
 const upgradeMagento = require('./upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const { getCachedPorts } = require('../../../util/ports');
-const getMagentoVersion = require('../../magento/get-magento-version');
+const getMagentoVersionConfig = require('../../../config/get-magento-version-config');
 const checkThemeFolder = require('./check-theme-folder');
 
 const linkTheme = {
@@ -13,7 +13,7 @@ const linkTheme = {
     task: async (ctx, task) => task.newListr([
         checkThemeFolder,
         themeSymlink,
-        getMagentoVersion,
+        getMagentoVersionConfig,
         getCachedPorts,
         installTheme,
         themeSubtask,

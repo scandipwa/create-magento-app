@@ -10,8 +10,8 @@ const { createCacheFolder } = require('./cache');
 const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
-const getMagentoVersion = require('./magento/get-magento-version');
-const getAppConfig = require('../config/get-config');
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
+const getConfig = require('../config/get-config');
 const { pullContainers } = require('./docker/containers');
 
 const start = {
@@ -19,8 +19,8 @@ const start = {
     task: async (ctx, task) => task.newListr([
         createCacheFolder,
         checkRequirements,
-        getMagentoVersion,
-        getAppConfig,
+        getMagentoVersionConfig,
+        getConfig,
         getCachedPorts,
         stopServices,
         stopPhpFpm,

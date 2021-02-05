@@ -11,8 +11,7 @@ module.exports = (app, config) => {
 
     const {
         prefix,
-        magentoDir,
-        cacheDir
+        magentoDir
     } = config;
 
     const network = {
@@ -29,30 +28,22 @@ module.exports = (app, config) => {
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
         },
-        nginx: {
-            name: `${ prefix }_nginx-data`,
-            // driver: 'local',
-            opts: [
-                'type=nfs',
-                `device=${ cacheDir }/nginx/conf.d`,
-                'o=bind'
-            ]
-        },
+        nginx: nginx.config.volume,
         appPub: {
             name: `${ prefix }_pub-data`,
-            opts: [
-                'type=nfs',
-                `device=${ path.join(magentoDir, 'pub') }`,
-                'o=bind'
-            ]
+            opts: {
+                type: 'nfs',
+                device: `${ path.join(magentoDir, 'pub') }`,
+                o: 'bind'
+            }
         },
         appSetup: {
             name: `${ prefix }_setup-data`,
-            opts: [
-                'type=nfs',
-                `device=${path.join(magentoDir, 'setup')}`,
-                'o=bind'
-            ]
+            opts: {
+                type: 'nfs',
+                device: `${path.join(magentoDir, 'setup')}`,
+                o: 'bind'
+            }
         }
     };
 
@@ -71,10 +62,10 @@ module.exports = (app, config) => {
             restart: 'on-failure:5',
             // TODO: use connect instead
             network: macosVersion.isMacOS ? network.name : 'host',
-            image: `nginx:${ nginx }`,
+            image: `nginx:${ nginx.version }`,
             imageDetails: {
                 name: 'nginx',
-                tag: nginx
+                tag: nginx.version
             },
             name: `${ prefix }_nginx`,
             command: "nginx -g 'daemon off;'"
@@ -88,10 +79,10 @@ module.exports = (app, config) => {
             mounts: [`source=${ volumes.redis.name },target=/data`],
             // TODO: use connect instead
             network: network.name,
-            image: `redis:${ redis }`,
+            image: `redis:${ redis.version }`,
             imageDetails: {
                 name: 'redis',
-                tag: redis
+                tag: redis.version
             },
             name: `${ prefix }_redis`,
             connectCommand: ['redis-cli']
@@ -111,10 +102,10 @@ module.exports = (app, config) => {
                 MYSQL_DATABASE: 'magento'
             },
             network: network.name,
-            image: `mysql:${ mysql }`,
+            image: `mysql:${ mysql.version }`,
             imageDetails: {
                 name: 'mysql',
-                tag: mysql
+                tag: mysql.version
             },
             name: `${ prefix }_mysql`
         },
@@ -125,18 +116,12 @@ module.exports = (app, config) => {
             },
             ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
             mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
-            env: {
-                'bootstrap.memory_lock': true,
-                'xpack.security.enabled': false,
-                'discovery.type': 'single-node',
-                ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
-                'xpack.ml.enabled': false
-            },
+            env: elasticsearch.config.env,
             network: network.name,
-            image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch }`,
+            image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
             imageDetails: {
                 name: 'docker.elastic.co/elasticsearch/elasticsearch',
-                tag: elasticsearch
+                tag: elasticsearch.version
             },
             name: `${ prefix }_elasticsearch`
         }

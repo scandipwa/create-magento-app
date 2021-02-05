@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../util/run-magento');
-const { config: { magentoDir } } = require('../../config');
+const { baseConfig: { magentoDir } } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
 const uninstallMagento = {

@@ -4,8 +4,8 @@ const answers = ['Couldn\'t find the user account', 'was not locked or could not
 
 module.exports = {
     title: 'Creating admin user',
-    task: async ({ magentoVersion, magentoConfig: app }, task) => {
-        const { result: userStatus } = await runMagentoCommand(`admin:user:unlock ${app.user} -n`, {
+    task: async ({ magentoVersion, config: { magentoConfiguration } }, task) => {
+        const { result: userStatus } = await runMagentoCommand(`admin:user:unlock ${magentoConfiguration.user} -n`, {
             magentoVersion
         });
 
@@ -15,11 +15,11 @@ module.exports = {
         }
 
         await runMagentoCommand(`admin:user:create \
-        --admin-firstname='${ app.first_name }' \
-        --admin-lastname='${ app.last_name }' \
-        --admin-email='${ app.email }' \
-        --admin-user='${ app.user }' \
-        --admin-password='${ app.password }'`, {
+        --admin-firstname='${ magentoConfiguration.first_name }' \
+        --admin-lastname='${ magentoConfiguration.last_name }' \
+        --admin-email='${ magentoConfiguration.email }' \
+        --admin-user='${ magentoConfiguration.user }' \
+        --admin-password='${ magentoConfiguration.password }'`, {
             magentoVersion
         });
     }

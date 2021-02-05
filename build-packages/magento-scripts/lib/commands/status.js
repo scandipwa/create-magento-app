@@ -1,19 +1,19 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
-const getMagentoVersion = require('../tasks/magento/get-magento-version');
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { getCachedPorts } = require('../util/ports');
 
 const { prettyStatus } = require('../tasks/status');
 const { checkRequirements } = require('../tasks/requirements');
 const { statusContainers } = require('../tasks/docker/containers');
-const getAppConfig = require('../config/get-config');
+const getConfig = require('../config/get-config');
 
 module.exports = (yargs) => {
     yargs.command('status', 'Show application status', () => {}, async (args) => {
         const tasks = new Listr([
             checkRequirements,
-            getAppConfig,
-            getMagentoVersion,
+            getConfig,
+            getMagentoVersionConfig,
             getCachedPorts,
             statusContainers
         ], {

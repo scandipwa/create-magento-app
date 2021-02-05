@@ -1,19 +1,15 @@
 /* eslint-disable no-param-reassign */
-const {
-    getApplicationConfig,
-    defaultConfig,
-    saveApplicationConfig
-} = require('../util/application-config');
+const { getApplicationConfig } = require('../util/application-config');
+const { defaultConfiguration } = require('./versions');
 const sleep = require('../util/sleep');
 
 const getAppConfig = {
     title: 'Checking app config (300 sec left...)',
     task: async (ctx, task) => {
         const configExists = await getApplicationConfig();
-        if (configExists) {
-            const { magento } = configExists;
-            ctx.magentoConfig = magento;
-            task.skip('App config already created');
+        if (configExists && configExists.magento) {
+            ctx.magentoConfig = configExists.magento;
+            task.skip('Magento config already created');
             return;
         }
         let promptSkipper = false;
@@ -54,42 +50,43 @@ const getAppConfig = {
 
         if (configType === 'custom') {
             task.title = 'User have chosen custom Magento config...';
+            const { magento } = defaultConfiguration;
             const magentoConfig = await task.prompt([
                 {
                     type: 'Input',
                     name: 'first_name',
                     message: 'Magento first name',
-                    default: defaultConfig.magento.first_name
+                    default: magento.first_name
                 },
                 {
                     type: 'Input',
                     name: 'last_name',
                     message: 'Magento last name',
-                    default: defaultConfig.magento.last_name
+                    default: magento.last_name
                 },
                 {
                     type: 'Input',
                     name: 'email',
                     message: 'Magento email',
-                    default: defaultConfig.magento.email
+                    default: magento.email
                 },
                 {
                     type: 'Input',
                     name: 'user',
                     message: 'Magento admin user',
-                    default: defaultConfig.magento.user
+                    default: magento.user
                 },
                 {
                     type: 'Input',
                     name: 'password',
                     message: 'Magento admin password',
-                    default: defaultConfig.magento.password
+                    default: magento.password
                 },
                 {
                     type: 'Input',
                     name: 'adminuri',
                     message: 'Magento admin panel url path',
-                    default: defaultConfig.magento.adminuri
+                    default: magento.adminuri
                 },
                 {
                     type: 'Select',
@@ -99,19 +96,14 @@ const getAppConfig = {
                         'developer',
                         'production'
                     ],
-                    default: defaultConfig.magento.mode
+                    default: magento.mode
                 }
             ]);
 
-            await saveApplicationConfig({
-                magento: magentoConfig
-            });
             ctx.magentoConfig = magentoConfig;
             task.title = 'Config created!';
         } else if (configType === 'default') {
-            task.title = 'User have chosen default Magento config.';
-            await saveApplicationConfig(defaultConfig);
-            const { magento } = defaultConfig;
+            const { magento } = defaultConfiguration;
             ctx.magentoConfig = magento;
             task.title = 'Using default config!';
         } else {

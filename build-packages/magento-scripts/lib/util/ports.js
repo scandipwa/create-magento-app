@@ -2,18 +2,18 @@
 const portscanner = require('portscanner');
 const path = require('path');
 const fs = require('fs');
-const { config } = require('../config');
+const { baseConfig } = require('../config');
 const pathExists = require('./path-exists');
 
 // const { getPortPromise: getPort } = portfinder;
 
 const getPort = async (port) => portscanner.findAPortNotInUse(port, port + 999);
 
-const portConfigPath = path.join(config.cacheDir, 'port-config.json');
+const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
 
 const savePortsConfig = async (ports) => {
     await fs.promises.writeFile(
-        path.join(config.cacheDir, 'port-config.json'),
+        path.join(baseConfig.cacheDir, 'port-config.json'),
         JSON.stringify(ports, null, 2),
         { encoding: 'utf8' }
     );

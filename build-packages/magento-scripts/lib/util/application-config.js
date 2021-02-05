@@ -1,28 +1,18 @@
 const path = require('path');
 const fs = require('fs');
-const { config } = require('../config');
+// const { config } = require('../config');
 const pathExists = require('./path-exists');
 
-const defaultConfig = {
-    magento: {
-        first_name: 'Scandiweb',
-        last_name: 'Developer',
-        email: 'developer@scandipwa.com',
-        user: 'admin',
-        password: 'scandipwa123',
-        adminuri: 'admin',
-        mode: 'developer'
-    }
-};
-
 /**
- * Get application config from cache folder
+ * Get application config
  */
 const getApplicationConfig = async () => {
-    const configExists = await pathExists(path.join(config.cacheDir, 'app-config.json'));
+    const configExists = await pathExists(
+        path.join(process.cwd(), 'cma.json')
+    );
 
     if (configExists) {
-        return JSON.parse(await fs.promises.readFile(path.join(config.cacheDir, 'app-config.json'), 'utf-8'));
+        return JSON.parse(await fs.promises.readFile(path.join(process.cwd(), 'cma.json'), 'utf-8'));
     }
 
     return null;
@@ -30,7 +20,7 @@ const getApplicationConfig = async () => {
 
 const saveApplicationConfig = async (appConfig) => {
     await fs.promises.writeFile(
-        path.join(config.cacheDir, 'app-config.json'),
+        path.join(process.cwd(), 'cma.json'),
         JSON.stringify(appConfig, null, 2),
         'utf-8'
     );
@@ -39,7 +29,7 @@ const saveApplicationConfig = async (appConfig) => {
 };
 
 module.exports = {
-    defaultConfig,
+    // defaultMagentoConfig,
     getApplicationConfig,
     saveApplicationConfig
 };
