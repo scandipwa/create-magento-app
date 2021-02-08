@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
-const { getAvailablePorts, getCachedPorts } = require('../util/ports');
 const openBrowser = require('../util/open-browser');
 
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
+const { saveConfiguration } = require('../config/save-config');
+const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
 const { installComposer, installPrestissimo } = require('./composer');
 const { startServices, stopServices } = require('./docker');
 const { installPhp } = require('./php');
@@ -10,8 +12,6 @@ const { createCacheFolder } = require('./cache');
 const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
-const getMagentoVersionConfig = require('../config/get-magento-version-config');
-const getConfig = require('../config/get-config');
 const { pullContainers } = require('./docker/containers');
 
 const start = {
@@ -20,11 +20,12 @@ const start = {
         createCacheFolder,
         checkRequirements,
         getMagentoVersionConfig,
-        getConfig,
         getCachedPorts,
         stopServices,
         stopPhpFpm,
+        // get fresh ports
         getAvailablePorts,
+        saveConfiguration,
         installPhp,
         {
             title: 'Install Composer, prepare FS & download images',

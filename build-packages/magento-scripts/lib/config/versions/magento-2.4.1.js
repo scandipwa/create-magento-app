@@ -1,4 +1,5 @@
 const { defaultMagentoConfig } = require('../magento-config');
+const { defaultPorts } = require('../port-config');
 
 module.exports = (config = {}) => ({
     magentoVersion: '2.4.1',
@@ -67,5 +68,6 @@ module.exports = (config = {}) => ({
             version: '1'
         }
     },
-    magento: defaultMagentoConfig
+    magento: defaultMagentoConfig,
+    ports: defaultPorts
 });

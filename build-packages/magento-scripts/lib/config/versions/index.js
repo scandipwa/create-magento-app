@@ -5,7 +5,8 @@ const getConfigurations = (config = {}) => ({
         isDefault: true,
         magentoVersion: magento241().magentoVersion,
         magento: magento241().magento,
-        configuration: magento241(config).configuration
+        configuration: magento241(config).configuration,
+        ports: magento241().ports
     }
 });
 

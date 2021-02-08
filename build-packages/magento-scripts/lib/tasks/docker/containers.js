@@ -15,7 +15,8 @@ const run = (options) => {
         name,
         entrypoint,
         command = '',
-        healthCheck
+        healthCheck,
+        securityOptions = []
     } = options;
 
     const restartArg = restart && `--restart ${ restart }`;
@@ -28,6 +29,7 @@ const run = (options) => {
     const nameArg = name && `--name ${name}`;
     const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
     const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
+    const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt ${opt}`).join(' ');
 
     const dockerCommand = [
         'docker',
@@ -43,6 +45,7 @@ const run = (options) => {
         envArgs,
         entrypointArg,
         healthCheckArg,
+        securityArg,
         image,
         command
     ].filter(Boolean).join(' ');

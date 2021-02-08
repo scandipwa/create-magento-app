@@ -4,14 +4,18 @@ const { defaultConfiguration } = require('./versions');
 const sleep = require('../util/sleep');
 
 const getAppConfig = {
-    title: 'Checking app config (300 sec left...)',
+    // title: 'Checking app config (300 sec left...)',
+    title: 'Loading project configuration',
     task: async (ctx, task) => {
+        // const { config } = ctx;
         const configExists = await getApplicationConfig();
         if (configExists && configExists.magento) {
             ctx.magentoConfig = configExists.magento;
-            task.skip('Magento config already created');
+            task.skip('Configuration loaded');
             return;
         }
+
+        task.title = 'Checking app config (300 sec left...)';
         let promptSkipper = false;
         const timer = async () => {
             for (let i = 5 * 60; i !== 0; i--) {

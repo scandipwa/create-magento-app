@@ -78,7 +78,7 @@ const getAvailablePorts = {
             }
         }
 
-        await savePortsConfig(availablePorts);
+        // await savePortsConfig(availablePorts);
         ctx.ports = availablePorts;
     }
 };
@@ -101,4 +101,8 @@ const getCachedPorts = {
     }
 };
 
-module.exports = { getAvailablePorts, getCachedPorts, savePortsConfig };
+module.exports = {
+    getAvailablePorts,
+    getCachedPorts,
+    savePortsConfig
+};

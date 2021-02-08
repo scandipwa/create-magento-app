@@ -1,11 +1,14 @@
 const path = require('path');
 const getDockerConfig = require('./docker');
-const { getConfigurations, defaultConfiguration } = require('./versions');
+const {
+    getConfigurations,
+    defaultConfiguration
+} = require('./versions');
 const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
-// const getApplicationConfig = require('./application');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getMagentoConfig } = require('./magento-config');
+const { getPortsConfig } = require('./port-config');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
@@ -29,20 +32,27 @@ module.exports = {
             throw new Error(`No config found for magento version ${magentoVersion}`);
         }
 
-        const overridenConfiguration = await resolveConfigurationWithOverrides(configurations[magentoVersion]);
+        const {
+            overridenConfiguration,
+            userConfiguration
+        } = await resolveConfigurationWithOverrides(configurations[magentoVersion]);
 
         return {
             php: getPhpConfig(overridenConfiguration.configuration, baseConfig),
             docker: getDockerConfig(overridenConfiguration.configuration, baseConfig),
             composer: getComposerConfig(overridenConfiguration.configuration, baseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
+            ports: await getPortsConfig(overridenConfiguration.ports),
             baseConfig,
-            configuration: overridenConfiguration
+            overridenConfiguration,
+            userConfiguration,
+            nonOverridenConfiguration: configurations[magentoVersion]
         };
     },
     baseConfig,
     magento,
     platforms,
+    docker: getDockerConfig(defaultConfiguration.configuration, baseConfig),
     darwinMinimalVersion,
     defaultConfiguration
 };

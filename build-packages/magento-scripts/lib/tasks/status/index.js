@@ -8,15 +8,15 @@ const prettyStatus = async ({
     phpBrewVersion,
     platform,
     platformVersion,
-    magentoConfig,
     containers
 }) => {
+    const { magentoConfiguration, baseConfig } = config;
     const strings = [];
     const separator = () => strings.push(`>${'-'.repeat(30)}`);
 
     separator();
 
-    strings.push(`Project: ${logger.style.file(config.config.prefix)}`);
+    strings.push(`Project: ${logger.style.file(baseConfig.prefix)}`);
     strings.push(`Project location: ${logger.style.link(process.cwd())}`);
     strings.push(`Magento 2 version: ${logger.style.file(magentoVersion)}`);
     strings.push(`PHP version: ${logger.style.file(config.php.version)}`);
@@ -65,8 +65,8 @@ const prettyStatus = async ({
     separator();
 
     strings.push(`Web location: ${logger.style.link(`http://localhost:${ports.app}/`)}`);
-    strings.push(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfig.adminuri}`)}`);
-    strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfig.user)} - ${logger.style.misc(magentoConfig.password)}`);
+    strings.push(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfiguration.adminuri}`)}`);
+    strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
 
     separator();
 

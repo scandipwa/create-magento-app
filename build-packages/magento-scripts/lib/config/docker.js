@@ -101,6 +101,9 @@ module.exports = (app, config) => {
                 MYSQL_PASSWORD: 'magento',
                 MYSQL_DATABASE: 'magento'
             },
+            securityOptions: [
+                'seccomp=unconfined'
+            ],
             network: network.name,
             image: `mysql:${ mysql.version }`,
             imageDetails: {
