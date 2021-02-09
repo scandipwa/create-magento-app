@@ -1,5 +1,14 @@
-const { getConfigFromMagentoVersion } = require('.');
-const { getPort } = require('./port-config');
+const fs = require('fs');
+const path = require('path');
+const { baseConfig } = require('.');
+const pathExists = require('../util/path-exists');
+const {
+    getPort,
+    getPortsConfig,
+    defaultPorts
+} = require('./port-config');
+
+const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
 
 /**
  * Get available ports on the system
@@ -7,8 +16,19 @@ const { getPort } = require('./port-config');
 const getAvailablePorts = {
     title: 'Get available ports',
     task: async (ctx) => {
-        const { magentoVersion } = ctx;
-        const { ports: availablePorts } = await getConfigFromMagentoVersion(magentoVersion);
+        let ports;
+
+        if (await pathExists(portConfigPath)) {
+            ports = JSON.parse(
+                await fs.promises.readFile(
+                    portConfigPath,
+                    'utf-8'
+                )
+            );
+        } else {
+            ports = { ...defaultPorts };
+        }
+        const availablePorts = await getPortsConfig(ports);
 
         if (ctx.port) {
             const isPortAvailable = (await getPort(ctx.port)) === ctx.port;
@@ -27,7 +47,18 @@ const getAvailablePorts = {
 const getCachedPorts = {
     title: 'Get cached ports',
     task: async (ctx) => {
-        const { ports } = ctx.config.overridenConfiguration;
+        let ports;
+
+        if (await pathExists(portConfigPath)) {
+            ports = JSON.parse(
+                await fs.promises.readFile(
+                    portConfigPath,
+                    'utf-8'
+                )
+            );
+        } else {
+            ports = { ...defaultPorts };
+        }
 
         // eslint-disable-next-line no-param-reassign
         ctx.ports = ports;

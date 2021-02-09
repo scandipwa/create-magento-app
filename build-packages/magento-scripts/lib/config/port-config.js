@@ -1,4 +1,7 @@
+const fs = require('fs');
+const path = require('path');
 const portscanner = require('portscanner');
+const { baseConfig } = require('.');
 const deepmerge = require('../util/deepmerge');
 
 /**
@@ -6,6 +9,14 @@ const deepmerge = require('../util/deepmerge');
  * @returns {Promise<Number>}
  */
 const getPort = async (port) => portscanner.findAPortNotInUse(port, port + 999);
+
+const savePortsConfig = async (ports) => {
+    await fs.promises.writeFile(
+        path.join(baseConfig.cacheDir, 'port-config.json'),
+        JSON.stringify(ports, null, 2),
+        { encoding: 'utf8' }
+    );
+};
 
 // Map of default ports (key:value)
 const defaultPorts = {
@@ -37,5 +48,6 @@ const getPortsConfig = async (ports) => {
 module.exports = {
     defaultPorts,
     getPortsConfig,
-    getPort
+    getPort,
+    savePortsConfig
 };

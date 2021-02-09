@@ -11,7 +11,8 @@ module.exports = (app, config) => {
 
     const {
         prefix,
-        magentoDir
+        magentoDir,
+        cacheDir
     } = config;
 
     const network = {
@@ -28,7 +29,14 @@ module.exports = (app, config) => {
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
         },
-        nginx: nginx.config.volume,
+        nginx: {
+            name: `${ prefix }_nginx-data`,
+            opts: {
+                type: 'nfs',
+                device: `${cacheDir}/nginx/conf.d`,
+                o: 'bind'
+            }
+        },
         appPub: {
             name: `${ prefix }_pub-data`,
             opts: {
@@ -119,7 +127,13 @@ module.exports = (app, config) => {
             },
             ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
             mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
-            env: elasticsearch.config.env,
+            env: {
+                'bootstrap.memory_lock': true,
+                'xpack.security.enabled': false,
+                'discovery.type': 'single-node',
+                ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
+                'xpack.ml.enabled': false
+            },
             network: network.name,
             image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
             imageDetails: {

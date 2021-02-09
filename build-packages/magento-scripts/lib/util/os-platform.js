@@ -1,11 +1,5 @@
 const getos = require('getos');
 
-const getOs = () => new Promise((resolve, reject) => getos((err, os) => (err ? reject(err) : resolve(os))));
-
-const osPlatform = async () => {
-    const os = await getOs();
-
-    return os;
-};
+const osPlatform = () => new Promise((resolve, reject) => getos((err, os) => (err ? reject(err) : resolve(os))));
 
 module.exports = osPlatform;

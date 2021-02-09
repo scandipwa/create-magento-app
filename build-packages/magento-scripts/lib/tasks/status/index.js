@@ -54,11 +54,21 @@ const prettyStatus = async ({
         containerString.push(`Image: ${logger.style.file(container.image)}`);
         containerString.push(`Network: ${logger.style.link(container.network)}`);
         containerString.push(`Port forwarding: ${container.ports.map((port) => logger.style.link(port)).join(', ')}`);
+        if (container.env) {
+            containerString.push('Environment variables:');
+            const containerEnvStrings = [''];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const [envName, envValue] of Object.entries(container.env)) {
+                containerEnvStrings.push(`${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+            }
 
+            containerString.push(containerEnvStrings.join('\n   '));
+        }
         containersStrings.push(containerString.join('\n  '));
+        containersStrings.push('');
     });
 
-    containersStrings.push('');
+    // containersStrings.push('');
 
     strings.push(containersStrings.join('\n'));
 

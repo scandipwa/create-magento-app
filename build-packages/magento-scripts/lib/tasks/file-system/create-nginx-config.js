@@ -5,12 +5,32 @@ const macosVersion = require('macos-version');
 
 const createNginxConfig = {
     title: 'Setting nginx config',
-    task: async ({ ports }) => {
+    task: async (ctx) => {
+        const {
+            ports,
+            config: {
+                overridenConfiguration: {
+                    configuration: {
+                        nginx
+                    }
+                }
+            }
+        } = ctx;
+
         try {
             await setConfigFile({
-                configPathname: path.join(baseConfig.cacheDir, 'nginx', 'conf.d', 'default.conf'),
-                dirName: path.join(baseConfig.cacheDir, 'nginx', 'conf.d'),
-                template: path.join(baseConfig.templateDir, 'nginx.template.conf'),
+                configPathname: path.join(
+                    baseConfig.cacheDir,
+                    'nginx',
+                    'conf.d',
+                    'default.conf'
+                ),
+                dirName: path.join(
+                    baseConfig.cacheDir,
+                    'nginx',
+                    'conf.d'
+                ),
+                template: nginx.configTemplate,
                 ports,
                 overwrite: true,
                 templateArgs: {

@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const macosVersion = require('macos-version');
 
@@ -6,7 +6,8 @@ const configure = {
     title: 'Configuring PHP extensions',
     task: async ({ config: { php } }, task) => {
         const loadedModules = await execAsyncSpawn(`${ php.binPath } -c ${php.iniPath} -m`);
-        const missingExtensions = Object.values(php.extensions).filter(({ name }) => !loadedModules.includes(name));
+        const missingExtensions = Object.entries(php.extensions)
+            .filter(([name]) => !loadedModules.includes(name));
 
         if (missingExtensions.length === 0) {
         // if all extensions are installed - do not configure PHP
@@ -16,12 +17,12 @@ const configure = {
 
         try {
             // eslint-disable-next-line no-restricted-syntax
-            for (const extension of missingExtensions) {
-                const options = macosVersion.isMacOS ? extension.macOptions : extension.options;
+            for (const [extensionName, extensionOptions] of missingExtensions) {
+                const options = macosVersion.isMacOS ? extensionOptions.macOptions : extensionOptions.options;
                 // eslint-disable-next-line no-await-in-loop
                 await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
                 phpbrew use ${ php.version } && \
-                phpbrew ext install ${ extension.name }${ extension.version ? ` ${extension.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
+                phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
                 {
                     callback: (t) => {
                         task.output = t;

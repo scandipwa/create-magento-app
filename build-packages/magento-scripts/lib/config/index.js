@@ -6,9 +6,8 @@ const {
 } = require('./versions');
 const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
-const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getMagentoConfig } = require('./magento-config');
-const { getPortsConfig } = require('./port-config');
+const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
@@ -35,14 +34,13 @@ module.exports = {
         const {
             overridenConfiguration,
             userConfiguration
-        } = await resolveConfigurationWithOverrides(configurations[magentoVersion]);
+        } = await resolveConfigurationWithOverrides(configurations[magentoVersion], baseConfig);
 
         return {
             php: getPhpConfig(overridenConfiguration.configuration, baseConfig),
             docker: getDockerConfig(overridenConfiguration.configuration, baseConfig),
             composer: getComposerConfig(overridenConfiguration.configuration, baseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
-            ports: await getPortsConfig(overridenConfiguration.ports),
             baseConfig,
             overridenConfiguration,
             userConfiguration,

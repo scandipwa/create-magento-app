@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const getMagentoVersionConfig = require('../../../config/get-magento-version-config');
-const { getCachedPorts } = require('../../../config/get-port-config');
+const { getAvailablePorts } = require('../../../config/get-port-config');
 const themeSymlink = require('./theme-symlink');
 const installTheme = require('./install-theme');
 const themeSubtask = require('./theme-subtask');
@@ -14,7 +14,7 @@ const linkTheme = {
         checkThemeFolder,
         themeSymlink,
         getMagentoVersionConfig,
-        getCachedPorts,
+        getAvailablePorts,
         installTheme,
         themeSubtask,
         upgradeMagento,
