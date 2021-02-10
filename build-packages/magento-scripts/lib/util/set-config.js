@@ -17,7 +17,11 @@ const setConfigFile = async ({
     }
 
     const configTemplate = await fs.promises.readFile(template, 'utf-8');
-    const compliedConfig = await eta.render(configTemplate, { ports, date: new Date().toUTCString(), ...templateArgs });
+    const compliedConfig = await eta.render(configTemplate, {
+        ports,
+        date: new Date().toUTCString(),
+        ...templateArgs
+    });
 
     if (dirName) {
         const dirExists = await pathExists(dirName);

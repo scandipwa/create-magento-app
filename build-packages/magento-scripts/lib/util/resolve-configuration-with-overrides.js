@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const deepmerge = require('./deepmerge');
 const pathExists = require('./path-exists');
+const setConfigFile = require('./set-config');
 
 // const configJSONFilePath = path.join(process.cwd(), 'cma.json');
 const configJSFilePath = path.join(process.cwd(), 'cma.js');
@@ -18,7 +19,7 @@ const configJSFilePath = path.join(process.cwd(), 'cma.js');
 //     }
 // };
 
-const resolveConfigurationWithOverrides = async (configuration, { templateDir }) => {
+const resolveConfigurationWithOverrides = async (configuration, { templateDir, cacheDir }) => {
     // await checkForManyConfigFiles();
     // if (await pathExists(configJSONFilePath)) {
     //     const userConfiguration = JSON.parse(await fs.promises.readFile(configJSONFilePath));
@@ -77,15 +78,38 @@ const resolveConfigurationWithOverrides = async (configuration, { templateDir })
             overridenConfiguration
         };
     }
+    const magentoConfigFilePath = path.join(cacheDir, 'app-config.json');
 
-    await fs.promises.copyFile(
-        path.join(templateDir, 'cma-config.template.js'),
-        configJSFilePath
-    );
+    const legacyMagentoConfigExists = await pathExists(magentoConfigFilePath);
+
+    let magentoConfiguration;
+
+    if (legacyMagentoConfigExists) {
+        const legacyMagentoConfig = JSON.parse(await fs.promises.readFile(magentoConfigFilePath));
+
+        magentoConfiguration = legacyMagentoConfig.magento || legacyMagentoConfig;
+    } else {
+        magentoConfiguration = configuration.magento;
+    }
+
+    await setConfigFile({
+        configPathname: configJSFilePath,
+        template: path.join(templateDir, 'cma-config.template.js'),
+        overwrite: false,
+        templateArgs: {
+            magentoConfiguration
+        }
+    });
 
     return {
         userConfiguration: {},
-        overridenConfiguration: configuration
+        overridenConfiguration: {
+            ...configuration,
+            magento: deepmerge(
+                configuration.magento,
+                magentoConfiguration
+            )
+        }
     };
 };
 

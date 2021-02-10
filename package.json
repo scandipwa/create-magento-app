@@ -24,7 +24,8 @@
         "extends": "@scandipwa",
         "ignorePatterns": [
             "runtime-packages/cma/**",
-            "**/node_modules/**"
+            "**/node_modules/**",
+            "build-packages/magento-scripts/lib/config/templates/**"
         ]
     },
     "workspaces": [
