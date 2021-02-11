@@ -2,8 +2,9 @@ const runMagentoCommand = require('../../../util/run-magento');
 
 module.exports = {
     title: 'Setting baseurl and secure baseurl',
-    task: async ({ ports, magentoVersion }, task) => {
-        const location = `localhost${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
+    task: async (ctx, task) => {
+        const { ports, magentoVersion, config: { overridenConfiguration: { host } } } = ctx;
+        const location = `${host}${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
         const httpUrl = `http://${location}`;
         const httpsUrl = `https://${location}`;
 

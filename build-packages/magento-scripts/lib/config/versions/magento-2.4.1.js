@@ -34,5 +34,6 @@ module.exports = ({ templateDir } = {}) => ({
             version: '7.6.2'
         }
     },
-    magento: defaultMagentoConfig
+    magento: defaultMagentoConfig,
+    host: 'localhost'
 });

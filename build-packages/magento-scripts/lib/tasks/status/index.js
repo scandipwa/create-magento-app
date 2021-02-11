@@ -10,7 +10,7 @@ const prettyStatus = async ({
     platformVersion,
     containers
 }) => {
-    const { magentoConfiguration, baseConfig } = config;
+    const { magentoConfiguration, baseConfig, overridenConfiguration: { host } } = config;
     const strings = [];
     const separator = () => strings.push(`>${'-'.repeat(30)}`);
 
@@ -74,8 +74,8 @@ const prettyStatus = async ({
 
     separator();
 
-    strings.push(`Web location: ${logger.style.link(`http://localhost:${ports.app}/`)}`);
-    strings.push(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfiguration.adminuri}`)}`);
+    strings.push(`Web location: ${logger.style.link(`http://${host}:${ports.app}/`)}`);
+    strings.push(`Magento Admin panel location: ${logger.style.link(`http://${host}:${ports.app}/${magentoConfiguration.adminuri}`)}`);
     strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
 
     separator();

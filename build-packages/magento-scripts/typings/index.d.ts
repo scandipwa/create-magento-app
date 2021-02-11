@@ -134,4 +134,8 @@ export interface CMAConfiguration {
         adminuri: string
         mode: string
     }
+    /**
+     *  Custom host for website base url
+     * */
+    host: string
 }

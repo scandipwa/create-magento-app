@@ -64,11 +64,11 @@ module.exports = (yargs) => {
         }
 
         try {
-            const { ports, config: { magentoConfiguration } } = await tasks.run();
+            const { ports, config: { magentoConfiguration, overridenConfiguration: { host } } } = await tasks.run();
 
             logger.logN();
-            logger.log(`Web location: ${logger.style.link(`http://localhost:${ports.app}/`)}`);
-            logger.log(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfiguration.adminuri}`)}`);
+            logger.log(`Web location: ${logger.style.link(`http://${host}:${ports.app}/`)}`);
+            logger.log(`Magento Admin panel location: ${logger.style.link(`http://${host}:${ports.app}/${magentoConfiguration.adminuri}`)}`);
             logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
             process.exit(0);
         } catch (e) {
