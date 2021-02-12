@@ -100,11 +100,17 @@ export interface SSLConfiguration {
 
     /**
      * SSL certificate name
+     *
+     * @example
+     * `./ssl_certificate.pem`
      */
     ssl_certificate: string
 
     /**
      * SSL certificate key name
+     *
+     * @example
+     * `./ssl_certificate-key.pem`
      */
     ssl_certificate_key: string
 }
