@@ -2,10 +2,10 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const create = ({
     driver,
-    opts = [],
+    opts = {},
     name
 }) => {
-    let command = `docker volume create ${ opts.map((opt) => `--opt ${opt}`).join(' ') } `;
+    let command = `docker volume create ${ Object.entries(opts).map(([name, value]) => `--opt ${name}=${value}`).join(' ') } `;
 
     if (driver) {
         command += `--driver ${ driver }`;

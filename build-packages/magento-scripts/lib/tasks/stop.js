@@ -1,11 +1,11 @@
 const { stopServices } = require('./docker');
-const getMagentoVersion = require('./magento/get-magento-version');
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { stopPhpFpm } = require('./php-fpm');
 
 const stop = {
     title: 'Stopping project',
     task: async (ctx, task) => task.newListr([
-        getMagentoVersion,
+        getMagentoVersionConfig,
         stopPhpFpm,
         stopServices
     ], {

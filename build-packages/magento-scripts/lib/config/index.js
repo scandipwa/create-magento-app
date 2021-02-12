@@ -1,17 +1,18 @@
 const path = require('path');
 const getDockerConfig = require('./docker');
-const { magentoVersionConfigs, allVersions } = require('./version-config');
+const {
+    getConfigurations,
+    defaultConfiguration
+} = require('./versions');
 const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
-const getApplicationConfig = require('./application');
+const { getMagentoConfig } = require('./magento-config');
+const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
 
-// TODO: ask for this version?
-const magentoVersion = '2.4.1';
-
-const config = {
+const baseConfig = {
     // TODO: get more unique prefix
     prefix: path.parse(process.cwd()).name,
     magentoDir: process.cwd(),
@@ -19,37 +20,37 @@ const config = {
     cacheDir: path.join(process.cwd(), 'node_modules', '.create-magento-app-cache')
 };
 
-const versionConfig = magentoVersionConfigs[magentoVersion];
-const php = getPhpConfig(versionConfig, config);
-const docker = getDockerConfig(versionConfig, config);
-const composer = getComposerConfig(versionConfig, config);
-const app = getApplicationConfig(versionConfig, config);
-
 const magento = {
-    version: magentoVersion,
-    binPath: path.join(config.magentoDir, 'bin', 'magento')
+    binPath: path.join(baseConfig.magentoDir, 'bin', 'magento')
 };
 
 module.exports = {
-    getConfigFromMagentoVersion(magentoVersion) {
-        if (!allVersions.includes(magentoVersion)) {
+    async getConfigFromMagentoVersion(magentoVersion) {
+        const configurations = getConfigurations(baseConfig);
+        if (!configurations[magentoVersion]) {
             throw new Error(`No config found for magento version ${magentoVersion}`);
         }
 
+        const {
+            overridenConfiguration,
+            userConfiguration
+        } = await resolveConfigurationWithOverrides(configurations[magentoVersion], baseConfig);
+
         return {
-            php: getPhpConfig(magentoVersionConfigs[magentoVersion], config),
-            docker: getDockerConfig(magentoVersionConfigs[magentoVersion], config),
-            composer: getComposerConfig(magentoVersionConfigs[magentoVersion], config),
-            app: getApplicationConfig(magentoVersionConfigs[magentoVersion], config),
-            config
+            php: getPhpConfig(overridenConfiguration.configuration, baseConfig),
+            docker: getDockerConfig(overridenConfiguration, baseConfig),
+            composer: getComposerConfig(overridenConfiguration.configuration, baseConfig),
+            magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
+            baseConfig,
+            overridenConfiguration,
+            userConfiguration,
+            nonOverridenConfiguration: configurations[magentoVersion]
         };
     },
-    app,
-    config,
+    baseConfig,
     magento,
-    php,
-    composer,
-    docker,
     platforms,
-    darwinMinimalVersion
+    docker: getDockerConfig(defaultConfiguration, baseConfig),
+    darwinMinimalVersion,
+    defaultConfiguration
 };

@@ -74,8 +74,6 @@ const compileOptions = {
         env: {
             // eslint-disable-next-line max-len
             PKG_CONFIG_PATH: '$PKG_CONFIG_PATH:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix openssl)/lib/pkgconfig:$(brew --prefix curl-openssl)/lib/pkgconfig:$(brew --prefix zlib)/lib/pkgconfig',
-            // CPPFLAGS: '$CPPFLAGS:"-I$(brew --prefix openssl)/include":"-I$(brew --prefix libedit)/include"',
-            // LD_LIBRARY_PATH: '$LD_LIBRARY_PATH:$(brew --prefix openssl)/lib',
             CPATH: '$CPATH:$(brew --prefix openssl)/include'
         }
     }

@@ -2,8 +2,9 @@ const runMagentoCommand = require('../../../util/run-magento');
 
 module.exports = {
     title: 'Setting baseurl and secure baseurl',
-    task: async ({ ports, magentoVersion }, task) => {
-        const location = `localhost${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
+    task: async (ctx, task) => {
+        const { ports, magentoVersion, config: { overridenConfiguration: { host, ssl } } } = ctx;
+        const location = `${host}${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
         const httpUrl = `http://${location}`;
         const httpsUrl = `https://${location}`;
 
@@ -45,14 +46,20 @@ module.exports = {
             skipped++;
         }
 
-        if (webSecureUseInFrontend !== '0') {
-            await runMagentoCommand('config:set web/secure/use_in_frontend 0', { magentoVersion });
+        const enableSecureFrontend = ssl.enabled ? '1' : '0';
+
+        if (webSecureUseInFrontend !== enableSecureFrontend) {
+            await runMagentoCommand(`config:set web/secure/use_in_frontend ${enableSecureFrontend}`, {
+                magentoVersion
+            });
         } else {
             skipped++;
         }
 
-        if (webSecureUseInAdminhtml !== '0') {
-            await runMagentoCommand('config:set web/secure/use_in_adminhtml 0', { magentoVersion });
+        if (webSecureUseInAdminhtml !== enableSecureFrontend) {
+            await runMagentoCommand(`config:set web/secure/use_in_adminhtml ${enableSecureFrontend}`, {
+                magentoVersion
+            });
         } else {
             skipped++;
         }

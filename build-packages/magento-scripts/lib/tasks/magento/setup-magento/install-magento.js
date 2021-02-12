@@ -5,17 +5,16 @@ const installMagento = {
     title: 'Installing magento...',
     task: async ({
         magentoVersion,
-        magentoConfig: app,
-        config: { docker },
+        config: { docker, magentoConfiguration },
         ports
     }, task) => {
         const { mysql: { env } } = docker.getContainers(ports);
         await runMagentoCommand(`setup:install \
-        --admin-firstname='${ app.first_name }' \
-        --admin-lastname='${ app.last_name }' \
-        --admin-email='${ app.email }' \
-        --admin-user='${ app.user }' \
-        --admin-password='${ app.password }' \
+        --admin-firstname='${ magentoConfiguration.first_name }' \
+        --admin-lastname='${ magentoConfiguration.last_name }' \
+        --admin-email='${ magentoConfiguration.email }' \
+        --admin-user='${ magentoConfiguration.user }' \
+        --admin-password='${ magentoConfiguration.password }' \
         --search-engine='elasticsearch7' \
         --elasticsearch-host='127.0.0.1' \
         --elasticsearch-port='${ ports.elasticsearch }' \
@@ -34,7 +33,7 @@ const installMagento = {
         --db-name='${ env.MYSQL_DATABASE }' \
         --db-user='${ env.MYSQL_USER }' \
         --db-password='${ env.MYSQL_PASSWORD }' \
-        --backend-frontname='${ app.adminuri }'`, {
+        --backend-frontname='${ magentoConfiguration.adminuri }'`, {
             magentoVersion,
             callback: (t) => {
                 task.output = t;

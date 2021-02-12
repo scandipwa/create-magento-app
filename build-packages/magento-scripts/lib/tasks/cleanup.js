@@ -5,13 +5,13 @@ const {
     uninstallMagento,
     removeMagento
 } = require('./magento');
-const getMagentoVersion = require('./magento/get-magento-version');
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { stopPhpFpm } = require('./php-fpm');
 
 const cleanup = {
     title: 'Cleanup project',
     task: async (ctx, task) => task.newListr([
-        getMagentoVersion,
+        getMagentoVersionConfig,
         stopPhpFpm,
         stopServices,
         removeVolumes,

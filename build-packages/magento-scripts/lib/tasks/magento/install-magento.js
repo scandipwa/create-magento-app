@@ -10,8 +10,8 @@ const getJsonFileData = require('../../util/get-jsonfile-data');
 
 const installMagento = {
     title: 'Installing Magento',
-    task: async ({ magentoVersion, config: { config } }, task) => {
-        const isFsMatching = await matchFilesystem(config.magentoDir, {
+    task: async ({ magentoVersion, config: { baseConfig } }, task) => {
+        const isFsMatching = await matchFilesystem(baseConfig.magentoDir, {
             'app/etc': [
                 'env.php'
             ],
@@ -27,8 +27,8 @@ const installMagento = {
 
         task.title = 'Creating Magento project...';
 
-        if (await pathExists(path.join(config.magentoDir, 'composer.json'))) {
-            const composerData = await getJsonFileData(path.join(config.magentoDir, 'composer.json'));
+        if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
+            const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
 
             if (!composerData.repositories
                 || (Array.isArray(composerData.repositories)

@@ -8,15 +8,15 @@ const prettyStatus = async ({
     phpBrewVersion,
     platform,
     platformVersion,
-    magentoConfig,
     containers
 }) => {
+    const { magentoConfiguration, baseConfig, overridenConfiguration: { host, ssl } } = config;
     const strings = [];
     const separator = () => strings.push(`>${'-'.repeat(30)}`);
 
     separator();
 
-    strings.push(`Project: ${logger.style.file(config.config.prefix)}`);
+    strings.push(`Project: ${logger.style.file(baseConfig.prefix)}`);
     strings.push(`Project location: ${logger.style.link(process.cwd())}`);
     strings.push(`Magento 2 version: ${logger.style.file(magentoVersion)}`);
     strings.push(`PHP version: ${logger.style.file(config.php.version)}`);
@@ -54,19 +54,29 @@ const prettyStatus = async ({
         containerString.push(`Image: ${logger.style.file(container.image)}`);
         containerString.push(`Network: ${logger.style.link(container.network)}`);
         containerString.push(`Port forwarding: ${container.ports.map((port) => logger.style.link(port)).join(', ')}`);
+        if (container.env) {
+            containerString.push('Environment variables:');
+            const containerEnvStrings = [''];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const [envName, envValue] of Object.entries(container.env)) {
+                containerEnvStrings.push(`${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+            }
 
+            containerString.push(containerEnvStrings.join('\n   '));
+        }
         containersStrings.push(containerString.join('\n  '));
+        containersStrings.push('');
     });
 
-    containersStrings.push('');
+    // containersStrings.push('');
 
     strings.push(containersStrings.join('\n'));
 
     separator();
 
-    strings.push(`Web location: ${logger.style.link(`http://localhost:${ports.app}/`)}`);
-    strings.push(`Magento Admin panel location: ${logger.style.link(`http://localhost:${ports.app}/${magentoConfig.adminuri}`)}`);
-    strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfig.user)} - ${logger.style.misc(magentoConfig.password)}`);
+    strings.push(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
+    strings.push(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`);
+    strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
 
     separator();
 

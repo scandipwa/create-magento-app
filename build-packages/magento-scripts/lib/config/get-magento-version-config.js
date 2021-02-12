@@ -1,12 +1,16 @@
 /* eslint-disable no-param-reassign */
-const { allVersions } = require('../../config/version-config');
-const { getConfigFromMagentoVersion } = require('../../config');
-const getInstalledMagentoVersion = require('../../util/get-installed-magento-version');
-const sleep = require('../../util/sleep');
+const { allVersions, defaultConfiguration } = require('./versions');
+const { getConfigFromMagentoVersion } = require('.');
+const getInstalledMagentoVersion = require('../util/get-installed-magento-version');
+const sleep = require('../util/sleep');
 
 const getMagentoVersion = {
-    title: 'Getting magento version (300 sec left...)',
+    // title: 'Getting magento version (300 sec left...)',
+    title: 'Loading Magento version',
     task: async (ctx, task) => {
+        /**
+         * @type {String}
+         */
         let magentoVersion;
 
         try {
@@ -16,7 +20,8 @@ const getMagentoVersion = {
                 throw e;
             }
             if (allVersions.length === 1) {
-                magentoVersion = allVersions[0];
+                const { magentoVersion: defaultMagentoVersion } = defaultConfiguration;
+                magentoVersion = defaultMagentoVersion;
             } else {
                 let promptSkipper = false;
                 const timer = async () => {
@@ -29,7 +34,7 @@ const getMagentoVersion = {
                         task.title = `Checking app config (${i} sec left...)`;
                     }
                     task.cancelPrompt();
-                    return allVersions[0];
+                    return defaultConfiguration.magento;
                 };
 
                 magentoVersion = await Promise.race([
@@ -37,10 +42,10 @@ const getMagentoVersion = {
                         type: 'Select',
                         message: 'Choose Magento Version',
                         name: 'magentoVersion',
-                        choices: allVersions.map((version) => (
+                        choices: allVersions.map(({ magentoVersion }) => (
                             {
-                                name: version,
-                                message: version
+                                name: magentoVersion,
+                                message: magentoVersion
                             }
                         ))
                     }),
@@ -52,8 +57,9 @@ const getMagentoVersion = {
         }
 
         ctx.magentoVersion = magentoVersion;
-        ctx.config = getConfigFromMagentoVersion(magentoVersion);
         task.title = `Using Magento ${magentoVersion}`;
+
+        ctx.config = await getConfigFromMagentoVersion(magentoVersion);
     }
 };
 

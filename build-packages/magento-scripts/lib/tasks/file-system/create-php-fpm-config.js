@@ -1,5 +1,5 @@
 const path = require('path');
-const { config } = require('../../config');
+const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
 const createPhpFpmConfig = {
@@ -8,7 +8,7 @@ const createPhpFpmConfig = {
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,
-                template: path.join(config.templateDir, 'php-fpm.template.conf'),
+                template: path.join(baseConfig.templateDir, 'php-fpm.template.conf'),
                 ports,
                 overwrite: true
             });

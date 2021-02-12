@@ -1,5 +1,5 @@
 const { execAsyncSpawn } = require('./exec-async-command');
-const { getConfigFromMagentoVersion, magento } = require('../config');
+const { getConfigFromMagentoVersion, defaultConfiguration, magento } = require('../config');
 /**
  * Execute magento command
  * @param {String} command magento command
@@ -10,12 +10,12 @@ const { getConfigFromMagentoVersion, magento } = require('../config');
 const runMagentoCommand = async (command, options = {}) => {
     const {
         throwNonZeroCode = true,
-        magentoVersion = magento.version
+        magentoVersion = defaultConfiguration.magentoVersion
     } = options;
     const {
         php,
-        config: { magentoDir }
-    } = getConfigFromMagentoVersion(magentoVersion);
+        baseConfig: { magentoDir }
+    } = await getConfigFromMagentoVersion(magentoVersion);
     const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${magento.binPath} ${command}`, {
         ...options,
         cwd: magentoDir,
