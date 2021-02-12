@@ -16,16 +16,19 @@ export interface NginxConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
+export interface PHPExtension {
+    version: string
+    [key: string]: unknown
+}
+
 export interface PHPExtensions {
-    gd: Record<string, unknown>
-    intl: Record<string, unknown>
-    zlib: Record<string, unknown>
-    openssl: Record<string, unknown>
-    sockets: Record<string, unknown>
-    simpleXML: Record<string, unknown>
-    xdebug: Record<string, unknown> & {
-        version: string
-    }
+    gd: PHPExtension
+    intl: PHPExtension
+    zlib: PHPExtension
+    openssl: PHPExtension
+    sockets: PHPExtension
+    simpleXML: PHPExtension
+    xdebug: PHPExtension
 }
 
 export interface PHPConfiguration {
