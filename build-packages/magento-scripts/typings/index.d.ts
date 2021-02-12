@@ -1,9 +1,3 @@
-export * from './deepmerge';
-
-// export interface ServiceConfiguration {
-//     config: Record<string, unknown>
-// }
-
 export interface ServiceWithVersion {
     /**
      * Container version
@@ -17,9 +11,7 @@ export interface NginxConfiguration extends ServiceWithVersion {
     /**
      * Configuration file location
      *
-     * Set to 'default' if you want to use default config file
-     * For custom configuration file use relative path:
-     * @example ./my-config.conf
+     * @example ./my-nginx-config.conf
      */
     configTemplate: string
 }
@@ -45,9 +37,7 @@ export interface PHPConfiguration {
     /**
      * Configuration file template location
      *
-     * Set to 'default' if you want to use default config file
-     * For custom configuration file use relative path:
-     * @example ./my-config.conf
+     * @example ./my-php-template.ini
      */
     configTemplate: string
 
@@ -56,42 +46,6 @@ export interface PHPConfiguration {
      */
     extensions: Record<string, unknown> & PHPExtensions
 }
-
-// export interface PHPFPMConfiguration {
-
-//     /**
-//      * Configuration file location
-//      *
-//      * Set to 'default' if you want to use default config file
-//      * For custom configuration file use relative path:
-//      * @example ./my-config.conf
-//      */
-//     configFile: 'default'
-// }
-
-// // eslint-disable-next-line @typescript-eslint/no-empty-interface
-// export interface MySQLConfiguration extends Omit<DockerServiceConfiguration, 'config'> {}
-
-// // eslint-disable-next-line @typescript-eslint/no-empty-interface
-// export interface RedisConfiguration extends Omit<DockerServiceConfiguration, 'config'> {}
-
-// export interface ElasticsearchConfiguration extends Omit<DockerServiceConfiguration, 'config'> {
-//     config: {
-//         env: {
-//             /**
-//              * Controls machine learning setting on Elasticsearch instance
-//              *
-//              * [ES documentation](https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html#ml-settings)
-//              */
-//             'xpack.ml.enabled': boolean
-//         }
-//     }
-// }
-
-// export interface ComposerConfiguration {
-//     version: 'default' | '1.x' | '2.x'
-// }
-
 export interface SSLConfiguration {
     /**
      * Enables or disables SSL in application
