@@ -92,6 +92,23 @@ export interface PHPConfiguration {
 //     version: 'default' | '1.x' | '2.x'
 // }
 
+export interface SSLConfiguration {
+    /**
+     * Enables or disables SSL in application
+     */
+    enabled: boolean
+
+    /**
+     * SSL certificate name
+     */
+    ssl_certificate: string
+
+    /**
+     * SSL certificate key name
+     */
+    ssl_certificate_key: string
+}
+
 export interface CMAConfiguration {
     /**
      * Services configuration
@@ -138,4 +155,9 @@ export interface CMAConfiguration {
      *  Custom host for website base url
      * */
     host: string
+
+    /**
+     * SSL Configuration
+     */
+    ssl: SSLConfiguration
 }

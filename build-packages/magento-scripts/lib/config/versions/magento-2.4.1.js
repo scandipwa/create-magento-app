@@ -35,5 +35,8 @@ module.exports = ({ templateDir } = {}) => ({
         }
     },
     magento: defaultMagentoConfig,
-    host: 'localhost'
+    host: 'localhost',
+    ssl: {
+        enabled: false
+    }
 });

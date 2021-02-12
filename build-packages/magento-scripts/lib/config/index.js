@@ -38,7 +38,7 @@ module.exports = {
 
         return {
             php: getPhpConfig(overridenConfiguration.configuration, baseConfig),
-            docker: getDockerConfig(overridenConfiguration.configuration, baseConfig),
+            docker: getDockerConfig(overridenConfiguration, baseConfig),
             composer: getComposerConfig(overridenConfiguration.configuration, baseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
             baseConfig,
@@ -50,7 +50,7 @@ module.exports = {
     baseConfig,
     magento,
     platforms,
-    docker: getDockerConfig(defaultConfiguration.configuration, baseConfig),
+    docker: getDockerConfig(defaultConfiguration, baseConfig),
     darwinMinimalVersion,
     defaultConfiguration
 };

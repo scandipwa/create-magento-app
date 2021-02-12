@@ -103,7 +103,12 @@ const startContainers = {
         }
 
         // TODO: we might stop containers here ?
-        await Promise.all(missingContainers.map((container) => run(container)));
+        await Promise.all(missingContainers.map((container) => run(container).then((out) => {
+            task.output = `From ${container._}: ${out}`;
+        })));
+    },
+    options: {
+        bottomBar: 10
     }
 };
 
