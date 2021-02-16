@@ -8,13 +8,13 @@ const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
+const { getPrefix } = require('../util/get-prefix');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
 
 const baseConfig = {
-    // TODO: get more unique prefix
-    prefix: path.parse(process.cwd()).name,
+    prefix: getPrefix(),
     magentoDir: process.cwd(),
     templateDir: path.join(__dirname, 'templates'),
     cacheDir: path.join(process.cwd(), 'node_modules', '.create-magento-app-cache')

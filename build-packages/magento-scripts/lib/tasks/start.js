@@ -46,13 +46,13 @@ const start = {
         startPhpFpm,
         {
             title: 'Open browser',
-            task: async ({ ports, noOpen }, task) => {
+            task: async ({ ports, noOpen, config: { overridenConfiguration: { host, ssl } } }, task) => {
                 if (noOpen) {
                     task.skip();
                     return;
                 }
 
-                openBrowser(`http://localhost:${ports.app}`);
+                openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
             }
         }
     ], {

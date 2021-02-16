@@ -1,4 +1,5 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { getProjectCreatedAt } = require('../../util/get-prefix');
 
 const prettyStatus = async ({
     ports,
@@ -10,14 +11,23 @@ const prettyStatus = async ({
     platformVersion,
     containers
 }) => {
-    const { magentoConfiguration, baseConfig, overridenConfiguration: { host, ssl } } = config;
+    const {
+        magentoConfiguration,
+        baseConfig,
+        overridenConfiguration: { host, ssl }
+    } = config;
     const strings = [];
     const separator = () => strings.push(`>${'-'.repeat(30)}`);
+    const projectCreatedAt = getProjectCreatedAt();
 
     separator();
 
     strings.push(`Project: ${logger.style.file(baseConfig.prefix)}`);
     strings.push(`Project location: ${logger.style.link(process.cwd())}`);
+
+    if (projectCreatedAt) {
+        strings.push(`Project created: ${logger.style.link(projectCreatedAt.toDateString())} at ${logger.style.link(projectCreatedAt.toTimeString())}`);
+    }
     strings.push(`Magento 2 version: ${logger.style.file(magentoVersion)}`);
     strings.push(`PHP version: ${logger.style.file(config.php.version)}`);
     strings.push(`PHP location: ${logger.style.link(config.php.binPath)}`);

@@ -22,6 +22,7 @@
     ],
     "dependencies": {
         "@scandipwa/scandipwa-dev-utils": "^0.0.20",
+        "conf": "^9.0.2",
         "enquirer": "2.3.6",
         "eta": "^1.12.1",
         "getos": "^3.2.1",
@@ -33,5 +34,6 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "devDependencies": {}
 }
