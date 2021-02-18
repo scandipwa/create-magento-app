@@ -5,6 +5,7 @@ const { Listr } = require('listr2');
 const start = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
+const linkTheme = require('../tasks/theme/link-theme');
 
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
@@ -49,7 +50,7 @@ module.exports = (yargs) => {
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,
-            ctx: { force: args.testRun, ...args },
+            ctx: args,
             concurrent: false,
             rendererOptions: { collapse: false }
         });
@@ -64,7 +65,29 @@ module.exports = (yargs) => {
         }
 
         try {
-            const { ports, config: { magentoConfiguration, overridenConfiguration: { host, ssl } } } = await tasks.run();
+            const ctx = await tasks.run();
+
+            if (ctx.checkForInstalledThemesAfterStartUp) {
+                if (ctx.themePaths && ctx.themePaths.length > 0) {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const themepath of ctx.themePaths) {
+                        // eslint-disable-next-line no-await-in-loop
+                        await new Listr([linkTheme], {
+                            concurrent: false,
+                            exitOnError: true,
+                            ctx: {
+                                ...ctx,
+                                themepath
+                            },
+                            rendererOptions: { collapse: false }
+                        }).run();
+                    }
+                }
+            }
+            const {
+                ports,
+                config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
+            } = ctx;
 
             logger.logN();
             logger.log(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
