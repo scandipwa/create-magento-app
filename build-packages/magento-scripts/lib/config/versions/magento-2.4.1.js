@@ -1,6 +1,5 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
-// const { defaultPorts } = require('../port-config');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.1',

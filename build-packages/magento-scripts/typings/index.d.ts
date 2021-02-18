@@ -123,4 +123,15 @@ export interface CMAConfiguration {
      * SSL Configuration
      */
     ssl: SSLConfiguration
+
+    /**
+     * Prefix config.
+     *
+     * Set to `true` if you want to use prefix for the project, `false` if don't.
+     *
+     * @description If prefix is set to `true` a unique identifier will be appended to docker container and volume names to prevent possible
+     * interference between folders with similar names.
+     * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
+     */
+    prefix: boolean
 }

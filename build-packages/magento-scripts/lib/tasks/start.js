@@ -13,6 +13,7 @@ const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
 const { pullContainers } = require('./docker/containers');
+const { setPrefix } = require('./prefix');
 
 const start = {
     title: 'Starting project',
@@ -23,6 +24,8 @@ const start = {
         getCachedPorts,
         stopServices,
         stopPhpFpm,
+        setPrefix,
+        getMagentoVersionConfig,
         // get fresh ports
         getAvailablePorts,
         saveConfiguration,
