@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
@@ -18,7 +18,7 @@ const checkPhpbrew = {
             );
         }
 
-        const phpBrewVersion = result.match(/phpbrew - ([\d.]+)/i)[1];
+        const [_, phpBrewVersion] = result.match(/phpbrew - ([\d.]+)/i);
 
         ctx.phpBrewVersion = phpBrewVersion;
         task.title = `Using PHPBrew version ${phpBrewVersion}`;

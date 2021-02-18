@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,no-unused-vars */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const getDockerVersion = async () => {
@@ -7,7 +7,7 @@ const getDockerVersion = async () => {
     });
 
     if (code === 0) {
-        const dockerVersion = result.match(/Docker version ([\d.]+)/)[1];
+        const [_, dockerVersion] = result.match(/Docker version ([\d.]+)/);
 
         return dockerVersion;
     }

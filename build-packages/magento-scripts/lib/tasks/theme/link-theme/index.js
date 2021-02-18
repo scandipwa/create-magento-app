@@ -10,23 +10,26 @@ const checkThemeFolder = require('./check-theme-folder');
 
 const linkTheme = {
     title: 'Linking theme',
-    task: async (ctx, task) => task.newListr([
-        checkThemeFolder,
-        themeSymlink,
-        getMagentoVersionConfig,
-        getCachedPorts,
-        installTheme,
-        themeSubtask,
-        upgradeMagento,
-        disablePageCache
-    ], {
-        concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        },
-        ctx
-    }),
+    task: async (ctx, task) => {
+        task.title = `Linking theme from ${ctx.themepath}`;
+        return task.newListr([
+            checkThemeFolder,
+            themeSymlink,
+            getMagentoVersionConfig,
+            getCachedPorts,
+            installTheme,
+            themeSubtask,
+            upgradeMagento,
+            disablePageCache
+        ], {
+            concurrent: false,
+            exitOnError: true,
+            rendererOptions: {
+                collapse: false
+            },
+            ctx
+        });
+    },
     options: {
         bottomBar: 5
     }

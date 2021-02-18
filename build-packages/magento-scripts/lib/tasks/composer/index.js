@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign, no-unused-vars */
 const fs = require('fs');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
@@ -7,7 +7,7 @@ const installPrestissimo = require('./install-prestissimo');
 
 const getComposerVersion = async ({ composer, php }) => {
     const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.initPath} ${composer.binPath} --version --no-ansi`);
-    const composerVersion = composerVersionOutput.match(/Composer version ([\d.]+)/i)[1];
+    const [_, composerVersion] = composerVersionOutput.match(/Composer version ([\d.]+)/i);
     return composerVersion;
 };
 

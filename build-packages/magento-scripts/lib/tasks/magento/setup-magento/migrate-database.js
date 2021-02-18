@@ -35,12 +35,12 @@ const migrateDatabase = {
                     task.output = t;
                 }
             });
-            task.output = 'Magento upgraded!';
+            task.title = 'Migrating database: upgraded!';
             break;
         }
         default: {
         // TODO: handle these statuses ?
-            task.output = 'Database migration failed: manual action is required!';
+            task.title = 'Migrating database failed: manual action is required!';
             break;
         }
         }
