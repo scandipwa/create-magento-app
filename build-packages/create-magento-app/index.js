@@ -8,7 +8,6 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const createFilesystem = require('@scandipwa/scandipwa-dev-utils/create-filesystem');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps');
-const { setPrefix } = require('./config');
 
 const greet = (name, pathname) => {
     const relativePathname = `./${pathname}`;
@@ -67,9 +66,6 @@ const createApp = async (options) => {
         scandipwaBeScriptsVersion: latestVersion,
         name
     };
-
-    // set prefix for the project
-    setPrefix(destination);
 
     // create filesystem from template
     await createFilesystem(
