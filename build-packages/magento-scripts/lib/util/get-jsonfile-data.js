@@ -2,9 +2,9 @@ const fs = require('fs');
 const pathExists = require('./path-exists');
 
 const getJsonfileData = async (filePath) => {
-    const composerExists = await pathExists(filePath);
+    const fileExists = await pathExists(filePath);
 
-    if (!composerExists) {
+    if (!fileExists) {
         return null;
     }
 
