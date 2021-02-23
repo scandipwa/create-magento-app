@@ -6,7 +6,6 @@ const setConfigFile = async ({
     configPathname,
     dirName,
     template,
-    ports = {},
     overwrite,
     templateArgs = {}
 }) => {
@@ -18,7 +17,6 @@ const setConfigFile = async ({
 
     const configTemplate = await fs.promises.readFile(template, 'utf-8');
     const compliedConfig = await eta.render(configTemplate, {
-        ports,
         date: new Date().toUTCString(),
         ...templateArgs
     });

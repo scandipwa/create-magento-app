@@ -8,9 +8,9 @@ const createPhpConfig = {
             await setConfigFile({
                 configPathname: php.iniPath,
                 template: php.iniTemplatePath,
-                ports,
                 overwrite: true,
                 templateArgs: {
+                    ports,
                     debug,
                     mageRoot: baseConfig.magentoDir
                 }
