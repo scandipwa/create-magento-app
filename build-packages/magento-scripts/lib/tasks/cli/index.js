@@ -1,5 +1,6 @@
 const path = require('path');
 const { spawn } = require('child_process');
+const { baseConfig } = require('../../config');
 
 const cli = () => {
     if (!process.stdin.isTTY) {
@@ -9,7 +10,7 @@ const cli = () => {
 
     spawn('bash', [
         '--rcfile',
-        path.join(__dirname, '.magentorc')
+        path.join(baseConfig.cacheDir, '.magentorc')
     ], {
         stdio: [0, 1, 2]
     });
