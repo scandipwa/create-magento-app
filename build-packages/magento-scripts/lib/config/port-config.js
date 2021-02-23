@@ -1,14 +1,44 @@
 const fs = require('fs');
 const path = require('path');
-const portscanner = require('portscanner');
+const { findAPortNotInUse } = require('../util/portscanner');
 const { baseConfig } = require('.');
 const deepmerge = require('../util/deepmerge');
+const { projectsConfig } = require('./config');
+const getJsonfileData = require('../util/get-jsonfile-data');
+
+const getUsedByOtherCMAProjectsPorts = async () => {
+    const portConfigs = await Promise.all(
+        Object.keys(projectsConfig.store)
+            .filter((projectPath) => projectPath !== process.cwd())
+            .map((projectPath) => getJsonfileData(path.join(projectPath, 'node_modules', '.create-magento-app-cache', 'port-config.json')))
+    );
+
+    const mappedPorts = portConfigs.filter(Boolean).map((portConfig) => Object.values(portConfig));
+
+    return Array.from(new Set(mappedPorts.reduce((acc, val) => acc.concat(val), [])));
+};
 
 /**
  * @param {Number} port
+ * @param {Object} options
+ * @param {Number[]} options.portIgnoreList
  * @returns {Promise<Number>}
  */
-const getPort = async (port) => portscanner.findAPortNotInUse(port, port + 999);
+const getPort = async (port, options) => {
+    const {
+        portIgnoreList = []
+    } = options;
+    const startPort = port;
+    const endPort = port + 999;
+
+    const availablePort = await findAPortNotInUse({
+        startPort,
+        endPort,
+        portIgnoreList
+    });
+
+    return availablePort;
+};
 
 const savePortsConfig = async (ports) => {
     await fs.promises.writeFile(
@@ -35,9 +65,13 @@ const defaultPorts = {
  */
 const getPortsConfig = async (ports) => {
     const mergedPorts = deepmerge(defaultPorts, ports || {});
+    const p = await getUsedByOtherCMAProjectsPorts();
     const availablePorts = Object.fromEntries(await Promise.all(
         Object.entries(mergedPorts).map(async ([name, port]) => {
-            const availablePort = await getPort(port);
+            const availablePort = await getPort(port, {
+                portIgnoreList: p
+            });
+
             return [name, availablePort];
         })
     ));
