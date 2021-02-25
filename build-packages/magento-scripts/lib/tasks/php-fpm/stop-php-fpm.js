@@ -23,7 +23,7 @@ const stopPhpFpmTask = {
             }
             await execAsyncSpawn(`kill ${processId} && rm -f ${php.fpmPidFilePath}`);
         } catch (e) {
-            if (e.message.includes('No such process')) {
+            if (e.includes('no such process')) {
                 await execAsyncSpawn(`rm -f ${php.fpmPidFilePath}`);
                 return;
             }
