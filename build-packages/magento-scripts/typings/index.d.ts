@@ -139,7 +139,7 @@ export interface CMAConfiguration {
 
     /**
      * Non-overlapping ports config
-     * @default true
+     * @default false
      *
      * @description If set to `true` CMA will try retrieving others CMA projects port configuration
      * and will not use their ports for itself.

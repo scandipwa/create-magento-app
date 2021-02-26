@@ -3,7 +3,7 @@ const magento241 = require('./magento-2.4.1');
 
 const defaultCMAConfig = {
     prefix: true,
-    useNonOverlappingPorts: true
+    useNonOverlappingPorts: false
 };
 
 const getConfigurations = (config = {}) => ({
