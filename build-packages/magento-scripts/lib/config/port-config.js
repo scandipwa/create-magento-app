@@ -61,11 +61,21 @@ const defaultPorts = {
 /**
  * Get available port configuration
  * @param {Record<string, number>} ports
+ * @param {Object} options
+ * @param {Object} options.userConfiguration
  * @returns {Promise<Record<string, number>>}
  */
-const getPortsConfig = async (ports) => {
+const getPortsConfig = async (ports, options = {}) => {
+    const {
+        userConfiguration
+    } = options;
     const mergedPorts = deepmerge(defaultPorts, ports || {});
-    const p = await getUsedByOtherCMAProjectsPorts();
+    let p;
+    if (userConfiguration.useNonOverlappingPorts) {
+        p = await getUsedByOtherCMAProjectsPorts();
+    } else {
+        p = [];
+    }
     const availablePorts = Object.fromEntries(await Promise.all(
         Object.entries(mergedPorts).map(async ([name, port]) => {
             const availablePort = await getPort(port, {

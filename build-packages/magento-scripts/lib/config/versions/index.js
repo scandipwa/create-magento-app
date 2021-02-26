@@ -2,7 +2,8 @@ const deepmerge = require('../../util/deepmerge');
 const magento241 = require('./magento-2.4.1');
 
 const defaultCMAConfig = {
-    prefix: true
+    prefix: true,
+    useNonOverlappingPorts: true
 };
 
 const getConfigurations = (config = {}) => ({

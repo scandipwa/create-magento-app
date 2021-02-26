@@ -28,7 +28,10 @@ const getAvailablePorts = {
         } else {
             ports = { ...defaultPorts };
         }
-        const availablePorts = await getPortsConfig(ports);
+        const { overridenConfiguration } = ctx.config;
+        const availablePorts = await getPortsConfig(ports, {
+            userConfiguration: overridenConfiguration
+        });
 
         if (ctx.port) {
             const isPortAvailable = (await getPort(ctx.port)) === ctx.port;

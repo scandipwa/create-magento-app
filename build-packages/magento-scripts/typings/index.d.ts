@@ -116,6 +116,7 @@ export interface CMAConfiguration {
     }
     /**
      *  Custom host for website base url
+     * @default 'localhost'
      * */
     host: string
 
@@ -126,6 +127,7 @@ export interface CMAConfiguration {
 
     /**
      * Prefix config.
+     * @default true
      *
      * Set to `true` if you want to use prefix for the project, `false` if don't.
      *
@@ -134,4 +136,13 @@ export interface CMAConfiguration {
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
     prefix: boolean
+
+    /**
+     * Non-overlapping ports config
+     * @default true
+     *
+     * @description If set to `true` CMA will try retrieving others CMA projects port configuration
+     * and will not use their ports for itself.
+     */
+    useNonOverlappingPorts: boolean
 }
