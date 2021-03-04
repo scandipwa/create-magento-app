@@ -21,10 +21,14 @@ const stopPhpFpmTask = {
                 task.skip();
                 return;
             }
-            await execAsyncSpawn(`kill ${processId} && rm -f ${php.fpmPidFilePath}`);
+            await execAsyncSpawn(`kill ${processId}`);
+
+            if (await pathExists(php.fpmPidFilePath)) {
+                await fs.promises.unlink(php.fpmPidFilePath);
+            }
         } catch (e) {
-            if (e.includes('no such process')) {
-                await execAsyncSpawn(`rm -f ${php.fpmPidFilePath}`);
+            if (e.toLowerCase().includes('no such process')) {
+                await fs.promises.unlink(php.fpmPidFilePath);
                 return;
             }
 
