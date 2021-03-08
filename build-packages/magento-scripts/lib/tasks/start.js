@@ -14,6 +14,7 @@ const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
 const { pullContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
+const { connectToMySQL } = require('./mysql');
 
 const start = {
     title: 'Starting project',
@@ -45,6 +46,7 @@ const start = {
         installPrestissimo,
         installMagento,
         startServices,
+        connectToMySQL,
         setupMagento,
         startPhpFpm,
         {
@@ -56,6 +58,11 @@ const start = {
                 }
 
                 openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+            }
+        },
+        {
+            task: (ctx) => {
+                ctx.mysqlConnection.destroy();
             }
         }
     ], {

@@ -1,12 +1,31 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
+// const runComposerCommand = require('../../../util/run-composer');
 const runMagentoCommand = require('../../../util/run-magento');
 const installMagento = require('./install-magento');
 
 const migrateDatabase = {
     title: 'Migrating database',
     task: async (ctx, task) => {
-        const { magentoVersion } = ctx;
+        const { magentoVersion, mysqlConnection: connection } = ctx;
+
+        const [[{ tableCount }]] = await connection.query(`
+        SELECT count (*) AS tableCount
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_SCHEMA = 'magento';
+        `);
+
+        if (tableCount === 0) {
+            task.output = 'No Magento is installed in DB!\nInstalling...';
+
+            return task.newListr([
+                installMagento
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                ctx
+            });
+        }
         const { code } = await runMagentoCommand('setup:db:status', {
             magentoVersion,
             throwNonZeroCode: false

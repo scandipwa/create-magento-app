@@ -1,15 +1,29 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
-const answers = ['Couldn\'t find the user account', 'was not locked or could not be unlocked'];
+// const answers = [
+//     'Couldn\'t find the user account',
+//     'was not locked or could not be unlocked'
+// ];
 
 module.exports = {
     title: 'Creating admin user',
-    task: async ({ magentoVersion, config: { magentoConfiguration } }, task) => {
-        const { result: userStatus } = await runMagentoCommand(`admin:user:unlock ${magentoConfiguration.user} -n`, {
-            magentoVersion
-        });
+    task: async ({ magentoVersion, mysqlConnection, config: { magentoConfiguration } }, task) => {
+        const [[{ userCount }]] = await mysqlConnection.query(`
+            SELECT count(*) AS userCount
+            FROM admin_user
+            WHERE username = ?;
+        `, [magentoConfiguration.user]);
 
-        if (answers.some((a) => userStatus.includes(a))) {
+        // const { result: userStatus } = await runMagentoCommand(`admin:user:unlock ${magentoConfiguration.user} -n`, {
+        //     magentoVersion
+        // });
+
+        // if (answers.some((a) => userStatus.includes(a))) {
+        //     task.skip();
+        //     return;
+        // }
+
+        if (userCount === 1) {
             task.skip();
             return;
         }

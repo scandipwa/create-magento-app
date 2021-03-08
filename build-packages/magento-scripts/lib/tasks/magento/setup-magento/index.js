@@ -1,5 +1,5 @@
 const flushRedisConfig = require('./flush-redis-config');
-const waitingForMysql = require('./waiting-for-mysql');
+// const waitingForMysql = require('./waiting-for-mysql');
 const waitingForRedis = require('./waiting-for-redis');
 const migrateDatabase = require('./migrate-database');
 const configureElasticsearch = require('./configure-elasticsearch');
@@ -16,7 +16,7 @@ const setupMagento = {
     task: async (ctx, task) => task.newListr([
         flushRedisConfig,
         waitingForRedis,
-        waitingForMysql,
+        // waitingForMysql,
         migrateDatabase,
         configureElasticsearch,
         createAdmin,
