@@ -17,7 +17,7 @@ const commands = [
     require('./lib/commands/execute')
 ];
 
-process.title = 'Create Magento App';
+process.title = 'magento-scripts';
 
 (async () => {
     const { version: currentVersion, name } = require('./package.json');
