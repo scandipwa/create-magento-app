@@ -10,9 +10,9 @@ const migrateDatabase = {
         const { magentoVersion, mysqlConnection: connection } = ctx;
 
         const [[{ tableCount }]] = await connection.query(`
-        SELECT count (*) AS tableCount
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE TABLE_SCHEMA = 'magento';
+            SELECT count (*) AS tableCount
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = 'magento';
         `);
 
         if (tableCount === 0) {
