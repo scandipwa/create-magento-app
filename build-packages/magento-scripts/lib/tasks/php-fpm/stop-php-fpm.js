@@ -24,7 +24,11 @@ const stopPhpFpmTask = {
             await execAsyncSpawn(`kill ${processId}`);
 
             if (await pathExists(php.fpmPidFilePath)) {
-                await fs.promises.unlink(php.fpmPidFilePath);
+                try {
+                    await fs.promises.unlink(php.fpmPidFilePath);
+                } catch (e) {
+                    //
+                }
             }
         } catch (e) {
             if (e.toLowerCase().includes('no such process')) {

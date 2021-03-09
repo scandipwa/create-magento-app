@@ -7,7 +7,6 @@ const connectToMySQL = {
     task: async (ctx, task) => {
         const { config: { docker }, ports } = ctx;
         const { mysql: { env } } = docker.getContainers();
-        await sleep(2000); // add a bit of delay while mysql container is starting for pretty print
         let tries = 0;
         while (tries < 10) {
             tries++;
@@ -33,7 +32,7 @@ const connectToMySQL = {
             throw new Error('Unable to connect to MySQL server. Check your server configuration!');
         }
 
-        task.title = `MySQL connected${tries > 1 ? ` after ${tries} tries.` : '!'}`;
+        task.title = `MySQL connected${tries > 2 ? ` after ${tries} tries.` : '!'}`;
     },
     options: {
         bottomBar: 10

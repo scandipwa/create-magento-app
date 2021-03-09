@@ -3,11 +3,15 @@ const runMagentoCommand = require('../../../util/run-magento');
 
 const installMagento = {
     title: 'Installing magento...',
-    task: async ({
-        magentoVersion,
-        config: { docker, magentoConfiguration },
-        ports
-    }, task) => {
+    task: async (ctx, task) => {
+        const {
+            magentoVersion,
+            config: {
+                docker,
+                magentoConfiguration
+            },
+            ports
+        } = ctx;
         const { mysql: { env } } = docker.getContainers(ports);
         await runMagentoCommand(`setup:install \
         --admin-firstname='${ magentoConfiguration.first_name }' \

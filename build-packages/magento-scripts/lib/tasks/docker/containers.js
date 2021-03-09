@@ -129,8 +129,6 @@ const stopContainers = {
         await stop(runningContainers.map(({ name }) => name));
     }
 };
-
-// eslint-disable-next-line max-len
 const getContainerStatus = async (containerName) => {
     try {
         return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State.Health}}' ${containerName}`));
