@@ -2,6 +2,8 @@ const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 
+const { version: packageVersion } = require('../../../package.json');
+
 const prettyStatus = async ({
     ports,
     config,
@@ -26,6 +28,11 @@ const prettyStatus = async ({
     const prefix = getPrefix();
 
     const { name: folderName } = path.parse(process.cwd());
+
+    strings.push(`Running magento-scripts version: ${ logger.style.link(packageVersion) }`);
+
+    separator();
+
     strings.push(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'}`);
     strings.push(`Project location: ${logger.style.link(process.cwd())}`);
 
