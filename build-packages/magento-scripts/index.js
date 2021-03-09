@@ -25,12 +25,31 @@ process.title = 'Create Magento App';
     try {
         const latestVersion = await getLatestVersion(name);
 
-        if (semver.gt(latestVersion, currentVersion)) {
-            logger.warn(
-                `${ isGlobal() ? 'Global module' : 'Module' } ${ logger.style.misc(name) } is out-dated.`,
-                `Please upgrade it to latest version ${ logger.style.misc(latestVersion) }.`,
-                `You can do it by running following command: ${ logger.style.command(`npm i ${ isGlobal() ? '-g' : '' } ${ name }@${ latestVersion }`) }.`
-            );
+        if (semver.gt(latestVersion, currentVersion, { includePrerelease: true })) {
+            const isLatestVersionPreRelease = Boolean(semver.prerelease(latestVersion));
+            const isCurrentVersionPreRelease = Boolean(semver.prerelease(currentVersion));
+            const isInstalledGlobally = isGlobal();
+
+            let warnMessage = [];
+
+            if (!isLatestVersionPreRelease) {
+                warnMessage = [
+                    `${ isInstalledGlobally ? 'Global module' : 'Module' } ${ logger.style.misc(name) } is out-dated.`,
+                    `Please upgrade it to latest version ${ logger.style.misc(latestVersion) }.`,
+                    `You can do it by running the following command: ${ logger.style.command(`npm i ${ isInstalledGlobally ? '-g ' : '' }${ name }@${ latestVersion }`) }.`
+                ];
+            } else {
+                warnMessage = [
+                    `${ isInstalledGlobally ? 'Global module' : 'Module' } ${ logger.style.misc(name) } have a pre-release version ${ logger.style.misc(latestVersion) }`,
+                    `You are currently using ${!isCurrentVersionPreRelease ? 'stable' : ''} version ${ logger.style.misc(currentVersion) }.`,
+                    `If you want to participate in testing of next stable release you can install prerelease version ${ logger.style.misc(latestVersion) } using the following command:`,
+                    `${ logger.style.command(`npm i ${ isInstalledGlobally ? '-g ' : '' }${ name }@${ latestVersion }`) }.`,
+                    '',
+                    `Waiting for your feedback at ${ logger.style.link('https://github.com/scandipwa/create-magento-app/issues') }!`
+                ];
+            }
+
+            logger.warn(...warnMessage);
         }
     } catch (e) {
         logger.warn(`Package ${ logger.style.misc(name) } is not yet published.`);
