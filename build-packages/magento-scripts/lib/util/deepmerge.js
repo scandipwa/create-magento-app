@@ -10,27 +10,28 @@ function deepmerge(
     target,
     ...sources
 ) {
+    const targetCopy = Object.create(target);
     const isObject = (obj) => obj && typeof obj === 'object';
     sources.forEach((source) => Object.keys(source).forEach((key) => {
-        const targetValue = target[key];
+        const targetValue = targetCopy[key];
         const sourceValue = source[key];
 
         if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-            target[key] = targetValue.concat(sourceValue);
+            targetCopy[key] = targetValue.concat(sourceValue);
         } else if (
             isObject(targetValue)
           && isObject(sourceValue)
         ) {
-            target[key] = deepmerge(
+            targetCopy[key] = deepmerge(
                 { ...targetValue },
                 sourceValue
             );
         } else {
-            target[key] = sourceValue;
+            targetCopy[key] = sourceValue;
         }
     }));
 
-    return target;
+    return targetCopy;
 }
 
 module.exports = deepmerge;
