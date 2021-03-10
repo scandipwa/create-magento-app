@@ -15,7 +15,7 @@ module.exports = ({ templateDir } = {}) => ({
                 sockets: {},
                 SimpleXML: {},
                 xdebug: {
-                    version: '3.0.2'
+                    version: '3.0.3'
                 }
             }
         },
