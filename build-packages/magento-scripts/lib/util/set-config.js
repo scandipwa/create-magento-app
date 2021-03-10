@@ -1,10 +1,10 @@
 const eta = require('eta');
 const fs = require('fs');
+const path = require('path');
 const pathExists = require('./path-exists');
 
 const setConfigFile = async ({
     configPathname,
-    dirName,
     template,
     overwrite,
     templateArgs = {}
@@ -21,11 +21,11 @@ const setConfigFile = async ({
         ...templateArgs
     });
 
-    if (dirName) {
-        const dirExists = await pathExists(dirName);
-        if (!dirExists) {
-            await fs.promises.mkdir(dirName, { recursive: true });
-        }
+    const { dir } = path.parse(configPathname);
+
+    const dirExists = await pathExists(dir);
+    if (!dirExists) {
+        await fs.promises.mkdir(dir, { recursive: true });
     }
     await fs.promises.writeFile(configPathname, compliedConfig, { encoding: 'utf-8' });
 

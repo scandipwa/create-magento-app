@@ -58,11 +58,6 @@ const createNginxConfig = {
                     'conf.d',
                     'default.conf'
                 ),
-                dirName: path.join(
-                    baseConfig.cacheDir,
-                    'nginx',
-                    'conf.d'
-                ),
                 template: nginx.configTemplate,
                 overwrite: true,
                 templateArgs: {
