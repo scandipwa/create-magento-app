@@ -2,7 +2,7 @@
 const runComposerCommand = require('../../../util/run-composer');
 
 const themeSymlink = {
-    title: 'Setting symbolic link for theme in composer',
+    title: 'Setting symbolic link for theme in composer.json',
     task: async ({ absoluteThemePath, magentoVersion }, task) => {
         try {
             await runComposerCommand(`config repo.scandipwa path ${absoluteThemePath}`, {

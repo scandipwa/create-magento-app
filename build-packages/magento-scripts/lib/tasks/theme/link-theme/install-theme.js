@@ -2,7 +2,7 @@
 const runComposerCommand = require('../../../util/run-composer');
 
 const installTheme = {
-    title: 'Installing theme',
+    title: 'Installing theme in composer.json',
     task: async ({ composerData, magentoVersion }, task) => {
         try {
             await runComposerCommand(`require ${composerData.name}`, {

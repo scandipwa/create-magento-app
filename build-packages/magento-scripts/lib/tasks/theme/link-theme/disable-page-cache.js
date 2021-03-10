@@ -2,7 +2,7 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
 const disablePageCache = {
-    title: 'Disabling full_page cache',
+    title: 'Disabling full_page cache in Magento',
     task: async ({ magentoVersion }, task) => {
         try {
             await runMagentoCommand('cache:disable full_page', {

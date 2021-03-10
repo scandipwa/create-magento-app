@@ -5,7 +5,7 @@ const runMagentoCommand = require('../../../util/run-magento');
  * TODO move this block inside theme folder as post installation command
  */
 const themeSubtask = {
-    title: 'Setting up redis for persisted queries',
+    title: 'Setting up redis configuration for persisted queries',
     task: async ({ ports }, task) => {
         try {
             await runMagentoCommand(`setup:config:set \

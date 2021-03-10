@@ -2,7 +2,7 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
 const upgradeMagento = {
-    title: 'Upgrading magento',
+    title: 'Running Magento setup:upgrade ...',
     task: async ({ magentoVersion }, task) => {
         try {
             await runMagentoCommand('setup:upgrade', {
