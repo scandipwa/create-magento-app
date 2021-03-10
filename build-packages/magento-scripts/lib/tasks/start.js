@@ -30,6 +30,8 @@ const start = {
         // get fresh ports
         getAvailablePorts,
         saveConfiguration,
+        // first install php is used to build php if it's missing
+        installPhp,
         {
             title: 'Install Composer, prepare FS & download images',
             task: (ctx, task) => task.newListr([
@@ -42,6 +44,8 @@ const start = {
                 ctx
             })
         },
+        // second is needed to check if php have missing extensions
+        // TODO rewrite to 2 separate tasks
         installPhp,
         installPrestissimo,
         installMagento,
