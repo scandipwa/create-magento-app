@@ -30,7 +30,6 @@ const start = {
         // get fresh ports
         getAvailablePorts,
         saveConfiguration,
-        installPhp,
         {
             title: 'Install Composer, prepare FS & download images',
             task: (ctx, task) => task.newListr([
@@ -43,6 +42,7 @@ const start = {
                 ctx
             })
         },
+        installPhp,
         installPrestissimo,
         installMagento,
         startServices,
