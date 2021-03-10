@@ -101,7 +101,7 @@ module.exports = ({ configuration, ssl }, config) => {
             mysql: {
                 _: 'MySQL',
                 healthCheck: {
-                    cmd: 'mysqladmin ping -h localhost'
+                    cmd: 'mysqladmin ping --silent'
                 },
                 ports: [`127.0.0.1:${ ports.mysql }:3306`],
                 mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
