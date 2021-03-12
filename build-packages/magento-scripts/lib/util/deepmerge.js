@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable prefer-object-spread,no-param-reassign */
 
 /**
  * Merge object deeply
@@ -10,7 +10,7 @@ function deepmerge(
     target,
     ...sources
 ) {
-    const targetCopy = Object.create(target);
+    const targetCopy = Object.assign({}, target);
     const isObject = (obj) => obj && typeof obj === 'object';
     sources.forEach((source) => Object.keys(source).forEach((key) => {
         const targetValue = targetCopy[key];
