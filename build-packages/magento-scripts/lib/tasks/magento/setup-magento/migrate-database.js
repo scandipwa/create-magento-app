@@ -2,7 +2,10 @@
 /* eslint-disable no-param-reassign */
 // const runComposerCommand = require('../../../util/run-composer');
 const runMagentoCommand = require('../../../util/run-magento');
+const adjustMagentoConfiguration = require('./adjust-magento-configuration');
+const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
+const upgradeMagento = require('./upgrade-magento');
 
 const migrateDatabase = {
     title: 'Migrating database',
@@ -19,7 +22,8 @@ const migrateDatabase = {
             task.output = 'No Magento is installed in DB!\nInstalling...';
 
             return task.newListr([
-                installMagento
+                installMagento,
+                configureElasticsearch
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -39,7 +43,8 @@ const migrateDatabase = {
         }
         case 1: {
             return task.newListr([
-                installMagento
+                installMagento,
+                configureElasticsearch
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -47,15 +52,16 @@ const migrateDatabase = {
             });
         }
         case 2: {
-            task.output = 'Upgrading magento';
-            await runMagentoCommand('setup:upgrade', {
-                magentoVersion,
-                callback: (t) => {
-                    task.output = t;
-                }
+            task.output = 'Migrating database: upgrade magento';
+            return task.newListr([
+                adjustMagentoConfiguration,
+                configureElasticsearch,
+                upgradeMagento
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                ctx
             });
-            task.title = 'Migrating database: upgraded!';
-            break;
         }
         default: {
         // TODO: handle these statuses ?

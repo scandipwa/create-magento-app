@@ -4,7 +4,7 @@ const { getCachedPorts } = require('../../../config/get-port-config');
 const themeSymlink = require('./theme-symlink');
 const installTheme = require('./install-theme');
 const themeSubtask = require('./theme-subtask');
-const upgradeMagento = require('./upgrade-magento');
+const upgradeMagento = require('../../magento/setup-magento/upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const checkThemeFolder = require('./check-theme-folder');
 

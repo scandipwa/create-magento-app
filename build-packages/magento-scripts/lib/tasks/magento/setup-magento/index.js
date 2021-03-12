@@ -1,7 +1,6 @@
 const flushRedisConfig = require('./flush-redis-config');
 const waitingForRedis = require('./waiting-for-redis');
 const migrateDatabase = require('./migrate-database');
-const configureElasticsearch = require('./configure-elasticsearch');
 const createAdmin = require('./create-admin');
 const setDeploymentMode = require('./set-deployment-mode');
 const setBaseUrl = require('./set-base-url');
@@ -16,11 +15,10 @@ const setupMagento = {
         flushRedisConfig,
         waitingForRedis,
         migrateDatabase,
-        configureElasticsearch,
-        createAdmin,
-        setDeploymentMode,
         setBaseUrl,
         setUrlRewrite,
+        createAdmin,
+        setDeploymentMode,
         postDeploy,
         disable2fa
     ], {
