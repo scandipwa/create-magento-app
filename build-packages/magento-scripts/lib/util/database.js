@@ -27,7 +27,7 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
                 UPDATE ${table}
                 SET value = ?
                 WHERE path = ?;
-            `, config.value, config.path);
+            `, [config.value, config.path]);
         }
 
         return;
@@ -46,7 +46,7 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
         return;
     }
 
-    const configsToUpdate = values.filter((p) => rows.find((row) => row.path === p.path).value === p.value);
+    const configsToUpdate = values.filter((p) => rows.find((row) => row.path === p.path).value !== p.value);
     for (const config of configsToUpdate) {
         await mysqlConnection.query(`
             UPDATE ${table}

@@ -4,6 +4,10 @@ const { getConfigFromMagentoVersion, defaultConfiguration, magento } = require('
  * Execute magento command
  * @param {String} command magento command
  * @param {Object} options
+ * @param {Boolean} options.logOutput Log output to console using logger
+ * @param {Boolean} options.withCode
+ * @param {String} options.cwd
+ * @param {() => {}} options.callback
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
  */

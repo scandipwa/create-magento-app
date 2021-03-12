@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 const openBrowser = require('../util/open-browser');
 
@@ -6,7 +7,7 @@ const { saveConfiguration } = require('../config/save-config');
 const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
 const { installComposer, installPrestissimo } = require('./composer');
 const { startServices, stopServices } = require('./docker');
-const { installPhp } = require('./php');
+const { installPhp, configurePhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
 const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
@@ -14,7 +15,7 @@ const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
 const { pullContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
-const { connectToMySQL } = require('./mysql');
+const { connectToMySQL, importDumpToMySQL } = require('./mysql');
 
 const start = {
     title: 'Starting project',
@@ -46,12 +47,24 @@ const start = {
         },
         // second is needed to check if php have missing extensions
         // TODO rewrite to 2 separate tasks
-        installPhp,
+        configurePhp,
         installPrestissimo,
         installMagento,
         startServices,
         connectToMySQL,
         setupMagento,
+        {
+            task: (ctx, task) => {
+                if (ctx.importDb) {
+                    return task.newListr([importDumpToMySQL, setupMagento], {
+                        concurrent: false,
+                        exitOnError: true,
+                        ctx,
+                        rendererOptions: { collapse: false }
+                    });
+                }
+            }
+        },
         startPhpFpm,
         {
             title: 'Open browser',

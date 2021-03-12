@@ -47,6 +47,14 @@ module.exports = (yargs) => {
                 default: false
             }
         );
+
+        yargs.option(
+            'import-db', {
+                describe: 'Import database dump to MySQL',
+                type: 'string'
+                // normalize: true
+            }
+        );
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,

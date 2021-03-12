@@ -14,7 +14,8 @@ const commands = [
     require('./lib/commands/stop'),
     require('./lib/commands/cleanup'),
     require('./lib/commands/status'),
-    require('./lib/commands/execute')
+    require('./lib/commands/execute'),
+    require('./lib/commands/import-db')
 ];
 
 process.title = 'magento-scripts';

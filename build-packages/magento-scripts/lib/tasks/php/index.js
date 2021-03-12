@@ -50,8 +50,7 @@ const installPhp = {
         // eslint-disable-next-line consistent-return
         return task.newListr([
             updatePhpBrew,
-            compile,
-            configure
+            compile
         ], {
             concurrent: false,
             exitOnError: true,
@@ -63,4 +62,4 @@ const installPhp = {
     }
 };
 
-module.exports = { installPhp };
+module.exports = { installPhp, compilePhp: compile, configurePhp: configure };
