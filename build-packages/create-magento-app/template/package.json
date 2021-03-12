@@ -10,7 +10,8 @@
         "logs": "magento-scripts logs",
         "link": "magento-scripts link",
         "status": "magento-scripts status",
-        "exec": "magento-scripts exec"
+        "exec": "magento-scripts exec",
+        "import-db": "magento-scripts import-db"
     },
     "scandipwa": {
         "type": "magento"
