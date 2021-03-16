@@ -7,6 +7,7 @@ const setBaseUrl = require('./set-base-url');
 const postDeploy = require('./post-deploy');
 const disable2fa = require('./disable-2fa');
 const setUrlRewrite = require('./set-url-rewrite');
+const updateEnvPHP = require('../../php/update-env-php');
 
 const setupMagento = {
     title: 'Setup magento',
@@ -14,6 +15,7 @@ const setupMagento = {
     task: async (ctx, task) => task.newListr([
         flushRedisConfig,
         waitingForRedis,
+        updateEnvPHP,
         migrateDatabase,
         setBaseUrl,
         setUrlRewrite,
