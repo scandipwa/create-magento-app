@@ -32,7 +32,12 @@ const stopPhpFpmTask = {
             }
         } catch (e) {
             if (e.toLowerCase().includes('no such process')) {
-                await fs.promises.unlink(php.fpmPidFilePath);
+                try {
+                    await fs.promises.unlink(php.fpmPidFilePath);
+                } catch (e) {
+                    //
+                }
+
                 return;
             }
 
