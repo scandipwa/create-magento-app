@@ -8,7 +8,8 @@ const updateEnvPHP = {
         await runPhpCode(`-f ${ path.join(__dirname, 'update-env.php') }`, {
             callback: (t) => {
                 task.output = t;
-            }
+            },
+            throwNonZeroCode: true
         });
     }
 };
