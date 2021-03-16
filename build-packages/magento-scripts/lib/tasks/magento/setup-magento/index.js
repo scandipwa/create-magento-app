@@ -8,6 +8,8 @@ const postDeploy = require('./post-deploy');
 const disable2fa = require('./disable-2fa');
 const setUrlRewrite = require('./set-url-rewrite');
 const updateEnvPHP = require('../../php/update-env-php');
+const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
+const magentoTask = require('../../../util/magento-task');
 
 const setupMagento = {
     title: 'Setup magento',
@@ -19,10 +21,12 @@ const setupMagento = {
         migrateDatabase,
         setBaseUrl,
         setUrlRewrite,
+        increaseAdminSessionLifetime,
         createAdmin,
         setDeploymentMode,
         postDeploy,
-        disable2fa
+        disable2fa,
+        magentoTask('cache:flush')
     ], {
         concurrent: false,
         exitOnError: true,

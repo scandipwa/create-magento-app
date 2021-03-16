@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
 
 module.exports = {
@@ -18,12 +20,10 @@ module.exports = {
         });
 
         if (magentoConfiguration.mode === 'production') {
-            await runMagentoCommand('setup:di:compile', {
-                magentoVersion
-            });
-            await runMagentoCommand('setup:static-content:deploy', {
-                magentoVersion
-            });
+            return task.newListr([
+                magentoTask('setup:di:compile'),
+                magentoTask('setup:static-content:deploy')
+            ]);
         }
     }
 };

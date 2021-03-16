@@ -17,8 +17,5 @@ module.exports = {
         await runMagentoCommand('module:disable Magento_TwoFactorAuth', {
             magentoVersion
         });
-        await runMagentoCommand('cache:flush', {
-            magentoVersion
-        });
     }
 };
