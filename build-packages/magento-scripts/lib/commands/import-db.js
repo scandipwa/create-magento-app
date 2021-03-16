@@ -20,9 +20,6 @@ module.exports = (yargs) => {
             try {
                 await tasks.run();
 
-                logger.logN();
-                logger.warn(`If you had theme setup you might want to re-link theme by running command ${ logger.style.command('link') }!`);
-                logger.warn(`Also, it's recommended to run ${ logger.style.command('start') } properly configure setup!`);
                 process.exit(0);
             } catch (e) {
                 logger.error(e.message || e);
