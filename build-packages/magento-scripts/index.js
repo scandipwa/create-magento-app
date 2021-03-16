@@ -4,7 +4,7 @@ const yargs = require('yargs');
 const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
-const isGlobal = require('./lib/util/is-global');
+const isInstalledGlobally = require('is-installed-globally');
 
 const commands = [
     require('./lib/commands/link'),
@@ -22,14 +22,12 @@ process.title = 'magento-scripts';
 
 (async () => {
     const { version: currentVersion, name } = require('./package.json');
-
     try {
         const latestVersion = await getLatestVersion(name);
 
         if (semver.gt(latestVersion, currentVersion, { includePrerelease: true })) {
             const isLatestVersionPreRelease = Boolean(semver.prerelease(latestVersion));
             const isCurrentVersionPreRelease = Boolean(semver.prerelease(currentVersion));
-            const isInstalledGlobally = isGlobal();
 
             let warnMessage = [];
 
