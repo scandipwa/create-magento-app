@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable max-len,no-param-reassign */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
@@ -21,6 +21,10 @@ const importDumpToMySQL = {
         try {
             await execAsyncSpawn(
                 `docker cp ${ctx.importDb} ${mysql.name}:/dump.sql`
+            );
+
+            await execAsyncSpawn(
+                `docker exec ${mysql.name} bash -c 'mysql -uroot -p${mysql.env.MYSQL_ROOT_PASSWORD} -e "SET GLOBAL log_bin_trust_function_creators = 1;"'`
             );
 
             await execAsyncSpawn(
