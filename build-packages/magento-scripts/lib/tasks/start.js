@@ -15,7 +15,12 @@ const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
 const { pullContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
-const { connectToMySQL, importDumpToMySQL, fixDB } = require('./mysql');
+const {
+    connectToMySQL,
+    importDumpToMySQL,
+    fixDB,
+    restoreThemeConfig
+} = require('./mysql');
 
 const start = {
     title: 'Starting project',
@@ -56,7 +61,13 @@ const start = {
         {
             task: (ctx, task) => {
                 if (ctx.importDb) {
-                    return task.newListr([importDumpToMySQL, fixDB, setupMagento], {
+                    return task.newListr([
+                        restoreThemeConfig,
+                        importDumpToMySQL,
+                        fixDB,
+                        restoreThemeConfig,
+                        setupMagento
+                    ], {
                         concurrent: false,
                         exitOnError: true,
                         ctx,

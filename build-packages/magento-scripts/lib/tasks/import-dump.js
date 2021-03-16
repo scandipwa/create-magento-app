@@ -2,7 +2,14 @@
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { getCachedPorts } = require('../config/get-port-config');
 const { checkRequirements } = require('./requirements');
-const { importDumpToMySQL, fixDB, connectToMySQL } = require('./mysql');
+const {
+    importDumpToMySQL,
+    fixDB,
+    connectToMySQL,
+    dumpThemeConfig,
+    restoreThemeConfig
+} = require('./mysql');
+const { setupMagento } = require('./magento');
 
 const importDump = {
     title: 'Importing Database Dump',
@@ -12,9 +19,12 @@ const importDump = {
             checkRequirements,
             getMagentoVersionConfig,
             getCachedPorts,
-            importDumpToMySQL,
             connectToMySQL,
-            fixDB
+            dumpThemeConfig,
+            importDumpToMySQL,
+            fixDB,
+            restoreThemeConfig,
+            setupMagento
         ], {
             concurrent: false,
             exitOnError: true,
