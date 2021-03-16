@@ -37,9 +37,12 @@ const migrateDatabase = {
 
         switch (code) {
         case 0: {
-            // No upgrade/install is needed
-            task.skip();
-            break;
+            // no setup is needed, but still to be sure configure ES
+            return task.newListr([configureElasticsearch], {
+                concurrent: false,
+                exitOnError: true,
+                ctx
+            });
         }
         case 1: {
             return task.newListr([
