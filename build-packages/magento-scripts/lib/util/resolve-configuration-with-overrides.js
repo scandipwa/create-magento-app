@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { configFileSchema } = require('./config-file-validator');
 const deepmerge = require('./deepmerge');
 const pathExists = require('./path-exists');
 const setConfigFile = require('./set-config');
@@ -11,6 +12,12 @@ const configJSFilePath = path.join(process.cwd(), 'cma.js');
 const resolveConfigurationWithOverrides = async (configuration, { templateDir, cacheDir }) => {
     if (await pathExists(configJSFilePath)) {
         const userConfiguration = require(configJSFilePath);
+
+        try {
+            await configFileSchema.validateAsync(userConfiguration);
+        } catch (e) {
+            throw new Error(`Configuration file validation error!\n\n${e}`);
+        }
 
         const overridenConfiguration = deepmerge(configuration, userConfiguration);
 
