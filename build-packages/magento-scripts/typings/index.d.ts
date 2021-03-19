@@ -16,9 +16,8 @@ export interface NginxConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface PHPExtension {
+export interface PHPExtension extends Record<string, unknown> {
     version: string
-    [key: string]: unknown
 }
 
 export interface PHPExtensions {
@@ -47,7 +46,7 @@ export interface PHPConfiguration {
     /**
      * Extensions for PHP
      */
-    extensions: Record<string, unknown> & PHPExtensions
+    extensions: PHPExtensions & Record<string, PHPExtension>
 }
 export interface SSLConfiguration {
     /**
@@ -111,8 +110,19 @@ export interface CMAConfiguration {
         email: string
         user: string
         password: string
+        /**
+         * Magento admin panel url.
+         *
+         * @default '/admin'
+         */
         adminuri: string
-        mode: string
+
+        /**
+         * One of found magento modes:`'default' | 'developer' | 'production' | 'maintenance'`
+         *
+         * @default 'developer'
+         */
+        mode: 'default' | 'developer' | 'production' | 'maintenance'
     }
     /**
      *  Custom host for website base url
