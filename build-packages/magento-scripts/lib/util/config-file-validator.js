@@ -16,7 +16,7 @@ const versionValidator = (value, helpers) => {
     const isValid = semver.valid(value);
 
     if (!isValid) {
-        return helpers.error('string.invalid');
+        return helpers.error('any.invalid');
     }
 
     return undefined;
@@ -50,6 +50,7 @@ const phpExtensionConfiguration = Joi.object()
         Joi.object({
             version: Joi.string().optional().custom(versionValidator)
         })
+            .unknown()
     );
 
 /**

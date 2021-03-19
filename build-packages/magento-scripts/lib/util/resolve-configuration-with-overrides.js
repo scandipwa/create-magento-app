@@ -16,7 +16,7 @@ const resolveConfigurationWithOverrides = async (configuration, { templateDir, c
         try {
             await configFileSchema.validateAsync(userConfiguration);
         } catch (e) {
-            throw new Error(`Configuration file validation error!\n\n${e}`);
+            throw new Error(`Configuration file validation error!\n\n${e.message}`);
         }
 
         const overridenConfiguration = deepmerge(configuration, userConfiguration);
