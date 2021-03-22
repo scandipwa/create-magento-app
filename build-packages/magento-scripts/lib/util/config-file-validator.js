@@ -48,7 +48,7 @@ const phpExtensionConfiguration = Joi.object()
     .pattern(
         Joi.string(),
         Joi.object({
-            version: Joi.string().optional().custom(versionValidator)
+            version: Joi.string().optional()
         })
             .unknown()
     );
@@ -66,7 +66,7 @@ const phpConfigurationSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
  */
 const nginxConfigurationSchema = Joi.object({
-    version: Joi.string().optional().custom(versionValidator),
+    version: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
 
@@ -74,7 +74,7 @@ const nginxConfigurationSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').ServiceWithVersion>}
  */
 const serviceConfigurationSchema = Joi.object({
-    version: Joi.string().optional().custom(versionValidator)
+    version: Joi.string().optional()
 });
 
 /**
