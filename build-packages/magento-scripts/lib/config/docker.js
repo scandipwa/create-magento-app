@@ -1,7 +1,8 @@
 const path = require('path');
 const macosVersion = require('macos-version');
+const { isIpAddress } = require('../util/ip');
 
-module.exports = ({ configuration, ssl }, config) => {
+module.exports = ({ configuration, ssl, host }, config) => {
     const {
         nginx,
         redis,
@@ -55,12 +56,14 @@ module.exports = ({ configuration, ssl }, config) => {
         }
     };
 
+    const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
+
     const getContainers = (ports = {}) => {
         const dockerConfig = {
             nginx: {
                 _: 'Nginx',
                 ports: [
-                    `127.0.0.1:${ ports.app }:80`
+                    `${networkToBindTo}:${ ports.app }:80`
                 ],
                 healthCheck: {
                     cmd: 'service nginx status'

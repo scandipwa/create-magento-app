@@ -4,6 +4,7 @@ const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 const macosVersion = require('macos-version');
 const pathExists = require('../../util/path-exists');
+const { isIpAddress } = require('../../util/ip');
 
 const createNginxConfig = {
     title: 'Setting nginx config',
@@ -19,7 +20,8 @@ const createNginxConfig = {
             configuration: {
                 nginx
             },
-            ssl
+            ssl,
+            host
         } = overridenConfiguration;
 
         if (ssl.enabled) {
@@ -50,6 +52,8 @@ const createNginxConfig = {
             );
         }
 
+        const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
+
         try {
             await setConfigFile({
                 configPathname: path.join(
@@ -65,7 +69,8 @@ const createNginxConfig = {
                     mageRoot: baseConfig.magentoDir,
                     hostMachine: macosVersion.isMacOS ? 'host.docker.internal' : '127.0.0.1',
                     hostPort: macosVersion.isMacOS ? 80 : ports.app,
-                    config: overridenConfiguration
+                    config: overridenConfiguration,
+                    networkToBindTo
                 }
             });
         } catch (e) {
