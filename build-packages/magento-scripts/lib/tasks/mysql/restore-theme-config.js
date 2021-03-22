@@ -9,12 +9,14 @@ const restoreThemeConfig = {
         const { themeIdConfig, themes } = themeDump;
 
         // restore theme config
-        await updateTableValues('core_config_data', [
-            {
-                path: themeIdConfig.path,
-                value: themeIdConfig.value
-            }
-        ], { mysqlConnection, task });
+        if (themeIdConfig) {
+            await updateTableValues('core_config_data', [
+                {
+                    path: themeIdConfig.path,
+                    value: themeIdConfig.value
+                }
+            ], { mysqlConnection, task });
+        }
 
         // restore themes
         const themeKeys = Object.keys(themes[0]);
