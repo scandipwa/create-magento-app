@@ -55,7 +55,6 @@ const migrateDatabase = {
             });
         }
         case 2: {
-            task.output = 'Migrating database: upgrade magento';
             return task.newListr([
                 adjustMagentoConfiguration,
                 configureElasticsearch,

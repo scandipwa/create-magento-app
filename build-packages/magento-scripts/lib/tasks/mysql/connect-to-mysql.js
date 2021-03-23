@@ -3,7 +3,7 @@ const mysql = require('mysql2/promise');
 const sleep = require('../../util/sleep');
 
 const connectToMySQL = {
-    title: 'Connect to MySQL server',
+    title: 'Connecting to MySQL server',
     task: async (ctx, task) => {
         const { config: { docker }, ports } = ctx;
         const { mysql: { env } } = docker.getContainers();
@@ -32,7 +32,7 @@ const connectToMySQL = {
             throw new Error('Unable to connect to MySQL server. Check your server configuration!');
         }
 
-        task.title = `MySQL connected${tries > 2 ? ` after ${tries} tries.` : '!'}`;
+        task.title = `MySQL server connected${tries > 2 ? ` after ${tries} tries.` : '!'}`;
     },
     options: {
         bottomBar: 10

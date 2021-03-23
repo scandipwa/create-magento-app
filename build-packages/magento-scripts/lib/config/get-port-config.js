@@ -14,7 +14,7 @@ const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
  * Get available ports on the system
  */
 const getAvailablePorts = {
-    title: 'Get available ports',
+    title: 'Getting available ports',
     task: async (ctx) => {
         let ports;
 
