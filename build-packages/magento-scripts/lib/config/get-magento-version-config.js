@@ -5,12 +5,12 @@ const getInstalledMagentoVersion = require('../util/get-installed-magento-versio
 const sleep = require('../util/sleep');
 
 const getMagentoVersion = {
-    // title: 'Getting magento version (300 sec left...)',
-    title: 'Loading Magento version',
+    // title: 'Loading Magento version',
     task: async (ctx, task) => {
         let { magentoVersion } = ctx;
 
         if (!magentoVersion) {
+            task.title = 'Loading Magento version';
             try {
                 magentoVersion = await getInstalledMagentoVersion();
             } catch (e) {
@@ -53,10 +53,10 @@ const getMagentoVersion = {
                     promptSkipper = true;
                 }
             }
+            task.title = `Using Magento ${magentoVersion}`;
         }
 
         ctx.magentoVersion = magentoVersion;
-        task.title = `Using Magento ${magentoVersion}`;
 
         ctx.config = await getConfigFromMagentoVersion(magentoVersion);
     }
