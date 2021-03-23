@@ -59,39 +59,30 @@ const start = {
         connectToMySQL,
         setupMagento,
         {
-            task: (ctx, task) => {
-                if (ctx.importDb) {
-                    return task.newListr([
-                        restoreThemeConfig,
-                        importDumpToMySQL,
-                        fixDB,
-                        restoreThemeConfig,
-                        setupMagento
-                    ], {
-                        concurrent: false,
-                        exitOnError: true,
-                        ctx,
-                        rendererOptions: { collapse: false }
-                    });
-                }
-            }
+            enabled: (ctx) => ctx.importDb,
+            task: (ctx, task) => task.newListr([
+                restoreThemeConfig,
+                importDumpToMySQL,
+                fixDB,
+                restoreThemeConfig,
+                setupMagento
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                ctx,
+                rendererOptions: { collapse: false }
+            })
         },
         startPhpFpm,
         {
-            title: 'Open browser',
-            task: async ({ ports, noOpen, config: { overridenConfiguration: { host, ssl } } }, task) => {
-                if (noOpen) {
-                    task.skip();
-                    return;
-                }
-
+            title: 'Opening browser',
+            enabled: ({ noOpen }) => noOpen,
+            task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
                 openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
             }
         },
         {
-            task: (ctx) => {
-                ctx.mysqlConnection.destroy();
-            }
+            task: (ctx) => ctx.mysqlConnection.destroy()
         }
     ], {
         concurrent: false,
