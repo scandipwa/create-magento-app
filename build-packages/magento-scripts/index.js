@@ -20,35 +20,40 @@ const commands = [
 
 process.title = 'magento-scripts';
 
+const newVersionIsAPatch = (latestVersion, currentVersion) => {
+    const latestVersionParsed = semver.parse(latestVersion);
+    const currentVersionParsed = semver.parse(currentVersion);
+
+    return latestVersionParsed.major === currentVersionParsed.major
+    && latestVersionParsed.minor === currentVersionParsed.minor
+    && latestVersionParsed.patch !== currentVersionParsed.patch;
+};
+
 (async () => {
     const { version: currentVersion, name } = require('./package.json');
     try {
         const latestVersion = await getLatestVersion(name);
 
-        if (semver.gt(latestVersion, currentVersion, { includePrerelease: true })) {
-            const isLatestVersionPreRelease = Boolean(semver.prerelease(latestVersion));
-            const isCurrentVersionPreRelease = Boolean(semver.prerelease(currentVersion));
+        if (semver.gt(latestVersion, currentVersion)) {
+            const isNewVersionAPath = newVersionIsAPatch(latestVersion, currentVersion);
 
-            let warnMessage = [];
+            let message = [];
 
-            if (!isLatestVersionPreRelease) {
-                warnMessage = [
-                    `${ isInstalledGlobally ? 'Global module' : 'Module' } ${ logger.style.misc(name) } is out-dated.`,
+            if (isNewVersionAPath) {
+                message = [
+                    `A patch for ${ logger.style.misc(name) } is available!`,
+                    `We recommend to update to latest version ${ logger.style.misc(latestVersion) }!`,
+                    `-> ${ logger.style.command(`npm i ${ isInstalledGlobally ? '-g ' : '' }${ name }@${ latestVersion }`) }`
+                ];
+            } else {
+                message = [
+                    `${ isInstalledGlobally ? 'Global module' : 'Module' } ${ logger.style.misc(name) } (${currentVersion}) is out-dated.`,
                     `Please upgrade it to latest version ${ logger.style.misc(latestVersion) }.`,
                     `You can do it by running the following command: ${ logger.style.command(`npm i ${ isInstalledGlobally ? '-g ' : '' }${ name }@${ latestVersion }`) }.`
                 ];
-            } else {
-                warnMessage = [
-                    `${ isInstalledGlobally ? 'Global module' : 'Module' } ${ logger.style.misc(name) } have a pre-release version ${ logger.style.misc(latestVersion) }`,
-                    `You are currently using ${!isCurrentVersionPreRelease ? 'stable' : ''} version ${ logger.style.misc(currentVersion) }.`,
-                    `If you want to participate in testing of next stable release you can install prerelease version ${ logger.style.misc(latestVersion) } using the following command:`,
-                    `${ logger.style.command(`npm i ${ isInstalledGlobally ? '-g ' : '' }${ name }@${ latestVersion }`) }.`,
-                    '',
-                    `Waiting for your feedback at ${ logger.style.link('https://github.com/scandipwa/create-magento-app/issues') }!`
-                ];
             }
 
-            logger.warn(...warnMessage);
+            logger.warn(...message);
         }
     } catch (e) {
         logger.warn(`Package ${ logger.style.misc(name) } is not yet published.`);
