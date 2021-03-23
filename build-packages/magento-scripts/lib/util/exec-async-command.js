@@ -41,7 +41,9 @@ const execAsyncSpawn = (command, {
         let stdout = '';
         function addLine(data) {
             stdout += data;
-            callback(data.toString());
+            data.toString().split().map((str) => str.trim()).forEach((str) => {
+                callback(str);
+            });
             if (logOutput && verbose) {
                 data.toString().split('\n').filter(Boolean).forEach((line) => {
                     logger.log(line);
