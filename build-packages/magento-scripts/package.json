@@ -21,17 +21,17 @@
         "x64"
     ],
     "dependencies": {
-        "@scandipwa/scandipwa-dev-utils": "^0.0.20",
+        "@scandipwa/scandipwa-dev-utils": "^0.0.25",
         "conf": "^9.0.2",
         "enquirer": "2.3.6",
         "eta": "^1.12.1",
         "getos": "^3.2.1",
         "is-installed-globally": "^0.4.0",
         "joi": "^17.4.0",
-        "listr2": "^3.3.1",
-        "macos-version": "^5.2.0",
+        "listr2": "^3.4.3",
+        "macos-version": "^5.2.1",
         "mysql2": "^2.2.5",
-        "semver": "^7.3.4",
+        "semver": "^7.3.5",
         "yargs": "^16.2.0"
     },
     "publishConfig": {
