@@ -5,7 +5,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const updatePhpBrew = {
-    title: 'Update PHPBrew known php versions',
+    title: 'Updating PHPBrew PHP versions',
     task: async ({ config: { php } }, task) => {
         try {
             const knownPhpVersions = await execAsyncSpawn('phpbrew known');

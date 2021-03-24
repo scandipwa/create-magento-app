@@ -52,7 +52,7 @@ const getAvailablePorts = {
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getCachedPorts = {
-    title: 'Get cached ports',
+    title: 'Getting cached ports',
     task: async (ctx) => {
         let ports;
 
