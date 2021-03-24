@@ -1,8 +1,9 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable consistent-return,no-param-reassign */
 const os = require('os');
 const macosVersion = require('macos-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { platforms, darwinMinimalVersion } = require('../../config');
+const macDependenciesCheck = require('./dependency/mac');
 
 const checkPlatform = {
     title: 'Checking platform',
@@ -27,6 +28,10 @@ const checkPlatform = {
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
 
         task.title = `Running on ${currentPlatform} ${ctx.platformVersion}`;
+
+        if (currentPlatform === 'darwin') {
+            return task.newListr([macDependenciesCheck]);
+        }
     }
 };
 
