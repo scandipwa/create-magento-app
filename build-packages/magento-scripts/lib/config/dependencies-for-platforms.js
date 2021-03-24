@@ -33,7 +33,8 @@ const dependenciesForPlatforms = {
         'libjpeg-turbo-devel',
         'libpng-devel',
         'gd-devel',
-        'libicu libicu-devel',
+        'libicu',
+        'libicu-devel',
         'libzip-devel',
         'libtool-ltdl-devel',
         'oniguruma-devel'
@@ -55,7 +56,7 @@ const dependenciesForPlatforms = {
         'libsqlite3-dev',
         'libssl-dev',
         'libxml2-dev',
-        'libxslt-dev',
+        ['libxslt-dev', 'libxslt1-dev'],
         'libonig-dev',
         'php-cli',
         'php-bz2',

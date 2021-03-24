@@ -18,14 +18,16 @@ const getInstallDependenciesCommand = async () => {
         case 'Manjaro': {
             return `pamac install ${ dependenciesForPlatforms['Arch Linux'].join(' ') }`;
         }
-        case 'Fedora':
+        case 'Fedora': {
+            return `yum install ${ dependenciesForPlatforms.Fedora.join(' ')}`;
+        }
         case 'CentOS': {
             return `yum install ${ ['--enablerepo=PowerTools', ...dependenciesForPlatforms.Fedora].join(' ')}`;
         }
         case 'Linux Mint':
         case 'Ubuntu':
         default: {
-            return `apt-get install ${ dependenciesForPlatforms.Ubuntu.join(' ')}`;
+            return `apt-get install ${ dependenciesForPlatforms.Ubuntu.map((dep) => (Array.isArray(dep) ? dep[0] : dep)).join(' ')}`;
         }
         }
     }
