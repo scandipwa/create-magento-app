@@ -12,6 +12,9 @@ const getProcessId = async (fpmPidFilePath) => {
     return null;
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const stopPhpFpmTask = {
     title: 'Stopping php-fpm',
     task: async ({ config: { php } }, task) => {

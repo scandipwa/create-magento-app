@@ -4,6 +4,9 @@ const { getConfigFromMagentoVersion } = require('.');
 const getInstalledMagentoVersion = require('../util/get-installed-magento-version');
 const sleep = require('../util/sleep');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
 const getMagentoVersion = {
     // title: 'Loading Magento version',
     task: async (ctx, task) => {

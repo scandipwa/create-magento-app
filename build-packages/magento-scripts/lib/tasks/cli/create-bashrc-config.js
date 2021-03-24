@@ -2,6 +2,9 @@ const path = require('path');
 const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createBashrcConfigFile = {
     title: 'Setting Bashrc config',
     task: async ({ config: { php } }) => {

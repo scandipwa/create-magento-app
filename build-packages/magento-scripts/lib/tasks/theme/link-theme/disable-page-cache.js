@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../../util/run-magento');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const disablePageCache = {
     title: 'Disabling full_page cache in Magento',
     task: async ({ magentoVersion }, task) => {

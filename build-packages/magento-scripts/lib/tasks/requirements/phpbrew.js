@@ -2,6 +2,9 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const checkPhpbrew = {
     title: 'Checking phpbrew',
     task: async (ctx, task) => {

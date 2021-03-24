@@ -3,6 +3,9 @@ const path = require('path');
 const pathExists = require('../../util/path-exists');
 const runPhpCode = require('../../util/run-php');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const updateEnvPHP = {
     title: 'Updating env.php',
     task: async (ctx, task) => {

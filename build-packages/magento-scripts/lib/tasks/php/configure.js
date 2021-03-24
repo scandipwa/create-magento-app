@@ -22,6 +22,9 @@ const getInstalledModules = async ({ php }) => {
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {});
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const configure = {
     title: 'Configuring PHP extensions',
     task: async ({ config: { php } }, task) => {

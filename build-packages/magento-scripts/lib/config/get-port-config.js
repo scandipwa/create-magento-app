@@ -12,6 +12,7 @@ const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
 
 /**
  * Get available ports on the system
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getAvailablePorts = {
     title: 'Getting available ports',
@@ -47,6 +48,9 @@ const getAvailablePorts = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
 const getCachedPorts = {
     title: 'Get cached ports',
     task: async (ctx) => {

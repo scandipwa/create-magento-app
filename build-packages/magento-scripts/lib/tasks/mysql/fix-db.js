@@ -3,6 +3,9 @@ const configureElasticsearch = require('../magento/setup-magento/configure-elast
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users');
 const indexProducts = require('../magento/setup-magento/index-products');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const fixDB = {
     title: 'Fixing database',
     task: async (ctx, task) => task.newListr([

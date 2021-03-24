@@ -1,5 +1,8 @@
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createNetwork = {
     title: 'Deploying docker network',
     task: async ({ config: { docker } }, task) => {
@@ -14,6 +17,9 @@ const createNetwork = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const removeNetwork = {
     title: 'Remove docker network',
     task: async ({ config: { docker } }, task) => {

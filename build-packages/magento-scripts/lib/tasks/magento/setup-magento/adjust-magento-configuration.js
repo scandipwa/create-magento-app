@@ -1,3 +1,6 @@
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const adjustMagentoConfiguration = {
     title: 'Adjusting Magento Database Configuration',
     task: async (ctx) => {

@@ -3,6 +3,7 @@ const runMagentoCommand = require('../../../util/run-magento');
 
 /**
  * TODO move this block inside theme folder as post installation command
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const themeSubtask = {
     title: 'Setting up redis configuration for persisted queries',

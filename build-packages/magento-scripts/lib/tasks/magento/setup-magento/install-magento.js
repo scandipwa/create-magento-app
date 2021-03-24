@@ -1,6 +1,9 @@
 /* eslint-disable no-await-in-loop,no-param-reassign */
 const runMagentoCommand = require('../../../util/run-magento');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const installMagento = {
     title: 'Installing magento...',
     task: async (ctx, task) => {

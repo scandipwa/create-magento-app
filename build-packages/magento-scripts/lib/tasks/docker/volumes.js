@@ -14,6 +14,9 @@ const create = ({
     return execAsyncSpawn(`${ command } ${ name }`);
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createVolumes = {
     title: 'Creating volumes',
     task: async ({ config: { docker } }, task) => {
@@ -32,6 +35,9 @@ const createVolumes = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const removeVolumes = {
     title: 'Removing volumes',
     task: async ({ config: { docker } }, task) => {

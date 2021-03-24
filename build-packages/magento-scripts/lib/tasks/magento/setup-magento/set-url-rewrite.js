@@ -2,6 +2,9 @@
 
 const { updateTableValues } = require('../../../util/database');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const setUrlRewrite = {
     title: 'Setting up url-rewrites',
     task: async ({ mysqlConnection }, task) => {

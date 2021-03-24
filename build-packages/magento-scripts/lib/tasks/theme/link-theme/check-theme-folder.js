@@ -3,6 +3,9 @@ const path = require('path');
 const getJsonfileData = require('../../../util/get-jsonfile-data');
 const pathExists = require('../../../util/path-exists');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const checkThemeFolder = {
     title: 'Checking theme folder',
     task: async (ctx) => {

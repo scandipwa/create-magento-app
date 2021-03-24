@@ -1,6 +1,9 @@
 const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createPhpConfig = {
     title: 'Setting PHP config',
     task: async ({ config: { php }, debug, ports }) => {

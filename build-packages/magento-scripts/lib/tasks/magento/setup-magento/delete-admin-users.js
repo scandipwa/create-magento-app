@@ -1,3 +1,6 @@
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const deleteAdminUsers = {
     title: 'Deleting old admin users',
     task: async (ctx) => {

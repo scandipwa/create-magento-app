@@ -1,5 +1,8 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const checkComposer = {
     title: 'Checking composer',
     task: () => {

@@ -2,6 +2,9 @@
 
 const { updateTableValues } = require('../../../util/database');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 module.exports = {
     title: 'Setting baseurl and secure baseurl',
     task: async (ctx, task) => {

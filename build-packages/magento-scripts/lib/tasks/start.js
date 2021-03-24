@@ -22,6 +22,9 @@ const {
     restoreThemeConfig
 } = require('./mysql');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const start = {
     title: 'Starting project',
     task: async (ctx, task) => task.newListr([

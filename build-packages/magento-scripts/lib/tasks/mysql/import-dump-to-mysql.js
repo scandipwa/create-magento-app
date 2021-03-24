@@ -2,6 +2,9 @@
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const importDumpToMySQL = {
     title: 'Importing Database Dump To MySQL',
     task: async (ctx, task) => {

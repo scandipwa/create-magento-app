@@ -14,6 +14,10 @@ const getDockerVersion = async () => {
 
     return null;
 };
+
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const checkDocker = {
     title: 'Checking docker',
     task: async (ctx, task) => {

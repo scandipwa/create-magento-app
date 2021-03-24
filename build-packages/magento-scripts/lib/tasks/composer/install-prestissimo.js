@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 const runComposerCommand = require('../../util/run-composer');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const prestissimoInstall = {
     title: 'Installing Prestissimo',
     task: async (ctx, task) => {

@@ -9,6 +9,9 @@ const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const installMagento = {
     title: 'Installing Magento',
     task: async (ctx, task) => {

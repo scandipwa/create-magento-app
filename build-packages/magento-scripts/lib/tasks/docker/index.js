@@ -2,6 +2,9 @@ const containers = require('./containers');
 const network = require('./network');
 const volumes = require('./volumes');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const startServices = {
     title: 'Starting docker services',
     task: async (ctx, task) => task.newListr([
@@ -28,6 +31,9 @@ const startServices = {
     })
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const stopServices = {
     title: 'Stopping Docker services',
     task: async (ctx, task) => task.newListr([

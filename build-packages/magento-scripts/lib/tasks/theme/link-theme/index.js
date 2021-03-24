@@ -8,6 +8,9 @@ const upgradeMagento = require('../../magento/setup-magento/upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const checkThemeFolder = require('./check-theme-folder');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const linkTheme = {
     title: 'Linking theme',
     task: async (ctx, task) => {

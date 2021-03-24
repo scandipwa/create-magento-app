@@ -7,6 +7,9 @@ const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
 const upgradeMagento = require('./upgrade-magento');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const migrateDatabase = {
     title: 'Migrating database',
     task: async (ctx, task) => {

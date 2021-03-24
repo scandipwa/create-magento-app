@@ -6,6 +6,9 @@ const compile = require('./compile');
 const configure = require('./configure');
 const updatePhpBrew = require('./update-phpbrew');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const installPhp = {
     title: 'Install PHP',
     task: async (ctx, task) => {

@@ -3,6 +3,9 @@ const runMagentoCommand = require('../../util/run-magento');
 const { baseConfig: { magentoDir } } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const uninstallMagento = {
     title: 'Uninstall Magento App',
     task: async (ctx, task) => {

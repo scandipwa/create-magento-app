@@ -18,6 +18,9 @@ const createComposerDir = async ({ composer }) => {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const installComposer = {
     title: 'Installing composer',
     task: async (ctx, task) => {

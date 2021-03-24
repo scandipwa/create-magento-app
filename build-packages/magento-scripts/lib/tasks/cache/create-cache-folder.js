@@ -3,6 +3,9 @@ const fs = require('fs');
 const { baseConfig } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createCacheFolder = {
     title: 'Creating cache folder',
     task: async (ctx, task) => {

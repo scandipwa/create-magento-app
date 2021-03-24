@@ -3,6 +3,9 @@ const checkPhpbrew = require('./phpbrew');
 const checkComposer = require('./composer');
 const checkDocker = require('./docker');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const checkRequirements = {
     title: 'Checking requirements',
     task: (ctx, task) => task.newListr([

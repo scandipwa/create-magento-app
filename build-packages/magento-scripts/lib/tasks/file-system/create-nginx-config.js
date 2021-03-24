@@ -6,6 +6,9 @@ const macosVersion = require('macos-version');
 const pathExists = require('../../util/path-exists');
 const { isIpAddress } = require('../../util/ip');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const createNginxConfig = {
     title: 'Setting nginx config',
     task: async (ctx) => {

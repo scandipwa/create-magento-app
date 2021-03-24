@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const startPhpFpm = {
     title: 'Starting php-fpm',
     task: async ({ config: { php } }, task) => {

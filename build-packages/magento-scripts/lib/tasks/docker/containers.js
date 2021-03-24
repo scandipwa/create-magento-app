@@ -60,6 +60,9 @@ const stop = async (containers) => {
 
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const pullContainers = {
     title: 'Pulling container images',
     task: async ({ config: { docker } }, task) => {
@@ -88,6 +91,9 @@ const pullContainers = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const startContainers = {
     title: 'Starting containers',
     task: async ({ ports, config: { docker } }, task) => {
@@ -112,6 +118,9 @@ const startContainers = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const stopContainers = {
     title: 'Stopping containers',
     task: async ({ ports, config: { docker } }, task) => {
@@ -137,6 +146,9 @@ const getContainerStatus = async (containerName) => {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const statusContainers = {
     task: async (ctx) => {
         const { config: { docker }, ports } = ctx;

@@ -33,6 +33,9 @@ const magentoFiles = [
     'vendor'
 ];
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const removeMagento = {
     title: 'Remove magento application folder',
     task: async (ctx, task) => {

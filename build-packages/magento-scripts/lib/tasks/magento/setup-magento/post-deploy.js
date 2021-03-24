@@ -1,5 +1,8 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 module.exports = {
     title: 'Disabling maintenance mode',
     task: async ({ magentoVersion }, task) => {

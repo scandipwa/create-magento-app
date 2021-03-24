@@ -1,5 +1,8 @@
 const { updateTableValues } = require('../../../util/database');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const increaseAdminSessionLifetime = {
     title: 'Increase admin session lifetime to 1 month',
     task: async (ctx, task) => {

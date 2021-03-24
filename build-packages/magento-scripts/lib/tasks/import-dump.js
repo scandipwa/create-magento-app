@@ -11,6 +11,9 @@ const {
 } = require('./mysql');
 const { setupMagento } = require('./magento');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const importDump = {
     title: 'Importing Database Dump',
     task: (ctx, task) => {

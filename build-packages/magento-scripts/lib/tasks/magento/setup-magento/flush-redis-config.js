@@ -1,6 +1,9 @@
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const macosVersion = require('macos-version');
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 module.exports = {
     title: 'Flushing Magento redis cache',
     task: async ({ ports, config: { docker } }) => {
