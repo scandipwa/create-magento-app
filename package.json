@@ -7,11 +7,13 @@
         "publish": "lerna publish --exact",
         "publish:alpha": "lerna publish --exact --canary --preid alpha --dist-tag=alpha",
         "postinstall": "lerna bootstrap",
-        "clean": "lerna clean --yes"
+        "clean": "lerna clean --yes",
+        "generate-changelog": "gren changelog --override"
     },
     "devDependencies": {
         "@scandipwa/eslint-config": "0.1.12",
         "eslint": "7.11.0",
+        "github-release-notes": "^0.17.3",
         "husky": "^4.3.0",
         "lerna": "^3.22.1"
     },
