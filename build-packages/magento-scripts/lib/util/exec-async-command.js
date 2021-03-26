@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable max-len */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { exec, spawn } = require('child_process');
@@ -76,8 +77,25 @@ const execAsyncBool = async (command, options) => {
     }
 };
 
+/**
+ * @type {(command: string[]) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const execCommandTask = (command) => ({
+    title: `Running command "${command}"`,
+    task: (ctx, task) => execAsyncSpawn(command, {
+        throwNonZeroCode: true,
+        callback: (t) => {
+            task.output = t;
+        }
+    }),
+    option: {
+        bottomBar: 10
+    }
+});
+
 module.exports = {
     execAsync,
     execAsyncBool,
-    execAsyncSpawn
+    execAsyncSpawn,
+    execCommandTask
 };
