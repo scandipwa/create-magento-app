@@ -19,12 +19,14 @@ const execAsync = (command, options) => new Promise((resolve, reject) => {
  * @param {Object} param1
  * @param {Boolean} param1.logOutput Log output to console using logger
  * @param {Boolean} param1.withCode
+ * @param {Boolean} param1.pipeInput
  * @param {String} param1.cwd
- * @param {() => {}} param1.callback
+ * @param {(str: string) => void} param1.callback
  * @returns {Promise<string>}
  */
 const execAsyncSpawn = (command, {
     callback = () => {},
+    pipeInput,
     logOutput = false,
     cwd,
     withCode = false
@@ -33,19 +35,23 @@ const execAsyncSpawn = (command, {
         'bash',
         ['-c', command],
         {
-            stdio: 'pipe',
+            stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
             cwd
         }
     );
 
     return new Promise((resolve, reject) => {
         let stdout = '';
+
+        /**
+         * @param {Buffer} data
+         */
         function addLine(data) {
-            stdout += data;
-            data.toString().split().map((str) => str.trim()).forEach((str) => {
+            stdout += data.toString();
+            data.toString().split('\n').map((str) => str.trim()).forEach((str) => {
                 callback(str);
             });
-            if (logOutput && verbose) {
+            if (logOutput) {
                 data.toString().split('\n').filter(Boolean).forEach((line) => {
                     logger.log(line);
                 });
@@ -78,15 +84,23 @@ const execAsyncBool = async (command, options) => {
 };
 
 /**
- * @type {(command: string[]) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @param {String} command Bash command
+ * @param {Object} options
+ * @param {Boolean} options.logOutput Log output to console using logger
+ * @param {Boolean} options.withCode
+ * @param {Boolean} options.pipeInput
+ * @param {String} options.cwd
+ * @param {(str: string) => void} options.callback
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const execCommandTask = (command) => ({
+const execCommandTask = (command, options = {}) => ({
     title: `Running command "${command}"`,
     task: (ctx, task) => execAsyncSpawn(command, {
         throwNonZeroCode: true,
         callback: (t) => {
             task.output = t;
-        }
+        },
+        ...options
     }),
     option: {
         bottomBar: 10
