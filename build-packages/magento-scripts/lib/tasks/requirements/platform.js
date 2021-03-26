@@ -32,7 +32,7 @@ const checkPlatform = {
 
         task.title = `Running on ${currentPlatform} ${ctx.platformVersion}`;
 
-        return task.newListr([dependencyCheck]);
+        return task.newListr([await dependencyCheck()]);
     }
 };
 
