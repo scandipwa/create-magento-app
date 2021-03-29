@@ -122,7 +122,13 @@ export interface CMAConfiguration {
          *
          * @default 'developer'
          */
-        mode: 'default' | 'developer' | 'production' | 'maintenance'
+        mode: 'default' | 'developer' | 'production' | 'maintenance',
+        /**
+         * Choose Magento Edition
+         *
+         * @default 'community'
+         */
+        edition: 'community' | 'enterprise'
     }
     /**
      *  Custom host for website base url

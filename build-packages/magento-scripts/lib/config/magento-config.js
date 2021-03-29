@@ -1,5 +1,8 @@
 const deepmerge = require('../util/deepmerge');
 
+/**
+ * @type {import('../../typings/index').CMAConfiguration['magento']}
+ */
 const defaultMagentoConfig = {
     first_name: 'Scandiweb',
     last_name: 'Developer',
@@ -7,7 +10,8 @@ const defaultMagentoConfig = {
     user: 'admin',
     password: 'scandipwa123',
     adminuri: 'admin',
-    mode: 'developer'
+    mode: 'developer',
+    edition: 'community'
 };
 
 const getMagentoConfig = (magento) => deepmerge(defaultMagentoConfig, magento);

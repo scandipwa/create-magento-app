@@ -18,11 +18,16 @@ const getInstalledMagentoVersion = async () => {
     if (!composerData) {
         throw new Error('composer.json not found');
     }
-    if (!composerData.require['magento/product-community-edition']) {
-        throw new Error('No magento/product-community-edition dependency found in composer.json');
+    const magentoDependency = [
+        'magento/product-community-edition',
+        'magento/product-enterprise-edition'
+    ].find((magentoEdition) => composerData.require[magentoEdition]);
+
+    if (!magentoDependency) {
+        throw new Error('No Magento dependency found in composer.json');
     }
 
-    return composerData.require['magento/product-community-edition'].replace(/\^/i, '');
+    return composerData.require[magentoDependency].replace(/\^/i, '');
 };
 
 module.exports = getInstalledMagentoVersion;
