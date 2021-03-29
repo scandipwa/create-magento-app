@@ -1,7 +1,7 @@
 export interface ListrContext {
     magentoVersion: string
     port?: number
-    ports: {
+    ports?: {
         app: number
         fpm: number
         xdebug: number
@@ -9,4 +9,6 @@ export interface ListrContext {
         redis: number
         elasticsearch: number
     }
+    platform?: NodeJS.Platform
+    platformVersion?: string
 }
