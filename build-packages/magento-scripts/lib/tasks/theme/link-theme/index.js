@@ -7,6 +7,7 @@ const themeSubtask = require('./theme-subtask');
 const upgradeMagento = require('../../magento/setup-magento/upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const checkThemeFolder = require('./check-theme-folder');
+const getConfigFromConfigFile = require('../../../config/get-config-from-config-file');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -19,6 +20,7 @@ const linkTheme = {
             checkThemeFolder,
             themeSymlink,
             getMagentoVersionConfig,
+            getConfigFromConfigFile,
             getCachedPorts,
             installTheme,
             themeSubtask,

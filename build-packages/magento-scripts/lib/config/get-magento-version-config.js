@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 const { allVersions, defaultConfiguration } = require('./versions');
-const { getConfigFromMagentoVersion } = require('.');
 const getInstalledMagentoVersion = require('../util/get-installed-magento-version');
 const sleep = require('../util/sleep');
 
@@ -60,8 +59,6 @@ const getMagentoVersion = {
         }
 
         ctx.magentoVersion = magentoVersion;
-
-        ctx.config = await getConfigFromMagentoVersion(magentoVersion);
     }
 };
 

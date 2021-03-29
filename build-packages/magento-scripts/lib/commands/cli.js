@@ -3,11 +3,13 @@ const cli = require('../tasks/cli');
 const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 
 module.exports = (yargs) => {
     yargs.command('cli', 'Enter CLI (magento, php, composer).', () => {}, async () => {
         const tasks = new Listr([
             getMagentoVersionConfig,
+            getConfigFromConfigFile,
             createBashrcConfigFile
         ], {
             concurrent: false,

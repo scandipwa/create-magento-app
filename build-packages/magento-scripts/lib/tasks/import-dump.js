@@ -10,6 +10,7 @@ const {
     restoreThemeConfig
 } = require('./mysql');
 const { setupMagento } = require('./magento');
+const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -21,6 +22,7 @@ const importDump = {
         return task.newListr([
             checkRequirements,
             getMagentoVersionConfig,
+            getConfigFromConfigFile,
             getCachedPorts,
             connectToMySQL,
             dumpThemeConfig,
