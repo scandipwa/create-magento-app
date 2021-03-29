@@ -13,7 +13,7 @@ const magentoTask = (command) => ({
         magentoVersion,
         throwNonZeroCode: true
     }),
-    option: {
+    options: {
         bottomBar: 10
     }
 });
