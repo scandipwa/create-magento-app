@@ -17,9 +17,10 @@ const getConfigurations = (config = {}) => ({
     // })
 });
 
+const allVersions = Object.entries(getConfigurations()).map(([name, magentoConfig]) => ({ ...magentoConfig, name }));
 module.exports = {
-    allVersions: Object.values(getConfigurations()),
+    allVersions,
     getConfigurations,
-    defaultConfiguration: Object.values(getConfigurations()).find((config) => config.isDefault),
+    defaultConfiguration: allVersions.find((config) => config.isDefault),
     defaultCMAConfig
 };

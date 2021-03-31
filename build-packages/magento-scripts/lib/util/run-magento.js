@@ -14,7 +14,7 @@ const { getConfigFromMagentoVersion, defaultConfiguration, magento } = require('
 const runMagentoCommand = async (command, options = {}) => {
     const {
         throwNonZeroCode = true,
-        magentoVersion = defaultConfiguration.magentoVersion
+        magentoVersion = defaultConfiguration.name
     } = options;
     const {
         php,

@@ -15,7 +15,8 @@ const getJsonfileData = require('../../util/get-jsonfile-data');
 const installMagento = {
     title: 'Installing Magento',
     task: async (ctx, task) => {
-        const { magentoVersion, config: { baseConfig, magentoConfiguration } } = ctx;
+        const { magentoVersion, config: { baseConfig, overridenConfiguration } } = ctx;
+
         const isFsMatching = await matchFilesystem(baseConfig.magentoDir, {
             'app/etc': [
                 'env.php'
@@ -30,9 +31,12 @@ const installMagento = {
             return;
         }
 
+        const { magento: { edition: magentoEdition }, magentoVersion: magentoPackageVersion } = overridenConfiguration;
+        // const isEnterprise = magentoEdition === 'enterprise';
+
         task.title = 'Creating Magento project...';
 
-        const magentoEdition = `magento/product-${magentoConfiguration.edition}-edition`;
+        const magentoPackage = `magento/product-${magentoEdition}-edition`;
 
         if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
             const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
@@ -52,8 +56,8 @@ const installMagento = {
                 });
             }
 
-            if (!composerData.require[magentoEdition]) {
-                await runComposerCommand(`require ${magentoEdition}:${magentoVersion}`,
+            if (!composerData.require[magentoPackage]) {
+                await runComposerCommand(`require ${magentoPackage}${magentoPackageVersion ? `:${magentoPackageVersion}` : ''}`,
                     {
                         magentoVersion,
                         callback: (t) => {
@@ -72,13 +76,27 @@ const installMagento = {
             }
         } else {
             const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
-            await runComposerCommand(
-                `create-project \
-            --repository=https://repo.magento.com/ ${magentoEdition}=${magentoVersion} \
-            --no-install \
-            "${tempDir}"`,
-                { magentoVersion }
-            );
+            try {
+                await runComposerCommand(
+                    `create-project \
+                --repository=https://repo.magento.com/ ${magentoPackage}${magentoPackageVersion ? `=${magentoPackageVersion}` : ''} \
+                --no-install \
+                "${tempDir}"`,
+                    {
+                        magentoVersion
+                    }
+                );
+            } catch (e) {
+                if (e.message.includes(`Could not find package ${magentoPackage} with stability stable.`)) {
+                    throw new Error(`Unexpected error during create-project command!
+
+${e}
+
+Probably the account you are using does not have access to download the ${magentoEdition} edition.`);
+                }
+
+                throw e;
+            }
 
             await moveFile({
                 from: path.join(tempDir, 'composer.json'),

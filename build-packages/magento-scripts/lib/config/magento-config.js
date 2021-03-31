@@ -14,6 +14,11 @@ const defaultMagentoConfig = {
     edition: 'community'
 };
 
+/**
+ *
+ * @param {import('../../typings/index').CMAConfiguration['magento']} magento
+ * @returns {import('../../typings/index').CMAConfiguration['magento']}
+ */
 const getMagentoConfig = (magento) => deepmerge(defaultMagentoConfig, magento);
 
 module.exports = {

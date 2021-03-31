@@ -11,4 +11,10 @@ export interface ListrContext {
     }
     platform?: NodeJS.Platform
     platformVersion?: string
+    /**
+     * Magento Edition
+     *
+     * @default 'community'
+     */
+    edition?: 'community' | 'enterprise'
 }

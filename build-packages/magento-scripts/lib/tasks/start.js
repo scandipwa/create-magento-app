@@ -56,7 +56,6 @@ const start = {
             })
         },
         // second is needed to check if php have missing extensions
-        // TODO rewrite to 2 separate tasks
         configurePhp,
         installPrestissimo,
         installMagento,

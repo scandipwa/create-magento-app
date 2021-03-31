@@ -55,6 +55,14 @@ module.exports = (yargs) => {
                 // normalize: true
             }
         );
+
+        yargs.option(
+            'edition', {
+                alias: 'e',
+                describe: 'Magento Edition to install',
+                type: 'string'
+            }
+        );
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,

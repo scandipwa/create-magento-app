@@ -10,7 +10,7 @@ const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config
 const runComposerCommand = async (command, options = {}) => {
     const {
         throwNonZeroCode = true,
-        magentoVersion = defaultConfiguration.magentoVersion
+        magentoVersion = defaultConfiguration.name
     } = options;
     const {
         php,

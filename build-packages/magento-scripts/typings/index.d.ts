@@ -122,9 +122,12 @@ export interface CMAConfiguration {
          *
          * @default 'developer'
          */
-        mode: 'default' | 'developer' | 'production' | 'maintenance',
+        mode: 'default' | 'developer' | 'production' | 'maintenance'
+
         /**
-         * Choose Magento Edition
+         * Magento Edition configuration
+         *
+         * This field will be only used during Magento installation.
          *
          * @default 'community'
          */

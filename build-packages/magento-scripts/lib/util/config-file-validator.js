@@ -32,7 +32,8 @@ const magentoSchema = Joi.object({
     user: Joi.string().required(),
     password: Joi.string().required(),
     adminuri: Joi.string().required(),
-    mode: Joi.string().valid('default', 'developer', 'production', 'maintenance')
+    mode: Joi.string().valid('default', 'developer', 'production', 'maintenance'),
+    edition: Joi.string().valid('community', 'enterprise')
 });
 
 /**

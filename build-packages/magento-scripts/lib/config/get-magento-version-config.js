@@ -44,8 +44,8 @@ const getMagentoVersion = {
                             name: 'magentoVersion',
                             choices: allVersions.map((version) => (
                                 {
-                                    name: version.magentoVersion,
-                                    message: version.magentoVersion
+                                    name: version.name,
+                                    message: version.name
                                 }
                             ))
                         }),

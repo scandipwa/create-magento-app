@@ -13,6 +13,9 @@ const { getPrefix } = require('../util/prefix');
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
 
+/**
+ * @returns {{prefix: string,magentoDir: string,templateDir: string,cacheDir: string}}
+ */
 const getBaseConfig = () => ({
     prefix: getPrefix(),
     magentoDir: process.cwd(),
@@ -27,6 +30,9 @@ const magento = {
 };
 
 module.exports = {
+    /**
+     * @param {string} magentoVersion
+     */
     async getConfigFromMagentoVersion(magentoVersion) {
         const newBaseConfig = getBaseConfig();
         const configurations = getConfigurations(newBaseConfig);
@@ -37,7 +43,10 @@ module.exports = {
         const {
             overridenConfiguration,
             userConfiguration
-        } = await resolveConfigurationWithOverrides(configurations[magentoVersion], newBaseConfig);
+        } = await resolveConfigurationWithOverrides(
+            configurations[magentoVersion],
+            newBaseConfig
+        );
 
         return {
             php: getPhpConfig(overridenConfiguration.configuration, newBaseConfig),
