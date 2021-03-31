@@ -17,6 +17,8 @@ const installMagento = {
         } = ctx;
         const { mysql: { env } } = docker.getContainers(ports);
 
+        let installed = false;
+
         for (let tries = 0; tries < 2; tries++) {
             try {
                 const command = `setup:install \
@@ -53,10 +55,15 @@ const installMagento = {
                         task.output = t;
                     }
                 });
+                installed = true;
             } catch (e) {
                 if (tries === 2) {
                     throw e;
                 }
+            }
+
+            if (installed) {
+                break;
             }
         }
 
