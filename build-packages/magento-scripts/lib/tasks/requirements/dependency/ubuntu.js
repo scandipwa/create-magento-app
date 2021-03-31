@@ -32,10 +32,11 @@ const ubuntuDependenciesCheck = {
         //     throw new Error(`Missing dependencies detected!\n\nYou can install them by running the following command: ${ logger.style.code(`apt-get install ${dependenciesToInstall.map((dep) => (Array.isArray(dep) ? dep[0] : dep)).join(' ') }`)}`);
         // }
         if (dependenciesToInstall.length > 0) {
-            const cmd = `sudo apt-get install ${dependenciesToInstall.map((dep) => (Array.isArray(dep) ? dep[0] : dep)).join(' ') }`;
+            const dependencyList = dependenciesToInstall.map((dep) => (Array.isArray(dep) ? dep[0] : dep));
+            const cmd = `sudo apt-get install ${ dependencyList.join(' ') }`;
             const installCommand = logger.style.code(cmd);
             const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
-            task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependenciesToInstall.join(' ')) } detected!`;
+            task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependencyList.join(' ')) } detected!`;
 
             let promptSkipper = false;
             const timer = async () => {

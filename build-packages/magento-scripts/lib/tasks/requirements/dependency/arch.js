@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return,no-param-reassign */
+const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
 const { execAsyncSpawn, execCommandTask } = require('../../../util/exec-async-command');
@@ -12,7 +13,7 @@ const pkgRegex = /(\S+)\s(\S+)/i;
 const archDependenciesCheck = {
     title: 'Checking Arch Linux dependencies',
     task: async (ctx, task) => {
-        const installedDependencies = (await execAsyncSpawn('pacman -Qe')).split('\n')
+        const installedDependencies = (await execAsyncSpawn('pacman -Q')).split('\n')
             .map((pkg) => {
                 const result = pkg.match(pkgRegex);
 
@@ -23,15 +24,24 @@ const archDependenciesCheck = {
                 return result[1];
             });
 
-        const dependenciesToInstall = dependenciesForPlatforms['Arch Linux'].filter((dep) => !installedDependencies.some((pkg) => pkg === dep));
+        const dependenciesToInstall = dependenciesForPlatforms['Arch Linux']
+            .filter((dep) => {
+                if (Array.isArray(dep)) {
+                    return !dep.some((dp) => installedDependencies.includes(dp));
+                }
+
+                return !installedDependencies.includes(dep);
+            });
 
         // if (dependenciesToInstall.length > 0) {
         //     throw new Error(`Missing dependencies detected!\n\nYou can install them by running the following command: ${ logger.style.code(`pamac install ${dependenciesToInstall.join(' ') }`)}`);
         // }
         if (dependenciesToInstall.length > 0) {
-            const installCommand = logger.style.code(`pamac install ${dependenciesToInstall.join(' ') }`);
+            const dependencyList = dependenciesToInstall.map((dep) => (Array.isArray(dep) ? dep[0] : dep));
+            const cmd = `sudo pacman -S ${ dependencyList.join(' ') }`;
+            const installCommand = logger.style.code(cmd);
             const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
-            task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependenciesToInstall.join(' ')) } detected!`;
+            task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependencyList.join(' ')) } detected!`;
 
             let promptSkipper = false;
             const timer = async () => {
@@ -81,8 +91,14 @@ You need to install missing ${ dependenciesWordFormatter } manually, run the fol
             }
 
             if (installAnswer === 'install') {
+                task.output = `[sudo] password for ${ os.userInfo().username };`;
                 return task.newListr([
-                    execCommandTask(`brew install ${dependenciesToInstall.join(' ') }`)
+                    execCommandTask(`${ cmd } --noconfirm`, {
+                        callback: (str) => {
+                            task.output = str;
+                        },
+                        pipeInput: true
+                    })
                 ]);
             }
         }

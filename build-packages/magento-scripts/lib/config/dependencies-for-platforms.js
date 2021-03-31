@@ -18,7 +18,7 @@ const dependenciesForPlatforms = {
         'oniguruma',
         'libxslt',
         'bzip2',
-        'libjpeg',
+        ['libjpeg', 'libjpeg-turbo', 'libjpeg6-turbo'],
         'libpng',
         'icu',
         'libxml2',

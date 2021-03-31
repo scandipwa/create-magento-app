@@ -17,7 +17,7 @@ const dependencyCheck = async () => {
     const { dist } = await osPlatform();
     switch (dist) {
     case 'Arch Linux':
-    case 'Manjaro': {
+    case 'Manjaro Linux': {
         return archDependenciesCheck;
     }
     case 'Fedora':
