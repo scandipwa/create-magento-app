@@ -77,13 +77,17 @@ const installMagento = {
         } else {
             const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
             try {
-                await runComposerCommand(
-                    `create-project \
+                const installCommand = `create-project \
                 --repository=https://repo.magento.com/ ${magentoPackage}${magentoPackageVersion ? `=${magentoPackageVersion}` : ''} \
-                --no-install \
-                "${tempDir}"`,
+                --no-install ${tempDir}`;
+
+                await runComposerCommand(
+                    installCommand,
                     {
-                        magentoVersion
+                        magentoVersion,
+                        callback: (t) => {
+                            task.output = t;
+                        }
                     }
                 );
             } catch (e) {
