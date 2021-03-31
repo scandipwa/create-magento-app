@@ -1,9 +1,7 @@
 /* eslint-disable consistent-return,no-param-reassign */
-const os = require('os');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
-const { execAsyncSpawn, execCommandTask } = require('../../../util/exec-async-command');
-const sleep = require('../../../util/sleep');
+const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const installDependenciesTask = require('../../../util/install-dependencies-task');
 
 const pkgRegex = /(\S+)\s(\S+)/i;
 
@@ -25,82 +23,23 @@ const archDependenciesCheck = {
             });
 
         const dependenciesToInstall = dependenciesForPlatforms['Arch Linux']
+            .dependencies
             .filter((dep) => {
                 if (Array.isArray(dep)) {
                     return !dep.some((dp) => installedDependencies.includes(dp));
                 }
 
                 return !installedDependencies.includes(dep);
-            });
+            })
+            .map((dep) => (Array.isArray(dep) ? dep[0] : dep));
 
-        // if (dependenciesToInstall.length > 0) {
-        //     throw new Error(`Missing dependencies detected!\n\nYou can install them by running the following command: ${ logger.style.code(`pamac install ${dependenciesToInstall.join(' ') }`)}`);
-        // }
         if (dependenciesToInstall.length > 0) {
-            const dependencyList = dependenciesToInstall.map((dep) => (Array.isArray(dep) ? dep[0] : dep));
-            const cmd = `sudo pacman -S ${ dependencyList.join(' ') }`;
-            const installCommand = logger.style.code(cmd);
-            const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
-            task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependencyList.join(' ')) } detected!`;
-
-            let promptSkipper = false;
-            const timer = async () => {
-                for (let i = 5 * 60; i !== 0; i--) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await sleep(1000);
-                    if (promptSkipper) {
-                        return null;
-                    }
-                    task.title = `Checking MacOS dependencies (${i} sec left...)`;
-                }
-                task.cancelPrompt();
-                return 'timeout';
-            };
-
-            const installAnswer = await Promise.race([
-                task.prompt({
-                    type: 'Select',
-                    message: `Do you want to install missing ${ dependenciesWordFormatter } now?`,
-                    name: 'installAnswer',
-                    choices: [
-                        {
-                            name: 'install',
-                            message: `Install ${ dependenciesWordFormatter } now!`
-                        },
-                        {
-                            name: 'not-install',
-                            message: `Do not install ${ dependenciesWordFormatter } now!`
-                        }
-                    ]
-                }),
-                timer()
+            return task.newListr([
+                installDependenciesTask({
+                    platform: 'Arch Linux',
+                    dependenciesToInstall
+                })
             ]);
-
-            promptSkipper = true;
-
-            if (installAnswer === 'timeout') {
-                throw new Error(`User timeout.
-
-You need to install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
-            }
-
-            if (installAnswer === 'not-install') {
-                throw new Error(`User chosen to not install ${ dependenciesWordFormatter } now.
-
-You need to install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
-            }
-
-            if (installAnswer === 'install') {
-                task.output = `[sudo] password for ${ os.userInfo().username };`;
-                return task.newListr([
-                    execCommandTask(`${ cmd } --noconfirm`, {
-                        callback: (str) => {
-                            task.output = str;
-                        },
-                        pipeInput: true
-                    })
-                ]);
-            }
         }
     },
     options: {
