@@ -9,6 +9,99 @@ const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 
+const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
+const magentoProductCommunityEdition = 'magento/product-community-edition';
+
+/**
+ * Adjust composer.json file configuration for magento
+ */
+const adjustComposerJson = async ({
+    baseConfig,
+    magentoProductSelectedEdition,
+    magentoVersion,
+    magentoPackageVersion,
+    task,
+    isEnterprise
+}) => {
+    const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
+
+    // fix composer magento repository
+    if (!composerData.repositories
+        || (Array.isArray(composerData.repositories)
+            && !composerData.repositories.some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com'))
+        )
+        || (typeof composerData.repositories === 'object'
+            && !Object.values(composerData.repositories).some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com')))
+    ) {
+        task.output = 'No Magento repository is set in composer.json! Setting up...';
+        await runComposerCommand('config repo.0 composer https://repo.magento.com', {
+            magentoVersion,
+            callback: (t) => {
+                task.output = t;
+            }
+        });
+    }
+
+    // if composer-root-update-plugin is not installed in composer, install it.
+    if (!composerData.require['magento/composer-root-update-plugin']) {
+        task.output = 'Installing magento/composer-root-update-plugin!';
+        await runComposerCommand('require magento/composer-root-update-plugin:^1',
+            {
+                magentoVersion,
+                callback: (t) => {
+                    task.output = t;
+                }
+            });
+    }
+
+    // if magento package is not installed in composer, require it.
+    if (!composerData.require[magentoProductSelectedEdition]) {
+        task.output = `Installing ${magentoProductSelectedEdition}=${magentoPackageVersion}!`;
+        await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
+            {
+                magentoVersion,
+                callback: (t) => {
+                    task.output = t;
+                }
+            });
+    }
+};
+
+/**
+ * Create Magento Project
+ */
+const createMagentoProject = async ({
+    magentoProject,
+    magentoPackageVersion,
+    magentoVersion,
+    task
+}) => {
+    const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
+    const installCommand = [
+        'create-project',
+        `--repository=https://repo.magento.com/ ${magentoProject}=${magentoPackageVersion}`,
+        '--no-install',
+        `"${tempDir}"`
+    ];
+
+    await runComposerCommand(
+        installCommand.join(' '),
+        {
+            magentoVersion,
+            callback: (t) => {
+                task.output = t;
+            }
+        }
+    );
+
+    await moveFile({
+        from: path.join(tempDir, 'composer.json'),
+        to: path.join(process.cwd(), 'composer.json')
+    });
+
+    await fs.promises.rmdir(tempDir);
+};
+
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
@@ -16,6 +109,25 @@ const installMagento = {
     title: 'Installing Magento',
     task: async (ctx, task) => {
         const { magentoVersion, config: { baseConfig, overridenConfiguration } } = ctx;
+        const {
+            magento: { edition: magentoEdition },
+            magentoVersion: magentoPackageVersion
+        } = overridenConfiguration;
+        const isEnterprise = magentoEdition === 'enterprise';
+        const magentoProductSelectedEdition = isEnterprise ? magentoProductEnterpriseEdition : magentoProductCommunityEdition;
+        const magentoProject = `magento/project-${magentoEdition}-edition`;
+
+        if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
+            await adjustComposerJson({
+                baseConfig,
+                isEnterprise,
+                magentoEdition,
+                magentoPackageVersion,
+                magentoProductSelectedEdition,
+                magentoVersion,
+                task
+            });
+        }
 
         const isFsMatching = await matchFilesystem(baseConfig.magentoDir, {
             'app/etc': [
@@ -31,78 +143,16 @@ const installMagento = {
             return;
         }
 
-        task.title = 'Creating Magento project...';
-        const {
-            magento: { edition: magentoEdition },
-            magentoVersion: magentoPackageVersion
-        } = overridenConfiguration;
+        task.output = 'Creating Magento project';
 
-        const magentoProjectPackage = `magento/project-${magentoEdition}-edition`;
-        const magentoProduct = `magento/product-${magentoEdition}-edition`;
-
-        if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
-            const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
-
-            if (!composerData.repositories
-                || (Array.isArray(composerData.repositories)
-                    && !composerData.repositories.some((repo) => repo.type === 'composer' && repo.url === 'https://repo.magento.com/')
-                )
-                || (typeof composerData.repositories === 'object'
-                    && !Object.values(composerData.repositories).some((repo) => repo.type === 'composer' && repo.url === 'https://repo.magento.com/'))
-            ) {
-                await runComposerCommand('config repo.0 composer https://repo.magento.com', {
-                    magentoVersion,
-                    callback: (t) => {
-                        task.output = t;
-                    }
-                });
-            }
-
-            if (!composerData.require[magentoProduct]) {
-                await runComposerCommand(`require ${magentoProduct}:${magentoPackageVersion}`,
-                    {
-                        magentoVersion,
-                        callback: (t) => {
-                            task.output = t;
-                        }
-                    });
-            }
-            if (!composerData.require['magento/composer-root-update-plugin']) {
-                await runComposerCommand('require magento/composer-root-update-plugin:~1.0',
-                    {
-                        magentoVersion,
-                        callback: (t) => {
-                            task.output = t;
-                        }
-                    });
-            }
-        } else {
-            const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
-            const installCommand = [
-                'create-project',
-                `--repository=https://repo.magento.com/ ${magentoProjectPackage}=${magentoVersion}`,
-                '--no-install',
-                `"${tempDir}"`
-            ];
-
-            await runComposerCommand(
-                installCommand.join(' '),
-                {
-                    magentoVersion,
-                    callback: (t) => {
-                        task.output = t;
-                    }
-                }
-            );
-
-            await moveFile({
-                from: path.join(tempDir, 'composer.json'),
-                to: path.join(process.cwd(), 'composer.json')
+        if (!await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
+            await createMagentoProject({
+                magentoProject,
+                magentoPackageVersion,
+                magentoVersion,
+                task
             });
-
-            await fs.promises.rmdir(tempDir);
         }
-
         try {
             await runComposerCommand('install',
                 {
