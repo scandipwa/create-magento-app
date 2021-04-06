@@ -1,8 +1,8 @@
+const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
-const macosVersion = require('macos-version');
 const pathExists = require('../../util/path-exists');
 const { isIpAddress } = require('../../util/ip');
 
@@ -56,6 +56,7 @@ const createNginxConfig = {
         }
 
         const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
+        const isLinux = os.platform() === 'linux';
 
         try {
             await setConfigFile({
@@ -70,8 +71,8 @@ const createNginxConfig = {
                 templateArgs: {
                     ports,
                     mageRoot: baseConfig.magentoDir,
-                    hostMachine: macosVersion.isMacOS ? 'host.docker.internal' : '127.0.0.1',
-                    hostPort: macosVersion.isMacOS ? 80 : ports.app,
+                    hostMachine: isLinux ? '127.0.0.1' : 'host.docker.internal',
+                    hostPort: isLinux ? ports.app : 80,
                     config: overridenConfiguration,
                     networkToBindTo
                 }
