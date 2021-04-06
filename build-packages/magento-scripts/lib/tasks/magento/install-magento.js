@@ -17,6 +17,7 @@ const magentoProductCommunityEdition = 'magento/product-community-edition';
  */
 const adjustComposerJson = async ({
     baseConfig,
+    magentoEdition,
     magentoProductSelectedEdition,
     magentoVersion,
     magentoPackageVersion,
@@ -53,7 +54,26 @@ const adjustComposerJson = async ({
             });
     }
 
+    // if for some reason both editions are installed, throw an error
+    if (
+        composerData.require[magentoProductCommunityEdition]
+        && composerData.require[magentoProductEnterpriseEdition]
+    ) {
+        throw new Error('Somehow, both Magento editions are installed!\nPlease choose only one edition an modify your composer.json manually!');
+    }
+
+    const oppositeEdition = [magentoProductCommunityEdition, magentoProductEnterpriseEdition]
+        .find((edition) => edition !== magentoProductSelectedEdition);
+
+    // if opposite edition is installed than selected in config file, throw an error
+    if (composerData.require[oppositeEdition]) {
+        throw new Error(`You have installed ${oppositeEdition} but selected magento.edition as ${magentoEdition} in config file!
+
+Change magento edition in config file or manually reinstall correct magento edition!`);
+    }
+
     // if magento package is not installed in composer, require it.
+
     if (!composerData.require[magentoProductSelectedEdition]) {
         task.output = `Installing ${magentoProductSelectedEdition}=${magentoPackageVersion}!`;
         await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
