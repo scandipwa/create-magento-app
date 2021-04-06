@@ -20,8 +20,7 @@ const adjustComposerJson = async ({
     magentoProductSelectedEdition,
     magentoVersion,
     magentoPackageVersion,
-    task,
-    isEnterprise
+    task
 }) => {
     const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
 
