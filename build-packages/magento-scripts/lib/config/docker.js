@@ -1,5 +1,5 @@
+const os = require('os');
 const path = require('path');
-const macosVersion = require('macos-version');
 const { isIpAddress } = require('../util/ip');
 
 module.exports = ({ configuration, ssl, host }, config) => {
@@ -29,53 +29,67 @@ module.exports = ({ configuration, ssl, host }, config) => {
         },
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
-        },
-        nginx: {
+        }
+    };
+
+    const isLinux = os.platform() === 'linux';
+
+    if (!isLinux) {
+        /**
+         * When CMA is running in non-native linux environment,
+         * we need also create named volumes for nginx to avoid performance penalty
+         */
+        volumes.nginx = {
             name: `${ prefix }_nginx-data`,
             opts: {
                 type: 'nfs',
                 device: `${cacheDir}/nginx/conf.d`,
                 o: 'bind'
             }
-        },
-        appPub: {
+        };
+        volumes.appPub = {
             name: `${ prefix }_pub-data`,
             opts: {
                 type: 'nfs',
                 device: `${ path.join(magentoDir, 'pub') }`,
                 o: 'bind'
             }
-        },
-        appSetup: {
+        };
+        volumes.appSetup = {
             name: `${ prefix }_setup-data`,
             opts: {
                 type: 'nfs',
                 device: `${path.join(magentoDir, 'setup')}`,
                 o: 'bind'
             }
-        }
-    };
-
-    const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
+        };
+    }
 
     const getContainers = (ports = {}) => {
         const dockerConfig = {
             nginx: {
                 _: 'Nginx',
-                ports: [
-                    `${networkToBindTo}:${ ports.app }:80`
-                ],
+                ports: !isLinux ? [
+                    `${isIpAddress(host) ? host : '127.0.0.1'}:${ ports.app }:80`
+                ] : [],
                 healthCheck: {
                     cmd: 'service nginx status'
                 },
-                mountVolumes: [
+                /**
+                 * Mount volumes directly on linux
+                 */
+                mountVolumes: isLinux ? [
+                    `${ cacheDir }/nginx/conf.d:/etc/nginx/conf.d`,
+                    `${ path.join(magentoDir, 'pub') }:${path.join(magentoDir, 'pub')}`,
+                    `${ path.join(magentoDir, 'setup') }:${path.join(magentoDir, 'setup')}`
+                ] : [
                     `${ volumes.nginx.name }:/etc/nginx/conf.d`,
                     `${ volumes.appPub.name }:${path.join(magentoDir, 'pub')}`,
                     `${ volumes.appSetup.name }:${path.join(magentoDir, 'setup')}`
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: macosVersion.isMacOS ? network.name : 'host',
+                network: !isLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 imageDetails: {
                     name: 'nginx',
@@ -152,7 +166,7 @@ module.exports = ({ configuration, ssl, host }, config) => {
 
         if (ssl.enabled) {
             dockerConfig.nginx.ports.push(
-                '127.0.0.1:443:443'
+                `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             );
         }
 
