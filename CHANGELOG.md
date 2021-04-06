@@ -1,5 +1,52 @@
 # Changelog
 
+## v1.4.0 (06/04/2021)
+# What's New
+
+- Added support to installing **Magento Enterprise Edition**.
+  To install enterprise edition you need to create a new CMA app, it should create the default `cma.js` file, set **magento.edition** to **enterprise** and then run the [start](https://docs.create-magento-app.com/getting-started/available-commands/start).
+  > NOTE: You need access keys with Magento Enterprise on them to be able to install **enterprise edition**.
+- CMA will now check if dependencies are installed on supported platforms: `macOS, Ubuntu, Linux Mint, Fedora, Centos, Arch Linux, Manjaro Linux`.
+  If you don't have some dependency installed, CMA will prompt you to install, not install (installation will exit) or skip install (not recommended).
+  If you select **install** you will need to write your root password and press **enter**. (Does not apply to macOS)
+
+# Bug Fixes
+
+- Fixed error **The default website isn't defined. Set the website and try again**.
+  Now setup should perform as smooth as possible.
+- If Magento Schema is installed to the MySQL successfully from the first try, CMA will not install it a second time as it did before.
+
+# Miscellaneous
+
+- Hide duplicate "Using Magento" task title.
+- Adjusted task titles to use **Present continuous** tense.
+- Adjusted **Update to newer version** message.
+- Adjusted task titles.
+- Bumped dependency versions.
+- Added typings to existing tasks via JSDoc.
+---
+
+## create-magento-app@1.2.2 (06/04/2021)
+# What's New
+
+- Added `cma.js` file to template for CMA.
+---
+
+## v1.3.2-alpha.2 (31/03/2021)
+# What's New
+
+- CMA will now check if dependencies are installed on supported platforms: `MacOS, Ubuntu, Linux Mint, Fedora, CentOS, Arch Linux, Manjaro Linux`.
+  If you don't have some dependency installed, CMA will prompt you to install, not install (installation will exit) and skip install (not recommended).
+  If you select **yes** you will need to write your root password and press **enter**. (Does not apply to MacOS)
+- Added support to installing **Magento Enterprise Edition**.
+  To install enterprise edition you need to create a new CMA app and then run the [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command with argument `-e enterprise` (or `--edition enterprise`). This will create `cma.js` file with `magento.edition` field set to **enterprise** and install enterprise edition.
+  > NOTE: You need access keys with Magento Enterprise on them to be able to install **enterprise edition**.
+
+# Bug Fixes
+
+- If Magento Schema is installed to the MySQL successfully from the first try, CMA will not install it a second time as it did before.
+---
+
 ## v1.3.2-alpha.1 (25/03/2021)
 # What's New
 
