@@ -14,5 +14,10 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "debug.javascript.autoAttachFilter": "onlyWithFlag"
+    "debug.javascript.autoAttachFilter": "onlyWithFlag",
+    "debug.javascript.terminalOptions": {
+        "skipFiles": [
+          "<node_internals>/**"
+        ]
+    }
 }
