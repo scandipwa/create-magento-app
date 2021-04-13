@@ -81,6 +81,11 @@ const createApp = async (options) => {
                 destinationPath('package.json'),
                 templateOptions
             );
+            filesystem.copyTpl(
+                templatePath('cma.js'),
+                destinationPath('cma.js'),
+                templateOptions
+            );
         }
     );
 
