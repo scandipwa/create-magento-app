@@ -33,12 +33,10 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
         return;
     }
 
-    const checkIfValueIsCorrect = (row) => {
-        if (values.find((p) => p.path === row.path).value === row.value) {
-            return true;
-        }
+    const checkIfValueIsCorrect = ({ path, value }) => {
+        const val = values.find((p) => p.path === path);
 
-        return false;
+        return val && val.value === value;
     };
 
     if (rows.every(checkIfValueIsCorrect)) {
@@ -46,7 +44,12 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
         return;
     }
 
-    const configsToUpdate = values.filter((p) => rows.find((row) => row.path === p.path).value !== p.value);
+    const configsToUpdate = values.filter(({ path, value }) => {
+        const row = rows.find((row) => row.path === path);
+
+        return row && row.value !== value;
+    });
+
     for (const config of configsToUpdate) {
         await mysqlConnection.query(`
             UPDATE ${table}
