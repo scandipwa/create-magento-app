@@ -2,6 +2,7 @@ const checkPlatform = require('./platform');
 const checkPhpbrew = require('./phpbrew');
 const checkComposer = require('./composer');
 const checkDocker = require('./docker');
+const checkNodeVersion = require('./node-version');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -17,7 +18,9 @@ const checkRequirements = {
         // check the Docker installation
         checkDocker,
         // check for COMPOSER_AUTH
-        checkComposer
+        checkComposer,
+        // check for Node.js version
+        checkNodeVersion
     ], {
         concurrent: false,
         exitOnError: true,
