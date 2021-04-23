@@ -4,10 +4,11 @@ const { getCachedPorts } = require('../../../config/get-port-config');
 const themeSymlink = require('./theme-symlink');
 const installTheme = require('./install-theme');
 const themeSubtask = require('./theme-subtask');
-const upgradeMagento = require('../../magento/setup-magento/upgrade-magento');
 const disablePageCache = require('./disable-page-cache');
 const checkThemeFolder = require('./check-theme-folder');
+const buildTheme = require('./build-theme');
 const getConfigFromConfigFile = require('../../../config/get-config-from-config-file');
+const upgradeMagento = require('../../magento/setup-magento/upgrade-magento');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -24,6 +25,7 @@ const linkTheme = {
             getCachedPorts,
             installTheme,
             themeSubtask,
+            buildTheme,
             upgradeMagento,
             disablePageCache
         ], {
