@@ -24,7 +24,7 @@ const getUsedByOtherCMAProjectsPorts = async () => {
  * @param {Number[]} options.portIgnoreList
  * @returns {Promise<Number>}
  */
-const getPort = async (port, options) => {
+const getPort = async (port, options = {}) => {
     const {
         portIgnoreList = []
     } = options;
