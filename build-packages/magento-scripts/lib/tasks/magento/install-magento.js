@@ -162,6 +162,7 @@ const installMagento = {
             return;
         }
 
+        task.title = `Installing Magento ${magentoPackageVersion}`;
         task.output = 'Creating Magento project';
 
         if (!await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
