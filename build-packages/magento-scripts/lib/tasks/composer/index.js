@@ -31,7 +31,7 @@ const installComposer = {
             task.title = 'Installing Composer';
             await createComposerDir({ composer });
             try {
-                await downloadFile('https://getcomposer.org/composer-1.phar', {
+                await downloadFile(`https://getcomposer.org/composer-${composer.version}.phar`, {
                     destination: composer.binPath
                 });
             } catch (e) {

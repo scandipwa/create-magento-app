@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const semver = require('semver');
 const runComposerCommand = require('../../util/run-composer');
 
 /**
@@ -7,6 +8,12 @@ const runComposerCommand = require('../../util/run-composer');
 const prestissimoInstall = {
     title: 'Installing Prestissimo',
     task: async (ctx, task) => {
+        const { composer } = ctx.config;
+
+        if (!semver.satisfies(composer.version, '^2')) {
+            task.skip();
+            return;
+        }
         const { code } = await runComposerCommand('global show hirak/prestissimo', {
             throwNonZeroCode: false
         });

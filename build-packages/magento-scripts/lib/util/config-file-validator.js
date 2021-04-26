@@ -79,6 +79,13 @@ const serviceConfigurationSchema = Joi.object({
 });
 
 /**
+ * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']['composer']>}
+ */
+const composerConfigurationSchema = Joi.object({
+    version: Joi.string().optional().allow('1', '2')
+});
+
+/**
  * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']>}
  */
 const configurationSchema = Joi.object({
@@ -86,7 +93,8 @@ const configurationSchema = Joi.object({
     nginx: nginxConfigurationSchema.optional(),
     mysql: serviceConfigurationSchema.optional(),
     elasticsearch: serviceConfigurationSchema.optional(),
-    redis: serviceConfigurationSchema.optional()
+    redis: serviceConfigurationSchema.optional(),
+    composer: composerConfigurationSchema.optional()
 });
 
 /**
