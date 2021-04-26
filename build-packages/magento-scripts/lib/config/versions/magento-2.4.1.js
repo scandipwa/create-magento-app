@@ -15,7 +15,7 @@ module.exports = ({ templateDir } = {}) => ({
                 sockets: {},
                 SimpleXML: {},
                 xdebug: {
-                    version: '3.0.3'
+                    version: '3.0.4'
                 }
             }
         },
@@ -31,6 +31,9 @@ module.exports = ({ templateDir } = {}) => ({
         },
         elasticsearch: {
             version: '7.6.2'
+        },
+        composer: {
+            version: '1'
         }
     },
     magento: defaultMagentoConfig,
