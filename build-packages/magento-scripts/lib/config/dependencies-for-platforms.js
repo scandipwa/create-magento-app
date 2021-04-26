@@ -30,9 +30,10 @@ const dependenciesForPlatforms = {
             'libzip',
             'sqlite',
             'readline',
-            'perl'
+            'perl',
+            'libsodium'
         ],
-        installCommand: (deps) => `sudo pacman -S ${deps} --no-confirm`
+        installCommand: (deps) => `sudo pacman -S ${deps} --noconfirm`
     },
     Fedora: {
         dependencies: [
