@@ -1,6 +1,7 @@
+/* eslint-disable no-use-before-define */
 export interface ServiceWithVersion {
     /**
-     * Container version
+     * Service version
      */
     version: string
 }
@@ -18,6 +19,10 @@ export interface NginxConfiguration extends ServiceWithVersion {
 
 export interface PHPExtension extends Record<string, unknown> {
     version: string
+    hooks?: {
+        preInstall: (config: CMAConfiguration['configuration']) => Promise<void>
+        postInstall: (config: CMAConfiguration['configuration']) => Promise<void>
+    }
 }
 
 export interface PHPExtensions {
@@ -100,6 +105,11 @@ export interface CMAConfiguration {
          * Redis configuration
          */
         redis: ServiceWithVersion
+
+        /**
+         * Composer configuration
+         */
+        composer: ServiceWithVersion
     }
     /**
      * Magento configuration
