@@ -1,11 +1,10 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
-// const runComposerCommand = require('../../../util/run-composer');
+const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
 const adjustMagentoConfiguration = require('./adjust-magento-configuration');
 const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
-const upgradeMagento = require('./upgrade-magento');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -26,6 +25,8 @@ const migrateDatabase = {
 
             return task.newListr([
                 installMagento,
+                magentoTask('setup:upgrade'),
+                magentoTask('cache:enable'),
                 configureElasticsearch
             ], {
                 concurrent: false,
@@ -50,6 +51,8 @@ const migrateDatabase = {
         case 1: {
             return task.newListr([
                 installMagento,
+                magentoTask('setup:upgrade'),
+                magentoTask('cache:enable'),
                 configureElasticsearch
             ], {
                 concurrent: false,
@@ -61,7 +64,7 @@ const migrateDatabase = {
             return task.newListr([
                 adjustMagentoConfiguration,
                 configureElasticsearch,
-                upgradeMagento
+                magentoTask('setup:upgrade')
             ], {
                 concurrent: false,
                 exitOnError: true,

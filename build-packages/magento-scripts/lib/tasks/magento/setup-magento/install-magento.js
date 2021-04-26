@@ -19,6 +19,11 @@ const installMagento = {
 
         let installed = false;
 
+        /**
+         * @type {Array<Error>}
+         */
+        const errors = [];
+
         for (let tries = 0; tries < 2; tries++) {
             try {
                 const command = `setup:install \
@@ -55,8 +60,10 @@ const installMagento = {
                         task.output = t;
                     }
                 });
+
                 installed = true;
             } catch (e) {
+                errors.push(e);
                 if (tries === 2) {
                     throw e;
                 }
@@ -67,12 +74,10 @@ const installMagento = {
             }
         }
 
-        await runMagentoCommand('cache:enable', {
-            magentoVersion,
-            callback: (t) => {
-                task.output = t;
-            }
-        });
+        if (!installed) {
+            const errorMessages = errors.map((e) => e.message).join('\n\n');
+            throw new Error(`Unable to install Magento!\n${errorMessages}`);
+        }
     },
     options: {
         bottomBar: 15
