@@ -109,6 +109,8 @@ module.exports = (yargs) => {
             logger.log(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
             logger.log(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`);
             logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
+            logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
+            logger.log('');
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
