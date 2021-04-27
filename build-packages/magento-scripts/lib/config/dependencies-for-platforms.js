@@ -44,6 +44,7 @@ const dependenciesForPlatforms = {
             'libicu',
             'libicu-devel',
             'libzip-devel',
+            'libsodium-devel',
             'libtool-ltdl-devel',
             'oniguruma-devel'
         ],
@@ -58,6 +59,7 @@ const dependenciesForPlatforms = {
             'libicu',
             'libicu-devel',
             'libzip-devel',
+            'libsodium-devel',
             'libtool-ltdl-devel',
             'oniguruma-devel'
         ],
@@ -78,6 +80,7 @@ const dependenciesForPlatforms = {
             'build-essential',
             'libbz2-dev',
             'libreadline-dev',
+            'libsodium-dev',
             'libsqlite3-dev',
             'libssl-dev',
             'libxml2-dev',
