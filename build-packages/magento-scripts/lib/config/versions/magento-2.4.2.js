@@ -46,6 +46,7 @@ module.exports = ({ templateDir } = {}) => ({
                         }
                     }
                 },
+                fileinfo: {},
                 xdebug: {
                     version: '3.0.4'
                 }
