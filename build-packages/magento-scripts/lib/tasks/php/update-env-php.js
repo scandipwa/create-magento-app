@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable consistent-return,no-param-reassign */
 const path = require('path');
 const pathExists = require('../../util/path-exists');
 const phpTask = require('../../util/php-task');
@@ -12,6 +12,7 @@ const updateEnvPHP = {
         // update env.php only if it's exist
         if (!await pathExists(path.resolve('app', 'etc', 'env.php'))) {
             task.skip();
+            return;
         }
 
         return task.newListr([
