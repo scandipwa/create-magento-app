@@ -18,7 +18,26 @@ export interface NginxConfiguration extends ServiceWithVersion {
 }
 
 export interface PHPExtension extends Record<string, unknown> {
-    version: string
+    version?: string
+    /**
+     * Name of the extension loaded to PHP.
+     *
+     * @example `libsodium` extension is using `sodium` moduleName because it is loaded into PHP as `sodium` extension
+     * and dynamic library that it requires called `sodium`
+     *
+     * ```
+     * {
+     *  php: {
+     *      extensions: {
+     *          libsodium: {
+     *              moduleName: 'sodium'
+     *          }
+     *      }
+     *  }
+     * }
+     * ```
+     */
+    moduleName?: string
     hooks?: {
         preInstall: (config: CMAConfiguration['configuration']) => Promise<void>
         postInstall: (config: CMAConfiguration['configuration']) => Promise<void>
@@ -33,6 +52,8 @@ export interface PHPExtensions {
     sockets: PHPExtension
     simpleXML: PHPExtension
     xdebug: PHPExtension
+    fileinfo: PHPExtension
+    libsodium: PHPExtension
 }
 
 export interface PHPConfiguration {
