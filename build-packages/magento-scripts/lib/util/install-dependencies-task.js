@@ -87,6 +87,9 @@ You need to install missing ${ dependenciesWordFormatter } manually, run the fol
         if (installAnswer === 'skip-install') {
             task.skip(`Skipping ${ dependenciesWordFormatter} installation!`);
         }
+    },
+    options: {
+        bottomBar: 10
     }
 });
 
