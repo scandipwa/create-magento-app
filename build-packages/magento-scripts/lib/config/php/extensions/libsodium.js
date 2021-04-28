@@ -3,6 +3,9 @@ const fs = require('fs');
 const os = require('os');
 const pathExists = require('../../../util/path-exists');
 
+/**
+ * @type {import('../../../../typings/index').PHPExtension}
+ */
 module.exports = {
     extensionName: 'sodium',
     hooks: {
