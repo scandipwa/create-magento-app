@@ -57,7 +57,7 @@ const configure = {
                 const { hooks = {} } = extensionOptions;
 
                 if (hooks.preInstall) {
-                    await hooks.preInstall(config);
+                    await Promise.resolve(hooks.preInstall(config));
                 }
                 await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
                 phpbrew use ${ php.version } && \
@@ -69,7 +69,7 @@ const configure = {
                 });
 
                 if (hooks.postInstall) {
-                    await hooks.postInstall(config);
+                    await Promise.resolve(hooks.postInstall(config));
                 }
             }
         } catch (e) {
