@@ -14,6 +14,9 @@ const connectToMySQL = {
         let tries = 0;
         while (tries < 10) {
             tries++;
+            if (tries === 3) {
+                task.output = 'Still connecting, do not worry.\nProbably MySQL server is still starting...';
+            }
             try {
                 const connection = await mysql.createConnection({
                     host: 'localhost',
