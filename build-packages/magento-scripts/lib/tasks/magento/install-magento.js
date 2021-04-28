@@ -153,6 +153,7 @@ const installMagento = {
                 'env.php'
             ],
             'bin/magento': true,
+            vendor: true,
             'composer.json': true,
             'composer.lock': true
         });
