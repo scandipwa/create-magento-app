@@ -5,6 +5,7 @@ const dependenciesForPlatforms = {
             'bzip2',
             'libiconv',
             'libzip',
+            'libsodium',
             'curl',
             'libpng',
             'gd',
