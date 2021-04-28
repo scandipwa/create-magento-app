@@ -1,11 +1,12 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { libsodium } = require('../php/extensions');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.1-p1',
     configuration: {
         php: {
-            version: '7.4.13',
+            version: '7.4.16',
             configTemplate: path.join(templateDir || '', 'php.template.ini'),
             extensions: {
                 gd: {},
@@ -14,6 +15,7 @@ module.exports = ({ templateDir } = {}) => ({
                 openssl: {},
                 sockets: {},
                 SimpleXML: {},
+                libsodium,
                 xdebug: {
                     version: '3.0.4'
                 }
