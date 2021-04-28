@@ -20,6 +20,7 @@ const installDependenciesTask = (options) => ({
         const cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
         const installCommand = logger.style.code(cmd);
         const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
+        task.title = `Installing missing dependencies: ${ logger.style.code(dependenciesToInstall.join(', ')) }`;
         task.output = `Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependenciesToInstall.join(' ')) } detected!`;
 
         let promptSkipper = false;
@@ -73,6 +74,7 @@ You need to install missing ${ dependenciesWordFormatter } manually, run the fol
         }
 
         if (installAnswer === 'install') {
+            task.output = `Enter your sudo password! It's needed for ${ dependenciesWordFormatter } installation.`;
             task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
             return task.newListr([
                 execCommandTask(cmd, {
