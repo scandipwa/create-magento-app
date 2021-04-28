@@ -25,9 +25,9 @@ const linkTheme = {
             getCachedPorts,
             installTheme,
             themeSubtask,
-            buildTheme,
             upgradeMagento,
-            disablePageCache
+            disablePageCache,
+            buildTheme
         ], {
             concurrent: false,
             exitOnError: true,
