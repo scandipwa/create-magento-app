@@ -18,7 +18,7 @@ module.exports = ({ templateDir } = {}) => ({
                 sockets: {},
                 SimpleXML: {},
                 libsodium: {
-                    moduleName: 'sodium',
+                    extensionName: 'sodium',
                     hooks: {
                         postInstall: async ({ php }) => {
                             const sodiumDynamicLibraryPath = path.join(

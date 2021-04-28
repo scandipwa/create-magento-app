@@ -22,7 +22,7 @@ export interface PHPExtension extends Record<string, unknown> {
     /**
      * Name of the extension loaded to PHP.
      *
-     * @example `libsodium` extension is using `sodium` moduleName because it is loaded into PHP as `sodium` extension
+     * @example `libsodium` extension is using `sodium` extensionName because it is loaded into PHP as `sodium` extension
      * and dynamic library that it requires called `sodium`
      *
      * ```
@@ -30,14 +30,14 @@ export interface PHPExtension extends Record<string, unknown> {
      *  php: {
      *      extensions: {
      *          libsodium: {
-     *              moduleName: 'sodium'
+     *              extensionName: 'sodium'
      *          }
      *      }
      *  }
      * }
      * ```
      */
-    moduleName?: string
+    extensionName?: string
     hooks?: {
         preInstall: (config: CMAConfiguration['configuration']) => Promise<void>
         postInstall: (config: CMAConfiguration['configuration']) => Promise<void>

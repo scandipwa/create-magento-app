@@ -33,12 +33,12 @@ const configure = {
         const missingExtensions = Object.entries(php.extensions)
             // check if module is not loaded and if it is loaded check installed version
             .filter(([name, options]) => {
-                const moduleName = options.moduleName || name;
-                if (!loadedModules[moduleName]) {
+                const extensionName = options.extensionName || name;
+                if (!loadedModules[extensionName]) {
                     return true;
                 }
 
-                if (options && options.version && loadedModules[moduleName] !== options.version) {
+                if (options && options.version && loadedModules[extensionName] !== options.version) {
                     return true;
                 }
 
