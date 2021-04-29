@@ -10,7 +10,7 @@ const prestissimoInstall = {
     task: async (ctx, task) => {
         const { composer } = ctx.config;
 
-        if (!semver.satisfies(composer.version, '^2')) {
+        if (semver.satisfies(composer.version, '^2')) {
             task.skip();
             return;
         }
