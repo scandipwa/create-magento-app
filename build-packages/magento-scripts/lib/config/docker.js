@@ -1,5 +1,7 @@
 const os = require('os');
 const path = require('path');
+const macosVersion = require('macos-version');
+const { getArchSync } = require('../util/arch');
 const { isIpAddress } = require('../util/ip');
 
 module.exports = ({ configuration, ssl, host }, config) => {
@@ -7,7 +9,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
         nginx,
         redis,
         mysql,
-        elasticsearch
+        elasticsearch,
+        mariadb
     } = configuration;
 
     const {
@@ -33,6 +36,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
     };
 
     const isLinux = os.platform() === 'linux';
+    const isArm = getArchSync() === 'arm64';
+    const isArmMac = macosVersion.isMacOS && isArm;
 
     if (!isLinux) {
         /**
@@ -116,7 +121,7 @@ module.exports = ({ configuration, ssl, host }, config) => {
                 connectCommand: ['redis-cli']
             },
             mysql: {
-                _: 'MySQL',
+                _: !isArmMac ? 'MySQL' : 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
@@ -133,12 +138,15 @@ module.exports = ({ configuration, ssl, host }, config) => {
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: `mysql:${ mysql.version }`,
-                imageDetails: {
+                image: !isArmMac ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
+                imageDetails: !isArmMac ? {
                     name: 'mysql',
                     tag: mysql.version
+                } : {
+                    name: 'mariadb',
+                    tag: mariadb.version
                 },
-                name: `${ prefix }_mysql`
+                name: !isArmMac ? `${ prefix }_mysql` : `${ prefix }_mariadb`
             },
             elasticsearch: {
                 _: 'ElasticSearch',

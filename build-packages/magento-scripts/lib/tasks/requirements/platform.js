@@ -4,6 +4,7 @@ const macosVersion = require('macos-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { platforms, darwinMinimalVersion } = require('../../config');
 const dependencyCheck = require('./dependency');
+const { getArch } = require('../../util/arch');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -26,6 +27,10 @@ const checkPlatform = {
                 `MacOS bellow version ${ logger.style.misc(darwinMinimalVersion) } is not supported.`
             );
         }
+
+        ctx.arch = await getArch();
+
+        ctx.isArm = ctx.arch === 'arm64';
 
         ctx.platform = currentPlatform;
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();

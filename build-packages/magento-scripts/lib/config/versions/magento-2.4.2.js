@@ -32,8 +32,11 @@ module.exports = ({ templateDir } = {}) => ({
         mysql: {
             version: '8.0'
         },
+        mariadb: {
+            version: '10.4'
+        },
         elasticsearch: {
-            version: '7.9.3'
+            version: '7.12.1'
         },
         composer: {
             version: '2'

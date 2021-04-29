@@ -3,6 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 
 const { version: packageVersion } = require('../../../package.json');
+const { getArchSync } = require('../../util/arch');
 
 const prettyStatus = async ({
     ports,
@@ -46,6 +47,7 @@ const prettyStatus = async ({
     strings.push(`PHPBrew version: ${logger.style.file(phpBrewVersion)}`);
     strings.push(`Platfrom: ${logger.style.code(platform)}`);
     strings.push(`Platform version: ${logger.style.file(platformVersion)}`);
+    strings.push(`Platform architecture: ${logger.style.file(getArchSync())}`);
 
     separator();
 
