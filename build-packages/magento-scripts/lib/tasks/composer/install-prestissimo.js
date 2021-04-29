@@ -7,15 +7,16 @@ const runComposerCommand = require('../../util/run-composer');
  */
 const prestissimoInstall = {
     title: 'Installing Prestissimo',
-    task: async (ctx, task) => {
-        const { composer } = ctx.config;
+    task: async ({ magentoVersion, config }, task) => {
+        const { composer } = config;
 
         if (semver.satisfies(composer.version, '^2')) {
             task.skip();
             return;
         }
         const { code } = await runComposerCommand('global show hirak/prestissimo', {
-            throwNonZeroCode: false
+            throwNonZeroCode: false,
+            magentoVersion
         });
 
         if (code === 0) {
@@ -24,6 +25,7 @@ const prestissimoInstall = {
         }
 
         await runComposerCommand('global require hirak/prestissimo', {
+            magentoVersion,
             callback: (t) => {
                 task.output = t;
             }
