@@ -74,8 +74,11 @@ You need to install missing ${ dependenciesWordFormatter } manually, run the fol
         }
 
         if (installAnswer === 'install') {
-            task.output = `Enter your sudo password! It's needed for ${ dependenciesWordFormatter } installation.`;
-            task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
+            if (platform !== 'darwin') {
+                task.output = `Enter your sudo password! It's needed for ${ dependenciesWordFormatter } installation.`;
+                task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
+            }
+
             return task.newListr([
                 execCommandTask(cmd, {
                     callback: (t) => {
