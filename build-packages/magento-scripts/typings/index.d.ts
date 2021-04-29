@@ -118,6 +118,11 @@ export interface CMAConfiguration {
         mysql: ServiceWithVersion
 
         /**
+         * MariaDB configuration
+         */
+        mariadb: ServiceWithVersion
+
+        /**
          * ElasticSearch configuration
          */
         elasticsearch: ServiceWithVersion
