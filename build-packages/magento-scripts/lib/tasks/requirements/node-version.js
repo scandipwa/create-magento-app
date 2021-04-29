@@ -16,7 +16,7 @@ You need to upgrade Node.js to at lease version 12 to work with this software!`
             );
         }
 
-        task.title = `Using Node.js version ${node}`;
+        task.title = `Using Node.js version ${node} ${process.arch}`;
     }
 };
 
