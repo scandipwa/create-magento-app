@@ -11,6 +11,8 @@ export interface ListrContext {
         redis: number
         elasticsearch: number
     }
+    arch: 'arm64' | 'x64'
+    isArm: boolean
     platform?: NodeJS.Platform
     platformVersion?: string
     /**
