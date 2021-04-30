@@ -1,5 +1,107 @@
 # Changelog
 
+## v1.5.0 (30/04/2021)
+#  Apple Silicon, Magento 2.4.2 & 2.4.1-p1 support and bug fixes!
+
+## What's New
+
+### Apple Silicon support is here!
+ When using CMA on Apple Silicon you might notice some differences compared to running it on X86 system.
+ Mainly, since MySQL image is not available with arm64 architecture, we are using MariaDB instead. MariaDB is a fork of MySQL and compatible with its API so there should be no problem.
+Like everything new, not everything works with old software. Currently, containers might experience issues with networking, so if you get message 
+
+More about issues with containers on Apple Silicon available [here](https://docs.docker.com/docker-for-mac/apple-silicon/).
+
+ Docs available [here](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos/installation-on-macos-apple-silicon)!
+### Magento 2.4.2 & 2.4.1-p1 support is here!
+ Now when running `magento-scripts` for the first time you will be given a prompt with all supported Magento versions.
+ Currently 3 are supported: 2.4.1, 2.4.1-p1, 2.4.2.
+ Magento 2.4.2 and 2.4.1-p1 requires new dependency called `libsodium`. [Prerequisites](https://docs.create-magento-app.com/getting-started/prerequisites) are already updated and CMA will also check if you need install additional dependencies and install them right away!
+
+ More about supported Magento versions [here](https://docs.create-magento-app.com/getting-started/supported-magento-versions)!
+### `magento-scripts` will now also check for the Node.js version!
+ So you will get a proper error message on what to do with your out-of-date Node.js version.
+ The minimum required Node.js version is still 12.
+### [link](https://docs.create-magento-app.com/getting-started/available-commands/link) command will now also build theme if it is not built already.
+ No more `"Template Magento_Theme::scandipwa_root.phtml "is not found"` error after install! 05378078310f071937a9f5f592b53902c2799499
+
+
+## Bug Fixes
+
+- Fixed a bug that prevents a user from choosing the desired port to run CMA on using the [--port](https://docs.create-magento-app.com/getting-started/available-commands/start#p-port) option. 352912d94a31c381adebcb0a21bf41c6daffcf21
+- Fixed updating the `env.php` file if your installed PHP version is not 7.4.13. 695644d622f9377154842003b1cf149fe4e1867d
+- Fixed skipping updating `app/etc/env.php` file if it does not exist. 2403892a4dbcf1f4e83590bfcf55436e6f4cf866
+- Fixed installation of [prestissimo](https://github.com/hirak/prestissimo) on non-default php version.
+
+## Miscellaneous
+- Bumped XDebug version to [3.0.4](https://xdebug.org/announcements/2021-04-08)
+- After the start command successfully finished, added a note about the status command containing MySQL credentials, container status, and more detailed info about the project. 656225035bf54ae1ba3a01475001d938e7e3162b
+- Nginx template has been updated to be up-to-date with a template [from Magento repository](https://github.com/magento/magento2/blob/2.4-develop/nginx.conf.sample). 14b02edd6a6c8f731146bccb93c6eade87039d41
+- Added `composer` configuration, so you can forcefully choose the composer version.
+ Although, only version 1 and 2 is supported.
+- Added `php.extensions` hooks configuration to do some actions before and after extension installation.
+ As an example, hooks are currently used to edit the `/home/user/.phpbrew/php/php-<>/var/db/libsodium.ini` file because when the `libsodium` extension is installed, it uses dynamic library called `sodium.so` instead of `libsodium.so`. PHP throws an error that it `cannot load libsodium library` because it does not exist. In the post-install hook, we edit this file to point to the correct library name so everything goes smoothly. 416d37503c9bb47af44b1f6f6debb2249c14f68f
+
+---
+
+## v1.4.2-alpha.16, v1.3.2-alpha.4, v1.3.2-alpha.5 (26/04/2021)
+# Magento 2.4.2 experimental support, composer configuration and XDebug version 3.0.4
+
+## What's New
+
+- Magento 2.4.2 support is finally here!
+ Although, to get it properly working you might need to edit a vendor file. 
+- `magento-scripts` will now also check for the Node.js version!
+ So you will get a proper error message on what to do with your out-of-date Node.js version.
+ The minimum required Node.js version is still 12.
+- [link](https://docs.create-magento-app.com/getting-started/available-commands/link) command will now also build theme if it is not built already.
+ No more `"Template Magento_Theme::scandipwa_root.phtml "is not found"` error after install! 05378078310f071937a9f5f592b53902c2799499
+
+## Bug Fixes
+
+- Fixed a bug that prevents a user from choosing the desired port to run CMA on using the [--port](https://docs.create-magento-app.com/getting-started/available-commands/start#p-port) option. 352912d94a31c381adebcb0a21bf41c6daffcf21
+- Fixed updating the `env.php` file if your installed PHP version is not 7.4.13. 695644d622f9377154842003b1cf149fe4e1867d
+
+## Miscellaneous
+- Bumped XDebug version to [3.0.4](https://xdebug.org/announcements/2021-04-08)
+- After the start command successfully finished, added a note about the status command containing MySQL credentials, container status, and more detailed info about the project. 656225035bf54ae1ba3a01475001d938e7e3162b
+- Nginx template has been updated to be up-to-date with a template [from Magento repository](https://github.com/magento/magento2/blob/2.4-develop/nginx.conf.sample). 14b02edd6a6c8f731146bccb93c6eade87039d41
+- Added `composer` configuration, so you can forcefully choose the composer version.
+ Although, only version 1 and 2 is supported.
+- Added `php.extensions` hooks configuration to do some actions before and after extension installation.
+ As an example, is currently used to edit the `libsodium.ini` file because when the `libsodium` extension is installed, it uses `sodium.so` dynamic library instead of `libsodium.so` which is set by default and PHP throws an error that it cannot load this library because it does not exist. In the post-install hook, we edit this file to point to the correct library name so everything goes smoothly. 416d37503c9bb47af44b1f6f6debb2249c14f68f
+
+## Fix for Magento 2.4.2
+When you open Magento Admin panel some pictures might not load, as well as css, js and other files, open devtools, network tab and see following picture:
+![Screenshot_20210426_192138](https://user-images.githubusercontent.com/18352350/116117224-a95a4b80-a6c4-11eb-87ca-b86606969c62.png)
+
+To fix this you will need to go to `vendor/magento/framework/Filesystem/Driver/File/Mime.php` and edit the method as follows:
+![Screenshot_20210426_174623](https://user-images.githubusercontent.com/18352350/116102369-55953580-a6b7-11eb-94f1-0a362bcf3584.png)
+add `if` statement to 116 line.
+![Screenshot_20210426_174722](https://user-images.githubusercontent.com/18352350/116102532-765d8b00-a6b7-11eb-9258-46917ee93d0c.png)
+
+After adding this `if` statement on line 116 it will work as expected.
+
+The issue is opened on magento2 GitHub so we waiting for a workaround or straight up fix. https://github.com/magento/magento2/issues/32878
+---
+
+## v1.4.1 (13/04/2021)
+# What's New
+
+- [Logs](https://docs.create-magento-app.com/getting-started/available-commands/logs) command now mimics [docker logs](https://docs.docker.com/engine/reference/commandline/logs/#options) command options.
+  So you can define how many lines to show in output and others. #22 
+
+# Miscellaneous
+
+- CMA will now add the default `cma.js` file correctly.
+---
+
+## create-magento-app@1.2.3 (13/04/2021)
+# What's New
+
+- Added `cma.js` file to template for CMA.
+---
+
 ## v1.4.0 (06/04/2021)
 # What's New
 
@@ -9,6 +111,8 @@
 - CMA will now check if dependencies are installed on supported platforms: `macOS, Ubuntu, Linux Mint, Fedora, Centos, Arch Linux, Manjaro Linux`.
   If you don't have some dependency installed, CMA will prompt you to install, not install (installation will exit) or skip install (not recommended).
   If you select **install** you will need to write your root password and press **enter**. (Does not apply to macOS)
+- On the Linux platform, CMA will use direct symlinks to mount data to the Nginx container instead of named volumes.
+  If you have experiencing performance issues, please let us know!
 
 # Bug Fixes
 
@@ -27,9 +131,7 @@
 ---
 
 ## create-magento-app@1.2.2 (06/04/2021)
-# What's New
 
-- Added `cma.js` file to template for CMA.
 ---
 
 ## v1.3.2-alpha.2 (31/03/2021)
@@ -283,17 +385,3 @@ Now it will not replace `composer.json` but install missing dependencies for mag
 Now when running CMA `php.ini` configuration will be stored inside the cache folder. This will prevent different CMA instances from causing interference on each other, so you can debug one CMA project and run the second CMA instance at the same time on the same machine.
 - Magento version and application config prompt will not timeout and fallback to the default value after 5 mins and will not interfere with task title state.
 Previously, users might have noticed that when creating new CMA project and choosing default values in the prompts they will still say that "n sec left" even after the user chose his answer. With this patch, they should behave as intended.
----
-
-## Bug Fixes, New Feature and More. (08/01/2021)
-# What's New
-
-- Command [start](https://docs.create-magento-app.com/getting-started/available-commands/start) received a new option __-s__ which skips Magento setup on start-up.
-- Added new command [exec](https://docs.create-magento-app.com/getting-started/available-commands/exec) which allows to run commands inside docker containers.
-
-# Bug Fixes
-
-- [Theme link](https://docs.create-magento-app.com/getting-started/available-commands/link) command is now able to use a relative path to the theme in __composer.json__ repository path field. #2
-- Fixed incorrect free port retrieving on macOS. #1
-- Fixed possible error during installation and re-installation of a CMA project - [SQLSTATE[HY000] [2002] No such file or directory](https://docs.create-magento-app.com/troubleshooting/common-issues#sqlstate-hy-000-2002-no-such-file-or-directory).
-Now it should work just fine.
