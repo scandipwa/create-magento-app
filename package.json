@@ -2,7 +2,7 @@
     "private": true,
     "name": "create-magento-app",
     "scripts": {
-        "eslint": "eslint ./build-packages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
+        "lint": "eslint ./build-packages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
         "cma": "create-magento-app runtime-packages/cma",
         "publish": "lerna publish --exact",
         "publish:alpha": "lerna publish --preid alpha --dist-tag alpha",
@@ -20,7 +20,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "npm run eslint"
+            "pre-commit": "npm run lint"
         }
     },
     "eslintConfig": {
