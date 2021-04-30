@@ -6,7 +6,7 @@ module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.2',
     configuration: {
         php: {
-            version: '7.4.16',
+            version: '7.4.18',
             configTemplate: path.join(templateDir || '', 'php.template.ini'),
             extensions: {
                 gd: {},
