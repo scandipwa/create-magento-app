@@ -6,9 +6,9 @@
 ## What's New
 
 ### Apple Silicon support is here!
- When using CMA on Apple Silicon you might notice some differences compared to running it on X86 system.
+ When using CMA on Apple Silicon you might notice some differences compared to running it on the X86 system.
  Mainly, since MySQL image is not available with arm64 architecture, we are using MariaDB instead. MariaDB is a fork of MySQL and compatible with its API so there should be no problem.
-Like everything new, not everything works with old software. Currently, containers might experience issues with networking, so if you get message 
+Like everything new, not everything works with old software. Currently, containers might experience issues with networking, so if you get the message `This site can’t be reached` try to run the start command again, it should restart the containers and resolve the issue.
 
 More about issues with containers on Apple Silicon available [here](https://docs.docker.com/docker-for-mac/apple-silicon/).
 
@@ -16,7 +16,7 @@ More about issues with containers on Apple Silicon available [here](https://docs
 ### Magento 2.4.2 & 2.4.1-p1 support is here!
  Now when running `magento-scripts` for the first time you will be given a prompt with all supported Magento versions.
  Currently 3 are supported: 2.4.1, 2.4.1-p1, 2.4.2.
- Magento 2.4.2 and 2.4.1-p1 requires new dependency called `libsodium`. [Prerequisites](https://docs.create-magento-app.com/getting-started/prerequisites) are already updated and CMA will also check if you need install additional dependencies and install them right away!
+ Magento 2.4.2 and 2.4.1-p1 requires a new dependency called `libsodium`. [Prerequisites](https://docs.create-magento-app.com/getting-started/prerequisites) are already updated and CMA will also check if you need to install additional dependencies and install them right away!
 
  More about supported Magento versions [here](https://docs.create-magento-app.com/getting-started/supported-magento-versions)!
 ### `magento-scripts` will now also check for the Node.js version!
