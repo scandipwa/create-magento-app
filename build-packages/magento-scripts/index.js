@@ -20,8 +20,7 @@ const commands = [
 ];
 
 process.title = 'magento-scripts';
-process.env.GA_TRACKING_ID = 'UA-195153501-1';
-// process.env.GA_TRACKING_ID = '';
+process.env.GA_TRACKING_ID = '';
 process.env.GA_DEBUG = '';
 process.env.GA_DISABLE = '';
 

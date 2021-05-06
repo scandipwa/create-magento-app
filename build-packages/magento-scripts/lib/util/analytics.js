@@ -59,6 +59,7 @@ class Analytics {
                 { headers: { 'User-Agent': 'Google-Cloud-Functions' } }
             );
             const jsonResponse = await res.json();
+            // eslint-disable-next-line no-console
             console.log(rawBody, jsonResponse);
         }
     }

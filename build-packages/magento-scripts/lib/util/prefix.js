@@ -28,6 +28,7 @@ const getPrefix = () => {
 
 const getProjectCreatedAt = () => {
     const projectInGlobalConfig = projectsConfig.get(projectKey);
+
     if (projectInGlobalConfig && projectInGlobalConfig.createdAt) {
         return new Date(parseInt(projectInGlobalConfig.createdAt, 10) * 1000);
     }
