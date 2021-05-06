@@ -4,6 +4,7 @@ const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const googleAnalytics = require('../util/analytics');
 
 module.exports = (yargs) => {
     yargs.command('cli', 'Enter CLI (magento, php, composer).', () => {}, async () => {
@@ -22,6 +23,7 @@ module.exports = (yargs) => {
             await tasks.run();
         } catch (e) {
             logger.error(e.message || e);
+            await googleAnalytics.trackError((e.message || e));
             process.exit(1);
         }
         cli();

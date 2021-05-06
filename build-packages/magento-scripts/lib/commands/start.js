@@ -6,6 +6,7 @@ const start = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
 const linkTheme = require('../tasks/theme/link-theme');
+const googleAnalytics = require('../util/analytics');
 
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
@@ -70,6 +71,7 @@ module.exports = (yargs) => {
             concurrent: false,
             rendererOptions: { collapse: false }
         });
+        const timeStamp = new Date().getTime() / 1000;
 
         if (args.debug) {
             logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -111,9 +113,16 @@ module.exports = (yargs) => {
             logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
+
+            if (process.env.isLegacy) {
+                await googleAnalytics.trackTiming('CMA installation time', new Date().getTime() / 1000 - timeStamp);
+                process.env.isLegacy = 0;
+            }
+
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
+            await googleAnalytics.trackError((e.message || e));
             process.exit(1);
         }
     });
