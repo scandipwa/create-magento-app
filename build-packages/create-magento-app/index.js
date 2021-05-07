@@ -8,6 +8,11 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const createFilesystem = require('@scandipwa/scandipwa-dev-utils/create-filesystem');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps');
+const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+
+process.env.GA_TRACKING_ID = 'UA-19513501-1';
+process.env.GA_DEBUG = 1;
+process.env.GA_DISABLE = '';
 
 const greet = (name, pathname) => {
     const relativePathname = `./${pathname}`;
@@ -138,10 +143,15 @@ yargs.command(
 
         const pathArr = destination.split(path.sep);
         const name = pathArr.slice(-1);
+        const timeStamp = new Date().getTime() / 1000;
+
+        googleAnalytics.setClientIdentifier(+(new Date()));
 
         await init({
             name, // we do not care about organization it is or not
             path: destination
         });
+
+        googleAnalytics.trackTiming('CMA installation time', new Date().getTime() / 1000 - timeStamp);
     }
 ).argv;

@@ -5,7 +5,7 @@ const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version'
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const isInstalledGlobally = require('is-installed-globally');
-const googleAnalytics = require('./lib/util/analytics');
+const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
 
 const commands = [
     require('./lib/commands/link'),
@@ -20,8 +20,8 @@ const commands = [
 ];
 
 process.title = 'magento-scripts';
-process.env.GA_TRACKING_ID = '';
-process.env.GA_DEBUG = '';
+process.env.GA_TRACKING_ID = 'UA-19513501-1';
+process.env.GA_DEBUG = 1;
 process.env.GA_DISABLE = '';
 
 const newVersionIsAPatch = (latestVersion, currentVersion) => {
