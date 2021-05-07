@@ -10,10 +10,6 @@ const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps');
 const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
 
-process.env.GA_TRACKING_ID = 'UA-19513501-1';
-process.env.GA_DEBUG = 1;
-process.env.GA_DISABLE = '';
-
 const greet = (name, pathname) => {
     const relativePathname = `./${pathname}`;
     const displayedCommand = shouldUseYarn() ? 'yarn' : 'npm run';

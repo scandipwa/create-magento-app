@@ -20,9 +20,6 @@ const commands = [
 ];
 
 process.title = 'magento-scripts';
-process.env.GA_TRACKING_ID = 'UA-19513501-1';
-process.env.GA_DEBUG = 1;
-process.env.GA_DISABLE = '';
 
 const newVersionIsAPatch = (latestVersion, currentVersion) => {
     const latestVersionParsed = semver.parse(latestVersion);
