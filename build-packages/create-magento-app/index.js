@@ -141,8 +141,6 @@ yargs.command(
         const name = pathArr.slice(-1);
         const timeStamp = new Date().getTime() / 1000;
 
-        googleAnalytics.setClientIdentifier(+(new Date()));
-
         await init({
             name, // we do not care about organization it is or not
             path: destination

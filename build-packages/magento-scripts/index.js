@@ -5,7 +5,6 @@ const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version'
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const isInstalledGlobally = require('is-installed-globally');
-const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
 
 const commands = [
     require('./lib/commands/link'),
@@ -32,7 +31,6 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
 
 (async () => {
     const { version: currentVersion, name } = require('./package.json');
-    googleAnalytics.setClientIdentifier(+(new Date()));
 
     try {
         const latestVersion = await getLatestVersion(name);
