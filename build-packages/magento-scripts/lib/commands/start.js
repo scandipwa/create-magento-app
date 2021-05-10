@@ -116,7 +116,6 @@ module.exports = (yargs) => {
 
             if (process.isLegacy) {
                 await googleAnalytics.trackTiming('CMA first development time', new Date().getTime() / 1000 - timeStamp);
-                process.isLegacy = 0;
             }
 
             process.exit(0);
