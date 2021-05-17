@@ -48,11 +48,7 @@ const installDependenciesTask = (options) => ({
                     },
                     {
                         name: 'not-install',
-                        message: `Do not install ${ dependenciesWordFormatter } now!`
-                    },
-                    {
-                        name: 'skip-install',
-                        message: `Skip ${dependenciesWordFormatter} installation.`
+                        message: `Install ${ dependenciesWordFormatter } later, when I feel it.`
                     }
                 ]
             }),
@@ -62,18 +58,19 @@ const installDependenciesTask = (options) => ({
         promptSkipper = true;
 
         if (installAnswer === 'timeout') {
-            throw new Error(`User timeout.
+            throw new Error(`Timeout!
 
-You need to install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
+To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
         }
 
         if (installAnswer === 'not-install') {
-            throw new Error(`User chosen to not install ${ dependenciesWordFormatter } now.
+            throw new Error(`Okay, skipping ${ dependenciesWordFormatter } installation for now.
 
-You need to install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
+To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
         }
 
         if (installAnswer === 'install') {
+            // on macos we don't need sudo permissions to install dependencies, so every other platform required to do that
             if (platform !== 'darwin') {
                 task.output = `Enter your sudo password! It's needed for ${ dependenciesWordFormatter } installation.`;
                 task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
@@ -87,10 +84,6 @@ You need to install missing ${ dependenciesWordFormatter } manually, run the fol
                     pipeInput: true
                 })
             ]);
-        }
-
-        if (installAnswer === 'skip-install') {
-            task.skip(`Skipping ${ dependenciesWordFormatter} installation!`);
         }
     },
     options: {
