@@ -139,13 +139,13 @@ yargs.command(
 
         const pathArr = destination.split(path.sep);
         const name = pathArr.slice(-1);
-        const timeStamp = new Date().getTime() / 1000;
+        const timeStamp = Date.now() / 1000;
 
         await init({
             name, // we do not care about organization it is or not
             path: destination
         });
 
-        googleAnalytics.trackTiming('CMA installation time', new Date().getTime() / 1000 - timeStamp);
+        googleAnalytics.trackTiming('CMA installation time', Date.now() / 1000 - timeStamp);
     }
 ).argv;

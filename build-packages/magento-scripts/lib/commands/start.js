@@ -71,7 +71,7 @@ module.exports = (yargs) => {
             concurrent: false,
             rendererOptions: { collapse: false }
         });
-        const timeStamp = new Date().getTime() / 1000;
+        const timeStamp = Date.now() / 1000;
 
         if (args.debug) {
             logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -114,14 +114,14 @@ module.exports = (yargs) => {
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
 
-            if (process.isLegacy) {
-                await googleAnalytics.trackTiming('CMA first development time', new Date().getTime() / 1000 - timeStamp);
+            if (process.isFirstStart) {
+                await googleAnalytics.trackTiming('CMA first development time', Date.now() / 1000 - timeStamp);
             }
 
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
-            googleAnalytics.trackError((e.message || e));
+            googleAnalytics.trackError(e.message || e);
             process.exit(1);
         }
     });
