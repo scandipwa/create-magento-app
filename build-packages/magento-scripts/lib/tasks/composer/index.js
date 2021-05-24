@@ -3,11 +3,20 @@ const fs = require('fs');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
+const safeRegexExtract = require('../../util/safe-regex-extract');
 const installPrestissimo = require('./install-prestissimo');
 
 const getComposerVersion = async ({ composer, php }) => {
     const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.initPath} ${composer.binPath} --version --no-ansi`);
-    const [_, composerVersion] = composerVersionOutput.match(/Composer version ([\d.]+)/i);
+
+    const composerVersion = safeRegexExtract({
+        string: composerVersionOutput,
+        regex: /Composer version ([\d.]+)/i,
+        onNoMatch: () => {
+            throw new Error(`No composer version found in composer version output!\n\n${composerVersionOutput}`);
+        }
+    });
+
     return composerVersion;
 };
 

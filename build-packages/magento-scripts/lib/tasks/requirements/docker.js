@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign,no-unused-vars */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const safeRegexExtract = require('../../util/safe-regex-extract');
 
 const getDockerVersion = async () => {
     const { result, code } = await execAsyncSpawn('docker -v', {
@@ -7,7 +8,13 @@ const getDockerVersion = async () => {
     });
 
     if (code === 0) {
-        const [_, dockerVersion] = result.match(/Docker version ([\d.]+)/);
+        const dockerVersion = safeRegexExtract({
+            string: result,
+            regex: /docker version ([\d.]+)/i,
+            onNoMatch: () => {
+                throw new Error(`No docker version found in docker version output!\n\n${result}`);
+            }
+        });
 
         return dockerVersion;
     }
