@@ -134,6 +134,13 @@ module.exports = ({ configuration, ssl, host }, config) => {
                     MYSQL_PASSWORD: 'magento',
                     MYSQL_DATABASE: 'magento'
                 },
+                /**
+                 * When database dump contains functions, MySQL can throw and error "access denied for those functions"
+                 * so to overcome this issue, we need to enable trust option for these functions to avoid errors during migrations.
+                 *
+                 * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
+                 */
+                command: '--log_bin_trust_function_creators=1',
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
