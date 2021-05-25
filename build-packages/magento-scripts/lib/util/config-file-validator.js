@@ -106,7 +106,7 @@ const configFileSchema = Joi.object({
     ssl: sslSchema.optional(),
     prefix: Joi.bool().optional(),
     configuration: configurationSchema.required(),
-    useNonOverlappingPorts: Joi.bool().forbidden().error()
+    useNonOverlappingPorts: Joi.bool().forbidden()
 });
 
 /**
