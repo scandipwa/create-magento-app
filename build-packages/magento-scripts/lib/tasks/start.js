@@ -22,6 +22,7 @@ const {
     restoreThemeConfig
 } = require('./mysql');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const { getSystemConfig } = require('../config/system-config');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -33,6 +34,7 @@ const start = {
         checkRequirements,
         getMagentoVersionConfig,
         getConfigFromConfigFile,
+        getSystemConfig,
         getCachedPorts,
         stopServices,
         stopPhpFpm,

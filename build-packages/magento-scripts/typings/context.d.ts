@@ -1,4 +1,4 @@
-import { CMAConfiguration } from './index';
+import { PHPExtension } from './index';
 
 export interface ListrContext {
     magentoVersion: string
@@ -29,7 +29,7 @@ export interface ListrContext {
             fpmBinPath: string
             fpmConfPath: string
             fpmPidFilePath: string
-            extensions: CMAConfiguration['configuration']['php']['extensions']
+            extensions: PHPExtension
             version: string
         }
         composer: {
@@ -50,5 +50,9 @@ export interface ListrContext {
                 }
             }>
         }
+    }
+    systemConfiguration: {
+        analytics: boolean
+        useNonOverlappingPorts: boolean
     }
 }
