@@ -33,6 +33,7 @@ const getSystemConfig = {
             }
 
             ctx.systemConfiguration = deepmerge(defaultSystemConfig, userSystemConfigParsed);
+            return;
         }
 
         ctx.systemConfiguration = defaultSystemConfig;
