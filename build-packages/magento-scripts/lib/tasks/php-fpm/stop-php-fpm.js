@@ -18,21 +18,13 @@ const getProcessId = async (fpmPidFilePath) => {
 const stopPhpFpmTask = {
     title: 'Stopping php-fpm',
     task: async ({ config: { php } }, task) => {
+        const processId = await getProcessId(php.fpmPidFilePath);
+        if (!processId) {
+            task.skip();
+            return;
+        }
         try {
-            const processId = await getProcessId(php.fpmPidFilePath);
-            if (!processId) {
-                task.skip();
-                return;
-            }
             await execAsyncSpawn(`kill ${processId}`);
-
-            if (await pathExists(php.fpmPidFilePath)) {
-                try {
-                    await fs.promises.unlink(php.fpmPidFilePath);
-                } catch (e) {
-                    //
-                }
-            }
         } catch (e) {
             if (e.toLowerCase().includes('no such process')) {
                 try {
@@ -43,11 +35,14 @@ const stopPhpFpmTask = {
 
                 return;
             }
+        }
 
-            throw new Error(
-                `Unexpected error while stopping php-fpm.
-                See ERROR log below.\n\n${e}`
-            );
+        if (await pathExists(php.fpmPidFilePath)) {
+            try {
+                await fs.promises.unlink(php.fpmPidFilePath);
+            } catch (e) {
+                //
+            }
         }
     },
     options: {
