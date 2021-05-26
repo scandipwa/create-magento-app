@@ -24,7 +24,7 @@ const getProjectsFromProjectKeys = (path, project) => {
  *
  * @returns {Record<string, { createdAt?: string, prefix?: string}>}
  */
-const getProjectsList = () => {
+const getProjects = () => {
     const projects = {};
     for (const [projectPath, projectValueWithProjects] of projectsConfig) {
         const projectList = getProjectsFromProjectKeys(projectPath, projectValueWithProjects);
@@ -46,5 +46,5 @@ const getProjectsList = () => {
 module.exports = {
     projectsConfig,
     projectKey,
-    getProjectsList
+    getProjects
 };

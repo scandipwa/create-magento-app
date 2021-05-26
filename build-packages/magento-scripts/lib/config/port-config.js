@@ -4,7 +4,7 @@ const { findAPortNotInUse } = require('../util/portscanner');
 const { baseConfig } = require('.');
 const deepmerge = require('../util/deepmerge');
 const getJsonfileData = require('../util/get-jsonfile-data');
-const { getProjectsList } = require('./config');
+const { getProjects } = require('./config');
 
 /**
  * Get ports that are used by other CMA instances
@@ -12,7 +12,7 @@ const { getProjectsList } = require('./config');
  */
 const getUsedByOtherCMAProjectsPorts = async () => {
     const portConfigs = await Promise.all(
-        Object.keys(getProjectsList())
+        Object.keys(getProjects())
             .filter((projectPath) => projectPath !== process.cwd())
             .map((projectPath) => getJsonfileData(path.join(projectPath, 'node_modules', '.create-magento-app-cache', 'port-config.json')))
     );
