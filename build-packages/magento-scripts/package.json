@@ -33,6 +33,7 @@
         "macos-version": "^5.2.1",
         "mysql2": "^2.2.5",
         "semver": "^7.3.5",
+        "systeminformation": "^5.7.4",
         "yargs": "^16.2.0"
     },
     "publishConfig": {

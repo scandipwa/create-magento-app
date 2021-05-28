@@ -4,7 +4,9 @@ const macosVersion = require('macos-version');
 const { getArchSync } = require('../util/arch');
 const { isIpAddress } = require('../util/ip');
 
-module.exports = ({ configuration, ssl, host }, config) => {
+const systeminformation = require('systeminformation');
+
+module.exports = async ({ configuration, ssl, host }, config) => {
     const {
         nginx,
         redis,
@@ -18,6 +20,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
         magentoDir,
         cacheDir
     } = config;
+
+    const cpuSupportedFlags = await systeminformation.cpuFlags();
 
     const network = {
         name: `${ prefix }_network`
@@ -167,7 +171,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
                     'xpack.security.enabled': false,
                     'discovery.type': 'single-node',
                     ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
-                    'xpack.ml.enabled': false
+                    // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
+                    'xpack.ml.enabled': cpuSupportedFlags.includes('sse4_2')
                 },
                 network: network.name,
                 image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
