@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const getDockerConfig = require('../../config/docker');
+const { getBaseConfig } = require('../../config');
 
 const run = (options) => {
     const {
@@ -123,7 +125,11 @@ const startContainers = {
  */
 const stopContainers = {
     title: 'Stopping containers',
-    task: async ({ ports, config: { docker } }, task) => {
+    task: async ({ ports, config: { overridenConfiguration }, projectPath }, task) => {
+        const docker = getDockerConfig(
+            overridenConfiguration,
+            getBaseConfig(projectPath)
+        );
         const containerList = await execAsyncSpawn('docker container ls -a');
 
         const runningContainers = Object.values(docker.getContainers(ports)).filter(

@@ -10,6 +10,10 @@ module.exports = (yargs) => {
             exitOnError: true,
             rendererOptions: {
                 collapse: false
+            },
+            ctx: {
+                throwMagentoVersionMissing: true,
+                projectPath: process.cwd()
             }
         });
 

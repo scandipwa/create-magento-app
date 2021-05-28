@@ -1,21 +1,21 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
 const path = require('path');
-const { getConfigFromMagentoVersion, baseConfig } = require('.');
+const { getConfigFromMagentoVersion, getBaseConfig } = require('.');
 const deepmerge = require('../util/deepmerge');
 const pathExists = require('../util/path-exists');
 const setConfigFile = require('../util/set-config');
 const { defaultMagentoConfig } = require('./magento-config');
-
-const configJSFilePath = path.join(process.cwd(), 'cma.js');
-const magentoConfigFilePath = path.join(baseConfig.cacheDir, 'app-config.json');
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getConfigFromConfigFile = {
     task: async (ctx, task) => {
-        const { magentoVersion } = ctx;
+        const { magentoVersion, projectPath = process.cwd() } = ctx;
+        const { cacheDir, templateDir } = getBaseConfig(projectPath);
+        const configJSFilePath = path.join(projectPath, 'cma.js');
+        const magentoConfigFilePath = path.join(cacheDir, 'app-config.json');
 
         if (ctx.edition) {
             if (!['community', 'enterprise'].includes(ctx.edition)) {
@@ -34,7 +34,7 @@ const getConfigFromConfigFile = {
 
             if (legacyMagentoConfigExists) {
                 const legacyMagentoConfig = JSON.parse(
-                    await fs.promises.readFile(magentoConfigFilePath)
+                    await fs.promises.readFile(magentoConfigFilePath, 'utf-8')
                 );
 
                 magentoConfiguration = legacyMagentoConfig.magento || legacyMagentoConfig;
@@ -46,7 +46,7 @@ const getConfigFromConfigFile = {
 
             await setConfigFile({
                 configPathname: configJSFilePath,
-                template: path.join(baseConfig.templateDir, 'cma-config.template.js'),
+                template: path.join(templateDir, 'cma-config.template.js'),
                 overwrite: false,
                 templateArgs: {
                     magentoConfiguration

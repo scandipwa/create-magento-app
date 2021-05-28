@@ -12,8 +12,8 @@ const getComposerData = async (composerPath) => {
     return JSON.parse(await fs.promises.readFile(composerPath, 'utf-8'));
 };
 
-const getInstalledMagentoVersion = async () => {
-    const composerData = await getComposerData(path.join(process.cwd(), 'composer.json'));
+const getInstalledMagentoVersion = async (projectPath = process.cwd()) => {
+    const composerData = await getComposerData(path.join(projectPath, 'composer.json'));
 
     if (!composerData) {
         throw new Error('composer.json not found');

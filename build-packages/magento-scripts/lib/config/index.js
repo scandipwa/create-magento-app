@@ -16,11 +16,11 @@ const darwinMinimalVersion = '10.5';
 /**
  * @returns {{prefix: string,magentoDir: string,templateDir: string,cacheDir: string}}
  */
-const getBaseConfig = () => ({
+const getBaseConfig = (projectPath = process.cwd()) => ({
     prefix: getPrefix(),
-    magentoDir: process.cwd(),
+    magentoDir: projectPath,
     templateDir: path.join(__dirname, 'templates'),
-    cacheDir: path.join(process.cwd(), 'node_modules', '.create-magento-app-cache')
+    cacheDir: path.join(projectPath, 'node_modules', '.create-magento-app-cache')
 });
 
 const baseConfig = getBaseConfig();
@@ -33,8 +33,8 @@ module.exports = {
     /**
      * @param {string} magentoVersion
      */
-    async getConfigFromMagentoVersion(magentoVersion) {
-        const newBaseConfig = getBaseConfig();
+    async getConfigFromMagentoVersion(magentoVersion, projectPath = process.cwd()) {
+        const newBaseConfig = getBaseConfig(projectPath);
         const configurations = getConfigurations(newBaseConfig);
         if (!configurations[magentoVersion]) {
             throw new Error(`No config found for magento version ${magentoVersion}`);
@@ -45,7 +45,8 @@ module.exports = {
             userConfiguration
         } = await resolveConfigurationWithOverrides(
             configurations[magentoVersion],
-            newBaseConfig
+            newBaseConfig,
+            projectPath
         );
 
         return {
@@ -60,6 +61,7 @@ module.exports = {
         };
     },
     baseConfig,
+    getBaseConfig,
     magento,
     platforms,
     docker: getDockerConfig(defaultConfiguration, baseConfig),

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
+const getPhpConfig = require('../../config/php');
+const { getBaseConfig } = require('../../config/index');
 
 const getProcessId = async (fpmPidFilePath) => {
     const pidExists = await pathExists(fpmPidFilePath);
@@ -17,7 +19,8 @@ const getProcessId = async (fpmPidFilePath) => {
  */
 const stopPhpFpmTask = {
     title: 'Stopping php-fpm',
-    task: async ({ config: { php } }, task) => {
+    task: async ({ config: { overridenConfiguration }, projectPath }, task) => {
+        const php = getPhpConfig(overridenConfiguration.configuration, getBaseConfig(projectPath));
         const processId = await getProcessId(php.fpmPidFilePath);
         if (!processId) {
             task.skip();
