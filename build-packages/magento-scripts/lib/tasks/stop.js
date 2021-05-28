@@ -19,10 +19,7 @@ const stop = {
         rendererOptions: {
             collapse: false
         },
-        ctx: {
-            ...ctx,
-            throwMagentoVersionMissing: true
-        }
+        ctx
     })
 };
 
