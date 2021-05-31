@@ -126,7 +126,7 @@ const startContainers = {
 const stopContainers = {
     title: 'Stopping containers',
     task: async ({ ports, config: { overridenConfiguration }, projectPath }, task) => {
-        const docker = getDockerConfig(
+        const docker = await getDockerConfig(
             overridenConfiguration,
             getBaseConfig(projectPath)
         );
