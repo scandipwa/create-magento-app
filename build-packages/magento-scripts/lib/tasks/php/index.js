@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const compile = require('./compile');

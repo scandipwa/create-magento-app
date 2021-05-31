@@ -1,4 +1,4 @@
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
