@@ -104,7 +104,8 @@ module.exports = (yargs) => {
             }
             const {
                 ports,
-                config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
+                config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
+                systemConfiguration: { analytics }
             } = ctx;
 
             logger.logN();
@@ -114,7 +115,7 @@ module.exports = (yargs) => {
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
 
-            if (process.isFirstStart) {
+            if (analytics && process.isFirstStart) {
                 await googleAnalytics.trackTiming('CMA first development time', Date.now() / 1000 - timeStamp);
             }
 
