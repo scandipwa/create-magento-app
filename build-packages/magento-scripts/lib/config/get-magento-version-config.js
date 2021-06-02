@@ -9,14 +9,15 @@ const sleep = require('../util/sleep');
 const getMagentoVersion = {
     // title: 'Loading Magento version',
     task: async (ctx, task) => {
+        const { throwMagentoVersionMissing = false, projectPath = process.cwd() } = ctx;
         let { magentoVersion } = ctx;
 
         if (!magentoVersion) {
             task.title = 'Loading Magento version';
             try {
-                magentoVersion = await getInstalledMagentoVersion();
+                magentoVersion = await getInstalledMagentoVersion(projectPath);
             } catch (e) {
-                if (ctx.throwMagentoVersionMissing) {
+                if (throwMagentoVersionMissing) {
                     throw e;
                 }
                 if (allVersions.length === 1) {

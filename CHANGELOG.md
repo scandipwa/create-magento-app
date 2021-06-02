@@ -1,5 +1,37 @@
 # Changelog
 
+## V1.5.1 (28/05/2021)
+# System config, Bug Fixes and Performance Improvements!
+
+# What is New
+
+- System config is here!
+ The file should be named `.cmarc` and located in the home directory of your user.
+ Currently, only 2 options are available to tweak: `useNonOverlappingPorts`,  `analytics`.
+  ```json
+  // default ~/.cmarc
+  {
+    "useNonOverlappingPorts": false,
+    "analytics": true
+  }
+  ```
+  `useNonOverlappingPorts` feature will tell CMA to not use ports that are already used by other CMA instances, even if they are currently stopped.
+  `analytics` will come in the following updates which will help us improve CMA, so an option to opt-out from it is already available!
+  >**[NOTICE]** Since the `useNonOverlappingPorts` feature control has been moved from the projects config file, aka `cma.js` in your project root directory, you will need to remove this option from there.
+
+  Documentation available [here](https://docs.create-magento-app.com/getting-started/config-file#system-configuration-file)!
+- ElasticSearch MachineLearning option will now be automatically enabled on systems that support it.
+ This feature was disabled before to keep compatibility for our developers running on older hardware, but now it will be enabled for systems that support the `SSE4.2` instruction set.
+
+# Bug Fixes
+
+- Fixed import and usage of stored programs in database dump. 19bf46c225273196eca812da84735ac63982ed2f
+- Fixed undefined errors while extracting data (like retrieving versions) from command output which does not contain that data or data is corrupted.
+  Now proper error message will be displayed if something goes wrong. c24836155b7e325fb98cb96f23ddd1a003f0a24b
+  Reported from https://github.com/scandipwa/scandipwa/discussions/2598
+- Fixed installation of `prestissimo` composer plugin on composer with version 2. 70ba9cc284c6142760cf6ed9f5f43ae430347477
+---
+
 ## v1.5.0 (30/04/2021)
 #  Apple Silicon, Magento 2.4.2 & 2.4.1-p1 support and bug fixes!
 
@@ -376,12 +408,3 @@ This release is small but important:
 - `create-magento-app` had a typo inside package.json template for `exec` command.
 - `magento-scripts` was replacing existing `composer.json` file if it detected that magento is not installed. #6 
 Now it will not replace `composer.json` but install missing dependencies for magento and setup composer repository to `repo.magento.com`.
----
-
-## Instances isolation and prompts timer improvement. (15/01/2021)
-# Bug Fixes
-
-- Fixed possible interference in PHP config between different instances of CMA on the same machine. #4 
-Now when running CMA `php.ini` configuration will be stored inside the cache folder. This will prevent different CMA instances from causing interference on each other, so you can debug one CMA project and run the second CMA instance at the same time on the same machine.
-- Magento version and application config prompt will not timeout and fallback to the default value after 5 mins and will not interfere with task title state.
-Previously, users might have noticed that when creating new CMA project and choosing default values in the prompts they will still say that "n sec left" even after the user chose his answer. With this patch, they should behave as intended.

@@ -3,27 +3,10 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { exec, spawn } = require('child_process');
 
-/**
- * Execute bash command
- * @param {String} command Bash command
- * @param {Object} options Child process exec options ([docs](https://nodejs.org/dist/latest-v14.x/docs/api/child_process.html#child_process_child_process_exec_command_options_callback))
- * @returns {Promise<String>}
- */
 const execAsync = (command, options) => new Promise((resolve, reject) => {
     exec(command, options, (err, stdout) => (err ? reject(err) : resolve(stdout)));
 });
 
-/**
- * Execute bash command in child process
- * @param {String} command Bash command
- * @param {Object} param1
- * @param {Boolean} param1.logOutput Log output to console using logger
- * @param {Boolean} param1.withCode
- * @param {Boolean} param1.pipeInput
- * @param {String} param1.cwd
- * @param {(str: string) => void} param1.callback
- * @returns {Promise<string>}
- */
 const execAsyncSpawn = (command, {
     callback = () => {},
     pipeInput,
@@ -76,27 +59,9 @@ const execAsyncSpawn = (command, {
     });
 };
 
-const execAsyncBool = async (command, options) => {
-    const result = await execAsync(command, options);
-    if (result.toString().trim() === '1') {
-        throw new Error('');
-    }
-};
-
-/**
- * @param {String} command Bash command
- * @param {Object} options
- * @param {Boolean} options.logOutput Log output to console using logger
- * @param {Boolean} options.withCode
- * @param {Boolean} options.pipeInput
- * @param {String} options.cwd
- * @param {(str: string) => void} options.callback
- * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
- */
 const execCommandTask = (command, options = {}) => ({
     title: `Running command "${command}"`,
     task: (ctx, task) => execAsyncSpawn(command, {
-        throwNonZeroCode: true,
         callback: (t) => {
             task.output = t;
         },
@@ -109,7 +74,6 @@ const execCommandTask = (command, options = {}) => ({
 
 module.exports = {
     execAsync,
-    execAsyncBool,
     execAsyncSpawn,
     execCommandTask
 };

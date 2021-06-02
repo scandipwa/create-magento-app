@@ -3,12 +3,16 @@ const path = require('path');
 const { findAPortNotInUse } = require('../util/portscanner');
 const { baseConfig } = require('.');
 const deepmerge = require('../util/deepmerge');
-const { projectsConfig } = require('./config');
 const getJsonfileData = require('../util/get-jsonfile-data');
+const { getProjects } = require('./config');
 
+/**
+ * Get ports that are used by other CMA instances
+ * @returns {Promise<number[]>}
+ */
 const getUsedByOtherCMAProjectsPorts = async () => {
     const portConfigs = await Promise.all(
-        Object.keys(projectsConfig.store)
+        Object.keys(getProjects())
             .filter((projectPath) => projectPath !== process.cwd())
             .map((projectPath) => getJsonfileData(path.join(projectPath, 'node_modules', '.create-magento-app-cache', 'port-config.json')))
     );
@@ -62,19 +66,15 @@ const defaultPorts = {
  * Get available port configuration
  * @param {Record<string, number>} ports
  * @param {Object} options
- * @param {Object} options.userConfiguration
+ * @param {boolean} options.useNonOverlappingPorts
  * @returns {Promise<Record<string, number>>}
  */
 const getPortsConfig = async (ports, options = {}) => {
-    const {
-        userConfiguration
-    } = options;
+    const { useNonOverlappingPorts } = options;
     const mergedPorts = deepmerge(defaultPorts, ports || {});
-    let p;
-    if (userConfiguration.useNonOverlappingPorts) {
+    let p = [];
+    if (useNonOverlappingPorts) {
         p = await getUsedByOtherCMAProjectsPorts();
-    } else {
-        p = [];
     }
     const availablePorts = Object.fromEntries(await Promise.all(
         Object.entries(mergedPorts).map(async ([name, port]) => {

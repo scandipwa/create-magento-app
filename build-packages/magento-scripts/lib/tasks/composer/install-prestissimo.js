@@ -10,7 +10,7 @@ const prestissimoInstall = {
     task: async ({ magentoVersion, config }, task) => {
         const { composer } = config;
 
-        if (semver.satisfies(composer.version, '^2')) {
+        if (semver.satisfies(semver.coerce(composer.version).version, '^2')) {
             task.skip();
             return;
         }

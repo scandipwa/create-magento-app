@@ -105,10 +105,19 @@ const configFileSchema = Joi.object({
     host: Joi.string().optional(),
     ssl: sslSchema.optional(),
     prefix: Joi.bool().optional(),
+    configuration: configurationSchema.required(),
+    useNonOverlappingPorts: Joi.bool().forbidden()
+});
+
+/**
+ * @type {Joi.ObjectSchema<{ useNonOverlappingPorts:boolean, analytics:boolean }>}
+ */
+const systemConfigurationSchema = Joi.object({
     useNonOverlappingPorts: Joi.bool().optional(),
-    configuration: configurationSchema.required()
+    analytics: Joi.bool().optional()
 });
 
 module.exports = {
-    configFileSchema
+    configFileSchema,
+    systemConfigurationSchema
 };

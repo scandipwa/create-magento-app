@@ -17,7 +17,7 @@ const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
 const getAvailablePorts = {
     title: 'Getting available ports',
     task: async (ctx) => {
-        let ports;
+        let ports = { ...defaultPorts };
 
         if (await pathExists(portConfigPath)) {
             ports = JSON.parse(
@@ -26,12 +26,14 @@ const getAvailablePorts = {
                     'utf-8'
                 )
             );
-        } else {
-            ports = { ...defaultPorts };
         }
-        const { overridenConfiguration } = ctx.config;
+        const {
+            systemConfiguration: {
+                useNonOverlappingPorts
+            }
+        } = ctx;
         const availablePorts = await getPortsConfig(ports, {
-            userConfiguration: overridenConfiguration
+            useNonOverlappingPorts
         });
 
         if (ctx.port) {

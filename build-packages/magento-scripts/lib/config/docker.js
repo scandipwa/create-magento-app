@@ -4,7 +4,9 @@ const macosVersion = require('macos-version');
 const { getArchSync } = require('../util/arch');
 const { isIpAddress } = require('../util/ip');
 
-module.exports = ({ configuration, ssl, host }, config) => {
+const systeminformation = require('systeminformation');
+
+module.exports = async ({ configuration, ssl, host }, config) => {
     const {
         nginx,
         redis,
@@ -18,6 +20,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
         magentoDir,
         cacheDir
     } = config;
+
+    const cpuSupportedFlags = await systeminformation.cpuFlags();
 
     const network = {
         name: `${ prefix }_network`
@@ -134,6 +138,13 @@ module.exports = ({ configuration, ssl, host }, config) => {
                     MYSQL_PASSWORD: 'magento',
                     MYSQL_DATABASE: 'magento'
                 },
+                /**
+                 * When database dump contains functions, MySQL can throw and error "access denied for those functions"
+                 * so to overcome this issue, we need to enable trust option for these functions to avoid errors during migrations.
+                 *
+                 * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
+                 */
+                command: '--log_bin_trust_function_creators=1',
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
@@ -160,7 +171,8 @@ module.exports = ({ configuration, ssl, host }, config) => {
                     'xpack.security.enabled': false,
                     'discovery.type': 'single-node',
                     ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
-                    'xpack.ml.enabled': false
+                    // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
+                    'xpack.ml.enabled': cpuSupportedFlags.includes('sse4_2')
                 },
                 network: network.name,
                 image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,

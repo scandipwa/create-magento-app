@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const safeRegexExtract = require('../../util/safe-regex-extract');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -8,7 +9,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const checkPhpbrew = {
     title: 'Checking phpbrew',
     task: async (ctx, task) => {
-        const { code, result } = await execAsyncSpawn('phpbrew --version', {
+        const { result, code } = await execAsyncSpawn('phpbrew --version', {
             withCode: true
         });
 
@@ -21,7 +22,13 @@ const checkPhpbrew = {
             );
         }
 
-        const [_, phpBrewVersion] = result.match(/phpbrew - ([\d.]+)/i);
+        const phpBrewVersion = safeRegexExtract({
+            string: result,
+            regex: /phpbrew - ([\d.]+)/i,
+            onNoMatch: () => {
+                throw new Error(`No phpbrew version found in phpbrew version output!\n\n${result}`);
+            }
+        });
 
         ctx.phpBrewVersion = phpBrewVersion;
         task.title = `Using PHPBrew version ${phpBrewVersion}`;
