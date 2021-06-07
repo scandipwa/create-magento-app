@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable max-len */
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 const { exec, spawn } = require('child_process');
 
 const execAsync = (command, options) => new Promise((resolve, reject) => {

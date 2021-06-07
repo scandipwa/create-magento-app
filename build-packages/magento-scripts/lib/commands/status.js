@@ -1,4 +1,4 @@
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 const { Listr } = require('listr2');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { getCachedPorts } = require('../config/get-port-config');

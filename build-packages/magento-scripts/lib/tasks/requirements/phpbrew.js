@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign,no-unused-vars */
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const safeRegexExtract = require('../../util/safe-regex-extract');
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const os = require('os');
 const osPlatform = require('../../util/os-platform');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const logger = require('@scandipwa/common-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const compileOptions = {
