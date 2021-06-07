@@ -8,6 +8,7 @@
         "Magento",
         "REBEM",
         "Scandiweb",
+        "overriden",
         "portscanner",
         "scandipwa"
     ],
@@ -19,5 +20,26 @@
         "skipFiles": [
           "<node_internals>/**"
         ]
-    }
+    },
+    "githubPullRequests.queries": [
+        {
+            "label": "Opened PRs",
+            "query": "is:pr is:open sort:created-desc"
+        },
+        {
+            "label": "Waiting For My Review",
+            "query": "is:pr is:open review-requested:${user}"
+        },
+        {
+            "label": "Assigned To Me",
+            "query": "is:pr is:open assignee:${user}"
+        },
+        {
+            "label": "Created By Me",
+            "query": "is:pr is:open author:${user}"
+        }
+    ],
+    "githubPullRequests.remotes": [
+        "origin"
+    ]
 }
