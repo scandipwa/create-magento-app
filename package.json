@@ -12,8 +12,8 @@
         "prepare": "husky install"
     },
     "devDependencies": {
-        "@scandipwa/eslint-config": "^0.1.17",
-        "eslint": "^7.25.0",
+        "@scandipwa/eslint-config": "^0.1.23",
+        "eslint": "^7.28.0",
         "github-release-notes": "^0.17.3",
         "husky": "^6.0.0",
         "lerna": "^4.0.0"
