@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 // const path = require('path');
-const logger = require('@scandipwa/common-dev-utils/logger');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
 const importDump = require('../tasks/import-dump');
 

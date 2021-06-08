@@ -22,7 +22,6 @@
         "arm64"
     ],
     "dependencies": {
-        "@scandipwa/common-dev-utils": "0.0.1",
         "@scandipwa/scandipwa-dev-utils": "^0.0.25",
         "conf": "^9.0.2",
         "enquirer": "2.3.6",

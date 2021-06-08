@@ -2,7 +2,7 @@ const { Listr } = require('listr2');
 const cli = require('../tasks/cli');
 const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
-const logger = require('@scandipwa/common-dev-utils/logger');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 
 module.exports = (yargs) => {

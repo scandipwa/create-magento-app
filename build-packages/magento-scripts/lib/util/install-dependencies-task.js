@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-await-in-loop,no-param-reassign */
 const os = require('os');
-const logger = require('@scandipwa/common-dev-utils/logger');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const sleep = require('./sleep');
 const { execCommandTask } = require('./exec-async-command');
 const dependenciesForPlatforms = require('../config/dependencies-for-platforms');

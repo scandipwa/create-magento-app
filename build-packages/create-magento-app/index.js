@@ -4,9 +4,9 @@ const path = require('path');
 const yargs = require('yargs');
 const semver = require('semver');
 const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version');
-const logger = require('@scandipwa/common-dev-utils/logger');
-const createFilesystem = require('@scandipwa/common-dev-utils/create-filesystem');
-const shouldUseYarn = require('@scandipwa/common-dev-utils/should-use-yarn');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const createFilesystem = require('@scandipwa/scandipwa-dev-utils/create-filesystem');
+const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps');
 
 const greet = (name, pathname) => {

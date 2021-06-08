@@ -2,7 +2,7 @@
 
 const yargs = require('yargs');
 const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version');
-const logger = require('@scandipwa/common-dev-utils/logger');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const isInstalledGlobally = require('is-installed-globally');
 

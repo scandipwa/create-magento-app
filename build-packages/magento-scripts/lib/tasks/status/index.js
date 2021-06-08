@@ -1,5 +1,5 @@
 const path = require('path');
-const logger = require('@scandipwa/common-dev-utils/logger');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 
 const { version: packageVersion } = require('../../../package.json');
