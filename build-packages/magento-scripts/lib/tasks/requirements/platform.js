@@ -40,7 +40,11 @@ const checkPlatform = {
         const installDependenciesTask = await dependencyCheck();
 
         if (installDependenciesTask) {
-            return task.newListr([installDependenciesTask]);
+            return task.newListr([installDependenciesTask], {
+                rendererOptions: {
+                    showTimer: false
+                }
+            });
         }
     }
 };

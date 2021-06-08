@@ -67,7 +67,10 @@ module.exports = (yargs) => {
             exitOnError: true,
             ctx: args,
             concurrent: false,
-            rendererOptions: { collapse: true }
+            rendererOptions: {
+                showErrorMessage: false,
+                showTimer: true
+            }
         });
 
         if (args.debug) {

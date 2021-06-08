@@ -32,7 +32,8 @@ const startPhpFpm = {
         }
     },
     options: {
-        bottomBar: 5
+        bottomBar: 5,
+        showTimer: false
     }
 };
 

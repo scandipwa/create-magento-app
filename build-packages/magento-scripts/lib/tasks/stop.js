@@ -15,11 +15,7 @@ const stop = {
         stopServices
     ], {
         concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        },
-        ctx
+        exitOnError: true
     })
 };
 

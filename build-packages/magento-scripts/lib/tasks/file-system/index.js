@@ -13,11 +13,7 @@ const prepareFileSystem = {
         createPhpConfig
     ], {
         concurrent: true,
-        rendererOptions: {
-            collapse: false
-        },
-        exitOnError: true,
-        ctx
+        exitOnError: true
     })
 };
 

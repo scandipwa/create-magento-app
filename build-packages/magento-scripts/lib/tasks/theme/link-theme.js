@@ -31,11 +31,7 @@ const linkTheme = {
             buildTheme(theme)
         ], {
             concurrent: false,
-            exitOnError: true,
-            rendererOptions: {
-                collapse: false
-            },
-            ctx
+            exitOnError: true
         });
     },
     options: {

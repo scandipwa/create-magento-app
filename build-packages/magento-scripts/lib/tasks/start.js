@@ -40,7 +40,14 @@ const start = {
                 createCacheFolder,
                 getSystemConfig,
                 getCachedPorts
-            ])
+            ], {
+                rendererOptions: {
+                    collapse: true
+                }
+            }),
+            options: {
+                showTimer: false
+            }
         },
         {
             title: 'Stopping project',
@@ -48,8 +55,15 @@ const start = {
                 stopServices,
                 stopPhpFpm
             ], {
-                concurrent: true
-            })
+                concurrent: true,
+                rendererOptions: {
+                    collapse: true,
+                    showTimer: false
+                }
+            }),
+            options: {
+                showTimer: false
+            }
         },
         setPrefix,
         {
@@ -59,19 +73,21 @@ const start = {
                 // get fresh ports
                 getAvailablePorts,
                 saveConfiguration
-            ])
-        },
-        {
-            title: 'Installing PHP',
-            task: (ctx, task) => task.newListr([
-                installPhp
-            ])
+            ], {
+                rendererOptions: {
+                    collapse: true
+                }
+            }),
+            options: {
+                showTimer: false
+            }
         },
         {
             title: 'Configuring project',
             task: (ctx, task) => task.newListr([
+                installPhp,
                 {
-                    title: 'Installing Composer, preparing filesystem and downloading container images',
+                    // title: 'Installing Composer, preparing filesystem and downloading container images',
                     task: (ctx, task) => task.newListr([
                         installComposer,
                         prepareFileSystem,
@@ -105,25 +121,31 @@ const start = {
                             setupMagento
                         ], {
                             concurrent: false,
-                            exitOnError: true,
-                            rendererOptions: { collapse: true }
+                            exitOnError: true
                         });
                     }
                 },
                 {
-                    title: 'Setup themes',
+                    title: 'Setting up themes',
                     skip: (ctx) => !ctx.magentoFirstInstall,
                     task: (subCtx, subTask) => subTask.newListr([
                         setupThemes
                     ])
                 }
-            ])
+            ], {
+                rendererOptions: {
+                    collapse: true
+                }
+            })
         },
         {
             title: 'Opening browser',
             skip: (ctx) => ctx.noOpen,
             task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
                 openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+            },
+            options: {
+                showTimer: false
             }
         },
         {
@@ -132,8 +154,9 @@ const start = {
     ], {
         concurrent: false,
         exitOnError: true,
-        ctx,
-        rendererOptions: { collapse: false }
+        rendererOptions: {
+            collapse: false
+        }
     })
 };
 

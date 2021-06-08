@@ -22,11 +22,7 @@ const startServices = {
         containers.startContainers
     ], {
         concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        },
-        ctx
+        exitOnError: true
     })
 };
 

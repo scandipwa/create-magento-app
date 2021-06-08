@@ -49,7 +49,8 @@ const stopPhpFpmTask = {
         }
     },
     options: {
-        bottomBar: 10
+        bottomBar: 10,
+        showTimer: false
     }
 };
 
