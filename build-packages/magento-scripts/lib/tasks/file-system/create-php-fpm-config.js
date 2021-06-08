@@ -1,5 +1,4 @@
 const path = require('path');
-const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -7,7 +6,7 @@ const setConfigFile = require('../../util/set-config');
  */
 const createPhpFpmConfig = {
     title: 'Setting php-fpm config',
-    task: async ({ ports, config: { php } }) => {
+    task: async ({ ports, config: { php, baseConfig } }) => {
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,

@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
-const { baseConfig } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
 /**
@@ -8,7 +7,7 @@ const pathExists = require('../../util/path-exists');
  */
 const createCacheFolder = {
     title: 'Creating cache folder',
-    task: async (ctx, task) => {
+    task: async ({ config: { baseConfig } }, task) => {
         const cacheFolderExists = await pathExists(baseConfig.cacheDir);
 
         if (cacheFolderExists) {
