@@ -60,7 +60,7 @@ module.exports = (yargs) => {
             );
         },
         async (argv) => {
-            const containers = docker.getContainers();
+            const containers = (await docker).getContainers();
             const services = Object.keys(containers);
 
             if (services.includes(argv.scope) || services.some((service) => service.includes(argv.scope))) {
