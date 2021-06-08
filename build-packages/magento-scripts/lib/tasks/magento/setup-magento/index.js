@@ -23,9 +23,16 @@ const setupMagento = {
         waitingForRedis,
         updateEnvPHP,
         migrateDatabase,
-        setBaseUrl,
-        setUrlRewrite,
-        increaseAdminSessionLifetime,
+        {
+            title: 'Configuring Magento settings',
+            task: (ctx, task) => task.newListr([
+                setBaseUrl,
+                setUrlRewrite,
+                increaseAdminSessionLifetime
+            ], {
+                concurrent: true
+            })
+        },
         createAdmin,
         setDeploymentMode,
         setupPersistedQuery,
