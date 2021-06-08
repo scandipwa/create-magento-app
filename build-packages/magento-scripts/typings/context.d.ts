@@ -50,6 +50,12 @@ export interface ListrContext {
                 }
             }>
         }
+        baseConfig: {
+            prefix: string
+            magentoDir: string
+            templateDir: string
+            cacheDir: string
+        }
     }
     systemConfiguration: {
         analytics: boolean
