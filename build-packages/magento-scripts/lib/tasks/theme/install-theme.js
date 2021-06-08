@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-const runComposerCommand = require('../../../util/run-composer');
+const runComposerCommand = require('../../util/run-composer');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installTheme = {
+const installTheme = ({ composerData }) => ({
     title: 'Installing theme in composer.json',
-    task: async ({ composerData, magentoVersion }, task) => {
+    task: async ({ magentoVersion }, task) => {
         try {
             await runComposerCommand(`require ${composerData.name}`, {
                 magentoVersion,
@@ -24,6 +24,6 @@ const installTheme = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = installTheme;

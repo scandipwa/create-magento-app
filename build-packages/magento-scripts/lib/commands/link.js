@@ -1,15 +1,15 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
-const { linkTheme } = require('../tasks/theme');
+const linkTask = require('../tasks/link');
 
 module.exports = (yargs) => {
     yargs.command('link <theme path>', 'Link with ScandiPWA application.', () => {}, async (args) => {
         const tasks = new Listr([
-            linkTheme
+            linkTask(args.themepath)
         ], {
             concurrent: false,
             exitOnError: true,
-            ctx: { throwMagentoVersionMissing: true, ...args },
+            ctx: { throwMagentoVersionMissing: true },
             rendererOptions: { collapse: false }
         });
 

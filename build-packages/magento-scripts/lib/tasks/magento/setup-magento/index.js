@@ -4,12 +4,13 @@ const migrateDatabase = require('./migrate-database');
 const createAdmin = require('./create-admin');
 const setDeploymentMode = require('./set-deployment-mode');
 const setBaseUrl = require('./set-base-url');
-const postDeploy = require('./post-deploy');
+const disableMaintenanceMode = require('./disable-maintenance-mode');
 const disable2fa = require('./disable-2fa');
 const setUrlRewrite = require('./set-url-rewrite');
 const updateEnvPHP = require('../../php/update-env-php');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
+const setupPersistedQuery = require('../../theme/setup-persisted-query');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -27,7 +28,8 @@ const setupMagento = {
         increaseAdminSessionLifetime,
         createAdmin,
         setDeploymentMode,
-        postDeploy,
+        setupPersistedQuery,
+        disableMaintenanceMode,
         disable2fa,
         magentoTask('cache:flush')
     ], {

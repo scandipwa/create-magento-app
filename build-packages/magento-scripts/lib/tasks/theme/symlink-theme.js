@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-const runComposerCommand = require('../../../util/run-composer');
+const runComposerCommand = require('../../util/run-composer');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const themeSymlink = {
+const symlinkTheme = ({ absoluteThemePath }) => ({
     title: 'Setting symbolic link for theme in composer.json',
-    task: async ({ absoluteThemePath, magentoVersion }, task) => {
+    task: async ({ magentoVersion }, task) => {
         try {
             await runComposerCommand(`config repo.scandipwa path ${absoluteThemePath}`, {
                 magentoVersion,
@@ -21,6 +21,6 @@ const themeSymlink = {
             );
         }
     }
-};
+});
 
-module.exports = themeSymlink;
+module.exports = symlinkTheme;
