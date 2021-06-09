@@ -26,118 +26,143 @@ const { getSystemConfig } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const retrieveProjectConfiguration = {
+    title: 'Retrieving project configuration',
+    task: (ctx, task) => task.newListr([
+        getMagentoVersionConfig,
+        getConfigFromConfigFile,
+        createCacheFolder,
+        getSystemConfig,
+        getCachedPorts
+    ], {
+        rendererOptions: {
+            collapse: true
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const stopProject = {
+    title: 'Stopping project',
+    task: (ctx, task) => task.newListr([
+        stopServices,
+        stopPhpFpm
+    ], {
+        concurrent: true,
+        rendererOptions: {
+            collapse: true,
+            showTimer: false
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const retrieveFreshProjectConfiguration = {
+    title: 'Retrieving fresh project configuration',
+    task: (ctx, task) => task.newListr([
+        getConfigFromConfigFile,
+        // get fresh ports
+        getAvailablePorts,
+        saveConfiguration
+    ], {
+        rendererOptions: {
+            collapse: true
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const configureProject = {
+    title: 'Configuring project',
+    task: (ctx, task) => task.newListr([
+        installPhp,
+        {
+            // title: 'Installing Composer, preparing filesystem and downloading container images',
+            task: (ctx, task) => task.newListr([
+                installComposer,
+                prepareFileSystem,
+                pullContainers
+            ], {
+                concurrent: true,
+                exitOnError: true
+            })
+        },
+        configurePhp,
+        installPrestissimo,
+        installMagento,
+        startServices,
+        startPhpFpm,
+        connectToMySQL
+    ])
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const finishProjectConfiguration = {
+    title: 'Finishing project configuration',
+    task: (ctx, task) => task.newListr([
+        {
+            skip: (ctx) => !ctx.importDb,
+            task: (ctx, task) => {
+                task.title = 'Importing database dump';
+                return task.newListr([
+                    restoreThemeConfig,
+                    importDumpToMySQL,
+                    fixDB,
+                    restoreThemeConfig,
+                    setupMagento
+                ], {
+                    concurrent: false,
+                    exitOnError: true
+                });
+            }
+        },
+        {
+            title: 'Setting up themes',
+            skip: (ctx) => !ctx.magentoFirstInstall,
+            task: (subCtx, subTask) => subTask.newListr([
+                setupThemes
+            ])
+        }
+    ], {
+        rendererOptions: {
+            collapse: true
+        }
+    })
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const start = {
     title: 'Starting project',
     task: async (ctx, task) => task.newListr([
         checkRequirements,
-        {
-            title: 'Retrieving project configuration',
-            task: (ctx, task) => task.newListr([
-                getMagentoVersionConfig,
-                getConfigFromConfigFile,
-                createCacheFolder,
-                getSystemConfig,
-                getCachedPorts
-            ], {
-                rendererOptions: {
-                    collapse: true
-                }
-            }),
-            options: {
-                showTimer: false
-            }
-        },
-        {
-            title: 'Stopping project',
-            task: (ctx, task) => task.newListr([
-                stopServices,
-                stopPhpFpm
-            ], {
-                concurrent: true,
-                rendererOptions: {
-                    collapse: true,
-                    showTimer: false
-                }
-            }),
-            options: {
-                showTimer: false
-            }
-        },
+        retrieveProjectConfiguration,
+        stopProject,
         setPrefix,
-        {
-            title: 'Retrieving fresh project configuration',
-            task: (ctx, task) => task.newListr([
-                getConfigFromConfigFile,
-                // get fresh ports
-                getAvailablePorts,
-                saveConfiguration
-            ], {
-                rendererOptions: {
-                    collapse: true
-                }
-            }),
-            options: {
-                showTimer: false
-            }
-        },
-        {
-            title: 'Configuring project',
-            task: (ctx, task) => task.newListr([
-                installPhp,
-                {
-                    // title: 'Installing Composer, preparing filesystem and downloading container images',
-                    task: (ctx, task) => task.newListr([
-                        installComposer,
-                        prepareFileSystem,
-                        pullContainers
-                    ], {
-                        concurrent: true,
-                        exitOnError: true
-                    })
-                },
-                configurePhp,
-                installPrestissimo,
-                installMagento,
-                startServices,
-                startPhpFpm,
-                connectToMySQL
-            ])
-        },
+        retrieveFreshProjectConfiguration,
+        configureProject,
         setupMagento,
-        {
-            title: 'Finishing project configuration',
-            task: (ctx, task) => task.newListr([
-                {
-                    skip: (ctx) => !ctx.importDb,
-                    task: (ctx, task) => {
-                        task.title = 'Importing database dump';
-                        return task.newListr([
-                            restoreThemeConfig,
-                            importDumpToMySQL,
-                            fixDB,
-                            restoreThemeConfig,
-                            setupMagento
-                        ], {
-                            concurrent: false,
-                            exitOnError: true
-                        });
-                    }
-                },
-                {
-                    title: 'Setting up themes',
-                    skip: (ctx) => !ctx.magentoFirstInstall,
-                    task: (subCtx, subTask) => subTask.newListr([
-                        setupThemes
-                    ])
-                }
-            ], {
-                rendererOptions: {
-                    collapse: true
-                }
-            })
-        },
+        finishProjectConfiguration,
         {
             title: 'Opening browser',
             skip: (ctx) => ctx.noOpen,
@@ -160,4 +185,11 @@ const start = {
     })
 };
 
-module.exports = start;
+module.exports = {
+    start,
+    retrieveProjectConfiguration,
+    retrieveFreshProjectConfiguration,
+    stopProject,
+    configureProject,
+    finishProjectConfiguration
+};
