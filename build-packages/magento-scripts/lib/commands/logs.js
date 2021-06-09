@@ -2,6 +2,9 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { docker } = require('../config');
 const { execAsyncSpawn } = require('../util/exec-async-command');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command(
         'logs <scope>',

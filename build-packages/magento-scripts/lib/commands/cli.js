@@ -5,6 +5,9 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('cli', 'Enter CLI (magento, php, composer).', () => {}, async () => {
         const tasks = new Listr([

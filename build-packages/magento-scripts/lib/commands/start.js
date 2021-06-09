@@ -2,10 +2,13 @@
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
-const start = require('../tasks/start');
+const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
         yargs.option(

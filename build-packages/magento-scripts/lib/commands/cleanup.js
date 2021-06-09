@@ -2,6 +2,9 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
 const cleanup = require('../tasks/cleanup');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command(
         'cleanup',
