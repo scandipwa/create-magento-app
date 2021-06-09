@@ -1,16 +1,19 @@
 /* eslint-disable no-param-reassign */
-const getMagentoVersionConfig = require('../config/get-magento-version-config');
-const { getCachedPorts } = require('../config/get-port-config');
 const { checkRequirements } = require('./requirements');
 const {
     importDumpToMySQL,
     fixDB,
-    connectToMySQL,
     dumpThemeConfig,
     restoreThemeConfig
 } = require('./mysql');
 const { setupMagento } = require('./magento');
-const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const {
+    retrieveProjectConfiguration,
+    stopProject,
+    retrieveFreshProjectConfiguration,
+    configureProject
+} = require('./start');
+const importRemoteDbSSH = require('./mysql/import-remote-db');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -20,11 +23,12 @@ const importDump = {
     task: (ctx, task) => {
         task.title = `Importing database dump '${ctx.importDb}'`;
         return task.newListr([
+            importRemoteDbSSH,
             checkRequirements,
-            getMagentoVersionConfig,
-            getConfigFromConfigFile,
-            getCachedPorts,
-            connectToMySQL,
+            retrieveProjectConfiguration,
+            stopProject,
+            retrieveFreshProjectConfiguration,
+            configureProject,
             dumpThemeConfig,
             importDumpToMySQL,
             fixDB,
@@ -32,9 +36,7 @@ const importDump = {
             setupMagento
         ], {
             concurrent: false,
-            exitOnError: true,
-            ctx,
-            rendererOptions: { collapse: false }
+            exitOnError: true
         });
     }
 };
