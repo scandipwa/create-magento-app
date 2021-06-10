@@ -13,9 +13,15 @@ const fixDB = {
     task: async (ctx, task) => task.newListr([
         adjustMagentoConfiguration,
         configureElasticsearch,
-        deleteAdminUsers,
-        deleteOrders,
-        deleteCustomers,
+        {
+            task: (ctx, task) => task.newListr([
+                deleteAdminUsers,
+                deleteOrders,
+                deleteCustomers
+            ], {
+                concurrent: true
+            })
+        },
         indexProducts
     ], {
         concurrent: false,

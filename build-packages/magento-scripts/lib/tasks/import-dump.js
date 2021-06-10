@@ -20,25 +20,22 @@ const importRemoteDbSSH = require('./mysql/import-remote-db');
  */
 const importDump = {
     title: 'Importing Database Dump',
-    task: (ctx, task) => {
-        task.title = `Importing database dump '${ctx.importDb}'`;
-        return task.newListr([
-            importRemoteDbSSH,
-            checkRequirements,
-            retrieveProjectConfiguration,
-            stopProject,
-            retrieveFreshProjectConfiguration,
-            configureProject,
-            dumpThemeConfig,
-            importDumpToMySQL,
-            fixDB,
-            restoreThemeConfig,
-            setupMagento
-        ], {
-            concurrent: false,
-            exitOnError: true
-        });
-    }
+    task: (ctx, task) => task.newListr([
+        importRemoteDbSSH,
+        checkRequirements,
+        retrieveProjectConfiguration,
+        stopProject,
+        retrieveFreshProjectConfiguration,
+        configureProject,
+        dumpThemeConfig,
+        importDumpToMySQL,
+        fixDB,
+        restoreThemeConfig,
+        setupMagento
+    ], {
+        concurrent: false,
+        exitOnError: true
+    })
 };
 
 module.exports = importDump;

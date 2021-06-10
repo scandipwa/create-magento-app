@@ -1,23 +1,21 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-param-reassign */
 const os = require('os');
-const path = require('path');
 const { NodeSSH } = require('node-ssh');
-const scp = require('node-scp');
-const pathExists = require('../../../../util/path-exists');
+const pathExists = require('../../../util/path-exists');
+const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const sshDb = {
     task: async (ctx, task) => {
+        const { remoteDbUrl } = ctx;
         const {
-            remoteDbUrl: {
-                hostname,
-                username,
-                password
-            }
-        } = ctx;
+            hostname,
+            username,
+            password
+        } = remoteDbUrl;
 
         task.title = `Connecting to remote ssh server ${hostname}`;
 
@@ -41,7 +39,7 @@ const sshDb = {
                 message: 'Please enter your private key passphrase (if you have it)'
             });
 
-            ctx.passphrase = passphrase;
+            ctx.passphrase = passphrase || undefined;
 
             await ssh.connect({
                 host: hostname,
@@ -59,41 +57,46 @@ const sshDb = {
 
         ctx.importDb = './dump.sql';
         task.output = 'Making remote database dump.sql...';
-        await ctx.sshConnection.execCommand(
+        await ssh.execCommand(
             'mysqldump magento --single-transaction --no-tablespaces --result-file=dump.sql'
         );
 
-        const { stdout: remotePwd } = await ctx.sshConnection.execCommand('pwd');
+        const { stdout: remotePwd } = await ssh.execCommand('pwd');
 
-        task.output = 'Connecting using SCP protocol to download dump.sql file...';
-        /**
-         * @type {import('node-scp').ScpClient}
-         */
-        let scpClient;
+        ssh.dispose();
 
-        if (!password) {
-            scpClient = await scp.Client({
-                host: hostname,
-                username,
-                privateKey: ctx.privateKey,
-                passphrase: ctx.passphrase
-            });
-        } else {
-            scpClient = await scp.Client({
-                host: hostname,
-                username,
-                password
-            });
-        }
-
-        task.output = 'Downloading dump.sql...';
-
-        await scpClient.downloadFile(
-            `${remotePwd}/dump.sql`,
-            path.resolve('dump.sql')
+        task.output = 'Downloading dump.sql file...';
+        await execAsyncSpawn(
+            `scp ${remoteDbUrl.href.replace(/ssh:\/\//i, '')}:${remotePwd}/dump.sql .`
         );
+        // /**
+        //  * @type {import('node-scp').ScpClient}
+        //  */
+        // let scpClient;
 
-        scpClient.close();
+        // if (!password) {
+        //     scpClient = await scp({
+        //         host: hostname,
+        //         username,
+        //         privateKey: fs.readFileSync(ctx.privateKey),
+        //         passphrase: ctx.passphrase,
+        //     });
+        // } else {
+        //     scpClient = await scp({
+        //         host: hostname,
+        //         username,
+        //         password
+        //     });
+        // }
+
+        // task.output = 'Downloading dump.sql...';
+
+        // await scpClient.downloadFile(
+        //     `${remotePwd}/dump.sql`,
+        //     path.resolve('dump.sql')
+        // );
+
+        // scpClient.close();
     },
     options: {
         bottomBar: 10
