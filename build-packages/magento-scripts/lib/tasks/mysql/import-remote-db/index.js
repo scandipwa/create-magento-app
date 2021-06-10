@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-const connectRemoteServerSSH = require('./connect-remote-db-ssh');
 const getRemoteDbDump = require('./get-remote-db-dump');
 
 /**
@@ -12,7 +11,6 @@ const importRemoteDbSSH = {
         task.title = 'Importing database from remote server';
 
         return task.newListr([
-            connectRemoteServerSSH,
             getRemoteDbDump
         ]);
     }
