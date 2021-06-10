@@ -16,11 +16,6 @@ module.exports = (yargs) => {
                 describe: 'Import database from remote ssh server',
                 type: 'string'
             });
-
-            yargs.option('private-key', {
-                describe: 'Private key location for SSH connection',
-                type: 'string'
-            });
         },
         async (args = {}) => {
             const tasks = new Listr([importDump], {
