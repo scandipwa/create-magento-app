@@ -13,7 +13,7 @@ const {
     retrieveFreshProjectConfiguration,
     configureProject
 } = require('./start');
-const importRemoteDbSSH = require('./mysql/import-remote-db');
+const importRemoteDb = require('./mysql/import-remote-db');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -21,7 +21,7 @@ const importRemoteDbSSH = require('./mysql/import-remote-db');
 const importDump = {
     title: 'Importing Database Dump',
     task: (ctx, task) => task.newListr([
-        importRemoteDbSSH,
+        importRemoteDb,
         checkRequirements,
         retrieveProjectConfiguration,
         stopProject,
@@ -29,12 +29,15 @@ const importDump = {
         configureProject,
         dumpThemeConfig,
         importDumpToMySQL,
-        fixDB,
         restoreThemeConfig,
+        fixDB,
         setupMagento
     ], {
         concurrent: false,
-        exitOnError: true
+        exitOnError: true,
+        rendererOptions: {
+            collapse: false
+        }
     })
 };
 

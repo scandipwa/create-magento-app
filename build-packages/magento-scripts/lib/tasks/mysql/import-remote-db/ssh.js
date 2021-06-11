@@ -1,9 +1,10 @@
-/* eslint-disable new-cap */
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-restricted-syntax,no-await-in-loop,new-cap,no-param-reassign */
 const os = require('os');
 const { NodeSSH } = require('node-ssh');
+const mergeFiles = require('merge-files');
 const pathExists = require('../../../util/path-exists');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { orderTables, customerTables } = require('../magento-tables');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -11,13 +12,17 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const sshDb = {
     task: async (ctx, task) => {
         const { remoteDbUrl } = ctx;
-        const {
-            hostname,
-            username,
-            password
-        } = remoteDbUrl;
+        const { hostname, username, password } = remoteDbUrl;
+        const sshConnectString = remoteDbUrl.href.replace(/ssh:\/\//i, '');
 
-        task.title = `Connecting to remote ssh server ${hostname}`;
+        if (hostname !== 'ssh.readymage.com') {
+            throw new Error(
+                `Unfortunately, your host is not supported yet.
+At the moment, only remote-db import from https://readymage.com is supported.`
+            );
+        }
+
+        task.title = `Importing database from remote ssh server ${hostname}`;
 
         const ssh = new NodeSSH();
 
@@ -28,7 +33,7 @@ const sshDb = {
                 initial: `${os.homedir()}/.ssh/id_rsa`
             });
 
-            if (!await pathExists(privateKey)) {
+            if (!(await pathExists(privateKey))) {
                 throw new Error(`Private key not found: ${privateKey}`);
             }
 
@@ -56,47 +61,35 @@ const sshDb = {
         }
 
         ctx.importDb = './dump.sql';
-        task.output = 'Making remote database dump.sql...';
+        task.output = 'Making remote database dump files...';
+        const ignoredOrderAndCustomerTables = [...orderTables, ...customerTables].map((table) => `--ignore-table=magento.${table}`).join(' ');
+
+        /**
+         * create dump without customers and orders
+         */
         await ssh.execCommand(
-            'mysqldump magento --single-transaction --no-tablespaces --result-file=dump.sql'
+            `mysqldump magento --single-transaction --no-tablespaces ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
+        );
+
+        const includedOrdersAndCustomerTables = [...orderTables, ...customerTables].join(' ');
+
+        await ssh.execCommand(
+            `mysqldump magento --single-transaction --no-tablespaces --no-data --result-file=dump-1.sql ${ includedOrdersAndCustomerTables }`
         );
 
         const { stdout: remotePwd } = await ssh.execCommand('pwd');
 
         ssh.dispose();
 
-        task.output = 'Downloading dump.sql file...';
+        task.output = 'Downloading dump files...';
         await execAsyncSpawn(
-            `scp ${remoteDbUrl.href.replace(/ssh:\/\//i, '')}:${remotePwd}/dump.sql .`
+            `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
         );
-        // /**
-        //  * @type {import('node-scp').ScpClient}
-        //  */
-        // let scpClient;
+        await execAsyncSpawn(
+            `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
+        );
 
-        // if (!password) {
-        //     scpClient = await scp({
-        //         host: hostname,
-        //         username,
-        //         privateKey: fs.readFileSync(ctx.privateKey),
-        //         passphrase: ctx.passphrase,
-        //     });
-        // } else {
-        //     scpClient = await scp({
-        //         host: hostname,
-        //         username,
-        //         password
-        //     });
-        // }
-
-        // task.output = 'Downloading dump.sql...';
-
-        // await scpClient.downloadFile(
-        //     `${remotePwd}/dump.sql`,
-        //     path.resolve('dump.sql')
-        // );
-
-        // scpClient.close();
+        await mergeFiles(['./dump-0.sql', './dump-1.sql'], './dump.sql');
     },
     options: {
         bottomBar: 10
