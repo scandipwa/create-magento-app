@@ -19,11 +19,13 @@ const {
     connectToMySQL,
     importDumpToMySQL,
     fixDB,
-    restoreThemeConfig
+    restoreThemeConfig,
+    dumpThemeConfig
 } = require('./mysql');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 const { getSystemConfig } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
+const pkg = require('../../package.json');
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -124,7 +126,7 @@ const finishProjectConfiguration = {
             task: (ctx, task) => {
                 task.title = 'Importing database dump';
                 return task.newListr([
-                    restoreThemeConfig,
+                    dumpThemeConfig,
                     importDumpToMySQL,
                     fixDB,
                     restoreThemeConfig,
@@ -154,35 +156,38 @@ const finishProjectConfiguration = {
  */
 const start = {
     title: 'Starting project',
-    task: async (ctx, task) => task.newListr([
-        checkRequirements,
-        retrieveProjectConfiguration,
-        stopProject,
-        setPrefix,
-        retrieveFreshProjectConfiguration,
-        configureProject,
-        setupMagento,
-        finishProjectConfiguration,
-        {
-            title: 'Opening browser',
-            skip: (ctx) => ctx.noOpen,
-            task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
-                openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+    task: (ctx, task) => {
+        task.title = `Starting project (magento-scripts@${pkg.version})`;
+        return task.newListr([
+            checkRequirements,
+            retrieveProjectConfiguration,
+            stopProject,
+            setPrefix,
+            retrieveFreshProjectConfiguration,
+            configureProject,
+            setupMagento,
+            finishProjectConfiguration,
+            {
+                title: 'Opening browser',
+                skip: (ctx) => ctx.noOpen,
+                task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
+                    openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+                },
+                options: {
+                    showTimer: false
+                }
             },
-            options: {
-                showTimer: false
+            {
+                task: (ctx) => ctx.mysqlConnection.destroy()
             }
-        },
-        {
-            task: (ctx) => ctx.mysqlConnection.destroy()
-        }
-    ], {
-        concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        }
-    })
+        ], {
+            concurrent: false,
+            exitOnError: true,
+            rendererOptions: {
+                collapse: false
+            }
+        });
+    }
 };
 
 module.exports = {
