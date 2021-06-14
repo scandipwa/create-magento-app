@@ -126,10 +126,9 @@ module.exports = (yargs) => {
                     process.exit(0);
                 }
 
-                const cpuModel = os.cpus()[0].model;
-
                 // Get ram amount in MB
                 const ramAmount = Math.round(os.totalmem() / 1024 / 1024);
+                const cpuModel = os.cpus()[0].model;
 
                 await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
                 await googleAnalytics.trackEvent('Params', `Platform: ${os.platform}, CPU model: ${cpuModel}, RAM amount: ${ramAmount} MB`, 0, 'OS');
