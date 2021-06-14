@@ -1,5 +1,4 @@
 const path = require('path');
-const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -7,7 +6,7 @@ const setConfigFile = require('../../util/set-config');
  */
 const createBashrcConfigFile = {
     title: 'Setting Bashrc config',
-    task: async ({ config: { php } }) => {
+    task: async ({ config: { php, baseConfig } }) => {
         try {
             await setConfigFile({
                 configPathname: path.join(baseConfig.cacheDir, '.magentorc'),

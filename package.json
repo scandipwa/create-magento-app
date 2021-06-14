@@ -4,16 +4,16 @@
     "scripts": {
         "lint": "eslint ./build-packages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
         "cma": "create-magento-app runtime-packages/cma",
-        "publish": "lerna publish --exact",
-        "publish:alpha": "lerna publish --preid alpha --dist-tag alpha",
+        "publish": "lerna publish --exact --no-private",
+        "publish:alpha": "lerna publish --preid alpha --no-private --dist-tag alpha",
         "postinstall": "lerna bootstrap",
         "clean": "lerna clean --yes",
         "generate-changelog": "gren changelog --override",
         "prepare": "husky install"
     },
     "devDependencies": {
-        "@scandipwa/eslint-config": "^0.1.17",
-        "eslint": "^7.25.0",
+        "@scandipwa/eslint-config": "^0.1.23",
+        "eslint": "^7.28.0",
         "github-release-notes": "^0.17.3",
         "husky": "^6.0.0",
         "lerna": "^4.0.0"

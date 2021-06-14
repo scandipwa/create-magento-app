@@ -7,7 +7,6 @@ const matchFilesystem = require('../../util/match-filesystem');
 const moveFile = require('../../util/move-file');
 const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
-const getJsonfileData = require('../../util/get-jsonfile-data');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -159,6 +158,7 @@ const installMagento = {
         });
 
         if (isFsMatching) {
+            ctx.magentoFirstInstall = false;
             task.skip();
             return;
         }
@@ -191,32 +191,7 @@ const installMagento = {
             throw new Error(`Unexpected error during composer install.\n\n${e}`);
         }
         task.title = 'Magento installed!';
-        ctx.checkForInstalledThemesAfterStartUp = true;
-        if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
-            const composerData = await getJsonfileData(path.join(baseConfig.magentoDir, 'composer.json'));
-            const composerLocalPathes = Array.isArray(composerData.repositories)
-                ? composerData.repositories.filter((repo) => repo.type === 'path')
-                : Object.values(composerData.repositories).filter((repo) => repo.type === 'path');
-
-            const composerExistingLocalPathes = [];
-            for (const localPath of composerLocalPathes) {
-                if (
-                    await pathExists(localPath.url)
-                    && await pathExists(path.join(process.cwd(), localPath.url, 'composer.json'))
-                    && await pathExists(path.join(process.cwd(), localPath.url, 'package.json'))
-                ) {
-                    const localPathPackageJsonData = await getJsonfileData(path.join(process.cwd(), localPath.url, 'package.json'));
-                    const localPathComposerData = await getJsonfileData(path.join(process.cwd(), localPath.url, 'composer.json'));
-                    if (localPathPackageJsonData.scandipwa
-                        && localPathPackageJsonData.scandipwa.type === 'theme'
-                        && composerData.require[localPathComposerData.name]
-                    ) {
-                        composerExistingLocalPathes.push(localPath.url);
-                    }
-                }
-            }
-            ctx.themePaths = composerExistingLocalPathes;
-        }
+        ctx.magentoFirstInstall = true;
     },
     options: {
         bottomBar: 10

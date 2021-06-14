@@ -7,7 +7,8 @@ const magentoTask = require('../../../util/magento-task');
 const indexProducts = {
     task: (ctx, task) => task.newListr([
         magentoTask('index:reindex')
-    ])
+    ]),
+    retry: 2
 };
 
 module.exports = indexProducts;

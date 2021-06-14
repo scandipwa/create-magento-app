@@ -3,7 +3,7 @@ const runMagentoCommand = require('../../../util/run-magento');
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+const disableMaintenanceMode = {
     title: 'Disabling maintenance mode',
     task: async ({ magentoVersion }, task) => {
         const { result } = await runMagentoCommand('maintenance:status', {
@@ -19,3 +19,5 @@ module.exports = {
         await runMagentoCommand('maintenance:disable', { magentoVersion });
     }
 };
+
+module.exports = disableMaintenanceMode;

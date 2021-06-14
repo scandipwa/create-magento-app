@@ -10,7 +10,7 @@ const updatePhpBrew = require('./update-phpbrew');
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installPhp = {
-    title: 'Install PHP',
+    title: 'Installing PHP',
     task: async (ctx, task) => {
         const { config: { php } } = ctx;
         const phpBinExists = await pathExists(php.binPath);
@@ -47,11 +47,7 @@ const installPhp = {
             compile
         ], {
             concurrent: false,
-            exitOnError: true,
-            rendererOptions: {
-                collapse: false
-            },
-            ctx
+            exitOnError: true
         });
     }
 };

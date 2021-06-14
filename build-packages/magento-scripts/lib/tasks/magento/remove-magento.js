@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { baseConfig } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
 const magentoFiles = [
@@ -39,6 +38,7 @@ const magentoFiles = [
 const removeMagento = {
     title: 'Remove magento application folder',
     task: async (ctx, task) => {
+        const { config: { baseConfig } } = ctx;
         const appPathExists = await pathExists(baseConfig.magentoDir);
 
         if (appPathExists && ctx.force) {

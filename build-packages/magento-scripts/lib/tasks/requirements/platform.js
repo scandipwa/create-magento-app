@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return,no-param-reassign */
 const os = require('os');
 const macosVersion = require('macos-version');
+const systeminformation = require('systeminformation');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { platforms, darwinMinimalVersion } = require('../../config');
 const dependencyCheck = require('./dependency');
@@ -35,12 +36,18 @@ const checkPlatform = {
         ctx.platform = currentPlatform;
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
 
-        task.title = `Running on ${currentPlatform} ${ctx.platformVersion}`;
+        const { brand, cores } = await systeminformation.cpu();
+
+        task.title = `Running on ${currentPlatform} ${ctx.platformVersion} (${brand} ${cores} threads)`;
 
         const installDependenciesTask = await dependencyCheck();
 
         if (installDependenciesTask) {
-            return task.newListr([installDependenciesTask]);
+            return task.newListr([installDependenciesTask], {
+                rendererOptions: {
+                    showTimer: false
+                }
+            });
         }
     }
 };

@@ -2,9 +2,12 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { docker } = require('../config');
 const executeInContainer = require('../tasks/execute');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('exec <container name> [commands...]', 'Execute command in docker container', () => {}, async (argv) => {
-        const containers = docker.getContainers();
+        const containers = (await docker).getContainers();
         const services = Object.keys(containers);
 
         if (services.includes(argv.containername) || services.some((service) => service.includes(argv.containername))) {

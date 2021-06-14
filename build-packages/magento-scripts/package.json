@@ -3,7 +3,7 @@
     "description": "Scripts and configuration used by CMA.",
     "homepage": "https://docs.create-magento-app.com/",
     "repository": "github:scandipwa/create-magento-app",
-    "version": "1.5.2",
+    "version": "1.5.4-alpha.1",
     "main": "./index.js",
     "types": "./typings/index.d.ts",
     "license": "OSL-3.0",
@@ -22,19 +22,21 @@
         "arm64"
     ],
     "dependencies": {
-        "@scandipwa/scandipwa-dev-utils": "^0.0.25",
+        "@scandipwa/scandipwa-dev-utils": "^0.1.4",
         "conf": "^9.0.2",
         "enquirer": "2.3.6",
         "eta": "^1.12.1",
         "getos": "^3.2.1",
         "is-installed-globally": "^0.4.0",
         "joi": "^17.4.0",
-        "listr2": "^3.4.3",
+        "listr2": "^3.10.0",
         "macos-version": "^5.2.1",
+        "merge-files": "^0.1.2",
         "mysql2": "^2.2.5",
+        "node-ssh": "^11.1.1",
         "semver": "^7.3.5",
         "systeminformation": "^5.7.4",
-        "yargs": "^16.2.0"
+        "yargs": "^17.0.1"
     },
     "publishConfig": {
         "access": "public"

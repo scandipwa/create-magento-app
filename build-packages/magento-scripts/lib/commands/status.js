@@ -8,6 +8,9 @@ const { checkRequirements } = require('../tasks/requirements');
 const { statusContainers } = require('../tasks/docker/containers');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('status', 'Show application status', () => {}, async (args) => {
         const tasks = new Listr([

@@ -1,6 +1,9 @@
 const { Listr } = require('listr2');
 const stop = require('../tasks/stop');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('stop', 'Stop the application.', () => {}, async () => {
         const tasks = new Listr([

@@ -9,11 +9,10 @@ const startServices = {
     title: 'Starting docker services',
     task: async (ctx, task) => task.newListr([
         {
-            title: 'Prepare services',
+            title: 'Preparing services',
             task: (ctx, task) => task.newListr([
                 network.createNetwork,
-                volumes.createVolumes,
-                containers.pullContainers
+                volumes.createVolumes
             ], {
                 concurrent: true,
                 exitOnError: true,
@@ -23,11 +22,7 @@ const startServices = {
         containers.startContainers
     ], {
         concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        },
-        ctx
+        exitOnError: true
     })
 };
 
@@ -35,17 +30,9 @@ const startServices = {
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const stopServices = {
-    title: 'Stopping Docker services',
     task: async (ctx, task) => task.newListr([
         containers.stopContainers
-    ], {
-        concurrent: false,
-        exitOnError: true,
-        rendererOptions: {
-            collapse: false
-        },
-        ctx
-    })
+    ])
 };
 
 module.exports = {

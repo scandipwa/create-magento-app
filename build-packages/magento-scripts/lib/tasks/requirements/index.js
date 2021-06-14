@@ -25,10 +25,13 @@ const checkRequirements = {
         concurrent: false,
         exitOnError: true,
         rendererOptions: {
-            collapse: false
-        },
-        ctx
-    })
+            collapse: false,
+            showTimer: false
+        }
+    }),
+    options: {
+        showTimer: false
+    }
 };
 
 module.exports = { checkRequirements };

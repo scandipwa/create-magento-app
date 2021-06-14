@@ -1,6 +1,8 @@
 const adjustMagentoConfiguration = require('../magento/setup-magento/adjust-magento-configuration');
 const configureElasticsearch = require('../magento/setup-magento/configure-elasticsearch');
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users');
+const deleteCustomers = require('../magento/setup-magento/delete-customers');
+const deleteOrders = require('../magento/setup-magento/delete-orders');
 const indexProducts = require('../magento/setup-magento/index-products');
 
 /**
@@ -11,7 +13,15 @@ const fixDB = {
     task: async (ctx, task) => task.newListr([
         adjustMagentoConfiguration,
         configureElasticsearch,
-        deleteAdminUsers,
+        {
+            task: (ctx, task) => task.newListr([
+                deleteAdminUsers,
+                deleteOrders,
+                deleteCustomers
+            ], {
+                concurrent: true
+            })
+        },
         indexProducts
     ], {
         concurrent: false,

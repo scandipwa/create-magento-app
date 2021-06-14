@@ -19,89 +19,182 @@ const {
     connectToMySQL,
     importDumpToMySQL,
     fixDB,
-    restoreThemeConfig
+    restoreThemeConfig,
+    dumpThemeConfig
 } = require('./mysql');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
 const { getSystemConfig } = require('../config/system-config');
+const setupThemes = require('./theme/setup-themes');
+const pkg = require('../../package.json');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const start = {
-    title: 'Starting project',
-    task: async (ctx, task) => task.newListr([
-        createCacheFolder,
-        checkRequirements,
+const retrieveProjectConfiguration = {
+    title: 'Retrieving project configuration',
+    task: (ctx, task) => task.newListr([
         getMagentoVersionConfig,
         getConfigFromConfigFile,
+        createCacheFolder,
         getSystemConfig,
-        getCachedPorts,
+        getCachedPorts
+    ], {
+        rendererOptions: {
+            collapse: true
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const stopProject = {
+    title: 'Stopping project',
+    task: (ctx, task) => task.newListr([
         stopServices,
-        stopPhpFpm,
-        setPrefix,
+        stopPhpFpm
+    ], {
+        concurrent: true,
+        rendererOptions: {
+            collapse: true,
+            showTimer: false
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const retrieveFreshProjectConfiguration = {
+    title: 'Retrieving fresh project configuration',
+    task: (ctx, task) => task.newListr([
         getConfigFromConfigFile,
         // get fresh ports
         getAvailablePorts,
-        saveConfiguration,
-        // first install php is used to build php if it's missing
+        saveConfiguration
+    ], {
+        rendererOptions: {
+            collapse: true
+        }
+    }),
+    options: {
+        showTimer: false
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const configureProject = {
+    title: 'Configuring project',
+    task: (ctx, task) => task.newListr([
         installPhp,
         {
-            title: 'Install Composer, prepare FS & download images',
+            // title: 'Installing Composer, preparing filesystem and downloading container images',
             task: (ctx, task) => task.newListr([
                 installComposer,
                 prepareFileSystem,
                 pullContainers
             ], {
                 concurrent: true,
-                exitOnError: true,
-                ctx
+                exitOnError: true
             })
         },
-        // second is needed to check if php have missing extensions
         configurePhp,
         installPrestissimo,
         installMagento,
         startServices,
-        connectToMySQL,
-        setupMagento,
-        {
-            task: (ctx, task) => {
-                if (ctx.importDb) {
-                    return task.newListr([
-                        restoreThemeConfig,
-                        importDumpToMySQL,
-                        fixDB,
-                        restoreThemeConfig,
-                        setupMagento
-                    ], {
-                        concurrent: false,
-                        exitOnError: true,
-                        ctx,
-                        rendererOptions: { collapse: false }
-                    });
-                }
-            }
-        },
         startPhpFpm,
+        connectToMySQL
+    ])
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const finishProjectConfiguration = {
+    title: 'Finishing project configuration',
+    task: (ctx, task) => task.newListr([
         {
-            title: 'Opening browser',
-            task: ({ ports, noOpen, config: { overridenConfiguration: { host, ssl } } }, task) => {
-                if (noOpen) {
-                    task.skip();
-                    return;
-                }
-                openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+            skip: (ctx) => !ctx.importDb,
+            task: (ctx, task) => {
+                task.title = 'Importing database dump';
+                return task.newListr([
+                    dumpThemeConfig,
+                    importDumpToMySQL,
+                    fixDB,
+                    restoreThemeConfig,
+                    setupMagento
+                ], {
+                    concurrent: false,
+                    exitOnError: true
+                });
             }
         },
         {
-            task: (ctx) => ctx.mysqlConnection.destroy()
+            title: 'Setting up themes',
+            skip: (ctx) => !ctx.magentoFirstInstall,
+            task: (subCtx, subTask) => subTask.newListr([
+                setupThemes
+            ])
         }
     ], {
-        concurrent: false,
-        exitOnError: true,
-        ctx,
-        rendererOptions: { collapse: false }
+        rendererOptions: {
+            collapse: true
+        }
     })
 };
 
-module.exports = start;
+/**
+ * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const start = {
+    title: 'Starting project',
+    task: (ctx, task) => {
+        task.title = `Starting project (magento-scripts@${pkg.version})`;
+        return task.newListr([
+            checkRequirements,
+            retrieveProjectConfiguration,
+            stopProject,
+            setPrefix,
+            retrieveFreshProjectConfiguration,
+            configureProject,
+            setupMagento,
+            finishProjectConfiguration,
+            {
+                title: 'Opening browser',
+                skip: (ctx) => ctx.noOpen,
+                task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
+                    openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+                },
+                options: {
+                    showTimer: false
+                }
+            },
+            {
+                task: (ctx) => ctx.mysqlConnection.destroy()
+            }
+        ], {
+            concurrent: false,
+            exitOnError: true,
+            rendererOptions: {
+                collapse: false
+            }
+        });
+    }
+};
+
+module.exports = {
+    start,
+    retrieveProjectConfiguration,
+    retrieveFreshProjectConfiguration,
+    stopProject,
+    configureProject,
+    finishProjectConfiguration
+};

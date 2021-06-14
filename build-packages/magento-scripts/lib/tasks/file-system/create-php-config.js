@@ -1,4 +1,3 @@
-const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -6,7 +5,7 @@ const setConfigFile = require('../../util/set-config');
  */
 const createPhpConfig = {
     title: 'Setting PHP config',
-    task: async ({ config: { php }, debug, ports }) => {
+    task: async ({ config: { php, baseConfig }, debug, ports }) => {
         try {
             await setConfigFile({
                 configPathname: php.iniPath,

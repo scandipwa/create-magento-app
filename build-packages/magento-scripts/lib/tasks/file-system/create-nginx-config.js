@@ -1,7 +1,6 @@
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
-const { baseConfig } = require('../../config');
 const setConfigFile = require('../../util/set-config');
 const pathExists = require('../../util/path-exists');
 const { isIpAddress } = require('../../util/ip');
@@ -15,7 +14,8 @@ const createNginxConfig = {
         const {
             ports,
             config: {
-                overridenConfiguration
+                overridenConfiguration,
+                baseConfig
             }
         } = ctx;
 

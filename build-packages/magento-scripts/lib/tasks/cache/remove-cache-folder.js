@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { baseConfig } = require('../../config');
 const pathExists = require('../../util/path-exists');
 
 /**
@@ -7,7 +6,7 @@ const pathExists = require('../../util/path-exists');
  */
 const removeCacheFolder = {
     title: 'Cleaning cache',
-    task: async (ctx, task) => {
+    task: async ({ config: { baseConfig } }, task) => {
         const cacheExists = await pathExists(baseConfig.cacheDir);
         if (!cacheExists) {
             task.skip();

@@ -25,9 +25,7 @@ const cleanup = {
         removeMagento
     ], {
         concurrent: false,
-        exitOnError: true,
-        ctx,
-        rendererOptions: { collapse: false }
+        exitOnError: true
     })
 };
 

@@ -9,6 +9,9 @@ const setPrefix = {
     task: (ctx) => {
         const { config: { overridenConfiguration } } = ctx;
         setPrefixUtil(overridenConfiguration.prefix);
+    },
+    options: {
+        showTimer: false
     }
 };
 

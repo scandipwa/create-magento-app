@@ -2,13 +2,15 @@
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
-const start = require('../tasks/start');
+const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
-const linkTheme = require('../tasks/theme/link-theme');
 const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
 const os = require('os');
 
+/**
+ * @param {import('yargs')} yargs
+ */
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
         yargs.option(
@@ -70,7 +72,10 @@ module.exports = (yargs) => {
             exitOnError: true,
             ctx: args,
             concurrent: false,
-            rendererOptions: { collapse: false }
+            rendererOptions: {
+                showErrorMessage: false,
+                showTimer: true
+            }
         });
         const timeStamp = Date.now() / 1000;
 
@@ -86,23 +91,6 @@ module.exports = (yargs) => {
         try {
             const ctx = await tasks.run();
 
-            if (ctx.checkForInstalledThemesAfterStartUp) {
-                if (ctx.themePaths && ctx.themePaths.length > 0) {
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const themepath of ctx.themePaths) {
-                        // eslint-disable-next-line no-await-in-loop
-                        await new Listr([linkTheme], {
-                            concurrent: false,
-                            exitOnError: true,
-                            ctx: {
-                                ...ctx,
-                                themepath
-                            },
-                            rendererOptions: { collapse: false }
-                        }).run();
-                    }
-                }
-            }
             const {
                 ports,
                 config: { magentoConfiguration, overridenConfiguration: { host, ssl } },

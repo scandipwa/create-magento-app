@@ -124,7 +124,7 @@ const startContainers = {
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const stopContainers = {
-    title: 'Stopping containers',
+    title: 'Stopping Docker containers',
     task: async ({ ports, config: { overridenConfiguration }, projectPath }, task) => {
         const docker = await getDockerConfig(
             overridenConfiguration,
