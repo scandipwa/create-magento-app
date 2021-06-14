@@ -7,6 +7,7 @@ const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
 const linkTheme = require('../tasks/theme/link-theme');
 const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+const os = require('os');
 
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
@@ -115,8 +116,25 @@ module.exports = (yargs) => {
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
 
-            if (analytics && process.isFirstStart) {
-                await googleAnalytics.trackTiming('CMA first development time', Date.now() / 1000 - timeStamp);
+            if (!analytics) {
+                process.exit(0);
+            }
+
+            try {
+                if (!process.isFirstStart) {
+                    await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                    process.exit(0);
+                }
+
+                const cpuModel = os.cpus()[0].model;
+
+                // Get ram amount in MB
+                const ramAmount = Math.round(os.totalmem() / 1024 / 1024);
+
+                await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                await googleAnalytics.trackEvent('Params', `Platform: ${os.platform}, CPU model: ${cpuModel}, RAM amount: ${ramAmount} MB`, 0, 'OS');
+            } catch (e) {
+                logger.error(e.message || e);
             }
 
             process.exit(0);
