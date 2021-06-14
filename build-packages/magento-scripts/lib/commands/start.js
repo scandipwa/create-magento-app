@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable arrow-body-style */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
@@ -11,7 +11,7 @@ const { baseConfig } = require('../config');
  */
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
-        yargs.option(
+        return yargs.option(
             'port',
             {
                 alias: 'p',
@@ -19,9 +19,7 @@ module.exports = (yargs) => {
                 type: 'number',
                 nargs: 1
             }
-        );
-
-        yargs.option(
+        ).option(
             'no-open',
             {
                 alias: 'n',
@@ -29,9 +27,7 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
+        ).option(
             'debug',
             {
                 alias: 'd',
@@ -39,32 +35,31 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
+        ).option(
             'skip-setup', {
                 alias: 's',
                 describe: 'Skip Magento setup',
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
-            'import-db', {
-                describe: 'Import database dump to MySQL',
-                type: 'string'
-                // normalize: true
-            }
-        );
-
-        yargs.option(
-            'edition', {
-                alias: 'e',
-                describe: 'Magento Edition to install',
-                type: 'string'
-            }
-        );
+        )
+            .option(
+                'import-db', {
+                    describe: 'Import database dump to MySQL',
+                    type: 'string'
+                }
+            )
+            .option(
+                'edition', {
+                    alias: 'e',
+                    describe: 'Magento Edition to install',
+                    type: 'string'
+                }
+            )
+            .option('recompile-php', {
+                describe: 'Recompile PHP version used in the project',
+                type: 'boolean'
+            });
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,

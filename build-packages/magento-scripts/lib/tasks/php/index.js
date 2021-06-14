@@ -12,10 +12,10 @@ const updatePhpBrew = require('./update-phpbrew');
 const installPhp = {
     title: 'Installing PHP',
     task: async (ctx, task) => {
-        const { config: { php } } = ctx;
+        const { config: { php }, recompilePhp } = ctx;
         const phpBinExists = await pathExists(php.binPath);
 
-        if (phpBinExists) {
+        if (phpBinExists && !recompilePhp) {
             task.title = `Using PHP version ${php.version}`;
 
             return;
@@ -27,7 +27,7 @@ const installPhp = {
         try {
             const phpVersions = await execAsyncSpawn('phpbrew list');
 
-            if (versionRegex.test(phpVersions)) {
+            if (versionRegex.test(phpVersions) && !recompilePhp) {
                 task.skip();
                 // eslint-disable-next-line consistent-return
                 return;
