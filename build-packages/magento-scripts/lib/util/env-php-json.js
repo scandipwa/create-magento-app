@@ -1,8 +1,10 @@
 const path = require('path');
 const runPhpCode = require('./run-php');
 
-const envPhpToJson = async (projectPath = process.cwd()) => {
-    const { code, result } = await runPhpCode(`-r "echo json_encode(require '${path.join(projectPath, 'app', 'etc', 'env.php')}');"`);
+const envPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => {
+    const { code, result } = await runPhpCode(`-r "echo json_encode(require '${path.join(projectPath, 'app', 'etc', 'env.php')}');"`, {
+        magentoVersion
+    });
 
     if (code !== 0) {
         throw new Error(result);

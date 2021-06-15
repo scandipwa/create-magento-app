@@ -10,7 +10,7 @@ const runMagentoCommand = require('../../util/run-magento');
  */
 const persistedQuerySetup = {
     title: 'Setting up redis configuration for persisted queries',
-    task: async ({ ports }, task) => {
+    task: async ({ ports, magentoVersion }, task) => {
         const composerLockData = await getJsonfileData(path.join(process.cwd(), 'composer.lock'));
 
         if (!composerLockData.packages.some(({ name }) => name === 'scandipwa/persisted-query')) {
@@ -21,7 +21,7 @@ const persistedQuerySetup = {
             return;
         }
 
-        const envPhp = await envPhpToJson(process.cwd());
+        const envPhp = await envPhpToJson(process.cwd(), { magentoVersion });
 
         const persistedQueryConfig = envPhp.cache && envPhp.cache['persisted-query'];
 
@@ -44,7 +44,8 @@ const persistedQuerySetup = {
         -n`, {
                 callback: (t) => {
                     task.output = t;
-                }
+                },
+                magentoVersion
             });
         } catch (e) {
             throw new Error(
