@@ -190,7 +190,6 @@ const installMagento = {
 
             throw new Error(`Unexpected error during composer install.\n\n${e}`);
         }
-        task.title = 'Magento installed!';
         ctx.magentoFirstInstall = true;
     },
     options: {
