@@ -3,16 +3,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const getPhpConfig = require('../../config/php');
 const { getBaseConfig } = require('../../config/index');
-
-const getProcessId = async (fpmPidFilePath) => {
-    const pidExists = await pathExists(fpmPidFilePath);
-
-    if (pidExists) {
-        return fs.promises.readFile(fpmPidFilePath, 'utf-8');
-    }
-
-    return null;
-};
+const getProcessId = require('./get-process-id');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
