@@ -1,9 +1,9 @@
-/* eslint-disable consistent-return, no-restricted-syntax,no-await-in-loop,new-cap,no-param-reassign */
+/* eslint-disable no-param-reassign */
 const os = require('os');
 const { NodeSSH } = require('node-ssh');
-const pathExists = require('../../../util/path-exists');
-const readymageSSH = require('./readymage');
+const pathExists = require('../../../../util/path-exists');
 const regularSSHServer = require('./regular-server');
+const readymageSSH = require('./readymage');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
@@ -13,13 +13,6 @@ const sshDb = {
         const { remoteDbUrl } = ctx;
         const { hostname, username, password } = remoteDbUrl;
 
-        //         if (hostname !== 'ssh.readymage.com') {
-        //             throw new Error(
-        //                 `Unfortunately, your host is not supported yet.
-        // At the moment, only remote-db import from https://readymage.com is supported.`
-        //             );
-        //         }
-
         task.title = `Importing database from remote ssh server ${hostname}`;
 
         const ssh = new NodeSSH();
@@ -28,7 +21,7 @@ const sshDb = {
         if (!password) {
             const privateKey = await task.prompt({
                 type: 'Input',
-                message: `Please enter your private key location to connect to ${hostname}`,
+                message: `Please enter your private key location to connect to ${hostname}\n`,
                 initial: `${os.homedir()}/.ssh/id_rsa`
             });
 
