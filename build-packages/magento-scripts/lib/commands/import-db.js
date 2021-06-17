@@ -13,6 +13,7 @@ module.exports = (yargs) => {
         'Import database dump to MySQL',
         (yargs) => {
             yargs.option('remote-db', {
+                alias: 'r',
                 describe: 'Import database from remote ssh server',
                 type: 'string'
             });
