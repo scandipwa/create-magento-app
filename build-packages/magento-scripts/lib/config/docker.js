@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const macosVersion = require('macos-version');
 const { getArchSync } = require('../util/arch');
+const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
@@ -40,6 +41,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     };
 
     const isLinux = os.platform() === 'linux';
+    const isWsl = await getIsWsl();
     const isArm = getArchSync() === 'arm64';
     const isArmMac = macosVersion.isMacOS && isArm;
 
@@ -78,7 +80,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         const dockerConfig = {
             nginx: {
                 _: 'Nginx',
-                ports: !isLinux ? [
+                ports: (!isLinux || isWsl) ? [
                     `${isIpAddress(host) ? host : '127.0.0.1'}:${ ports.app }:80`
                 ] : [],
                 healthCheck: {
@@ -98,7 +100,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: !isLinux ? network.name : 'host',
+                network: (!isLinux || isWsl) ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 imageDetails: {
                     name: 'nginx',
