@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const mergeFiles = require('merge-files');
-const { orderTables, customerTables } = require('../magento-tables');
-const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { orderTables, customerTables } = require('../../magento-tables');
+const { execAsyncSpawn } = require('../../../../util/exec-async-command');
 /**
  * @type {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
  */
