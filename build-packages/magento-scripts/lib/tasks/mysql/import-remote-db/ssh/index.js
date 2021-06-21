@@ -54,7 +54,7 @@ const sshDb = {
 
         ctx.importDb = './dump.sql';
 
-        if (hostname === 'ssh.readymage.com') {
+        if (hostname.endsWith('readymage.com')) {
             return task.newListr([
                 readymageSSH
             ]);
