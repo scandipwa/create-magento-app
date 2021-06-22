@@ -38,9 +38,9 @@ const checkPlatform = {
         ctx.platform = currentPlatform;
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
 
-        const { brand, cores } = await systeminformation.cpu();
+        const { manufacturer, brand, cores } = await systeminformation.cpu();
 
-        task.title = `Running on ${currentPlatform} ${ctx.platformVersion} (${brand} ${cores} threads)`;
+        task.title = `Running on ${currentPlatform} ${ctx.platformVersion} (${manufacturer} ${brand} ${cores} threads)`;
 
         const installDependenciesTask = await dependencyCheck();
 
