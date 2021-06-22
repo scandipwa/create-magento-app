@@ -54,6 +54,26 @@ const sshDb = {
 
         ctx.importDb = './dump.sql';
 
+        const { stdout: remoteFilesOutput } = await ssh.execCommand('ls');
+
+        const dumpFileNames = ['dump-0.sql', 'dump-1.sql'];
+        const remoteFiles = remoteFilesOutput.split('\n');
+
+        if (dumpFileNames.every((dumpFile) => remoteFiles.includes(dumpFile))) {
+            ctx.makeRemoteDumps = await task.prompt({
+                type: 'Toggle',
+                enabled: 'Yes!',
+                disabled: 'No, just download and import them.',
+                message: `We found dump files on remote server.
+  Do you want to replace them with new dump files or use existing ones?
+`
+            });
+        } else {
+            ctx.makeRemoteDumps = true;
+        }
+
+        // throw new Error('nono');
+
         if (hostname.endsWith('readymage.com')) {
             return task.newListr([
                 readymageSSH

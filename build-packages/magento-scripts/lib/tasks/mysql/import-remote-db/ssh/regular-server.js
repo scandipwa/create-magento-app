@@ -7,48 +7,49 @@ const { execAsyncSpawn } = require('../../../../util/exec-async-command');
  */
 const regularSSHServer = {
     task: async (ctx, task) => {
-        const { ssh, remoteDbUrl } = ctx;
+        const { ssh, remoteDbUrl, makeRemoteDumps } = ctx;
         const sshConnectString = remoteDbUrl.href.replace(/ssh:\/\//i, '');
-
-        /**
-         * @type {string}
-         */
-        const dumpCommand = await task.prompt({
-            type: 'Input',
-            message: `Edit (if needed) command to connect to remote mysql server and create dump files.
+        if (makeRemoteDumps) {
+            /**
+             * @type {string}
+             */
+            const dumpCommand = await task.prompt({
+                type: 'Input',
+                message: `Edit (if needed) command to connect to remote mysql server and create dump files.
 Do not enter "--result-file" option, we need to control that part.
 
 (documentation reference available here: https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html)
 `,
-            initial: 'mysqldump magento --single-transaction --no-tablespaces'
-        });
+                initial: 'mysqldump magento --single-transaction --no-tablespaces'
+            });
 
-        if (dumpCommand.includes('--result-file')) {
-            throw new Error('--result-file option is not allowed in user input command');
-        }
+            if (dumpCommand.includes('--result-file')) {
+                throw new Error('--result-file option is not allowed in user input command');
+            }
 
-        task.output = 'Making remote database dump files...';
+            task.output = 'Making remote database dump files...';
 
-        const ignoredOrderAndCustomerTables = [
-            ...orderTables,
-            ...customerTables
-        ].map((table) => `--ignore-table=magento.${table}`).join(' ');
+            const ignoredOrderAndCustomerTables = [
+                ...orderTables,
+                ...customerTables
+            ].map((table) => `--ignore-table=magento.${table}`).join(' ');
 
-        const includedOrdersAndCustomerTables = [
-            ...orderTables,
-            ...customerTables
-        ].join(' ');
+            const includedOrdersAndCustomerTables = [
+                ...orderTables,
+                ...customerTables
+            ].join(' ');
 
-        /**
+            /**
          * create dump without customers and orders
          */
-        await ssh.execCommand(
-            `${dumpCommand} ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
-        );
+            await ssh.execCommand(
+                `${dumpCommand} ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
+            );
 
-        await ssh.execCommand(
-            `${dumpCommand} --no-data ${ includedOrdersAndCustomerTables } --result-file=dump-1.sql`
-        );
+            await ssh.execCommand(
+                `${dumpCommand} --no-data ${ includedOrdersAndCustomerTables } --result-file=dump-1.sql`
+            );
+        }
 
         const { stdout: remotePwd } = await ssh.execCommand('pwd');
 
