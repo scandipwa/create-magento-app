@@ -49,6 +49,27 @@ export interface ListrContext {
                     o: string
                 }
             }>
+            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch', {
+                _: string
+                ports: string[]
+                healthCheck: {
+                    cmd: string
+                }
+                env: Record<string, string>
+                mountVolumes: string[]
+                mounts: string[]
+                restart: string
+                securityOptions: string[]
+                network: string
+                image: string
+                imageDetails: {
+                    name: string
+                    tag: string
+                }
+                name: string
+                command: string
+                connectCommand: string[]
+            }>
         }
         baseConfig: {
             prefix: string
