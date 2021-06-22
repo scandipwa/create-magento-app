@@ -10,7 +10,7 @@ const readymageSSH = require('./readymage');
  */
 const sshDb = {
     task: async (ctx, task) => {
-        const { remoteDbUrl } = ctx;
+        const { remoteDbUrl, withCustomersData } = ctx;
         const { hostname, username, password } = remoteDbUrl;
 
         task.title = `Importing database from remote ssh server ${hostname}`;
@@ -56,7 +56,7 @@ const sshDb = {
 
         const { stdout: remoteFilesOutput } = await ssh.execCommand('ls');
 
-        const dumpFileNames = ['dump-0.sql', 'dump-1.sql'];
+        const dumpFileNames = !withCustomersData ? ['dump-0.sql', 'dump-1.sql'] : ['dump.sql'];
         const remoteFiles = remoteFilesOutput.split('\n');
 
         if (dumpFileNames.every((dumpFile) => remoteFiles.includes(dumpFile))) {

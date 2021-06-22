@@ -17,6 +17,11 @@ module.exports = (yargs) => {
                 describe: 'Import database from remote ssh server',
                 type: 'string'
             });
+            yargs.option('with-customers-data', {
+                describe: 'Include orders and customers data in database dump',
+                type: 'boolean',
+                default: false
+            });
         },
         async (args = {}) => {
             const tasks = new Listr([importDump], {

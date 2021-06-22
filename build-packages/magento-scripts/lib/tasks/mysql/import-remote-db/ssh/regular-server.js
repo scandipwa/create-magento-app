@@ -7,7 +7,12 @@ const { execAsyncSpawn } = require('../../../../util/exec-async-command');
  */
 const regularSSHServer = {
     task: async (ctx, task) => {
-        const { ssh, remoteDbUrl, makeRemoteDumps } = ctx;
+        const {
+            ssh,
+            remoteDbUrl,
+            makeRemoteDumps,
+            withCustomersData
+        } = ctx;
         const sshConnectString = remoteDbUrl.href.replace(/ssh:\/\//i, '');
         if (makeRemoteDumps) {
             /**
@@ -27,43 +32,57 @@ Do not enter "--result-file" option, we need to control that part.
                 throw new Error('--result-file option is not allowed in user input command');
             }
 
-            task.output = 'Making remote database dump files...';
+            if (!withCustomersData) {
+                task.output = 'Making remote database dump files without customers data...';
 
-            const ignoredOrderAndCustomerTables = [
-                ...orderTables,
-                ...customerTables
-            ].map((table) => `--ignore-table=magento.${table}`).join(' ');
+                const ignoredOrderAndCustomerTables = [
+                    ...orderTables,
+                    ...customerTables
+                ].map((table) => `--ignore-table=magento.${table}`).join(' ');
 
-            const includedOrdersAndCustomerTables = [
-                ...orderTables,
-                ...customerTables
-            ].join(' ');
+                const includedOrdersAndCustomerTables = [
+                    ...orderTables,
+                    ...customerTables
+                ].join(' ');
 
-            /**
-         * create dump without customers and orders
-         */
-            await ssh.execCommand(
-                `${dumpCommand} ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
-            );
+                /**
+                 * create dump without customers and orders
+                 */
+                await ssh.execCommand(
+                    `${dumpCommand} ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
+                );
 
-            await ssh.execCommand(
-                `${dumpCommand} --no-data ${ includedOrdersAndCustomerTables } --result-file=dump-1.sql`
-            );
+                await ssh.execCommand(
+                    `${dumpCommand} --no-data ${ includedOrdersAndCustomerTables } --result-file=dump-1.sql`
+                );
+            } else {
+                task.output = 'Making remote database dump file with customers data...';
+                await ssh.execCommand(
+                    `${dumpCommand} --result-file=dump.sql`
+                );
+            }
         }
 
         const { stdout: remotePwd } = await ssh.execCommand('pwd');
 
         ssh.dispose();
 
-        task.output = 'Downloading dump files...';
-        await execAsyncSpawn(
-            `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
-        );
-        await execAsyncSpawn(
-            `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
-        );
+        if (!withCustomersData) {
+            task.output = 'Downloading dump files...';
+            await execAsyncSpawn(
+                `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
+            );
+            await execAsyncSpawn(
+                `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
+            );
 
-        await mergeFiles(['./dump-0.sql', './dump-1.sql'], './dump.sql');
+            await mergeFiles(['./dump-0.sql', './dump-1.sql'], './dump.sql');
+        } else {
+            task.output = 'Downloading dump file...';
+            await execAsyncSpawn(
+                `scp ${sshConnectString}:${remotePwd}/dump.sql .`
+            );
+        }
     }
 };
 
