@@ -22,8 +22,7 @@ const connectToMySQL = {
                 if (mysqlOutput.includes('Initializing database files')) {
                     maxTries = 120;
                     task.output = `MySQL is initializing database files!
-This will take some time on the first time.
-Please wait and do not restart the MySQL container until initialization is finished!`;
+Please wait, this will take some time and do not restart the MySQL container until initialization is finished!`;
                 }
                 await sleep(2000);
             }
