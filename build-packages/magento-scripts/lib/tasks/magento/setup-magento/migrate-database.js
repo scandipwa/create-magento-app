@@ -5,6 +5,7 @@ const runMagentoCommand = require('../../../util/run-magento');
 const adjustMagentoConfiguration = require('./adjust-magento-configuration');
 const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
+const upgradeMagento = require('./upgrade-magento');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -25,7 +26,7 @@ const migrateDatabase = {
 
             return task.newListr([
                 installMagento,
-                magentoTask('setup:upgrade'),
+                upgradeMagento,
                 magentoTask('cache:enable'),
                 configureElasticsearch
             ], {
@@ -51,7 +52,7 @@ const migrateDatabase = {
         case 1: {
             return task.newListr([
                 installMagento,
-                magentoTask('setup:upgrade'),
+                upgradeMagento,
                 magentoTask('cache:enable'),
                 configureElasticsearch
             ], {
@@ -64,7 +65,7 @@ const migrateDatabase = {
             return task.newListr([
                 adjustMagentoConfiguration,
                 configureElasticsearch,
-                magentoTask('setup:upgrade')
+                upgradeMagento
             ], {
                 concurrent: false,
                 exitOnError: true,
