@@ -1,4 +1,5 @@
 const deepmerge = require('../../util/deepmerge');
+const magento235 = require('./magento-2.3.5');
 const magento241 = require('./magento-2.4.1');
 const magento241p1 = require('./magento-2.4.1-p1');
 const magento242 = require('./magento-2.4.2');
@@ -8,6 +9,9 @@ const defaultCMAConfig = {
 };
 
 const getConfigurations = (config = {}) => ({
+    '2.3.5': deepmerge(defaultCMAConfig, {
+        ...magento235(config)
+    }),
     '2.4.1': deepmerge(defaultCMAConfig, {
         isDefault: true,
         ...magento241(config)
