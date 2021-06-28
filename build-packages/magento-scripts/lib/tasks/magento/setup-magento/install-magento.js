@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop,no-param-reassign */
+const semver = require('semver');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
@@ -19,6 +20,14 @@ const installMagento = {
 
         let installed = false;
 
+        const isMagento23 = semver.satisfies(magentoVersion, '<2.4');
+
+        const elasticsearchConfiguration = `
+--search-engine='elasticsearch7' \
+--elasticsearch-host='127.0.0.1' \
+--elasticsearch-port='${ ports.elasticsearch }'
+`;
+
         /**
          * @type {Array<Error>}
          */
@@ -32,9 +41,7 @@ const installMagento = {
                 --admin-email='${ magentoConfiguration.email }' \
                 --admin-user='${ magentoConfiguration.user }' \
                 --admin-password='${ magentoConfiguration.password }' \
-                --search-engine='elasticsearch7' \
-                --elasticsearch-host='127.0.0.1' \
-                --elasticsearch-port='${ ports.elasticsearch }' \
+                ${ !isMagento23 ? elasticsearchConfiguration : '' } \
                 --session-save=redis \
                 --session-save-redis-host='127.0.0.1' \
                 --session-save-redis-port='${ ports.redis }' \
