@@ -26,7 +26,7 @@ class EnvUpdater {
     /**
      * @var array
      */
-    private array $config;
+    private $config;
 
     /**
      * @var mixed
@@ -85,9 +85,11 @@ class EnvUpdater {
         if (
             isset($this->config['session']) &&
             $this->config['session']['save'] === 'redis' &&
-            $this->config['session']['redis']['port'] !== strval($this->portConfig['redis'])
+            $this->config['session']['redis']['port'] !== strval($this->portConfig['redis']) &&
+            $this->config['session']['redis']['host'] !== '127.0.0.1'
         ) {
             $this->config['session']['redis']['port'] = strval($this->portConfig['redis']);
+            $this->config['session']['redis']['port']= '127.0.0.1';
         }
 
         // update redis frontend config
