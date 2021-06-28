@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-param-reassign */
 const path = require('path');
 const os = require('os');
-const fs = require('fs');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
 const moveFile = require('../../util/move-file');
 const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
+const rmdirSafe = require('../../util/rmdir-safe');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -117,7 +117,7 @@ const createMagentoProject = async ({
         to: path.join(process.cwd(), 'composer.json')
     });
 
-    await fs.promises.rmdir(tempDir);
+    await rmdirSafe(tempDir);
 };
 
 /**
