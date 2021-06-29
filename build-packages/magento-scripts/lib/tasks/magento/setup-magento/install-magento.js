@@ -22,11 +22,10 @@ const installMagento = {
 
         const isMagento23 = semver.satisfies(magentoVersion, '<2.4');
 
-        const elasticsearchConfiguration = `
+        const elasticsearchConfiguration = ` \
 --search-engine='elasticsearch7' \
 --elasticsearch-host='127.0.0.1' \
---elasticsearch-port='${ ports.elasticsearch }'
-`;
+--elasticsearch-port='${ ports.elasticsearch }'`;
 
         /**
          * @type {Array<Error>}
