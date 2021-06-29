@@ -12,7 +12,7 @@ const safeRegexExtract = ({
 }) => {
     const result = string.match(regex);
 
-    if (result.length > 1) {
+    if (result && result.length > 1) {
         return result[1];
     }
 
