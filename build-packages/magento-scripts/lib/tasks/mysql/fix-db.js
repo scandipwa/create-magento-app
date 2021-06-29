@@ -3,7 +3,6 @@ const configureElasticsearch = require('../magento/setup-magento/configure-elast
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users');
 const deleteCustomers = require('../magento/setup-magento/delete-customers');
 const deleteOrders = require('../magento/setup-magento/delete-orders');
-const indexProducts = require('../magento/setup-magento/index-products');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -21,8 +20,7 @@ const fixDB = {
             ], {
                 concurrent: true
             })
-        },
-        indexProducts
+        }
     ], {
         concurrent: false,
         exitOnError: true,
