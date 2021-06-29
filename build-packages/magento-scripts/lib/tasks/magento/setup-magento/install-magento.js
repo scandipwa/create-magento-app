@@ -58,8 +58,7 @@ const installMagento = {
                 --db-user='${ env.MYSQL_USER }' \
                 --db-password='${ env.MYSQL_PASSWORD }' \
                 --backend-frontname='${ magentoConfiguration.adminuri }' \
-                --cleanup-database \
-                --no-interaction`;
+                --no-interaction ${ tries > 0 ? '--cleanup-database' : '' }`;
 
                 await runMagentoCommand(command, {
                     magentoVersion,
