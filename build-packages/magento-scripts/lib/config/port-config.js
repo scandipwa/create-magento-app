@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { findAPortNotInUse } = require('../util/portscanner');
 const { baseConfig } = require('.');
-const deepmerge = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge');
 const getJsonfileData = require('../util/get-jsonfile-data');
 const { getProjects } = require('./config');
 

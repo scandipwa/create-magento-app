@@ -34,4 +34,6 @@ function deepmerge(
     return targetCopy;
 }
 
-module.exports = deepmerge;
+module.exports = {
+    deepmerge
+};

@@ -1,4 +1,4 @@
-const deepmerge = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge');
 
 /**
  * @type {import('../../typings/index').CMAConfiguration['magento']}

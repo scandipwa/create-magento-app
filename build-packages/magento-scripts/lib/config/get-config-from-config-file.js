@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getConfigFromMagentoVersion, getBaseConfig } = require('.');
-const deepmerge = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge');
 const pathExists = require('../util/path-exists');
 const setConfigFile = require('../util/set-config');
 const { defaultMagentoConfig } = require('./magento-config');

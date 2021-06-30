@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const pathExists = require('../util/path-exists');
 const { systemConfigurationSchema } = require('../util/config-file-validator');
-const deepmerge = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge');
 
 const defaultSystemConfig = {
     analytics: true,
