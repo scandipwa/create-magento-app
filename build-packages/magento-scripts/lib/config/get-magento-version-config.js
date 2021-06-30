@@ -41,14 +41,18 @@ const getMagentoVersion = {
                     magentoVersion = await Promise.race([
                         task.prompt({
                             type: 'Select',
-                            message: 'Choose Magento Version',
+                            message: 'Choose Magento Version (use arrow keys)',
                             name: 'magentoVersion',
                             choices: allVersions.map((version) => (
                                 {
                                     name: version.name,
                                     message: version.name
                                 }
-                            ))
+                            )),
+                            initial: defaultConfiguration.name,
+                            scroll: true,
+                            limit: 7,
+                            footer: `Supported versions: ${allVersions.map(({ magentoVersion }) => magentoVersion).join(', ')}`
                         }),
                         timer()
                     ]);
