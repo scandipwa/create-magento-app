@@ -4,6 +4,7 @@ const { libsodium } = require('../php/extensions');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.2-p1',
+    isDefault: true,
     configuration: {
         php: {
             version: '7.4.18',

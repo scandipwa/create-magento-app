@@ -2,10 +2,10 @@ const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 
 module.exports = ({ templateDir } = {}) => ({
-    magentoVersion: '2.3.5',
+    magentoVersion: '2.3.0',
     configuration: {
         php: {
-            version: '7.3.28',
+            version: '7.2.33',
             configTemplate: path.join(templateDir || '', 'php.template.ini'),
             extensions: {
                 gd: {},
@@ -24,7 +24,7 @@ module.exports = ({ templateDir } = {}) => ({
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')
         },
         redis: {
-            version: '5'
+            version: '5.0'
         },
         mysql: {
             version: '5.7'
@@ -33,7 +33,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.2'
         },
         elasticsearch: {
-            version: '7.6'
+            version: '5.6.16'
         },
         composer: {
             version: '1'

@@ -2,7 +2,7 @@ const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 
 module.exports = ({ templateDir } = {}) => ({
-    magentoVersion: '2.3.5',
+    magentoVersion: '2.3.5-p2',
     configuration: {
         php: {
             version: '7.3.28',
