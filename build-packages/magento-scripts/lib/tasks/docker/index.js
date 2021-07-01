@@ -31,7 +31,8 @@ const startServices = {
  */
 const stopServices = {
     task: async (ctx, task) => task.newListr([
-        containers.stopContainers
+        containers.stopContainers,
+        network.removeNetwork
     ])
 };
 
