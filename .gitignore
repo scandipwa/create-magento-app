@@ -47,6 +47,7 @@ sample-packages/*/app/bootstrap.php
 sample-packages/*/app/functions.php
 !sample-packages/*/cma.js
 !sample-packages/*/package.json
+!sample-packages/*/README.md
 
 !**/composer.*
 # !**/cma.js
