@@ -15,7 +15,7 @@ module.exports = ({ templateDir } = {}) => ({
                 sockets: {},
                 SimpleXML: {},
                 xdebug: {
-                    version: '3.0.4'
+                    version: '2.9.8'
                 }
             }
         },
@@ -33,7 +33,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.2'
         },
         elasticsearch: {
-            version: '7.9'
+            version: '7.9.3'
         },
         composer: {
             version: '2'
