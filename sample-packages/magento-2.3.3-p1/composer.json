@@ -11,20 +11,19 @@
         "sort-packages": true
     },
     "require": {
-        "magento/composer-root-update-plugin": "^1",
-        "magento/product-community-edition": "2.3.2-p2"
+        "magento/product-community-edition": "2.3.3-p1"
     },
     "require-dev": {
         "allure-framework/allure-phpunit": "~1.2.0",
-        "friendsofphp/php-cs-fixer": "~2.13.0",
+        "friendsofphp/php-cs-fixer": "~2.14.0",
         "lusitanian/oauth": "~0.8.10",
-        "magento/magento-coding-standard": "~1.0.0",
-        "magento/magento2-functional-testing-framework": "~2.3.14",
+        "magento/magento-coding-standard": "~3.0.0",
+        "magento/magento2-functional-testing-framework": "2.4.5",
         "pdepend/pdepend": "2.5.2",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "~6.5.0",
         "sebastian/phpcpd": "~3.0.0",
-        "squizlabs/php_codesniffer": "3.3.1"
+        "squizlabs/php_codesniffer": "~3.4.0"
     },
     "conflict": {
         "gene/bluefoot": "*"
@@ -60,7 +59,7 @@
             "Magento\\TestFramework\\Utility\\": "dev/tests/static/framework/Magento/TestFramework/Utility/"
         }
     },
-    "version": "2.3.2-p2",
+    "version": "2.3.3-p1",
     "minimum-stability": "stable",
     "repositories": [
         {
