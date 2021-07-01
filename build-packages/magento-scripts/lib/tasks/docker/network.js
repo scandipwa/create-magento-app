@@ -42,7 +42,7 @@ Use command ${logger.style.command('docker network prune')}`);
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const removeNetwork = {
-    title: 'Remove docker network',
+    title: 'Removing docker network',
     task: async ({ config: { docker } }, task) => {
         const networkList = await execAsyncSpawn('docker network ls');
 
