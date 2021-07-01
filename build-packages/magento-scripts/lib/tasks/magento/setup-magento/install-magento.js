@@ -20,7 +20,9 @@ const installMagento = {
 
         let installed = false;
 
-        const isMagento23 = semver.satisfies(magentoVersion, '<2.4');
+        const pureMagentoVersion = magentoVersion.match(/^([0-9]+\.[0-9]+\.[0-9]+)/)[1];
+
+        const isMagento23 = semver.satisfies(pureMagentoVersion, '<2.4');
 
         const elasticsearchConfiguration = ` \
 --search-engine='elasticsearch7' \
