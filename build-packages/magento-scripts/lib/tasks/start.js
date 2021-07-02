@@ -74,6 +74,7 @@ const stopProject = {
 const retrieveFreshProjectConfiguration = {
     title: 'Retrieving fresh project configuration',
     task: (ctx, task) => task.newListr([
+        setPrefix,
         getConfigFromConfigFile,
         // get fresh ports
         getAvailablePorts,
@@ -162,7 +163,6 @@ const start = {
             checkRequirements,
             retrieveProjectConfiguration,
             stopProject,
-            setPrefix,
             retrieveFreshProjectConfiguration,
             configureProject,
             setupMagento,
