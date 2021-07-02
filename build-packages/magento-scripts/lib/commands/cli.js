@@ -4,6 +4,7 @@ const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const localAuthJson = require('../tasks/composer/local-auth-json');
 
 /**
  * @param {import('yargs')} yargs
@@ -13,7 +14,8 @@ module.exports = (yargs) => {
         const tasks = new Listr([
             getMagentoVersionConfig,
             getConfigFromConfigFile,
-            createBashrcConfigFile
+            createBashrcConfigFile,
+            localAuthJson
         ], {
             concurrent: false,
             exitOnError: true,
@@ -27,6 +29,7 @@ module.exports = (yargs) => {
             logger.error(e.message || e);
             process.exit(1);
         }
-        cli();
+
+        return cli();
     });
 };
