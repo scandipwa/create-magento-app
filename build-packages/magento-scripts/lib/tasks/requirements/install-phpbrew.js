@@ -1,48 +1,59 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable consistent-return */
+/* eslint-disable no-param-reassign,consistent-return */
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const osPlatform = require('../../util/os-platform');
-const { execCommandTask, execAsyncSpawn } = require('../../util/exec-async-command');
+const { execAsyncSpawn } = require('../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const dependenciesForPlatforms = require('../../config/dependencies-for-platforms');
+const installDependenciesTask = require('../../util/install-dependencies-task');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installPHPDependency = {
-    title: 'Installing PHP',
+const installPHPBrewDependencies = {
+    title: 'Installing PHPBrew dependencies',
     task: async (ctx, task) => {
+        if (os.platform() === 'darwin') {
+            return task.newListr(
+                installDependenciesTask({
+                    platform: 'darwin',
+                    dependenciesToInstall: ['php', 'autoconf', 'pkg-config']
+                })
+            );
+        }
         const { dist } = await osPlatform();
         switch (dist) {
         case 'Arch Linux':
         case 'Manjaro Linux': {
             return task.newListr(
-                execCommandTask(dependenciesForPlatforms['Arch Linux'].installCommand('php pkg-config'), {
-                    pipeInput: true
+                installDependenciesTask({
+                    platform: 'Arch Linux',
+                    dependenciesToInstall: ['php', 'pkg-config']
                 })
             );
         }
         case 'Fedora': {
             return task.newListr(
-                execCommandTask(dependenciesForPlatforms.Fedora.installCommand('php'), {
-                    pipeInput: true
+                installDependenciesTask({
+                    platform: 'Fedora',
+                    dependenciesToInstall: ['php']
                 })
             );
         }
         case 'CentOS': {
             return task.newListr(
-                execCommandTask(dependenciesForPlatforms.CentOS.installCommand('php'), {
-                    pipeInput: true
+                installDependenciesTask({
+                    platform: 'CentOS',
+                    dependenciesToInstall: ['php']
                 })
             );
         }
         case 'Linux Mint':
         case 'Ubuntu': {
             return task.newListr(
-                execCommandTask(dependenciesForPlatforms.Ubuntu.installCommand('php'), {
-                    pipeInput: true
+                installDependenciesTask({
+                    platform: 'Ubuntu',
+                    dependenciesToInstall: ['php']
                 })
             );
         }
@@ -87,27 +98,6 @@ const installXcode = {
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installPHPBrewDependencies = {
-    title: 'Installing PHPBrew dependencies',
-    task: async (ctx, task) => {
-        const installedDependencies = (await execAsyncSpawn('brew list')).split('\n');
-
-        if (['autoconf', 'pkg-config'].every((dep) => installedDependencies.includes(dep))) {
-            task.skip();
-            return;
-        }
-
-        return task.newListr(
-            execCommandTask('brew install autoconf pkg-config', {
-                pipeInput: true
-            })
-        );
-    }
-};
-
-/**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
- */
 const installPHPBrewBinary = {
     title: 'Installing PHPBrew binary',
     task: async (ctx, task) => {
@@ -141,6 +131,52 @@ const installPHPBrewBinary = {
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
+const addPHPBrewInitiatorLineToConfigFile = {
+    task: async (ctx, task) => {
+        const addLineToShellConfigFIle = await task.prompt({
+            type: 'Confirm',
+            message: `To finish finish configuring PHPBrew we need to add ${logger.style.code('source ~/.phpbrew/bashrc')} line to your .zshrc file.
+Do you want to do it now?`
+        });
+
+        if (!addLineToShellConfigFIle) {
+            task.skip();
+            return;
+        }
+
+        if (process.env.SHELL.includes('zsh')) {
+            await fs.promises.appendFile(
+                path.join(os.homedir(), '.zshrc'),
+                '\nsource ~/.phpbrew/bashrc\n'
+            );
+        } else if (process.env.SHELL.includes('bash')) {
+            await fs.promises.appendFile(
+                path.join(os.homedir(), '.zshrc'),
+                '\nsource ~/.phpbrew/bashrc\n'
+            );
+        } else {
+            const continueInstall = await task.prompt({
+                type: 'Confirm',
+                message: `Unfortunately we cannot automatically add necessary configuration for your shell ${process.env.SHELL}!
+You will need to that manually!
+
+Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
+
+When you ready, press select Yes and installation will continue.`
+            });
+
+            if (!continueInstall) {
+                throw new Error(`Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
+
+Then you can continue installation.`);
+            }
+        }
+    }
+};
+
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const installPHPBrew = {
     title: 'Installing PHPBrew',
     task: async (ctx, task) => {
@@ -151,60 +187,14 @@ const installPHPBrew = {
                 installXcode,
                 installPHPBrewDependencies,
                 installPHPBrewBinary,
-                {
-                    task: async (subCtx, subTask) => {
-                        const addLineToShellConfigFIle = await subTask.prompt({
-                            type: 'Confirm',
-                            message: `To finish finish configuring PHPBrew we need to add ${logger.style.code('source ~/.phpbrew/bashrc')} line to your .zshrc file.
-Do you want to do it now?`
-                        });
-
-                        if (!addLineToShellConfigFIle) {
-                            throw new Error(`Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
-
-Then you can continue installation.`);
-                        }
-
-                        if (process.env.SHELL.includes('zsh')) {
-                            await fs.promises.appendFile(
-                                path.join(os.homedir(), '.zshrc'),
-                                '\nsource ~/.phpbrew/bashrc\n'
-                            );
-                        } else if (process.env.SHELL.includes('bash')) {
-                            await fs.promises.appendFile(
-                                path.join(os.homedir(), '.zshrc'),
-                                '\nsource ~/.phpbrew/bashrc\n'
-                            );
-                        } else {
-                            const continueInstall = await subTask.prompt({
-                                type: 'Confirm',
-                                message: `Unfortunately we cannot automatically add necessary configuration for your shell ${process.env.SHELL}!
-You will need to that manually!
-
-Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
-
-When you ready, press select Yes and installation will continue.`
-                            });
-
-                            if (!continueInstall) {
-                                throw new Error(`Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
-
-Then you can continue installation.`);
-                            }
-                        }
-                    }
-                }
+                addPHPBrewInitiatorLineToConfigFile
             ]);
         }
 
         return task.newListr([
-            installPHPDependency,
-            execCommandTask('curl -L -O https://github.com/phpbrew/phpbrew/releases/latest/download/phpbrew.phar'),
-            execCommandTask('chmod +x phpbrew.phar'),
-            execCommandTask('sudo mv phpbrew.phar /usr/local/bin/phpbrew', {
-                pipeInput: true
-            }),
-            execCommandTask('phpbrew init')
+            installPHPBrewDependencies,
+            installPHPBrewBinary,
+            addPHPBrewInitiatorLineToConfigFile
         ]);
     }
 };
