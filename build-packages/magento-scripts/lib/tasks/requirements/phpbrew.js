@@ -1,7 +1,8 @@
-/* eslint-disable no-param-reassign,no-unused-vars */
+/* eslint-disable consistent-return,no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const safeRegexExtract = require('../../util/safe-regex-extract');
+const installPhpbrew = require('./install-phpbrew');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -14,11 +15,23 @@ const checkPhpbrew = {
         });
 
         if (code !== 0) {
+            const automaticallyInstallPHPBrew = await task.prompt({
+                type: 'Confirm',
+                message: `You don't have PHPBrew installed!
+Do you want to install it automatically?`
+            });
+
+            if (automaticallyInstallPHPBrew) {
+                return task.newListr([
+                    installPhpbrew
+                ]);
+            }
+
             throw new Error(
                 `To install PHPBrew, you must first make sure the requirements are met.
-            The requirements are available here: ${ logger.style.link('https://github.com/phpbrew/phpbrew/wiki/Requirement') }.
-            Then, you can follow the installation instruction, here: ${ logger.style.link('https://phpbrew.github.io/phpbrew/#installation') }.
-            When completed, try running this script again.`
+The requirements are available here: ${ logger.style.link('https://github.com/phpbrew/phpbrew/wiki/Requirement') }.
+Then, you can follow the installation instruction, here: ${ logger.style.link('https://phpbrew.github.io/phpbrew/#installation') }.
+When completed, try running this script again.`
             );
         }
 
