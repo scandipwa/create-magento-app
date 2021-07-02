@@ -14,13 +14,12 @@ const checkComposer = {
             let magento;
 
             try {
-                // eslint-disable-next-line no-unused-expressions
-                magento = JSON.parse(process.env.COMPOSER_AUTH)['http-basic']['repo.magento.com'];
+                magento = JSON.parse(process.env.COMPOSER_AUTH);
             } catch (e) {
                 throw new Error(`Environmental variable ${ logger.style.misc('COMPOSER_AUTH') } is not valid JSON.`);
             }
 
-            if (!magento) {
+            if (!magento || !magento['http-basic'] || !magento['http-basic']['repo.magento.com']) {
                 throw new Error(`Environmental variable ${ logger.style.misc('COMPOSER_AUTH') } does not contain the ${ logger.style.misc('repo.magento.com') } field.`);
             }
         } catch (e) {
