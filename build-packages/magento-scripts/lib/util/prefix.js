@@ -10,6 +10,8 @@ const getPrefix = () => {
     const projectCreatedAt = Math.floor(projectStat.birthtime.getTime() / 1000).toString();
 
     if (!projectInGlobalConfig || !projectInGlobalConfig.createdAt) {
+        process.isFirstStart = 1;
+
         // if createdAt property does not set in config, means that project is threaded as legacy
         // so it uses docker volumes and containers names without prefixes, so it doesn't have creation date
         // as it's unknown

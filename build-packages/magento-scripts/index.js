@@ -31,6 +31,7 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
 
 (async () => {
     const { version: currentVersion, name } = require('./package.json');
+
     try {
         const latestVersion = await getLatestVersion(name);
 
