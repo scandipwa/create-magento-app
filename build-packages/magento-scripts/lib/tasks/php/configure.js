@@ -1,11 +1,11 @@
-/* eslint-disable no-await-in-loop,no-restricted-syntax,no-param-reassign,max-len */
+/* eslint-disable consistent-return,no-await-in-loop,no-restricted-syntax,no-param-reassign,max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const macosVersion = require('macos-version');
 
 /**
  * Get installed modules list with versions
- * @param {*} param0
- * @param {Object} param0.php
+ * @param {Object} param0
+ * @param {import('../../../typings/context').ListrContext['config']['php']} param0.php
  * @returns {Promise<{[key: string]: string}}>}
  */
 const getInstalledModules = async ({ php }) => {
@@ -23,17 +23,46 @@ const getInstalledModules = async ({ php }) => {
 };
 
 /**
+ * @type {(extensions: string[]) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
+const disablingExtensions = (extensions) => ({
+    title: `Disabling extensions ${extensions.join(', ')}`,
+    task: async ({ config: { overridenConfiguration: { configuration: { php } } } }, task) => {
+        try {
+            for (const extension of extensions) {
+                await execAsyncSpawn(`
+                source ~/.phpbrew/bashrc && \
+                phpbrew use ${ php.version } && \
+                phpbrew ext disable ${extension}`, {
+                    callback: (t) => {
+                        task.output = t;
+                    }
+                });
+            }
+        } catch (e) {
+            throw new Error(`Something went wrong during extension disabling.\n\n${e}`);
+        }
+    },
+    options: {
+        bottomBar: 10
+    }
+});
+
+/**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const configure = {
     title: 'Configuring PHP extensions',
-    task: async ({ config }, task) => {
-        const { php } = config;
+    task: async ({ config, debug }, task) => {
+        const { php, overridenConfiguration: { configuration: { php: { disabledExtensions = [] } } } } = config;
         const loadedModules = await getInstalledModules({ php });
         const missingExtensions = Object.entries(php.extensions)
             // check if module is not loaded and if it is loaded check installed version
             .filter(([name, options]) => {
                 const extensionName = options.extensionName || name;
+                if (extensionName === 'xdebug' && !debug) {
+                    return false;
+                }
                 if (!loadedModules[extensionName]) {
                     return true;
                 }
@@ -74,6 +103,16 @@ const configure = {
             }
         } catch (e) {
             throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
+        }
+
+        if (!debug && loadedModules.xdebug && !disabledExtensions.includes('xdebug')) {
+            disabledExtensions.push('xdebug');
+        }
+
+        if (disabledExtensions.length > 0) {
+            return task.newListr(
+                disablingExtensions(disabledExtensions)
+            );
         }
     },
     options: {
