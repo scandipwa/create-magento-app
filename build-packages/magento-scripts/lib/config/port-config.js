@@ -73,7 +73,8 @@ const getPortsConfig = async (ports, options = {}) => {
     const { useNonOverlappingPorts } = options;
     const mergedPorts = deepmerge(defaultPorts, ports || {});
     let p = [
-        9003
+        9003,
+        9111
     ];
 
     if (useNonOverlappingPorts) {
