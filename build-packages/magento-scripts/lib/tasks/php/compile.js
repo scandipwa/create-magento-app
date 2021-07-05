@@ -93,7 +93,7 @@ const compile = {
         const platformCompileOptions = compileOptions[os.platform()];
         if (os.platform() === 'linux') {
             const { dist } = await osPlatform();
-            if (dist.includes('Manjaro')) {
+            if (['Fedora', 'Manjaro'].some((distro) => dist.includes(distro))) {
                 platformCompileOptions.extraOptions.push('--with-libdir=lib64');
             }
         }
