@@ -1,3 +1,4 @@
+const semver = require('semver');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -5,7 +6,8 @@ const setConfigFile = require('../../util/set-config');
  */
 const createPhpConfig = {
     title: 'Setting PHP config',
-    task: async ({ config: { php, baseConfig }, debug, ports }) => {
+    task: async ({ config: { php, baseConfig, overridenConfiguration: { configuration } }, debug, ports }) => {
+        const isXDebug2 = semver.satisfies(configuration.php.extensions.xdebug.version, '2');
         try {
             await setConfigFile({
                 configPathname: php.iniPath,
@@ -14,7 +16,8 @@ const createPhpConfig = {
                 templateArgs: {
                     ports,
                     debug,
-                    mageRoot: baseConfig.magentoDir
+                    mageRoot: baseConfig.magentoDir,
+                    isXDebug2
                 }
             });
         } catch (e) {
