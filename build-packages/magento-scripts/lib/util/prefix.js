@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { projectsConfig, projectKey } = require('../config/config');
 
-const { name: folderName } = path.parse(process.cwd());
+const { base: folderName } = path.parse(process.cwd());
 
 const getPrefix = () => {
     const projectInGlobalConfig = projectsConfig.get(projectKey);
