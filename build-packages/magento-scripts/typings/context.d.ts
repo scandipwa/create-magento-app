@@ -1,4 +1,4 @@
-import { PHPExtension } from './index';
+import { CMAConfiguration, PHPExtension } from './index';
 
 export interface ListrContext {
     magentoVersion: string
@@ -77,6 +77,9 @@ export interface ListrContext {
             templateDir: string
             cacheDir: string
         }
+        overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
     }
     systemConfiguration: {
         analytics: boolean
