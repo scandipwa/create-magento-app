@@ -74,35 +74,31 @@ const configure = {
                 return false;
             });
 
-        if (missingExtensions.length === 0) {
-        // if all extensions are installed - do not configure PHP
-            task.skip();
-            return;
-        }
+        if (missingExtensions.length > 0) {
+            try {
+                for (const [extensionName, extensionOptions] of missingExtensions) {
+                    const options = macosVersion.isMacOS ? extensionOptions.macOptions : extensionOptions.options;
+                    const { hooks = {} } = extensionOptions;
 
-        try {
-            for (const [extensionName, extensionOptions] of missingExtensions) {
-                const options = macosVersion.isMacOS ? extensionOptions.macOptions : extensionOptions.options;
-                const { hooks = {} } = extensionOptions;
-
-                if (hooks.preInstall) {
-                    await Promise.resolve(hooks.preInstall(config));
-                }
-                await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
+                    if (hooks.preInstall) {
+                        await Promise.resolve(hooks.preInstall(config));
+                    }
+                    await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
                 phpbrew use ${ php.version } && \
                 phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
-                {
-                    callback: (t) => {
-                        task.output = t;
-                    }
-                });
+                    {
+                        callback: (t) => {
+                            task.output = t;
+                        }
+                    });
 
-                if (hooks.postInstall) {
-                    await Promise.resolve(hooks.postInstall(config));
+                    if (hooks.postInstall) {
+                        await Promise.resolve(hooks.postInstall(config));
+                    }
                 }
+            } catch (e) {
+                throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
             }
-        } catch (e) {
-            throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
         }
 
         if (!debug && loadedModules.xdebug && !disabledExtensions.includes('xdebug')) {
