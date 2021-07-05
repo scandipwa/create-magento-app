@@ -174,7 +174,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'discovery.type': 'single-node',
                     ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
                     // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
-                    'xpack.ml.enabled': cpuSupportedFlags.includes('sse4_2')
+                    'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
                 network: network.name,
                 image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
