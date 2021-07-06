@@ -4,6 +4,7 @@ const path = require('path');
 const { getConfigFromMagentoVersion, getBaseConfig } = require('.');
 const { deepmerge } = require('../util/deepmerge');
 const pathExists = require('../util/path-exists');
+const { folderName } = require('../util/prefix');
 const setConfigFile = require('../util/set-config');
 const { defaultMagentoConfig } = require('./magento-config');
 
@@ -54,7 +55,7 @@ const getConfigFromConfigFile = {
             });
         }
 
-        ctx.config = await getConfigFromMagentoVersion(magentoVersion);
+        ctx.config = await getConfigFromMagentoVersion(magentoVersion, process.cwd(), folderName);
     }
 };
 

@@ -2,14 +2,14 @@ const path = require('path');
 const fs = require('fs');
 const { projectsConfig, projectKey } = require('../config/config');
 
-const { base: folderName } = path.parse(process.cwd());
+const { name: legacyFolderName, base: folderName } = path.parse(process.cwd());
 
-const getPrefix = () => {
+const getPrefix = (fName = folderName) => {
     const projectInGlobalConfig = projectsConfig.get(projectKey);
-    const projectStat = fs.statSync(process.cwd());
-    const projectCreatedAt = Math.floor(projectStat.birthtime.getTime() / 1000).toString();
 
     if (!projectInGlobalConfig || !projectInGlobalConfig.createdAt) {
+        const projectStat = fs.statSync(process.cwd());
+        const projectCreatedAt = Math.floor(projectStat.birthtime.getTime() / 1000).toString();
         // if createdAt property does not set in config, means that project is threaded as legacy
         // so it uses docker volumes and containers names without prefixes, so it doesn't have creation date
         // as it's unknown
@@ -20,10 +20,10 @@ const getPrefix = () => {
     }
 
     if (projectInGlobalConfig && projectInGlobalConfig.prefix) {
-        return `${folderName}-${projectInGlobalConfig.prefix}`;
+        return `${fName}-${projectInGlobalConfig.prefix}`;
     }
 
-    return folderName;
+    return fName;
 };
 
 const getProjectCreatedAt = () => {
@@ -52,5 +52,7 @@ const setPrefix = (usePrefix) => {
 module.exports = {
     setPrefix,
     getPrefix,
-    getProjectCreatedAt
+    getProjectCreatedAt,
+    legacyFolderName,
+    folderName
 };
