@@ -26,7 +26,6 @@ const getConfigFromConfigFile = require('../config/get-config-from-config-file')
 const { getSystemConfig } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
 const pkg = require('../../package.json');
-const localAuthJson = require('./composer/local-auth-json');
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -161,7 +160,6 @@ const start = {
     task: (ctx, task) => {
         task.title = `Starting project (magento-scripts@${pkg.version})`;
         return task.newListr([
-            localAuthJson,
             checkRequirements,
             retrieveProjectConfiguration,
             stopProject,
