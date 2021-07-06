@@ -22,6 +22,11 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             });
+            yargs.option('no-compress', {
+                describe: 'Do not compress remote dump files',
+                type: 'boolean',
+                default: false
+            });
         },
         async (args = {}) => {
             const tasks = new Listr([importDump], {

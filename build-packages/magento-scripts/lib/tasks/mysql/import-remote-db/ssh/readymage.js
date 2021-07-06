@@ -12,7 +12,8 @@ const readymageSSH = {
             ssh,
             remoteDbUrl,
             makeRemoteDumps,
-            withCustomersData
+            withCustomersData,
+            noCompress
         } = ctx;
         const sshConnectString = remoteDbUrl.href.replace(/ssh:\/\//i, '');
         if (makeRemoteDumps) {
@@ -38,6 +39,19 @@ const readymageSSH = {
                     'mysqldump magento --single-transaction --no-tablespaces --result-file=dump.sql'
                 );
             }
+
+            if (!noCompress) {
+                task.output = 'Compressing dump files...';
+                if (!withCustomersData) {
+                    await ssh.execCommand(
+                        'tar -czvf dump.sql.gz ./dump-0.sql ./dump-1.sql'
+                    );
+                } else {
+                    await ssh.execCommand(
+                        'tar -czvf dump.sql.gz ./dump.sql'
+                    );
+                }
+            }
         }
 
         const { stdout: remotePwd } = await ssh.execCommand('pwd');
@@ -46,19 +60,43 @@ const readymageSSH = {
 
         if (!withCustomersData) {
             task.output = 'Downloading dump files...';
-            await execAsyncSpawn(
-                `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
-            );
-            await execAsyncSpawn(
-                `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
-            );
+            if (noCompress) {
+                await execAsyncSpawn(
+                    `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
+                );
+                await execAsyncSpawn(
+                    `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
+                );
+            } else {
+                await execAsyncSpawn(
+                    `scp ${sshConnectString}:${remotePwd}/dump.sql.gz .`
+                );
+
+                task.output = 'Extracting dump files...';
+
+                await execAsyncSpawn(
+                    'tar -xf ./dump.sql.gz'
+                );
+            }
 
             await mergeFiles(['./dump-0.sql', './dump-1.sql'], './dump.sql');
         } else {
             task.output = 'Downloading dump file...';
-            await execAsyncSpawn(
-                `scp ${sshConnectString}:${remotePwd}/dump.sql .`
-            );
+            if (noCompress) {
+                await execAsyncSpawn(
+                    `scp ${sshConnectString}:${remotePwd}/dump.sql .`
+                );
+            } else {
+                await execAsyncSpawn(
+                    `scp ${sshConnectString}:${remotePwd}/dump.sql.gz .`
+                );
+
+                task.output = 'Extracting dump file...';
+
+                await execAsyncSpawn(
+                    'tar -xf ./dump.sql.gz'
+                );
+            }
         }
     }
 };
