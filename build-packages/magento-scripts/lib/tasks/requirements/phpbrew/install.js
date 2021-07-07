@@ -2,13 +2,13 @@
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
-const osPlatform = require('../../util/os-platform');
-const { execAsyncSpawn } = require('../../util/exec-async-command');
+const osPlatform = require('../../../util/os-platform');
+const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const installDependenciesTask = require('../../util/install-dependencies-task');
+const installDependenciesTask = require('../../../util/install-dependencies-task');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installPHPBrewDependencies = {
     title: 'Installing PHPBrew dependencies',
@@ -65,7 +65,7 @@ const installPHPBrewDependencies = {
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installXcode = {
     title: 'Installing XCode',
@@ -96,7 +96,7 @@ const installXcode = {
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installPHPBrewBinary = {
     title: 'Installing PHPBrew binary',
@@ -129,7 +129,7 @@ const installPHPBrewBinary = {
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const addPHPBrewInitiatorLineToConfigFile = {
     task: async (ctx, task) => {
@@ -175,7 +175,7 @@ Then you can continue installation.`);
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installPHPBrew = {
     title: 'Installing PHPBrew',

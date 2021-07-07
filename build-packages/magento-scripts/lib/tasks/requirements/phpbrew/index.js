@@ -1,13 +1,13 @@
 /* eslint-disable consistent-return,no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { execAsyncSpawn } = require('../../util/exec-async-command');
-const safeRegexExtract = require('../../util/safe-regex-extract');
-const installPhpbrew = require('./install-phpbrew');
+const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const safeRegexExtract = require('../../../util/safe-regex-extract');
+const installPHPBrew = require('./install');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const checkPhpbrew = {
+const checkPHPBrew = {
     title: 'Checking phpbrew',
     task: async (ctx, task) => {
         const { result, code } = await execAsyncSpawn('phpbrew --version', {
@@ -23,7 +23,7 @@ Do you want to install it automatically?`
 
             if (automaticallyInstallPHPBrew) {
                 return task.newListr([
-                    installPhpbrew
+                    installPHPBrew
                 ]);
             }
 
@@ -48,4 +48,4 @@ When completed, try running this script again.`
     }
 };
 
-module.exports = checkPhpbrew;
+module.exports = checkPHPBrew;
