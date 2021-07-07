@@ -45,6 +45,7 @@ sample-packages/*/app/.htaccess
 sample-packages/*/app/autoload.php
 sample-packages/*/app/bootstrap.php
 sample-packages/*/app/functions.php
+!sample-packages/*/scandipwa
 !sample-packages/*/cma.js
 !sample-packages/*/package.json
 !sample-packages/*/README.md
