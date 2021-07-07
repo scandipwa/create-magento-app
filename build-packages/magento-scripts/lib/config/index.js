@@ -8,7 +8,7 @@ const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
-const { getPrefix, legacyFolderName } = require('../util/prefix');
+const { getPrefix, folderName } = require('../util/prefix');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
@@ -16,7 +16,7 @@ const darwinMinimalVersion = '10.5';
 /**
  * @returns {{prefix: string,magentoDir: string,templateDir: string,cacheDir: string}}
  */
-const getBaseConfig = (projectPath = process.cwd(), prefix = legacyFolderName) => ({
+const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
     prefix: getPrefix(prefix),
     magentoDir: projectPath,
     templateDir: path.join(__dirname, 'templates'),
@@ -33,7 +33,7 @@ module.exports = {
     /**
      * @param {string} magentoVersion
      */
-    async getConfigFromMagentoVersion(magentoVersion, projectPath = process.cwd(), prefix = legacyFolderName) {
+    async getConfigFromMagentoVersion(magentoVersion, projectPath = process.cwd(), prefix = folderName) {
         const newBaseConfig = getBaseConfig(projectPath, prefix);
         const configurations = getConfigurations(newBaseConfig);
         if (!configurations[magentoVersion]) {

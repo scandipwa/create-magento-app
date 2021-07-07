@@ -58,5 +58,6 @@ const removeVolumes = {
 
 module.exports = {
     createVolumes,
-    removeVolumes
+    removeVolumes,
+    createVolume: create
 };
