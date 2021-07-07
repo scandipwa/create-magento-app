@@ -3,6 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const safeRegexExtract = require('../../../util/safe-regex-extract');
 const installPHPBrew = require('./install');
+const getPHPBrewVersion = require('./version');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -23,7 +24,13 @@ Do you want to install it automatically?`
 
             if (automaticallyInstallPHPBrew) {
                 return task.newListr([
-                    installPHPBrew
+                    installPHPBrew,
+                    getPHPBrewVersion,
+                    {
+                        task: (ctx) => {
+                            task.title = `Using PHPBrew version ${ctx.PHPBrewVersion}`;
+                        }
+                    }
                 ]);
             }
 
@@ -35,16 +42,14 @@ When completed, try running this script again.`
             );
         }
 
-        const phpBrewVersion = safeRegexExtract({
-            string: result,
-            regex: /phpbrew - ([\d.]+)/i,
-            onNoMatch: () => {
-                throw new Error(`No phpbrew version found in phpbrew version output!\n\n${result}`);
+        return task.newListr([
+            getPHPBrewVersion,
+            {
+                task: (ctx) => {
+                    task.title = `Using PHPBrew version ${ctx.PHPBrewVersion}`;
+                }
             }
-        });
-
-        ctx.phpBrewVersion = phpBrewVersion;
-        task.title = `Using PHPBrew version ${phpBrewVersion}`;
+        ]);
     }
 };
 
