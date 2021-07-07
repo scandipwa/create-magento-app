@@ -11,6 +11,11 @@ const installDockerOnDebianSystemsTasks = [
     executeSudoCommand('sudo systemctl enable docker')
 ];
 
+const postInstallSteps = [
+    executeSudoCommand('sudo groupadd docker'),
+    executeSudoCommand('sudo usermod -aG docker $USER')
+];
+
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
@@ -27,14 +32,18 @@ const installDocker = {
                     dependenciesToInstall: ['docker']
                 }),
                 executeSudoCommand('sudo systemctl start docker.service'),
-                executeSudoCommand('sudo systemctl enable docker.service')
+                executeSudoCommand('sudo systemctl enable docker.service'),
+                ...postInstallSteps
             ]);
         }
         case 'Fedora':
         case 'CentOS':
         case 'Linux Mint':
         case 'Ubuntu': {
-            return task.newListr(installDockerOnDebianSystemsTasks);
+            return task.newListr([
+                ...installDockerOnDebianSystemsTasks,
+                ...postInstallSteps
+            ]);
         }
         default: {
             throw new Error(`Docker is not installed!

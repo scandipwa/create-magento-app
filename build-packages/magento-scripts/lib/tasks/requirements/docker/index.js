@@ -3,7 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const os = require('os');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
-const installDocker = require('./install-docker');
+const installDocker = require('./install');
 const getDockerVersion = require('./version');
 
 /**
@@ -22,7 +22,8 @@ const checkDocker = {
                 const automaticallyInstallDocker = await task.prompt({
                     type: 'Confirm',
                     message: `You don't have Docker installed!
-Do you want to install it automatically?`
+Do you want to install it automatically?
+NOTE: After installation it's recommended to log out and log back in so your group membership is re-evaluated!`
                 });
 
                 if (automaticallyInstallDocker) {
@@ -32,6 +33,12 @@ Do you want to install it automatically?`
                         {
                             task: (ctx) => {
                                 task.title = `Using docker version ${ctx.dockerVersion}`;
+
+                                throw new Error(
+                                    `Docker is installed successfully!
+Please log out and log back to so your group membership is re-evaluated!
+Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`
+                                );
                             }
                         }
                     ]);
