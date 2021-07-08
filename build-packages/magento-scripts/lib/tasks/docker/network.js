@@ -8,7 +8,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const createNetwork = {
     title: 'Deploying docker network',
     task: async ({ config: { docker } }, task) => {
-        const networkList = await execAsyncSpawn('docker network ls');
+        const networkList = await execAsyncSpawn('docker network ls -q');
 
         if (networkList.includes(docker.network.name)) {
             task.skip();
@@ -44,7 +44,7 @@ Use command ${logger.style.command('docker network prune')}`);
 const removeNetwork = {
     title: 'Removing docker network',
     task: async ({ config: { docker } }, task) => {
-        const networkList = await execAsyncSpawn('docker network ls');
+        const networkList = await execAsyncSpawn('docker network ls -q');
 
         if (!networkList.includes(docker.network.name)) {
             task.skip();
