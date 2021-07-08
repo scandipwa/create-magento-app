@@ -1,8 +1,5 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable consistent-return */
+/* eslint-disable no-param-reassign,consistent-return */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
-const getDockerConfig = require('../../config/docker');
-const { getBaseConfig } = require('../../config');
 
 const run = (options) => {
     const {
@@ -125,11 +122,7 @@ const startContainers = {
  */
 const stopContainers = {
     title: 'Stopping Docker containers',
-    task: async ({ ports, config: { overridenConfiguration }, projectPath }, task) => {
-        const docker = await getDockerConfig(
-            overridenConfiguration,
-            getBaseConfig(projectPath)
-        );
+    task: async ({ ports, config: { docker } }, task) => {
         const containerList = await execAsyncSpawn('docker container ls -a');
 
         const runningContainers = Object.values(docker.getContainers(ports)).filter(
@@ -144,6 +137,7 @@ const stopContainers = {
         await stop(runningContainers.map(({ name }) => name));
     }
 };
+
 const getContainerStatus = async (containerName) => {
     try {
         return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State.Health}}' ${containerName}`));
