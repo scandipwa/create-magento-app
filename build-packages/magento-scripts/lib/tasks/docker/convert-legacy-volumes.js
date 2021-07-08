@@ -1,8 +1,6 @@
-/* eslint-disable max-len */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-param-reassign */
-const { getBaseConfig } = require('../../config');
+/* eslint-disable consistent-return,max-len, no-await-in-loop,no-restricted-syntax, no-param-reassign */
+const { stopServices } = require('./index');
+const { getBaseConfig, getConfigFromMagentoVersion } = require('../../config');
 const getDockerConfig = require('../../config/docker');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const { folderName, legacyFolderName } = require('../../util/prefix');
@@ -31,38 +29,55 @@ const convertLegacyVolumes = {
             newVolumeNames.every((name) => !existingVolumes.includes(name))
             && legacyVolumeNames.every((name) => existingVolumes.includes(name))
         ) {
-            task.title = 'Converting old volumes to new ones, this will take some time...';
+            ctx.config = await getConfigFromMagentoVersion(ctx.magentoVersion, process.cwd(), legacyFolderName);
 
-            for (const [volumeName, volumeConfig] of Object.entries(newDockerConfig.volumes)) {
-                const legacyVolumeConfig = legacyDockerConfig.volumes[volumeName];
+            return task.newListr([
+                stopServices,
+                {
+                    title: 'Migrating data from legacy volumes to new ones',
+                    task: async (subCtx, subTask) => {
+                        task.title = 'Converting old volumes to new ones, this will take some time...';
 
-                task.output = `Creating volume ${volumeConfig.name}...`;
-                await createVolume(volumeConfig);
-                task.output = `Copying data from ${legacyVolumeConfig.name} to ${volumeConfig.name}...`;
-                await execAsyncSpawn(
-                    `docker run --rm -v ${legacyVolumeConfig.name}:/from:ro -v ${volumeConfig.name}:/to alpine ash -c "cd /from; cp -av . /to"`, {
-                        callback: (t) => {
-                            task.output = t;
+                        for (const [volumeName, volumeConfig] of Object.entries(newDockerConfig.volumes)) {
+                            const legacyVolumeConfig = legacyDockerConfig.volumes[volumeName];
+
+                            subTask.output = `Creating volume ${volumeConfig.name}...`;
+                            await createVolume(volumeConfig);
+                            subTask.output = `Copying data from ${legacyVolumeConfig.name} to ${volumeConfig.name}...`;
+                            await execAsyncSpawn(
+                                `docker run --rm -v ${legacyVolumeConfig.name}:/from:ro -v ${volumeConfig.name}:/to alpine ash -c "cd /from; cp -av . /to"`, {
+                                    callback: (t) => {
+                                        task.output = t;
+                                    }
+                                }
+                            );
                         }
+
+                        subCtx.config = await getConfigFromMagentoVersion(ctx.magentoVersion, process.cwd());
+
+                        const doDelete = await subTask.prompt({
+                            type: 'Toggle',
+                            message: `Good news! We successfully moved your data from legacy volumes ${legacyVolumeNames.join(', ')} to new ones!
+            But we have one last thing to do.
+            To free some space and avoid possible interference between docker volumes we strongly recommend you to delete legacy volumes ${legacyVolumeNames.join(', ')} now or when you are ready.
+            `,
+                            disabled: 'Delete later myself',
+                            enabled: 'Delete automatically now'
+                        });
+
+                        if (doDelete) {
+                            await execAsyncSpawn(
+                                `docker volume rm ${legacyVolumeNames.join(' ')}`
+                            );
+                        }
+                    },
+                    options: {
+                        bottomBar: 10
                     }
-                );
-            }
-
-            const doDelete = await task.prompt({
-                type: 'Toggle',
-                message: `Good news! We successfully moved your data from legacy volumes ${legacyVolumeNames.join(', ')} to new ones!
-But we have one last thing to do.
-To free some space and avoid possible interference between docker volumes we strongly recommend you to delete legacy volumes ${legacyVolumeNames.join(', ')} now or when you are ready.
-`,
-                disabled: 'Delete later myself',
-                enabled: 'Delete automatically now'
+                }
+            ], {
+                concurrent: false
             });
-
-            if (doDelete) {
-                await execAsyncSpawn(
-                    `docker volume rm ${legacyVolumeNames.join(' ')}`
-                );
-            }
         }
     }
 };
