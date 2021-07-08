@@ -3,7 +3,7 @@ const cli = require('../tasks/cli');
 const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const getProjectConfiguration = require('../config/get-config-from-config-file');
+const getProjectConfiguration = require('../config/get-project-configuration');
 const localAuthJson = require('../tasks/composer/local-auth-json');
 const checkConfigurationFile = require('../config/check-configuration-file');
 
