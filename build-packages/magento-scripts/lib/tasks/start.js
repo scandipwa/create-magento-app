@@ -27,6 +27,7 @@ const { getSystemConfig } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
 const pkg = require('../../package.json');
 const checkConfigurationFile = require('../config/check-configuration-file');
+const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -37,6 +38,7 @@ const retrieveProjectConfiguration = {
         getMagentoVersionConfig,
         checkConfigurationFile,
         getProjectConfiguration,
+        convertLegacyVolumes,
         createCacheFolder,
         getSystemConfig,
         getCachedPorts
