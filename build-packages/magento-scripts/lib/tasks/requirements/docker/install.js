@@ -4,16 +4,11 @@ const { execCommandTask } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const executeSudoCommand = require('../../../util/execute-sudo-command');
 
-const installDockerOnDebianSystemsTasks = [
-    execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
-    executeSudoCommand('sudo sh get-docker.sh'),
-    executeSudoCommand('sudo systemctl start docker'),
-    executeSudoCommand('sudo systemctl enable docker')
-];
-
 const postInstallSteps = [
-    executeSudoCommand('sudo groupadd docker'),
-    executeSudoCommand('sudo usermod -aG docker $USER')
+    executeSudoCommand('[ $(getent group docker) ] && sudo groupadd docker', {
+        withCode: true
+    }),
+    executeSudoCommand(`sudo usermod -aG docker ${process.env.USER}`)
 ];
 
 /**
@@ -41,7 +36,10 @@ const installDocker = {
         case 'Linux Mint':
         case 'Ubuntu': {
             return task.newListr([
-                ...installDockerOnDebianSystemsTasks,
+                execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
+                executeSudoCommand('sudo sh get-docker.sh'),
+                executeSudoCommand('sudo service docker start'),
+                executeSudoCommand('sudo service docker enable'),
                 ...postInstallSteps
             ]);
         }

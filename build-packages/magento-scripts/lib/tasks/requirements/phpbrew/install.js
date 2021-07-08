@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-param-reassign,consistent-return */
 const os = require('os');
 const path = require('path');
@@ -133,9 +134,13 @@ const installPHPBrewBinary = {
  */
 const addPHPBrewInitiatorLineToConfigFile = {
     task: async (ctx, task) => {
+        const shellName = process.env.SHELL.split('/').pop();
+
+        const shellConfigFileName = `.${shellName}rc`;
+
         const addLineToShellConfigFIle = await task.prompt({
             type: 'Confirm',
-            message: `To finish finish configuring PHPBrew we need to add ${logger.style.code('source ~/.phpbrew/bashrc')} line to your .zshrc file.
+            message: `To finish finish configuring PHPBrew we need to add ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')} line to your ${ shellConfigFileName } file.
 Do you want to do it now?`
         });
 
@@ -144,14 +149,14 @@ Do you want to do it now?`
             return;
         }
 
-        if (process.env.SHELL.includes('zsh')) {
+        if (shellName === 'zsh') {
             await fs.promises.appendFile(
                 path.join(os.homedir(), '.zshrc'),
                 '\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc\n'
             );
-        } else if (process.env.SHELL.includes('bash')) {
+        } else if (shellName === 'bash') {
             await fs.promises.appendFile(
-                path.join(os.homedir(), '.zshrc'),
+                path.join(os.homedir(), '.bashrc'),
                 '\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc\n'
             );
         } else {
@@ -160,13 +165,13 @@ Do you want to do it now?`
                 message: `Unfortunately we cannot automatically add necessary configuration for your shell ${process.env.SHELL}!
 You will need to that manually!
 
-Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
+Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
 
 When you ready, press select Yes and installation will continue.`
             });
 
             if (!continueInstall) {
-                throw new Error(`Add following string to your shells configuration file: ${logger.style.code('source ~/.phpbrew/bashrc')}
+                throw new Error(`Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
 
 Then you can continue installation.`);
             }
