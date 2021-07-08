@@ -5,9 +5,8 @@ const {
     uninstallMagento,
     removeMagento
 } = require('./magento');
-const getMagentoVersionConfig = require('../config/get-project-configuration');
 const { stopPhpFpm } = require('./php-fpm');
-const getProjectConfiguration = require('../config/get-config-from-config-file');
+const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 
 /**
@@ -16,7 +15,6 @@ const checkConfigurationFile = require('../config/check-configuration-file');
 const cleanup = {
     title: 'Cleanup project',
     task: async (ctx, task) => task.newListr([
-        getMagentoVersionConfig,
         checkConfigurationFile,
         getProjectConfiguration,
         stopPhpFpm,
