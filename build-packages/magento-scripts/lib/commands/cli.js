@@ -3,8 +3,9 @@ const cli = require('../tasks/cli');
 const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const getProjectConfiguration = require('../config/get-config-from-config-file');
 const localAuthJson = require('../tasks/composer/local-auth-json');
+const checkConfigurationFile = require('../config/check-configuration-file');
 
 /**
  * @param {import('yargs')} yargs
@@ -13,7 +14,8 @@ module.exports = (yargs) => {
     yargs.command('cli', 'Enter CLI (magento, php, composer).', () => {}, async () => {
         const tasks = new Listr([
             getMagentoVersionConfig,
-            getConfigFromConfigFile,
+            checkConfigurationFile,
+            getProjectConfiguration,
             createBashrcConfigFile,
             localAuthJson
         ], {

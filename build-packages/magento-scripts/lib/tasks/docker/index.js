@@ -1,5 +1,4 @@
 const containers = require('./containers');
-const convertLegacyVolumes = require('./convert-legacy-volumes');
 const network = require('./network');
 const volumes = require('./volumes');
 
@@ -13,12 +12,7 @@ const startServices = {
             title: 'Preparing services',
             task: (ctx, task) => task.newListr([
                 network.createNetwork,
-                {
-                    task: (ctx, task) => task.newListr([
-                        convertLegacyVolumes,
-                        volumes.createVolumes
-                    ])
-                }
+                volumes.createVolumes
             ], {
                 concurrent: true,
                 exitOnError: true,
