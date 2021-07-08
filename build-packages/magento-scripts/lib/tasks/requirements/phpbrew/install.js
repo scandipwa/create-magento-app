@@ -147,12 +147,12 @@ Do you want to do it now?`
         if (process.env.SHELL.includes('zsh')) {
             await fs.promises.appendFile(
                 path.join(os.homedir(), '.zshrc'),
-                '\nsource ~/.phpbrew/bashrc\n'
+                '\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc\n'
             );
         } else if (process.env.SHELL.includes('bash')) {
             await fs.promises.appendFile(
                 path.join(os.homedir(), '.zshrc'),
-                '\nsource ~/.phpbrew/bashrc\n'
+                '\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc\n'
             );
         } else {
             const continueInstall = await task.prompt({
