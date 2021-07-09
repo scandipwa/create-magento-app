@@ -32,7 +32,14 @@ const installDocker = {
             ]);
         }
         case 'Fedora':
-        case 'CentOS':
+        case 'CentOS': {
+            return task.newListr([
+                execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
+                executeSudoCommand('sudo sh get-docker.sh'),
+                executeSudoCommand('sudo systemctl start docker'),
+                executeSudoCommand('sudo systemctl enable docker')
+            ]);
+        }
         case 'Linux Mint':
         case 'Ubuntu': {
             return task.newListr([
