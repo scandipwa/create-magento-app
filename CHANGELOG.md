@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.8.0 (09/07/2021)
+# IMPORTANT COMPATIBILITY CHANGES, Improved XDebug 2 support, compressing for `import-db` from remote databases and more!
+
+## Important Changes
+
+Recently was discovered a bug in prefix generation.
+
+In general, if you installs and runs a CMA project in a directory with a name that contains dots (.) this was treated as a file name, so everything after a dot was thrown away.
+This could lead to interference between projects since `project-2.4.1` was using the same prefix as `project-2.4.2`, although with folder name we use folder creation timestamp, so the chance of this very low.
+
+For that reason, since **this release** this issue is fixed, now the full folder name is used and old MySQL, ElasticSearch and Redis volumes will be automatically converted to new use new prefixes when you run [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command.
+
+However, IF you try downgrading to an older version CMA, your setup will not have data from new volumes.
+
+## What's New
+
+- XDebug 2 support!
+  Previously only XDebug 3 configuration was used so it might not be working with XDebug 2. Now it should work as expected.
+- XDebug extension is not installed **by default**.
+  Previously, XDebug was installed but disabled through options in `php.ini` file. Now it's not installed and enabled unless you run project in **debug** mode.
+- Importing database from a remote server (ssh) now uses dump compression **by default**.
+  If, for some reason, you don't want to use compression, use the new option `no-compress`.
+- Docker can be automatically installed on the supported platform: Linux!
+  For macOS and Windows, you will still get a message with instructions on installing Docker on your system.
+
+## Miscellaneous
+
+- Improved validation of local `auth.json` file.
+- [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command received new option `-v, --verbose`.
+  Now **by default** logs from Magento install & setup & upgrade will not be shown in the console, but if you need them, use this option.
+
+## Bug FIxes
+
+- ElasticSearch container option `xpack.ml.enabled` is now enabled correctly on macOS systems. 71c67cb1646b316424c23cf0a4ee0b1f16b5fbe3
+
+---
+
 ## v1.7.0 (02/07/2021)
 # Magento version 2.3.x support, automatic PHPBrew install and more!
 
@@ -490,15 +527,3 @@ This release contains the following changes:
 - Now `magento-scripts` will choose available ports not only if they are free on the system, but also if they are not used by other CMA instances.
 No more `app/etc/env.php` file deletion of ports have changed while your project was offline during other projects development.
 - Configuration file for `cli` command is now a template file that will be stored in the cache folder. This is needed if you are using custom PHP version, rather default PHP version by `magento-scripts`, which currently is `7.4.13`.
----
-
-## Prefixes and automatic theme installation! (19/02/2021)
-# What is New
-- :clap: Prefixes :clap:
-Previously, if you have 2 folders with the same name in but located different places (for example `/home/user/my-cma-app` and `/home/user/test/my-cma-app` you might experience strange behaviour, like 404 errors in Nginx or ` failed to mount local volume: no such file or directory`. Now, CMA will **by default** append a unique prefix to the docker container names and volume names which should prevent errors described previously from appearing and allow to smoothly running CMA in non-unique folder names.
-⚠️ Since prefixes are enabled **by default**, you might encounter problems during the upgrading to the version. We recommend disabling prefixes if this is the case through the config file, set the `prefix` property to `false`.
-- Automatic theme installation.
-Now if your Magento is not installed and you starting the CMA project, magento-scripts will try to detect if you already have a theme installed in `composer.json` or not, and if it is then it will automatically link it after startup is complete.
-
-# Bug Fixes
-- If magento-scripts are out-of-date, console message said to run a command `npm upgrade -g ${package name}` even if a package is installed locally. Now it will print the correct command if a package is installed locally or globally.
