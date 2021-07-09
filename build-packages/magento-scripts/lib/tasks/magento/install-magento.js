@@ -128,7 +128,7 @@ const createMagentoProject = async ({
 const installMagento = {
     title: 'Installing Magento',
     task: async (ctx, task) => {
-        const { magentoVersion, config: { baseConfig, overridenConfiguration } } = ctx;
+        const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
         const {
             magento: { edition: magentoEdition },
             magentoVersion: magentoPackageVersion
@@ -146,7 +146,7 @@ const installMagento = {
                 magentoProductSelectedEdition,
                 magentoVersion,
                 task,
-                verbose: ctx.verbose
+                verbose
             });
         }
 
@@ -175,7 +175,7 @@ const installMagento = {
                 magentoPackageVersion,
                 magentoVersion,
                 task,
-                verbose: ctx.verbose
+                verbose
             });
         }
         try {
