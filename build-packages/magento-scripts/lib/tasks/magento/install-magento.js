@@ -20,7 +20,8 @@ const adjustComposerJson = async ({
     magentoProductSelectedEdition,
     magentoVersion,
     magentoPackageVersion,
-    task
+    task,
+    verbose
 }) => {
     const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
 
@@ -35,7 +36,7 @@ const adjustComposerJson = async ({
         task.output = 'No Magento repository is set in composer.json! Setting up...';
         await runComposerCommand('config repo.0 composer https://repo.magento.com', {
             magentoVersion,
-            callback: (t) => {
+            callback: !verbose ? undefined : (t) => {
                 task.output = t;
             }
         });
@@ -47,7 +48,7 @@ const adjustComposerJson = async ({
         await runComposerCommand('require magento/composer-root-update-plugin:^1',
             {
                 magentoVersion,
-                callback: (t) => {
+                callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -78,7 +79,7 @@ Change magento edition in config file or manually reinstall correct magento edit
         await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
             {
                 magentoVersion,
-                callback: (t) => {
+                callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -92,7 +93,8 @@ const createMagentoProject = async ({
     magentoProject,
     magentoPackageVersion,
     magentoVersion,
-    task
+    task,
+    verbose
 }) => {
     const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
     const installCommand = [
@@ -106,7 +108,7 @@ const createMagentoProject = async ({
         installCommand.join(' '),
         {
             magentoVersion,
-            callback: (t) => {
+            callback: !verbose ? undefined : (t) => {
                 task.output = t;
             }
         }
@@ -143,7 +145,8 @@ const installMagento = {
                 magentoPackageVersion,
                 magentoProductSelectedEdition,
                 magentoVersion,
-                task
+                task,
+                verbose: ctx.verbose
             });
         }
 
@@ -171,14 +174,15 @@ const installMagento = {
                 magentoProject,
                 magentoPackageVersion,
                 magentoVersion,
-                task
+                task,
+                verbose: ctx.verbose
             });
         }
         try {
             await runComposerCommand('install',
                 {
                     magentoVersion,
-                    callback: (t) => {
+                    callback: !verbose ? undefined : (t) => {
                         task.output = t;
                     }
                 });

@@ -59,6 +59,12 @@ module.exports = (yargs) => {
             .option('recompile-php', {
                 describe: 'Recompile PHP version used in the project',
                 type: 'boolean'
+            })
+            .option('verbose', {
+                alias: 'v',
+                describe: 'Enable verbose logging',
+                type: 'boolean',
+                default: false
             });
     }, async (args = {}) => {
         const tasks = new Listr([start], {

@@ -64,7 +64,7 @@ const installMagento = {
                 await runMagentoCommand(command, {
                     magentoVersion,
                     throwNonZeroCode: true,
-                    callback: (t) => {
+                    callback: !ctx.verbose ? undefined : (t) => {
                         task.output = t;
                     }
                 });
