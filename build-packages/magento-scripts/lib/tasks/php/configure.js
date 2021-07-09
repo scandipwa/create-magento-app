@@ -56,7 +56,17 @@ const configure = {
     task: async ({ config, debug }, task) => {
         const { php, overridenConfiguration: { configuration: { php: { disabledExtensions = [] } } } } = config;
         const loadedModules = await getInstalledModules({ php });
+
+        if (!debug && loadedModules.xdebug && !disabledExtensions.includes('xdebug')) {
+            disabledExtensions.push('xdebug');
+        }
+
         const missingExtensions = Object.entries(php.extensions)
+            .filter(([name, options]) => {
+                const extensionName = options.extensionName || name;
+
+                return !disabledExtensions.includes(extensionName);
+            })
             // check if module is not loaded and if it is loaded check installed version
             .filter(([name, options]) => {
                 const extensionName = options.extensionName || name;
@@ -99,10 +109,6 @@ const configure = {
             } catch (e) {
                 throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
             }
-        }
-
-        if (!debug && loadedModules.xdebug && !disabledExtensions.includes('xdebug')) {
-            disabledExtensions.push('xdebug');
         }
 
         if (disabledExtensions.length > 0) {
