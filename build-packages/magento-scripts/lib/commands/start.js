@@ -91,6 +91,7 @@ module.exports = (yargs) => {
 
         try {
             const ctx = await tasks.run();
+
             const {
                 ports,
                 config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
