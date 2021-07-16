@@ -112,6 +112,7 @@ module.exports = (yargs) => {
             try {
                 if (!process.isFirstStart) {
                     await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                    googleAnalytics.printAboutAnalytics();
                     process.exit(0);
                 }
 
@@ -125,6 +126,7 @@ module.exports = (yargs) => {
 
                 await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
                 await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                googleAnalytics.printAboutAnalytics();
             } catch (e) {
                 await googleAnalytics.trackError(e.message || e);
             }
