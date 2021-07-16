@@ -5,6 +5,8 @@ const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
+const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+const os = require('os');
 
 /**
  * @param {import('yargs')} yargs
@@ -76,6 +78,7 @@ module.exports = (yargs) => {
                 showTimer: true
             }
         });
+        const timeStamp = Date.now() / 1000;
 
         if (args.debug) {
             logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -91,7 +94,8 @@ module.exports = (yargs) => {
 
             const {
                 ports,
-                config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
+                config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
+                systemConfiguration: { analytics }
             } = ctx;
 
             logger.logN();
@@ -100,9 +104,31 @@ module.exports = (yargs) => {
             logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
+
+            if (!analytics) {
+                process.exit(0);
+            }
+
+            try {
+                if (!process.isFirstStart) {
+                    await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                    process.exit(0);
+                }
+
+                // Get ram amount in MB
+                const ramAmount = Math.round(os.totalmem() / 1024 / 1024);
+                const cpuModel = os.cpus()[0].model;
+
+                await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                await googleAnalytics.trackEvent('Params', `Platform: ${os.platform}, CPU model: ${cpuModel}, RAM amount: ${ramAmount} MB`, 0, 'OS');
+            } catch (e) {
+                logger.error(e.message || e);
+            }
+
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
+            googleAnalytics.trackError(e.message || e);
             process.exit(1);
         }
     });
