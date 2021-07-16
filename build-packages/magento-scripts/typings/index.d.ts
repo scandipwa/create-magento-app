@@ -73,6 +73,11 @@ export interface PHPConfiguration {
      * Extensions for PHP
      */
     extensions: PHPExtensions & Record<string, PHPExtension>
+
+    /**
+     * Disabled extension list
+     */
+    disabledExtensions?: string[]
 }
 export interface SSLConfiguration {
     /**
@@ -196,6 +201,7 @@ export interface CMAConfiguration {
      * Non-overlapping ports config
      * @default false
      *
+     * @deprecated Use global configuration file.
      * @description If set to `true` CMA will try retrieving others CMA projects port configuration
      * and will not use their ports for itself.
      */

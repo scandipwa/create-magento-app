@@ -16,7 +16,8 @@ const createNginxConfig = {
             config: {
                 overridenConfiguration,
                 baseConfig
-            }
+            },
+            isWsl
         } = ctx;
 
         const {
@@ -71,8 +72,8 @@ const createNginxConfig = {
                 templateArgs: {
                     ports,
                     mageRoot: baseConfig.magentoDir,
-                    hostMachine: isLinux ? '127.0.0.1' : 'host.docker.internal',
-                    hostPort: isLinux ? ports.app : 80,
+                    hostMachine: (isLinux && !isWsl) ? '127.0.0.1' : 'host.docker.internal',
+                    hostPort: (isLinux && !isWsl) ? ports.app : 80,
                     config: overridenConfiguration,
                     networkToBindTo
                 }

@@ -1,19 +1,17 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable arrow-body-style */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
-const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
-const os = require('os');
 
 /**
  * @param {import('yargs')} yargs
  */
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
-        yargs.option(
+        return yargs.option(
             'port',
             {
                 alias: 'p',
@@ -21,9 +19,7 @@ module.exports = (yargs) => {
                 type: 'number',
                 nargs: 1
             }
-        );
-
-        yargs.option(
+        ).option(
             'no-open',
             {
                 alias: 'n',
@@ -31,9 +27,7 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
+        ).option(
             'debug',
             {
                 alias: 'd',
@@ -41,32 +35,37 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
+        ).option(
             'skip-setup', {
                 alias: 's',
                 describe: 'Skip Magento setup',
                 type: 'boolean',
                 default: false
             }
-        );
-
-        yargs.option(
-            'import-db', {
-                describe: 'Import database dump to MySQL',
-                type: 'string'
-                // normalize: true
-            }
-        );
-
-        yargs.option(
-            'edition', {
-                alias: 'e',
-                describe: 'Magento Edition to install',
-                type: 'string'
-            }
-        );
+        )
+            .option(
+                'import-db', {
+                    describe: 'Import database dump to MySQL',
+                    type: 'string'
+                }
+            )
+            .option(
+                'edition', {
+                    alias: 'e',
+                    describe: 'Magento Edition to install',
+                    type: 'string'
+                }
+            )
+            .option('recompile-php', {
+                describe: 'Recompile PHP version used in the project',
+                type: 'boolean'
+            })
+            .option('verbose', {
+                alias: 'v',
+                describe: 'Enable verbose logging',
+                type: 'boolean',
+                default: false
+            });
     }, async (args = {}) => {
         const tasks = new Listr([start], {
             exitOnError: true,
@@ -77,7 +76,6 @@ module.exports = (yargs) => {
                 showTimer: true
             }
         });
-        const timeStamp = Date.now() / 1000;
 
         if (args.debug) {
             logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -93,8 +91,7 @@ module.exports = (yargs) => {
 
             const {
                 ports,
-                config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
-                systemConfiguration: { analytics }
+                config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
             } = ctx;
 
             logger.logN();
@@ -103,31 +100,9 @@ module.exports = (yargs) => {
             logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
-
-            if (!analytics) {
-                process.exit(0);
-            }
-
-            try {
-                if (!process.isFirstStart) {
-                    await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
-                    process.exit(0);
-                }
-
-                // Get ram amount in MB
-                const ramAmount = Math.round(os.totalmem() / 1024 / 1024);
-                const cpuModel = os.cpus()[0].model;
-
-                await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
-                await googleAnalytics.trackEvent('Params', `Platform: ${os.platform}, CPU model: ${cpuModel}, RAM amount: ${ramAmount} MB`, 0, 'OS');
-            } catch (e) {
-                logger.error(e.message || e);
-            }
-
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
-            googleAnalytics.trackError(e.message || e);
             process.exit(1);
         }
     });

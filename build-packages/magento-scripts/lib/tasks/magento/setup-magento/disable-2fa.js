@@ -17,8 +17,14 @@ module.exports = {
         }
 
         // Disable 2FA due admin login issue
-        await runMagentoCommand('module:disable Magento_TwoFactorAuth', {
-            magentoVersion
-        });
+        if (result.includes('Module is enabled')) {
+            await runMagentoCommand('module:disable Magento_TwoFactorAuth', {
+                magentoVersion
+            });
+
+            return;
+        }
+
+        task.skip();
     }
 };

@@ -29,3 +29,28 @@ themes/*
 # build specifc files
 lerna-debug.log
 .eslintcache
+
+**/Magento_Theme/
+**/vendor
+
+sample-packages/*/*
+!sample-packages/*/app
+sample-packages/*/app/etc/env.php
+sample-packages/*/app/etc/NonComposerComponentRegistration.php
+sample-packages/*/app/etc/db_schema.xml
+sample-packages/*/app/etc/di.xml
+sample-packages/*/app/etc/registration_globlist.php
+sample-packages/*/app/etc/vendor_path.php
+sample-packages/*/app/.htaccess
+sample-packages/*/app/autoload.php
+sample-packages/*/app/bootstrap.php
+sample-packages/*/app/functions.php
+!sample-packages/*/scandipwa
+!sample-packages/*/cma.js
+!sample-packages/*/package.json
+!sample-packages/*/README.md
+
+!**/composer.*
+# !**/cma.js
+!/.gitignore
+!**/.gitkeep

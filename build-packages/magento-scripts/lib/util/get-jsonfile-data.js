@@ -8,7 +8,11 @@ const getJsonfileData = async (filePath) => {
         return null;
     }
 
-    return JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
+    try {
+        return JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
+    } catch (e) {
+        throw new Error(`Ooops! Something went wrong when trying to json parse ${filePath} file!\n\n${e}`);
+    }
 };
 
 module.exports = getJsonfileData;

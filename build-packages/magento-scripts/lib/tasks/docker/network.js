@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 /**
@@ -6,14 +8,33 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const createNetwork = {
     title: 'Deploying docker network',
     task: async ({ config: { docker } }, task) => {
-        const networkList = await execAsyncSpawn('docker network ls');
+        const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
 
         if (networkList.includes(docker.network.name)) {
             task.skip();
             return;
         }
+        try {
+            await execAsyncSpawn(`docker network create --driver=bridge ${ docker.network.name }`);
+        } catch (e) {
+            if (e.includes('could not find an available, non-overlapping IPv4 address pool')) {
+                const pruneNetworks = await task.prompt({
+                    type: 'Confirm',
+                    message: `You don't have available, non-overlapping IPv4 address pool on you system.
+Do you want remove all custom networks not used by at least one container?`
+                });
 
-        await execAsyncSpawn(`docker network create --driver=bridge ${ docker.network.name }`);
+                if (pruneNetworks) {
+                    return task.newListr([
+                        pruneNetworks
+                    ]);
+                }
+
+                throw new Error(`Unable to create network for your project.
+You need to delete unused networks yourself.
+Use command ${logger.style.command('docker network prune')}`);
+            }
+        }
     }
 };
 
@@ -21,9 +42,9 @@ const createNetwork = {
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const removeNetwork = {
-    title: 'Remove docker network',
+    title: 'Removing docker network',
     task: async ({ config: { docker } }, task) => {
-        const networkList = await execAsyncSpawn('docker network ls');
+        const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
 
         if (!networkList.includes(docker.network.name)) {
             task.skip();
@@ -34,7 +55,18 @@ const removeNetwork = {
     }
 };
 
+/**
+ * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
+const pruneNetworks = {
+    title: 'Removing custom networks not used by at least one container',
+    task: async () => {
+        await execAsyncSpawn('docker network prune -f');
+    }
+};
+
 module.exports = {
     createNetwork,
-    removeNetwork
+    removeNetwork,
+    pruneNetworks
 };

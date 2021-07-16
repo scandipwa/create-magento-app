@@ -22,10 +22,12 @@ const {
     restoreThemeConfig,
     dumpThemeConfig
 } = require('./mysql');
-const getConfigFromConfigFile = require('../config/get-config-from-config-file');
+const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfig } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
 const pkg = require('../../package.json');
+const checkConfigurationFile = require('../config/check-configuration-file');
+const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -34,7 +36,9 @@ const retrieveProjectConfiguration = {
     title: 'Retrieving project configuration',
     task: (ctx, task) => task.newListr([
         getMagentoVersionConfig,
-        getConfigFromConfigFile,
+        checkConfigurationFile,
+        getProjectConfiguration,
+        convertLegacyVolumes,
         createCacheFolder,
         getSystemConfig,
         getCachedPorts
@@ -74,7 +78,8 @@ const stopProject = {
 const retrieveFreshProjectConfiguration = {
     title: 'Retrieving fresh project configuration',
     task: (ctx, task) => task.newListr([
-        getConfigFromConfigFile,
+        setPrefix,
+        getProjectConfiguration,
         // get fresh ports
         getAvailablePorts,
         saveConfiguration
@@ -162,7 +167,6 @@ const start = {
             checkRequirements,
             retrieveProjectConfiguration,
             stopProject,
-            setPrefix,
             retrieveFreshProjectConfiguration,
             configureProject,
             setupMagento,

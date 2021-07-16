@@ -1,12 +1,12 @@
 /* eslint-disable no-await-in-loop,no-restricted-syntax,no-param-reassign */
 const path = require('path');
 const os = require('os');
-const fs = require('fs');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
 const moveFile = require('../../util/move-file');
 const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
+const rmdirSafe = require('../../util/rmdir-safe');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -20,7 +20,8 @@ const adjustComposerJson = async ({
     magentoProductSelectedEdition,
     magentoVersion,
     magentoPackageVersion,
-    task
+    task,
+    verbose
 }) => {
     const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
 
@@ -35,7 +36,7 @@ const adjustComposerJson = async ({
         task.output = 'No Magento repository is set in composer.json! Setting up...';
         await runComposerCommand('config repo.0 composer https://repo.magento.com', {
             magentoVersion,
-            callback: (t) => {
+            callback: !verbose ? undefined : (t) => {
                 task.output = t;
             }
         });
@@ -47,7 +48,7 @@ const adjustComposerJson = async ({
         await runComposerCommand('require magento/composer-root-update-plugin:^1',
             {
                 magentoVersion,
-                callback: (t) => {
+                callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -78,7 +79,7 @@ Change magento edition in config file or manually reinstall correct magento edit
         await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
             {
                 magentoVersion,
-                callback: (t) => {
+                callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -92,7 +93,8 @@ const createMagentoProject = async ({
     magentoProject,
     magentoPackageVersion,
     magentoVersion,
-    task
+    task,
+    verbose
 }) => {
     const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
     const installCommand = [
@@ -106,7 +108,7 @@ const createMagentoProject = async ({
         installCommand.join(' '),
         {
             magentoVersion,
-            callback: (t) => {
+            callback: !verbose ? undefined : (t) => {
                 task.output = t;
             }
         }
@@ -117,7 +119,7 @@ const createMagentoProject = async ({
         to: path.join(process.cwd(), 'composer.json')
     });
 
-    await fs.promises.rmdir(tempDir);
+    await rmdirSafe(tempDir);
 };
 
 /**
@@ -126,7 +128,7 @@ const createMagentoProject = async ({
 const installMagento = {
     title: 'Installing Magento',
     task: async (ctx, task) => {
-        const { magentoVersion, config: { baseConfig, overridenConfiguration } } = ctx;
+        const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
         const {
             magento: { edition: magentoEdition },
             magentoVersion: magentoPackageVersion
@@ -143,7 +145,8 @@ const installMagento = {
                 magentoPackageVersion,
                 magentoProductSelectedEdition,
                 magentoVersion,
-                task
+                task,
+                verbose
             });
         }
 
@@ -171,14 +174,15 @@ const installMagento = {
                 magentoProject,
                 magentoPackageVersion,
                 magentoVersion,
-                task
+                task,
+                verbose
             });
         }
         try {
             await runComposerCommand('install',
                 {
                     magentoVersion,
-                    callback: (t) => {
+                    callback: !verbose ? undefined : (t) => {
                         task.output = t;
                     }
                 });
@@ -190,7 +194,6 @@ const installMagento = {
 
             throw new Error(`Unexpected error during composer install.\n\n${e}`);
         }
-        task.title = 'Magento installed!';
         ctx.magentoFirstInstall = true;
     },
     options: {

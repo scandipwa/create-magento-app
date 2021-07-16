@@ -3,7 +3,7 @@
     "description": "Scripts and configuration used by CMA.",
     "homepage": "https://docs.create-magento-app.com/",
     "repository": "github:scandipwa/create-magento-app",
-    "version": "1.5.4-alpha.1",
+    "version": "1.8.1",
     "main": "./index.js",
     "types": "./typings/index.d.ts",
     "license": "OSL-3.0",
@@ -22,7 +22,7 @@
         "arm64"
     ],
     "dependencies": {
-        "@scandipwa/scandipwa-dev-utils": "^0.1.4",
+        "@scandipwa/scandipwa-dev-utils": "^0.1.5",
         "conf": "^9.0.2",
         "enquirer": "2.3.6",
         "eta": "^1.12.1",

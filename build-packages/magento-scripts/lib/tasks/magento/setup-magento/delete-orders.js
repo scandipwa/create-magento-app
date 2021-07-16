@@ -5,8 +5,13 @@ const { orderTables } = require('../../mysql/magento-tables');
  */
 const deleteOrders = {
     title: 'Deleting orders',
-    task: async (ctx) => {
-        const { mysqlConnection } = ctx;
+    task: async (ctx, task) => {
+        const { mysqlConnection, withCustomersData } = ctx;
+
+        if (withCustomersData) {
+            task.skip();
+            return;
+        }
 
         await Promise.all(
             orderTables.map(

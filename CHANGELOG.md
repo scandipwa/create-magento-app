@@ -1,9 +1,214 @@
 # Changelog
 
+## v1.8.0 (09/07/2021)
+# IMPORTANT COMPATIBILITY CHANGES, Improved XDebug 2 support, compressing for `import-db` from remote databases and more!
+
+## Important Changes
+
+Recently was discovered a bug in prefix generation.
+
+In general, if you installs and runs a CMA project in a directory with a name that contains dots (.) this was treated as a file name, so everything after a dot was thrown away.
+This could lead to interference between projects since `project-2.4.1` was using the same prefix as `project-2.4.2`, although with folder name we use folder creation timestamp, so the chance of this very low.
+
+For that reason, since **this release** this issue is fixed, now the full folder name is used and old MySQL, ElasticSearch and Redis volumes will be automatically converted to new use new prefixes when you run [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command.
+
+However, IF you try downgrading to an older version CMA, your setup will not have data from new volumes.
+
+## What's New
+
+- XDebug 2 support!
+  Previously only XDebug 3 configuration was used so it might not be working with XDebug 2. Now it should work as expected.
+- XDebug extension is not installed **by default**.
+  Previously, XDebug was installed but disabled through options in `php.ini` file. Now it's not installed and enabled unless you run project in **debug** mode.
+- Importing database from a remote server (ssh) now uses dump compression **by default**.
+  If, for some reason, you don't want to use compression, use the new option `no-compress`.
+- Docker can be automatically installed on the supported platform: Linux!
+  For macOS and Windows, you will still get a message with instructions on installing Docker on your system.
+
+## Miscellaneous
+
+- Improved validation of local `auth.json` file.
+- [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command received new option `-v, --verbose`.
+  Now **by default** logs from Magento install & setup & upgrade will not be shown in the console, but if you need them, use this option.
+
+## Bug FIxes
+
+- ElasticSearch container option `xpack.ml.enabled` is now enabled correctly on macOS systems. 71c67cb1646b316424c23cf0a4ee0b1f16b5fbe3
+
+---
+
+## v1.7.0 (02/07/2021)
+# Magento version 2.3.x support, automatic PHPBrew install and more!
+
+## What's New
+
+- Magento version 2.3.x are supported now!
+  This includes all released versions as well as patches.
+- Magento 2.4.2-p1 is now supported as well!
+- PHPBrew will now install automatically for each supported platform!
+- `auth.json` file is now supported as well!
+  Using the global `COMPOSER_AUTH` environmental variable is not required anymore.
+
+## Miscellaneous
+
+- `update-env` script is also checking for redis session & cache host values.
+- Magento `setup:install` now will use `--cleanup-database` option only if the install was unsuccessful on the first try.
+- In the `import-db` command `magento index:reindex` command will run only after the Magento setup is finished using the new dump.
+- Added error handlers for JSON parsers so error messages are more meaningful.
+- Docker network for the project is now removed during the stop task.
+  This should prevent docker networks from flooding.
+  [See limitations docs](https://docs.create-magento-app.com/getting-started/limitations).
+- Converting legacy [magento-docker](https://github.com/scandipwa/magento-docker) setup to CMA [guide is already available](https://docs.create-magento-app.com/usage-guide/converting-legacy-docker-setup-to-cma)!
+- Our repository now has every ScandiPWA supported Magento version in [sample-packages](https://github.com/scandipwa/create-magento-app/tree/master/sample-packages) folder!
+
+## Bug Fixes
+
+- Fixed `safe-regex-extract` throwing an error if no result was found. b4de6cd5d7b52b807af0ddfb5b5c0ee6eef4d366
+---
+
+## v.1.6.1 (22/06/2021)
+# Quality of Life improvements!
+
+## What's New
+
+- [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command now has [--with-customers-data](https://docs.create-magento-app.com/getting-started/available-commands/import-db#with-customers-data) option, which will include customers and orders data into dump files and won't delete them while optimising the database task.
+- When importing remote database using [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command, CMA will check if dump files already exist on the remote server and ask the user if he wants to make a new dump or use existing on the remote server.
+
+## Miscellaneous 
+
+- 9003 port is added to the permanent port ignore list for CMA because otherwise PHP-FPM can take it and it will be impossible to debug the project.
+  **NOTE** If your PHP-FPM instance already using port 9003, you need to manually alter the `port-config.json` file in the `node_modules/.create-magento-app-cache` folder or update to this version your instances.
+- Internal calls for magento `setup:install` and `setup:upgrade` commands now include `--no-interaction` options, so it should prevent Magento installation and migration from freezing.
+- Connection to MySQL now checks if MySQL container is starting and extends connection time and tells the user about it.
+
+## Bug Fixes
+
+- Added startup option to MySQL container `--default-authentication-plugin=mysql_native_password` which should resolve error **Response: SQLSTATE[HY000] [2054] The server requested authentication method unknown to the client**
+  **NOTE** If you are experiencing this issue and you updated to this version, you will need to delete MySQL volume so it will initialize using the correct authentication method.
+---
+
+## v1.6.0 (18/06/2021)
+## What's New
+
+- [Import db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command now has [--remote-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db#r-remote-db) option to import database dumps from remote servers.
+  Usage example:
+  ```bash
+  yarn run import-db --remote-db ssh://my-ssh-username@my-ssh-server.com
+  ```
+  Now it will connect via ssh to your server, create dump files (`dump-0.sql` and `dump-1.sql`), download them to your projects root folder, merge them to single `dump.sql` and import them to your local instance with applied fixes.
+
+  Note, that the dump file created by this command is much smaller than dump files that are created by default. This is because we omit **orders** and **customers** data when we're creating dump file so it comes in a much smaller size.
+
+  For example, previously a dump from a database could weigh 2.7GB, now using this import feature size will be reduced to 4MB.
+- [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command now have [--recompile-php](https://docs.create-magento-app.com/getting-started/available-commands/start#recompile-php) option to recompile PHP, if needed.
+  Sometimes, for example on macOS when dynamic dependencies are updated, PHP might break. To fix this issue you had to manually delete the PHP binary in `~/.phpbrew/php/php-<version>`, so CMA will detect it and compile it.
+  Now, you just need to pass this option in the start command and CMA will take care of everything.
+-  Refactored start command tasks display and execution view.
+  Now it should look less cluttered with unnecessary information and also show timestamps for the tasks.
+- Windows platform is now also supported through WSL!
+  Docs available [here](https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements).
+
+## Miscellaneous
+
+- Refactored [link](https://docs.create-magento-app.com/getting-started/available-commands/link) command logic.
+- Link command now also automatically start the project if it was stopped.
+- If no connection string was supplied to import-db command with remote-db option, CMA will ask for it during runtime.
+- Adjusted Magento configuration task execution order.
+- Persisted query setup for ScandiPWA theme is now also executed during the Magento configuration task.
+- Start command will print into command output `magento-scripts` version.
+
+## Bug Fixes
+
+- Setup persisted query task will now use correct PHP version on your project. 93df0bf4843f430a1dbc3a3ec974b0f1adb76cf3
+- `start php-fpm` task will now will not break if php-fpm already running and just skip this step. 650c8c693f0146bb281541ba922d40af1199613a
+- MySQL connection will now print errors instead of only hardcoded message about the error.
+---
+
+## v1.5.4-alpha.3 (18/06/2021)
+- Fixed import errors.
+- MySQL connection will now print errors instead of only hardcoded message about the error.
+---
+
+## v1.5.4-alpha.2 (17/06/2021)
+# Recompile PHP option, import remote db improvements and bug fixes!
+
+## What's New
+
+- Removed check for readymage server on import-db, added support for any ssh servers with mysqldump installed on them.
+  CMA will ask the same things to connect to a remote server via ssh, then it will ask to alter (if needed) mysqldump command so the user will provide correct credentials for it. Then, the process will continue as follows: CMA will make 2 dump files (**dump-0.sql** and **dump-1.sql**), download them, concat them into a single **dump.sql** file and continue to import into your local instance.
+- [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command now have `--recompile-php` option to recompile PHP, if needed.
+  Sometimes, on macOS when dynamic dependencies are updated, PHP might break. To fix this issue you had to manually delete the PHP binary in `~/.phpbrew/php/php-<version>`, so CMA will detect it and compile it.
+  Now, you just need to pass this option in the start command and CMA will take care of everything.
+- [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command **remote-db** option now has an alias **-r**.
+  So, to import remote db command can look like this: `npm run import-db -r <connection string>` or `npm run import-db --remote-db <connection string>`
+- If no connection string was supplied to import-db command with remote-db option, CMA will ask for it during runtime.
+
+## Bug Fixes
+
+- Setup persisted query task will now use correct PHP version on your project. 93df0bf4843f430a1dbc3a3ec974b0f1adb76cf3
+- `start php-fpm` task will now will not break if php-fpm already running and just skip this step. 650c8c693f0146bb281541ba922d40af1199613a
+---
+
+## v1.5.4-alpha.1 (11/06/2021)
+# What's New
+
+- [Import db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command now has `--remote-db` option to import database dumps from remote servers.
+  At the moment, **only readymage ssh is supported**.
+  Usage example:
+  ```bash
+  yarn run import-db --remote-db ssh://my-ssh-username@ssh.readymage.com
+  ```
+  Now it will connect via ssh to readymage instance, create dump files (`dump-0.sql` and `dump-1.sql`), download them to your projects root folder, merge them to single `dump.sql` and import to your local instance with applied fixes.
+
+  Note, that the dump file created by this command is much smaller than dump files that are created by default on readymage. This is because we omit orders and customers data when we're creating dump file so it comes in much smaller size.
+
+- Start command will also print into command output `magento-scripts` version.
+  Printing the` magento-scripts` version is helpful for error reporting if something goes wrong.
+---
+
+## v1.5.4-alpha.0 (08/06/2021)
+# Adjusted start command output and some under the hood changes
+
+-  Refactored start command tasks display and execution view.
+  Now it should look less cluttered with unnecessary information and also show timestamps for the tasks.
+  Before:
+  ![Screenshot_20210608_190347](https://user-images.githubusercontent.com/18352350/121219348-45fb3600-c88c-11eb-8698-ef598b6b83ce.png)
+
+   After:
+   ![Screenshot_20210608_190506](https://user-images.githubusercontent.com/18352350/121219512-717e2080-c88c-11eb-97d5-88ae22aa53d7.png)
+
+- Refactored [link](https://docs.create-magento-app.com/getting-started/available-commands/link) command logic.
+- Link command now also automatically start the project if it was stopped.
+- Adjusted Magento configuration task execution order.
+- Persisted query setup for ScandiPWA theme is now also executed during the Magento configuration task.
+
+---
+
+## create-magento-app@1.2.4 (08/06/2021)
+- Bump dependencies version.
+---
+
+## v1.5.3 (08/06/2021)
+# Bug Fixes!
+
+- Fixed [exec](https://docs.create-magento-app.com/getting-started/available-commands/exec) and [logs](https://docs.create-magento-app.com/getting-started/available-commands/logs) command throwing an error about `docker.getContainers not a function`.
+
+# Miscelarrious
+
+- Bump dependencies version.
+
+---
+
+## v1.5.2 (31/05/2021)
+# Bug Fixes!
+
+- Fixed `docker.getContainers is not a function`  error that caused the application to unable to properly start or stop. 56e3d28b43782ce96f778b9781d247163b3cbf47
+---
+
 ## V1.5.1 (28/05/2021)
 # System config, Bug Fixes and Performance Improvements!
 
-# What is New
+## What is New
 
 - System config is here!
  The file should be named `.cmarc` and located in the home directory of your user.
@@ -23,7 +228,7 @@
 - ElasticSearch MachineLearning option will now be automatically enabled on systems that support it.
  This feature was disabled before to keep compatibility for our developers running on older hardware, but now it will be enabled for systems that support the `SSE4.2` instruction set.
 
-# Bug Fixes
+## Bug Fixes
 
 - Fixed import and usage of stored programs in database dump. 19bf46c225273196eca812da84735ac63982ed2f
 - Fixed undefined errors while extracting data (like retrieving versions) from command output which does not contain that data or data is corrupted.
@@ -322,89 +527,3 @@ This release contains the following changes:
 - Now `magento-scripts` will choose available ports not only if they are free on the system, but also if they are not used by other CMA instances.
 No more `app/etc/env.php` file deletion of ports have changed while your project was offline during other projects development.
 - Configuration file for `cli` command is now a template file that will be stored in the cache folder. This is needed if you are using custom PHP version, rather default PHP version by `magento-scripts`, which currently is `7.4.13`.
----
-
-## Prefixes and automatic theme installation! (19/02/2021)
-# What is New
-- :clap: Prefixes :clap:
-Previously, if you have 2 folders with the same name in but located different places (for example `/home/user/my-cma-app` and `/home/user/test/my-cma-app` you might experience strange behaviour, like 404 errors in Nginx or ` failed to mount local volume: no such file or directory`. Now, CMA will **by default** append a unique prefix to the docker container names and volume names which should prevent errors described previously from appearing and allow to smoothly running CMA in non-unique folder names.
-⚠️ Since prefixes are enabled **by default**, you might encounter problems during the upgrading to the version. We recommend disabling prefixes if this is the case through the config file, set the `prefix` property to `false`.
-- Automatic theme installation.
-Now if your Magento is not installed and you starting the CMA project, magento-scripts will try to detect if you already have a theme installed in `composer.json` or not, and if it is then it will automatically link it after startup is complete.
-
-# Bug Fixes
-- If magento-scripts are out-of-date, console message said to run a command `npm upgrade -g ${package name}` even if a package is installed locally. Now it will print the correct command if a package is installed locally or globally.
----
-
-## Configuration file is here! (12/02/2021)
-# What's new
-
-- Configuration file is finally here! :clap:
-Now when running `start` command will be automatically created `cma.js` file inside your project root directory. This file contains Magento configuration, docker services configuration, host and SSL configuration.
-  > NOTE: If you are upgrading existing CMA project old Magento configuration from the file `app-config.json` will be converted to  `magento` field in `cma.js`.
-
-  More about the configuration file can be found in docs: https://docs.create-magento-app.com/getting-started/config-file.
-- `status` command will now also display containers environment variables. Useful when you need to get MySQL credentials for example.
-
-
-
----
-
-## @scandipwa/magento-scripts@1.2.0-alpha.5 (11/02/2021)
-This release fixes when linking theme CMA was choosing the wrong port for redis persistent query configuration.
----
-
-## @scandipwa/magento-scripts@1.2.0-alpha.4 (11/02/2021)
-Added support for custom `host` field in the configuration file. This field is controlling default base_url in Magento.
-
-> NOTE: if you are using `host` configuration and some custom port that is not 80 or 8080, browsers can throw an error **ERR_UNSAFE_PORT**: https://superuser.com/questions/188006/how-to-fix-err-unsafe-port-error-on-chrome-when-browsing-to-unsafe-ports
----
-
-## @scandipwa/magento-scripts@1.2.0-alpha.3 (10/02/2021)
-Legacy Magento configuration from `cache-folder/app-config.json` file will be automatically transferred to the new config file located in the projects root directory.
----
-
-## @scandipwa/magento-scripts@1.2.0-alpha.2 (09/02/2021)
-This alpha version brings proper support for the configuration file.
-Now Magento configuration file `app-config.json` is moved to `cma.js` file which is located in the projects root folder, this should allow easier access to the configuration and brings access to the configuration of CMA project itself!
-With `cma.js` you can:
-- Update versions of Nginx, MySQL, ElasticSearch and Redis containers.
-- Use custom nginx configuration file.
-- Use custom PHP configuration file. 
-- Add PHP extensions or override existing ones. (like updating XDebug version)
-
-In the future, we're also planning on adding support to override environmental variables for MySQL and ES containers.
----
-
-## MySQL 8.0 and XDebug 3.0.2 and bug fixes! (05/02/2021)
-# Bug Fixes
-- Previously, some docker volume names could interfere between themselves which caused `Couldn't mount volume, no such file or directory` docker error. (For example volume name for nginx in `be` directory will be `be_nginx-data`, and if you try to create new CMA project in a directory with name `additional-name-be` it will not create new docker volume for nginx and throw an error.) #9 
-This update fixes that.
-- Command `link` tasks for check folder and run setup persistent cache received titles.
-
-# What is new
-- MySQL version was bumped to 8.0 ([migration guide from MySQL 5.7](https://devdocs.magento.com/guides/v2.4/install-gde/prereq/mysql.html#upgrading-from-mysql-57-to-mysql-8)), XDebug version to 3.0.2.
-- Bumped node dependencies versions.
-
----
-
-## MySQL 8.0 and XDebug 3.0.2 (30/01/2021)
-This version includes bugfixes from version **1.1.5**, MySQL version **8.0** as well as XDebug **3.0.2**.
----
-
-## Bug Fixes (30/01/2021)
-This release is small but important:
-- There was some small bug in command execution utility that leads to issues in command response processing logic, for example in checking in current instance is using `url-rewrites` or not.
-Also, setting `url-rewrites` task had no name, so it was invisible to the user.
----
-
-## Bug Fixes (22/01/2021)
-This release is small but important:
-- In magento-scripts@1.1.1 `php.ini` was moved from the user's home directory to the project cache folder, but commands wrappers that were using PHP for Composer and Magento commands execution still used the default `php.ini` in users home directory which caused memory-limit errors across the app. Now with correct `php.ini` configuration file, there should be no such issues.
----
-
-## Bug Fixes (21/01/2021)
-This release is small but important:
-- `create-magento-app` had a typo inside package.json template for `exec` command.
-- `magento-scripts` was replacing existing `composer.json` file if it detected that magento is not installed. #6 
-Now it will not replace `composer.json` but install missing dependencies for magento and setup composer repository to `repo.magento.com`.

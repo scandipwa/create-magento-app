@@ -62,7 +62,7 @@ const execAsyncSpawn = (command, {
 const execCommandTask = (command, options = {}) => ({
     title: `Running command "${command}"`,
     task: (ctx, task) => execAsyncSpawn(command, {
-        callback: (t) => {
+        callback: !ctx.verbose ? undefined : (t) => {
             task.output = t;
         },
         ...options

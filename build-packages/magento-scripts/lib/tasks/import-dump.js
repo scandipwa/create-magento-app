@@ -7,6 +7,7 @@ const {
     restoreThemeConfig
 } = require('./mysql');
 const { setupMagento } = require('./magento');
+const indexProducts = require('./magento/setup-magento/index-products');
 const {
     retrieveProjectConfiguration,
     stopProject,
@@ -31,7 +32,8 @@ const importDump = {
         importDumpToMySQL,
         restoreThemeConfig,
         fixDB,
-        setupMagento
+        setupMagento,
+        indexProducts
     ], {
         concurrent: false,
         exitOnError: true,

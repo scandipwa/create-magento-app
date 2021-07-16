@@ -48,7 +48,11 @@ const getMagentoVersion = {
                                     name: version.name,
                                     message: version.name
                                 }
-                            ))
+                            )),
+                            initial: defaultConfiguration.name,
+                            scroll: true,
+                            limit: 7,
+                            footer: `(use arrow keys to select other magento versions, in total we support ${allVersions.length} versions)`
                         }),
                         timer()
                     ]);

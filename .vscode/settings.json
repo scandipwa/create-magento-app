@@ -8,6 +8,13 @@
         "Magento",
         "REBEM",
         "Scandiweb",
+        "bzip",
+        "freetype",
+        "libiconv",
+        "libpng",
+        "libsodium",
+        "libxml",
+        "libzip",
         "overriden",
         "portscanner",
         "scandipwa"

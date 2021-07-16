@@ -13,8 +13,19 @@ module.exports = (yargs) => {
         'Import database dump to MySQL',
         (yargs) => {
             yargs.option('remote-db', {
+                alias: 'r',
                 describe: 'Import database from remote ssh server',
                 type: 'string'
+            });
+            yargs.option('with-customers-data', {
+                describe: 'Include orders and customers data in database dump',
+                type: 'boolean',
+                default: false
+            });
+            yargs.option('no-compress', {
+                describe: 'Do not compress remote dump files',
+                type: 'boolean',
+                default: false
             });
         },
         async (args = {}) => {

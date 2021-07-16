@@ -60,7 +60,8 @@ const phpExtensionConfiguration = Joi.object()
 const phpConfigurationSchema = Joi.object({
     version: Joi.string().optional().custom(versionValidator),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
-    extensions: phpExtensionConfiguration.optional()
+    extensions: phpExtensionConfiguration.optional(),
+    disabledExtensions: Joi.array().items(Joi.string())
 });
 
 /**

@@ -26,7 +26,7 @@ class EnvUpdater {
     /**
      * @var array
      */
-    private array $config;
+    private $config;
 
     /**
      * @var mixed
@@ -90,16 +90,22 @@ class EnvUpdater {
             $this->config['session']['redis']['port'] = strval($this->portConfig['redis']);
         }
 
+        if (
+            isset($this->config['session']) &&
+            $this->config['session']['save'] === 'redis' &&
+            $this->config['session']['redis']['host'] !== '127.0.0.1'
+        ) {
+            $this->config['session']['redis']['host'] = '127.0.0.1';
+        }
+
         // update redis frontend config
         if (isset($this->config['cache']['frontend']['default'])) {
             $frontendCache = &$this->config['cache']['frontend']['default'];
-            if ($frontendCache['backend'] === 'Magento\\Framework\\Cache\\Backend\\Redis') {
-                if ($frontendCache['backend_options']['port'] !== strval($this->portConfig['redis'])) {
-                    $frontendCache['backend_options']['port'] = strval($this->portConfig['redis']);
-                }
-                if ($frontendCache['backend_options']['server'] !== '127.0.0.1') {
-                    $frontendCache['backend_options']['server'] = '127.0.0.1';
-                }
+            if ($frontendCache['backend_options']['port'] !== strval($this->portConfig['redis'])) {
+                $frontendCache['backend_options']['port'] = strval($this->portConfig['redis']);
+            }
+            if ($frontendCache['backend_options']['server'] !== '127.0.0.1') {
+                $frontendCache['backend_options']['server'] = '127.0.0.1';
             }
         }
 

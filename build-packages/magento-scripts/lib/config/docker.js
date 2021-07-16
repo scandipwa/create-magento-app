@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const macosVersion = require('macos-version');
 const { getArchSync } = require('../util/arch');
+const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
@@ -40,6 +41,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     };
 
     const isLinux = os.platform() === 'linux';
+    const isWsl = await getIsWsl();
     const isArm = getArchSync() === 'arm64';
     const isArmMac = macosVersion.isMacOS && isArm;
 
@@ -78,7 +80,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         const dockerConfig = {
             nginx: {
                 _: 'Nginx',
-                ports: !isLinux ? [
+                ports: (!isLinux || isWsl) ? [
                     `${isIpAddress(host) ? host : '127.0.0.1'}:${ ports.app }:80`
                 ] : [],
                 healthCheck: {
@@ -98,7 +100,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: !isLinux ? network.name : 'host',
+                network: (!isLinux || isWsl) ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 imageDetails: {
                     name: 'nginx',
@@ -144,7 +146,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                  *
                  * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
                  */
-                command: '--log_bin_trust_function_creators=1',
+                command: '--log_bin_trust_function_creators=1 --default-authentication-plugin=mysql_native_password',
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
@@ -172,7 +174,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'discovery.type': 'single-node',
                     ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
                     // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
-                    'xpack.ml.enabled': cpuSupportedFlags.includes('sse4_2')
+                    'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
                 network: network.name,
                 image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { findAPortNotInUse } = require('../util/portscanner');
 const { baseConfig } = require('.');
-const deepmerge = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge');
 const getJsonfileData = require('../util/get-jsonfile-data');
 const { getProjects } = require('./config');
 
@@ -72,9 +72,13 @@ const defaultPorts = {
 const getPortsConfig = async (ports, options = {}) => {
     const { useNonOverlappingPorts } = options;
     const mergedPorts = deepmerge(defaultPorts, ports || {});
-    let p = [];
+    let p = [
+        9003,
+        9111
+    ];
+
     if (useNonOverlappingPorts) {
-        p = await getUsedByOtherCMAProjectsPorts();
+        p = p.concat(await getUsedByOtherCMAProjectsPorts());
     }
     const availablePorts = Object.fromEntries(await Promise.all(
         Object.entries(mergedPorts).map(async ([name, port]) => {

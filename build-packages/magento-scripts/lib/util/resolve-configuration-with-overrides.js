@@ -1,6 +1,6 @@
 const path = require('path');
 const { configFileSchema } = require('./config-file-validator');
-const deepmerge = require('./deepmerge');
+const { deepmerge } = require('./deepmerge');
 const pathExists = require('./path-exists');
 
 const resolveConfigurationWithOverrides = async (configuration, baseConfig, projectPath = process.cwd()) => {

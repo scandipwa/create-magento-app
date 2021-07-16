@@ -1,0 +1,39 @@
+{
+    "name": "scandipwa",
+    "version": "0.0.1",
+    "license": "OSL-3.0",
+    "dependencies": {
+        "@scandipwa/scandipwa": "4.4.0",
+        "@scandipwa/scandipwa-scripts": "2.4.9",
+        "@scandipwa/eslint-config": "0.1.25",
+        "@tilework/mosaic": "0.1.4"
+    },
+    "scandipwa": {
+        "type": "theme",
+        "locales": {
+            "en_US": true
+        },
+        "parentTheme": "@scandipwa/scandipwa",
+        "extensions": {}
+    },
+    "scripts": {
+        "start": "scandipwa-scripts start",
+        "build": "scandipwa-scripts build"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "eslintConfig": {
+        "extends": "@scandipwa"
+    },
+    "proxy": "https://40kskudemo.scandipwa.com/"
+}

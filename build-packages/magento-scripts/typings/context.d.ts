@@ -1,4 +1,4 @@
-import { PHPExtension } from './index';
+import { CMAConfiguration, PHPExtension } from './index';
 
 export interface ListrContext {
     magentoVersion: string
@@ -49,6 +49,27 @@ export interface ListrContext {
                     o: string
                 }
             }>
+            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch', {
+                _: string
+                ports: string[]
+                healthCheck: {
+                    cmd: string
+                }
+                env: Record<string, string>
+                mountVolumes: string[]
+                mounts: string[]
+                restart: string
+                securityOptions: string[]
+                network: string
+                image: string
+                imageDetails: {
+                    name: string
+                    tag: string
+                }
+                name: string
+                command: string
+                connectCommand: string[]
+            }>
         }
         baseConfig: {
             prefix: string
@@ -56,6 +77,9 @@ export interface ListrContext {
             templateDir: string
             cacheDir: string
         }
+        overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
     }
     systemConfiguration: {
         analytics: boolean

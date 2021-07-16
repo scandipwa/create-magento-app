@@ -37,7 +37,11 @@ const compileOptions = {
             '--with-gd=shared',
             '--with-jpeg-dir=/usr/',
             '--with-png-dir=/usr/'
-        ]
+        ],
+        env: {
+            CXX: 'g++ -DTRUE=1 -DFALSE=0',
+            CC: 'gcc -DTRUE=1 -DFALSE=0'
+        }
     },
     darwin: {
         cpuCount: '$(sysctl -n hw.ncpu)',
@@ -73,7 +77,9 @@ const compileOptions = {
         env: {
             // eslint-disable-next-line max-len
             PKG_CONFIG_PATH: '$PKG_CONFIG_PATH:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix openssl)/lib/pkgconfig:$(brew --prefix curl-openssl)/lib/pkgconfig:$(brew --prefix zlib)/lib/pkgconfig',
-            CPATH: '$CPATH:$(brew --prefix openssl)/include'
+            CPATH: '$CPATH:$(brew --prefix openssl)/include',
+            CXX: 'g++ -DTRUE=1 -DFALSE=0',
+            CC: 'gcc -DTRUE=1 -DFALSE=0'
         }
     }
 };
@@ -87,11 +93,11 @@ const compile = {
         const platformCompileOptions = compileOptions[os.platform()];
         if (os.platform() === 'linux') {
             const { dist } = await osPlatform();
-            if (dist.includes('Manjaro')) {
+            if (['Fedora', 'Manjaro'].some((distro) => dist.includes(distro))) {
                 platformCompileOptions.extraOptions.push('--with-libdir=lib64');
             }
         }
-        const exportEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `export ${key}=${value}`).join(' && ');
+        const exportEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `export ${key}="${value}"`).join(' && ');
         const phpCompileCommand = `${exportEnv ? `${exportEnv} && ` : ''} \
         phpbrew install -j ${platformCompileOptions.cpuCount} ${php.version} ${platformCompileOptions.variants.join(' ')} \
         -- ${platformCompileOptions.extraOptions.join(' ')}`;

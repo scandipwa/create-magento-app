@@ -21,7 +21,7 @@ The powerful [XDebug tool](https://docs.create-magento-app.com/usage-guide/enabl
 
 **You’ll need to have Node >= 12 on your local development machine**. You can use [n](https://www.npmjs.com/package/n) to switch Node versions between different projects.
 
-**You’ll need to install platform specific dependencies** for [Linux](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-linux) and [MacOS](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos).
+**You’ll need to install platform specific dependencies** for [Linux](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-linux), [MacOS](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos) and [Windows](https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements).
 
 To create a new app, you may choose one of the following methods:
 
