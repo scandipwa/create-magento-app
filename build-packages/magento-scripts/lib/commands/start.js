@@ -5,6 +5,8 @@ const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
+const { getCSAThemes } = require('../util/CSA-theme');
+const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 
 /**
  * @param {import('yargs')} yargs
@@ -94,12 +96,27 @@ module.exports = (yargs) => {
                 config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
             } = ctx;
 
-            logger.logN();
-            logger.log(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
-            logger.log(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`);
-            logger.logN(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
+            logger.log('');
+            logger.log('┌----------------------------- Magento ------------------------------┐');
+            logger.log(`| Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
+            logger.log(`| Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`);
+            logger.log(`| Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
+
+            const themes = await getCSAThemes();
+            if (themes.length > 0) {
+                logger.log('├---------------------------- ScandiPWA -----------------------------┤');
+                const theme = themes[0];
+
+                logger.log('| To run ScandiPWA theme in Magento mode, run the following command:');
+                logger.log(`| Enter theme folder: ${ logger.style.code(`cd ${ theme.themePath }`) }`);
+                logger.log(`| Run theme in Magento mode: ${ logger.style.code(`BUILD_MODE=magento ${ shouldUseYarn() ? 'yarn start' : 'npm start' }`) }`);
+            }
+
+            logger.logN('└--------------------------------------------------------------------┘');
+
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
+
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
