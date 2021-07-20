@@ -23,7 +23,7 @@ const {
     dumpThemeConfig
 } = require('./mysql');
 const getProjectConfiguration = require('../config/get-project-configuration');
-const { getSystemConfig } = require('../config/system-config');
+const { getSystemConfigTask } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
 const pkg = require('../../package.json');
 const checkConfigurationFile = require('../config/check-configuration-file');
@@ -40,7 +40,7 @@ const retrieveProjectConfiguration = {
         getProjectConfiguration,
         convertLegacyVolumes,
         createCacheFolder,
-        getSystemConfig,
+        getSystemConfigTask,
         getCachedPorts
     ], {
         rendererOptions: {
