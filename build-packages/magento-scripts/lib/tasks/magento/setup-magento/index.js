@@ -10,7 +10,6 @@ const setUrlRewrite = require('./set-url-rewrite');
 const updateEnvPHP = require('../../php/update-env-php');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
-const setupPersistedQuery = require('../../theme/setup-persisted-query');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -35,7 +34,6 @@ const setupMagento = {
         },
         createAdmin,
         setDeploymentMode,
-        setupPersistedQuery,
         disableMaintenanceMode,
         disable2fa,
         magentoTask('cache:flush')

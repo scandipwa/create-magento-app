@@ -6,6 +6,7 @@ const adjustMagentoConfiguration = require('./adjust-magento-configuration');
 const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
 const upgradeMagento = require('./upgrade-magento');
+const setupPersistedQuery = require('../../theme/setup-persisted-query');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -26,6 +27,7 @@ const migrateDatabase = {
 
             return task.newListr([
                 installMagento,
+                setupPersistedQuery,
                 upgradeMagento,
                 magentoTask('cache:enable'),
                 configureElasticsearch
@@ -43,7 +45,10 @@ const migrateDatabase = {
         switch (code) {
         case 0: {
             // no setup is needed, but still to be sure configure ES
-            return task.newListr([configureElasticsearch], {
+            return task.newListr([
+                setupPersistedQuery,
+                configureElasticsearch
+            ], {
                 concurrent: false,
                 exitOnError: true,
                 ctx
@@ -52,6 +57,7 @@ const migrateDatabase = {
         case 1: {
             return task.newListr([
                 installMagento,
+                setupPersistedQuery,
                 upgradeMagento,
                 magentoTask('cache:enable'),
                 configureElasticsearch
@@ -63,6 +69,7 @@ const migrateDatabase = {
         }
         case 2: {
             return task.newListr([
+                setupPersistedQuery,
                 adjustMagentoConfiguration,
                 configureElasticsearch,
                 upgradeMagento
