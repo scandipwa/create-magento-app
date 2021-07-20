@@ -17,6 +17,8 @@ const MIDDLE_RIGHT_SEPARATOR = '┤';
 const BOTTOM_LEFT_SEPARATOR = '└';
 const BOTTOM_RIGHT_SEPARATOR = '┘';
 
+const consoleStyleReplacer = /[\u001b]\[\S+?m/g;
+
 class ConsoleBlock {
     constructor() {
         /**
@@ -72,8 +74,13 @@ class ConsoleBlock {
     }
 
     log() {
-        const longestLineRaw = this.data.reduce((acc, { data = '' }) => (data.length > acc ? data.length : acc), 0);
-        const longestLine = longestLineRaw % 2 === 0 ? longestLineRaw : longestLineRaw + 1;
+        const longestLineRaw = this.data.reduce(
+            (acc, { data = '' }) => (
+                data.replace(consoleStyleReplacer, '').length > acc ? data.replace(consoleStyleReplacer, '').length : acc
+            ),
+            0
+        );
+        const longestLine = longestLineRaw % 2 === 0 ? longestLineRaw + 2 : longestLineRaw + 3;
 
         logger.log('');
 
@@ -87,7 +94,7 @@ class ConsoleBlock {
             }
 
             case 'line': {
-                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR}${data}${EMPTY_CHAR.repeat(longestLine - data.replace(/[\u001b]\[\S+?m/g, '').length - 1)}${EMPTY_CHAR}${VERTICAL_SEPARATOR}`);
+                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR}${data}${EMPTY_CHAR.repeat((longestLine - data.replace(consoleStyleReplacer, '').length || 1) - 1)}${EMPTY_CHAR}${VERTICAL_SEPARATOR}`);
                 break;
             }
 
