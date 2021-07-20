@@ -10,6 +10,8 @@ const systeminformation = require('systeminformation');
 const { getCSAThemes } = require('../util/CSA-theme');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 
+const cmaGaTrackingId = 'UA-127741417-7';
+
 /**
  * @param {import('yargs')} yargs
  */
@@ -129,6 +131,8 @@ module.exports = (yargs) => {
             }
 
             try {
+                googleAnalytics.setGaTrackingId(cmaGaTrackingId);
+
                 if (!process.isFirstStart) {
                     await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
                     googleAnalytics.printAboutAnalytics();
