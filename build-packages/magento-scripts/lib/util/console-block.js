@@ -99,7 +99,7 @@ class ConsoleBlock {
             }
 
             case 'separator': {
-                const spacersLength = (longestLine - data.length) / 2;
+                const spacersLength = (longestLine - data.replace(consoleStyleReplacer, '').length) / 2;
 
                 logger.log(`${MIDDLE_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${EMPTY_CHAR}${data}${EMPTY_CHAR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${MIDDLE_RIGHT_SEPARATOR}`);
                 break;

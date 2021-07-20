@@ -99,7 +99,7 @@ module.exports = (yargs) => {
 
             const block = new ConsoleBlock();
             block
-                .addHeader('Magento')
+                .addHeader('Magento 2')
                 .addEmptyLine()
                 .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
                 .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
@@ -113,11 +113,22 @@ module.exports = (yargs) => {
                     .addSeparator('ScandiPWA')
                     .addEmptyLine()
                     .addLine('To run ScandiPWA theme in Magento mode, run the following command:')
-                    .addLine(`Enter theme folder: ${ logger.style.code(`cd ${ theme.themePath }`) }`)
-                    .addLine(`Run theme in Magento mode: ${ logger.style.code(`BUILD_MODE=magento ${ shouldUseYarn() ? 'yarn start' : 'npm start' }`) }`);
+                    .addLine(`-> ${ logger.style.command(`cd ${ theme.themePath }`) }`)
+                    .addLine(`-> ${ logger.style.command(`BUILD_MODE=magento ${ shouldUseYarn() ? 'yarn start' : 'npm start' }`) }`);
             }
 
             block.addEmptyLine();
+
+            if (process.isOutOfDateVersion) {
+                block
+                    .addSeparator(logger.style.code('Warning'))
+                    .addEmptyLine();
+                process.isOutOfDateVersionMessage.forEach((line) => {
+                    block.addLine(line);
+                });
+
+                block.addEmptyLine();
+            }
 
             block.log();
 

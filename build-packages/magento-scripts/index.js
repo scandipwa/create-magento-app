@@ -54,6 +54,8 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
             }
 
             logger.warn(...message);
+            process.isOutOfDateVersion = true;
+            process.isOutOfDateVersionMessage = message;
         }
     } catch (e) {
         logger.warn(`Package ${ logger.style.misc(name) } is not yet published.`);
