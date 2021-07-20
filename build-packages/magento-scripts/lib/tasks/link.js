@@ -3,7 +3,6 @@ const { getCachedPorts } = require('../config/get-port-config');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const retrieveThemeData = require('./theme/retrieve-theme-data');
 const linkTheme = require('./theme/link-theme');
-const setupPersistedQuery = require('./theme/setup-persisted-query');
 const { startServices } = require('./docker');
 const { startPhpFpm } = require('./php-fpm');
 const checkConfigurationFile = require('../config/check-configuration-file');
@@ -20,8 +19,7 @@ const linkTask = (themePath) => ({
         startServices,
         startPhpFpm,
         retrieveThemeData(themePath),
-        linkTheme,
-        setupPersistedQuery
+        linkTheme
     ])
 });
 

@@ -4,6 +4,7 @@ const installTheme = require('./install-theme');
 const disablePageCache = require('../magento/setup-magento/disable-page-cache');
 const buildTheme = require('./build-theme');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
+const setupPersistedQuery = require('./setup-persisted-query');
 
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -26,6 +27,7 @@ const linkTheme = {
         return task.newListr([
             symlinkTheme(theme),
             installTheme(theme),
+            setupPersistedQuery,
             upgradeMagento,
             disablePageCache,
             buildTheme(theme)
