@@ -12,7 +12,7 @@ const envPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => 
     try {
         return JSON.parse(result);
     } catch (e) {
-        throw new Error(`Ooops! Something went wrong when trying to parse app/etc/env.php file!\n\n${e}`);
+        throw new Error(`Ooops! Something went wrong when trying to parse app/etc/env.php file!\n\n${e}\n\nFile result: ${result}`);
     }
 };
 
