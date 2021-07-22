@@ -5,9 +5,13 @@ const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
+const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+const systeminformation = require('systeminformation');
 const { getCSAThemes } = require('../util/CSA-theme');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const ConsoleBlock = require('../util/console-block');
+
+const cmaGaTrackingId = 'UA-127741417-7';
 
 /**
  * @param {import('yargs')} yargs
@@ -79,6 +83,7 @@ module.exports = (yargs) => {
                 showTimer: true
             }
         });
+        const timeStamp = Date.now() / 1000;
 
         if (args.debug) {
             logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -94,7 +99,8 @@ module.exports = (yargs) => {
 
             const {
                 ports,
-                config: { magentoConfiguration, overridenConfiguration: { host, ssl } }
+                config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
+                systemConfiguration: { analytics }
             } = ctx;
 
             const block = new ConsoleBlock();
@@ -135,9 +141,38 @@ module.exports = (yargs) => {
             logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
             logger.log('');
 
+            if (!analytics) {
+                process.exit(0);
+            }
+
+            try {
+                googleAnalytics.setGaTrackingId(cmaGaTrackingId);
+
+                if (!process.isFirstStart) {
+                    await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                    googleAnalytics.printAboutAnalytics();
+                    process.exit(0);
+                }
+
+                const { manufacturer, brand } = await systeminformation.cpu();
+                const { platform, kernel } = await systeminformation.osInfo();
+                const { total } = await systeminformation.mem();
+
+                // Get ram amount in MB
+                const totalRam = Math.round(total / 1024 / 1024);
+                const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
+
+                await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
+                await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                googleAnalytics.printAboutAnalytics();
+            } catch (e) {
+                await googleAnalytics.trackError(e.message || e);
+            }
+
             process.exit(0);
         } catch (e) {
             logger.error(e.message || e);
+            await googleAnalytics.trackError(e.message || e);
             process.exit(1);
         }
     });
