@@ -18,51 +18,40 @@ const cmaGaTrackingId = 'UA-127741417-7';
  */
 module.exports = (yargs) => {
     yargs.command('start', 'Deploy the application.', (yargs) => {
-        return yargs.option(
-            'port',
-            {
+        return yargs
+            .option('port', {
                 alias: 'p',
                 describe: 'Suggest a port for an application to run.',
                 type: 'number',
                 nargs: 1
-            }
-        ).option(
-            'no-open',
-            {
+            })
+            .option('no-open', {
                 alias: 'n',
                 describe: 'Do not open browser after command finished',
                 type: 'boolean',
                 default: false
-            }
-        ).option(
-            'debug',
-            {
+            })
+            .option('debug', {
                 alias: 'd',
                 describe: 'Enable PHP xdebug.',
                 type: 'boolean',
                 default: false
-            }
-        ).option(
-            'skip-setup', {
+            })
+            .option('skip-setup', {
                 alias: 's',
                 describe: 'Skip Magento setup',
                 type: 'boolean',
                 default: false
-            }
-        )
-            .option(
-                'import-db', {
-                    describe: 'Import database dump to MySQL',
-                    type: 'string'
-                }
-            )
-            .option(
-                'edition', {
-                    alias: 'e',
-                    describe: 'Magento Edition to install',
-                    type: 'string'
-                }
-            )
+            })
+            .option('import-db', {
+                describe: 'Import database dump to MySQL',
+                type: 'string'
+            })
+            .option('edition', {
+                alias: 'e',
+                describe: 'Magento Edition to install',
+                type: 'string'
+            })
             .option('recompile-php', {
                 describe: 'Recompile PHP version used in the project',
                 type: 'boolean'
