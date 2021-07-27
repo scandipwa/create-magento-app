@@ -79,7 +79,8 @@ const compileOptions = {
             PKG_CONFIG_PATH: '$PKG_CONFIG_PATH:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix openssl)/lib/pkgconfig:$(brew --prefix curl-openssl)/lib/pkgconfig:$(brew --prefix zlib)/lib/pkgconfig',
             CPATH: '$CPATH:$(brew --prefix openssl)/include',
             CXX: 'g++ -DTRUE=1 -DFALSE=0',
-            CC: 'gcc -DTRUE=1 -DFALSE=0'
+            CC: 'gcc -DTRUE=1 -DFALSE=0',
+            LDFLAGS: '$(brew --prefix openssl)/lib/libssl.dylib $(brew --prefix openssl)/lib/libcrypto.dylib'
         }
     }
 };
