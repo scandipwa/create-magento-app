@@ -6,14 +6,14 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { saveConfiguration } = require('../config/save-config');
 const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
 const { installComposer, installPrestissimo } = require('./composer');
-const { startServices, stopServices } = require('./docker');
+const { startServices } = require('./docker');
 const { installPhp, configurePhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
 const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagento, setupMagento } = require('./magento');
-const { pullContainers } = require('./docker/containers');
+const { pullContainers, stopContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
 const {
     connectToMySQL,
@@ -58,7 +58,7 @@ const retrieveProjectConfiguration = {
 const stopProject = {
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
-        stopServices,
+        stopContainers,
         stopPhpFpm
     ], {
         concurrent: true,
