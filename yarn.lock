@@ -1074,14 +1074,14 @@
     semver "^7.3.2"
     validate-npm-package-name "^3.0.0"
 
-"@scandipwa/scandipwa-dev-utils@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.5.tgz#605da605b0bcaf5e94e57f5d859541b7eb1e1017"
-  integrity sha512-GgFokRYzm9uNhPsxdGajaWxxl2W/g6x34woBvWYTFKQ0t4pCAMbst8AKTGnxdnrMF0zek9fiJMSS6jE9amEOrg==
+"@scandipwa/scandipwa-dev-utils@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.10.tgz#9519dc201c35781aecc029945f5d9a22399c2a5e"
+  integrity sha512-bcqfk43Idfr5smmlr1AD9N1HL+40h9rURc9i2mJVRlCTEmZDeKLqZTYJbhO88HDDHcBHfCzhP8hWdV8t5qMcsA==
   dependencies:
-    "@tilework/mosaic-dev-utils" "0.1.2"
+    "@tilework/mosaic-dev-utils" "0.1.5"
     cross-spawn "^7.0.3"
-    react-dev-utils "^10.2.1"
+    react-dev-utils "^11.0.4"
     semver "^7.3.2"
     validate-npm-package-name "^3.0.0"
 
@@ -1124,6 +1124,17 @@
     mem-fs "^1.2.0"
     mem-fs-editor "^7.0.1"
     memoizee "^0.4.15"
+
+"@tilework/mosaic-dev-utils@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@tilework/mosaic-dev-utils/-/mosaic-dev-utils-0.1.5.tgz#7d656d94b9ddc1781da268694c0af1eac5ab535f"
+  integrity sha512-d7ahuThWkO8H/DY4fBQfoKyGaVDBG9BJcU1bfSVKhc+8TJPnE/CvyM3roo5B66aQ8HrB7o1CfyyNKFEwFbPT4g==
+  dependencies:
+    chalk "^4.1.0"
+    mem-fs "^1.2.0"
+    mem-fs-editor "^7.0.1"
+    memoizee "^0.4.15"
+    node-fetch "^2.6.1"
 
 "@tootallnate/once@1":
   version "1.1.2"
