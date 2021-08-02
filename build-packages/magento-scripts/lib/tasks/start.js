@@ -180,9 +180,6 @@ const start = {
                 options: {
                     showTimer: false
                 }
-            },
-            {
-                task: (ctx) => ctx.mysqlConnection.destroy()
             }
         ], {
             concurrent: false,
