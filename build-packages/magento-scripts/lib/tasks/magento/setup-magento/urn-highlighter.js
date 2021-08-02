@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+const fs = require('fs');
 const path = require('path');
 const magentoTask = require('../../../util/magento-task');
 const pathExists = require('../../../util/path-exists');
@@ -12,8 +13,7 @@ const URNHighlighter = {
     title: 'Generating URN highlighter',
     task: async (ctx, task) => {
         if (!await pathExists(path.resolve('./.idea'))) {
-            task.skip();
-            return;
+            await fs.promises.mkdir(path.resolve('./.idea'));
         }
 
         return task.newListr(
