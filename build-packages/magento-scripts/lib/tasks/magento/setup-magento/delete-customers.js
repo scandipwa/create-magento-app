@@ -15,15 +15,19 @@ const deleteCustomers = {
             return;
         }
 
-        await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+        try {
+            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
 
-        await Promise.all(
-            customerTables.map(
-                (tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`)
-            )
-        );
-
-        await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+            await Promise.all(
+                customerTables.map(
+                    (tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`)
+                )
+            );
+        } catch (err) {
+            throw new Error(err);
+        } finally {
+            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
     }
 };
 
