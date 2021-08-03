@@ -31,7 +31,7 @@ const importDumpToMySQL = {
             );
 
             await execAsyncSpawn(
-                `docker exec ${mysql.name} bash -c "cat dump.sql | mysql -umagento -pmagento magento"`,
+                `docker exec ${mysql.name} bash -c "mysqlimport -umagento -pmagento magento ./dump.sql"`,
                 {
                     callback: (t) => {
                         task.output = t;
