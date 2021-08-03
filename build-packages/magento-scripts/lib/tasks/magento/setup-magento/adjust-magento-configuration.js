@@ -12,6 +12,7 @@ const adjustMagentoConfiguration = {
         `);
 
         // update cache policy to not use varnish
+        // 0 - magento cache, 2 - varnish cache
         await mysqlConnection.query(`
             UPDATE core_config_data
             SET value = ?
