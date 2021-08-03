@@ -70,7 +70,8 @@ const customerTables = [
     'review',
     'review_detail',
     'review_entity_summary',
-    'review_store'
+    'review_store',
+    'report_event'
 ];
 
 module.exports = {
