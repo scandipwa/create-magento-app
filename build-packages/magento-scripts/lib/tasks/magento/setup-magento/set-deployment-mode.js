@@ -7,26 +7,30 @@ const runMagentoCommand = require('../../../util/run-magento');
  */
 module.exports = {
     title: 'Switching magento mode',
-    task: async ({ magentoVersion, config: { magentoConfiguration } }, task) => {
+    task: async ({ magentoVersion, config: { magentoConfiguration: { mode } } }, task) => {
         const { result } = await runMagentoCommand('deploy:mode:show', {
             throwNonZeroCode: false,
             magentoVersion
         });
 
-        if (result.includes(magentoConfiguration.mode)) {
+        if (result.includes(mode)) {
             task.skip();
             return;
         }
 
-        await runMagentoCommand(`deploy:mode:set ${ magentoConfiguration.mode } --skip-compilation`, {
-            magentoVersion
-        });
+        const magentoModeSwitchTasks = [
+            magentoTask(`deploy:mode:set ${ mode } --skip-compilation`)
+        ];
 
-        if (magentoConfiguration.mode === 'production') {
-            return task.newListr([
+        if (mode === 'production') {
+            magentoModeSwitchTasks.push(
                 magentoTask('setup:di:compile'),
                 magentoTask('setup:static-content:deploy')
-            ]);
+            );
         }
+
+        return task.newListr(
+            magentoModeSwitchTasks
+        );
     }
 };
