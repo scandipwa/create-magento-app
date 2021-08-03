@@ -66,7 +66,11 @@ const customerTables = [
     'persistent_session',
     'wishlist',
     'wishlist_item',
-    'wishlist_item_option'
+    'wishlist_item_option',
+    'review',
+    'review_detail',
+    'review_entity_summary',
+    'review_store'
 ];
 
 module.exports = {
