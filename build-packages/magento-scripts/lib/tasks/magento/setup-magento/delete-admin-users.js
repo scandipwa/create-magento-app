@@ -6,7 +6,7 @@ const deleteAdminUsers = {
     task: async (ctx) => {
         const { mysqlConnection } = ctx;
         await mysqlConnection.query(`
-            DELETE FROM admin_user;
+            TRUNCATE TABLE admin_user;
         `);
     }
 };

@@ -13,11 +13,15 @@ const deleteOrders = {
             return;
         }
 
+        await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+
         await Promise.all(
             orderTables.map(
-                (tableName) => mysqlConnection.query(`DELETE FROM \`${ tableName }\`;`)
+                (tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`)
             )
         );
+
+        await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
     }
 };
 
