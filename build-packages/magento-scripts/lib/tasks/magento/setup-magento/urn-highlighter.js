@@ -16,6 +16,11 @@ const URNHighlighter = {
             await fs.promises.mkdir(path.resolve('./.idea'));
         }
 
+        if (await pathExists(path.resolve('./.idea/misc.xml'))) {
+            task.skip();
+            return;
+        }
+
         return task.newListr(
             magentoTask('dev:urn-catalog:generate -- ./.idea/misc.xml')
         );
