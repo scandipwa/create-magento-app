@@ -11,6 +11,10 @@ const increaseAdminSessionLifetime = {
             {
                 path: 'admin/security/session_lifetime',
                 value: '2800000'
+            },
+            {
+                path: 'admin/security/password_lifetime',
+                value: null
             }
         ], {
             mysqlConnection,
