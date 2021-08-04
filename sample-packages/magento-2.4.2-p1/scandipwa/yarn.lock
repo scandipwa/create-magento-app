@@ -2343,26 +2343,13 @@
     eslint-traverse "^1.0.0"
     requireindex "~1.1.0"
 
-"@scandipwa/m2-theme@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@scandipwa/m2-theme/-/m2-theme-0.1.4.tgz#a241674a9d7ecffc3a945a6793bdbdd40310b320"
-  integrity sha512-4wl91Ab4Jbiy0dFp8ktahGZP59lz+1rBM0WHdQze0Y1tIkJ4K6SslWkMjJ34+J3plml8c6oHKwlatyZwD+uu2Q==
+"@scandipwa/m2-theme@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@scandipwa/m2-theme/-/m2-theme-0.1.6.tgz#d91b2298521451ae67729423bd02f86aabdbe2a6"
+  integrity sha512-unu9u2Stg15eaEseQfCnEvOiZ/whuLhvhfZpCw7c+PstcQWrTNhYDJ+wewChiMiy7ldrKc6P1m5DOH+cQjlFQA==
   dependencies:
     "@scandipwa/craco" "0.0.4"
     "@scandipwa/webpack-fallback-plugin" "^1.2.0"
-
-"@scandipwa/scandipwa-dev-utils@0.0.20":
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.0.20.tgz#88001ca3cfceea3e8643cf301eed7e362ccbf94e"
-  integrity sha512-c0mtIdPHXnma5YvKYqLutqaTtWOmeBfkJGdtjpRCeBYaaDOXhyYZUFNx6xbkyLiSzC/yxNXsUzqbbuSajj6x4Q==
-  dependencies:
-    chalk "^4.1.0"
-    cross-spawn "^7.0.3"
-    mem-fs "^1.2.0"
-    mem-fs-editor "^7.0.1"
-    react-dev-utils "^10.2.1"
-    semver "^7.3.2"
-    validate-npm-package-name "^3.0.0"
 
 "@scandipwa/scandipwa-dev-utils@0.0.25":
   version "0.0.25"
@@ -2389,7 +2376,7 @@
     semver "^7.3.2"
     validate-npm-package-name "^3.0.0"
 
-"@scandipwa/scandipwa-scripts@2.4.9", "@scandipwa/scandipwa-scripts@^2.3.6":
+"@scandipwa/scandipwa-scripts@2.4.9", "@scandipwa/scandipwa-scripts@^2.4.9":
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-scripts/-/scandipwa-scripts-2.4.9.tgz#5da45d50a86e313cd4ee3d9254d27629342f9ed1"
   integrity sha512-SXc7Vjlgi5LrPDvvpVaLtFubWDboox4gTsOD9qo3uMRe1KCS1BNvEsJL6ayQ7flSCLyVwc4XS8UfcQfhxv7nnw==
@@ -2408,15 +2395,15 @@
     lodash "^4.17.20"
     xmldom "^0.5.0"
 
-"@scandipwa/scandipwa@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa/-/scandipwa-4.4.0.tgz#d16f9b6795d9a9478cf9e6cf53458834d2f062db"
-  integrity sha512-WvSuAfpjgZMXwaaIJVdIQSzJDmdHouNWQSbCmZXI+DD+4ovQRJ9jZTi6Rj7xcVrcg8IbVuWyzPCl8V/pIiDJ9w==
+"@scandipwa/scandipwa@4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa/-/scandipwa-4.5.1.tgz#2312907ac6efabdfafbb70f62a4e2b2a611fb3ad"
+  integrity sha512-DJFQX4APEgciqKpnfWY3LKuaNwyZjcmc5tHQdZDqCnoG8j2UtFD6lxY5iynFpXA5FjOk+1R6/H00KYNh0fjGSQ==
   dependencies:
-    "@scandipwa/m2-theme" "^0.1.4"
-    "@scandipwa/scandipwa-scripts" "^2.3.6"
-    "@scandipwa/service-worker" "^0.0.4"
-    "@scandipwa/webpack-i18n-runtime" "0.0.9"
+    "@scandipwa/m2-theme" "^0.1.6"
+    "@scandipwa/scandipwa-scripts" "^2.4.9"
+    "@scandipwa/service-worker" "^0.0.10"
+    "@scandipwa/webpack-i18n-runtime" "^0.0.21"
     history "^4.9.0"
     html-react-parser "^0.13.0"
     intersection-observer "^0.12.0"
@@ -2436,26 +2423,20 @@
     redux "^4.0.5"
     unstated "^2.1.1"
 
-"@scandipwa/service-worker@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@scandipwa/service-worker/-/service-worker-0.0.4.tgz#eb15307c4d7cc7a649452c30ad71e7b01eef6f5d"
-  integrity sha512-JcigVs7ptyMXpKIjY7ZzBRvYfG2lIIK0rIqfVJ0fyY/Wc1+/cMmOtCyZUN1YXmWzf401FZNo4WysI7PTjXfyfA==
+"@scandipwa/service-worker@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@scandipwa/service-worker/-/service-worker-0.0.10.tgz#9d357fd621b30b7155e4e66030258da11765142c"
+  integrity sha512-hyLtmOQy4me2nG0RZthfbET87GPqFycnh0otp+Kko3K8rIyrR+h6PF7BpHMtb7tprkVz3hoRCAgfSNuEpU+56w==
   dependencies:
-    "@scandipwa/craco" "0.0.4"
-    "@scandipwa/webpack-fallback-plugin" "1.2.0"
+    "@tilework/mosaic-webpack-fallback-plugin" "0.0.5"
     lodash.clonedeep "^4.5.0"
 
-"@scandipwa/webpack-after-emit-logger@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@scandipwa/webpack-after-emit-logger/-/webpack-after-emit-logger-0.0.3.tgz#fc081bd2a94bf7335c26aafe19444aa4a881b334"
-  integrity sha512-bl3gf+/MYZ8VXzLqmH7pW0x2K5cUUwked3d/qLwqtpki3iNEBMWLtGYGX9mpzNX15/6RMgHGW0RZjCZgA9TraQ==
+"@scandipwa/webpack-after-emit-logger@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@scandipwa/webpack-after-emit-logger/-/webpack-after-emit-logger-0.0.8.tgz#18243cff175da362b8fdc49929c51bcdf1f0da35"
+  integrity sha512-mtXqquTwKc4hMC3wDURsW9ywp5R0Fj+ByhuMw8oFMwG5tlE5daOb7YFWuHV2No1hNSEvY+dU+nILd2ePcUotsg==
   dependencies:
-    "@scandipwa/scandipwa-dev-utils" "0.0.20"
-
-"@scandipwa/webpack-fallback-plugin@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@scandipwa/webpack-fallback-plugin/-/webpack-fallback-plugin-1.2.0.tgz#f0e1fcd19107c52b52a00984cfaafb77008171b0"
-  integrity sha512-deWHU7JyhbAumkEH3u73Vkrn4ph4/IspPwXbb6JyUbPZ2M7QhcRoy914XxBMcrIuyGKAH6newgXf21I4jyOR6g==
+    "@scandipwa/scandipwa-dev-utils" "0.0.25"
 
 "@scandipwa/webpack-fallback-plugin@^1.2.0":
   version "1.2.5"
@@ -2464,13 +2445,15 @@
   dependencies:
     "@scandipwa/scandipwa-dev-utils" "0.0.25"
 
-"@scandipwa/webpack-i18n-runtime@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@scandipwa/webpack-i18n-runtime/-/webpack-i18n-runtime-0.0.9.tgz#fcbd68603c0ac35b1274891594962c6732ea7fb5"
-  integrity sha512-wxT+ynMKHDHXAw/VDjWV8WiD5NzmhyguKw4hnA31QtaTHLVv15TMDU+HhZzx3hX1uS3qNisyQFwy6BzopgfL+g==
+"@scandipwa/webpack-i18n-runtime@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@scandipwa/webpack-i18n-runtime/-/webpack-i18n-runtime-0.0.21.tgz#e9e9b29bb96d448d81adab0e62f7931a7fce1dea"
+  integrity sha512-hnLIgq9fVL+9qk16FN7fN7b3WcHqd6fRDtFDc82qkDft/f1/aXmwTmsiHMfzgx19ushNDG32+NWmB6Lf1+oWwg==
   dependencies:
-    "@scandipwa/scandipwa-dev-utils" "0.0.20"
-    "@scandipwa/webpack-after-emit-logger" "0.0.3"
+    "@scandipwa/scandipwa-dev-utils" "0.1.5"
+    "@scandipwa/webpack-after-emit-logger" "0.0.8"
+    "@tilework/mosaic-dev-utils" "0.0.5"
+    loader-utils "^2.0.0"
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
@@ -2793,6 +2776,13 @@
     babel-jest "26.6.3"
     babel-preset-react-app "10.0.0"
     react "17.0.1"
+
+"@tilework/mosaic-webpack-fallback-plugin@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@tilework/mosaic-webpack-fallback-plugin/-/mosaic-webpack-fallback-plugin-0.0.5.tgz#b94d8329ee6d63c50cb596103c8f9f76357c657e"
+  integrity sha512-k08i+2AWUNO6/JLqt5vSVpO8V+GLlWFOZ3n1KJAMFha76jglt22SYCHNapvp/+QzDTWrm5/eHC/1IzLLFbIotg==
+  dependencies:
+    "@tilework/mosaic-dev-utils" "0.0.5"
 
 "@tilework/mosaic-webpack-fallback-plugin@0.0.8":
   version "0.0.8"
