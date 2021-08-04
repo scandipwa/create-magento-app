@@ -53,7 +53,11 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
                 ];
             }
 
-            logger.warn(...message);
+            const doNotLogOutOfDateCommands = ['start'];
+
+            if (!yargs.argv._.some((arg) => doNotLogOutOfDateCommands.includes(arg))) {
+                logger.warn(...message);
+            }
             process.isOutOfDateVersion = true;
             process.isOutOfDateVersionMessage = message;
         }
