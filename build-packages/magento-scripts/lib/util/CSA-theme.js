@@ -12,7 +12,7 @@ const getCSAThemes = async ({ cwd = process.cwd() } = {}) => {
     const CSAThemes = (await Promise.all(
         pathRepositories
             .map(async ([_, repoOptions]) => {
-                const pkg = await getJsonfileData(path.join(cwd, repoOptions.url, 'package.json'));
+                const pkg = (await getJsonfileData(path.join(cwd, repoOptions.url, 'package.json')) || {});
 
                 return {
                     themePath: repoOptions.url,
