@@ -12,7 +12,7 @@ What this package does:
 ## Usage
 
 ```bash
-> create-magento-app <folder name>
+> npx create-magento-app <folder name>
 > cd <folder name>
 > yarn/npm run start
 ```
