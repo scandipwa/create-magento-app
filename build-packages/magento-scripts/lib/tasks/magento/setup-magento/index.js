@@ -13,37 +13,48 @@ const magentoTask = require('../../../util/magento-task');
 const URNHighlighter = require('./urn-highlighter');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const setupMagento = {
+const setupMagento = (options = {}) => ({
     title: 'Setting up Magento',
     skip: ({ skipSetup }) => skipSetup,
-    task: async (ctx, task) => task.newListr([
-        flushRedisConfig,
-        waitingForRedis,
-        updateEnvPHP,
-        migrateDatabase,
-        {
-            title: 'Configuring Magento settings',
-            task: (ctx, task) => task.newListr([
-                setBaseUrl,
-                setUrlRewrite,
-                increaseAdminSessionLifetime
-            ], {
-                concurrent: true
-            })
-        },
-        createAdmin,
-        setDeploymentMode,
-        disableMaintenanceMode,
-        disable2fa,
-        URNHighlighter,
-        magentoTask('cache:flush')
-    ], {
-        concurrent: false,
-        exitOnError: true,
-        ctx
-    })
-};
+    task: (ctx, task) => {
+        if (options.onlyInstallMagento) {
+            return task.newListr([
+                flushRedisConfig,
+                waitingForRedis,
+                updateEnvPHP,
+                migrateDatabase({ onlyInstallMagento: true })
+            ]);
+        }
+
+        return task.newListr([
+            flushRedisConfig,
+            waitingForRedis,
+            updateEnvPHP,
+            migrateDatabase(),
+            {
+                title: 'Configuring Magento settings',
+                task: (ctx, task) => task.newListr([
+                    setBaseUrl,
+                    setUrlRewrite,
+                    increaseAdminSessionLifetime
+                ], {
+                    concurrent: true
+                })
+            },
+            createAdmin,
+            setDeploymentMode,
+            disableMaintenanceMode,
+            disable2fa,
+            URNHighlighter,
+            magentoTask('cache:flush')
+        ], {
+            concurrent: false,
+            exitOnError: true,
+            ctx
+        });
+    }
+});
 
 module.exports = setupMagento;

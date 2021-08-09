@@ -135,7 +135,7 @@ const finishProjectConfiguration = {
                     importDumpToMySQL,
                     fixDB,
                     restoreThemeConfig,
-                    setupMagento
+                    setupMagento()
                 ], {
                     concurrent: false,
                     exitOnError: true
@@ -169,7 +169,7 @@ const start = {
             stopProject,
             retrieveFreshProjectConfiguration,
             configureProject,
-            setupMagento,
+            setupMagento(),
             finishProjectConfiguration,
             {
                 title: 'Opening browser',

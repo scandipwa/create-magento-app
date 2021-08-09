@@ -28,11 +28,12 @@ const importDump = {
         stopProject,
         retrieveFreshProjectConfiguration,
         configureProject,
+        setupMagento({ onlyInstallMagento: true }),
         dumpThemeConfig,
         importDumpToMySQL,
         restoreThemeConfig,
         fixDB,
-        setupMagento,
+        setupMagento(),
         indexProducts
     ], {
         concurrent: false,

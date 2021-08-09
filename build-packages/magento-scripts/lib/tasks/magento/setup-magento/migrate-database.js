@@ -9,14 +9,17 @@ const upgradeMagento = require('./upgrade-magento');
 const setupPersistedQuery = require('../../theme/setup-persisted-query');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const migrateDatabase = {
+const migrateDatabase = (options = {}) => ({
     title: 'Migrating database',
     task: async (ctx, task) => {
-        const { magentoVersion, mysqlConnection: connection } = ctx;
+        const {
+            magentoVersion,
+            mysqlConnection
+        } = ctx;
 
-        const [[{ tableCount }]] = await connection.query(`
+        const [[{ tableCount }]] = await mysqlConnection.query(`
             SELECT count (*) AS tableCount
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = 'magento';
@@ -24,6 +27,12 @@ const migrateDatabase = {
 
         if (tableCount === 0) {
             task.output = 'No Magento is installed in DB!\nInstalling...';
+
+            if (options.onlyInstallMagento) {
+                return task.newListr([
+                    installMagento
+                ]);
+            }
 
             return task.newListr([
                 installMagento,
@@ -55,6 +64,12 @@ const migrateDatabase = {
             });
         }
         case 1: {
+            if (options.onlyInstallMagento) {
+                return task.newListr([
+                    installMagento
+                ]);
+            }
+
             return task.newListr([
                 installMagento,
                 setupPersistedQuery,
@@ -89,6 +104,6 @@ const migrateDatabase = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = migrateDatabase;
