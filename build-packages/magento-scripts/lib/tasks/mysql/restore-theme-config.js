@@ -11,6 +11,11 @@ const restoreThemeConfig = {
 
         const { themeIdConfig, themes } = themeDump;
 
+        if (!themeIdConfig && themes.length === 0) {
+            task.skip();
+            return;
+        }
+
         // restore theme config
         if (themeIdConfig) {
             await updateTableValues('core_config_data', [
@@ -19,6 +24,10 @@ const restoreThemeConfig = {
                     value: themeIdConfig.value
                 }
             ], { mysqlConnection, task });
+        }
+
+        if (themes.length === 0) {
+            return;
         }
 
         // restore themes
