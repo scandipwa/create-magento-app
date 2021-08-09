@@ -4,6 +4,14 @@ const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users');
 const deleteCustomers = require('../magento/setup-magento/delete-customers');
 const deleteOrders = require('../magento/setup-magento/delete-orders');
 
+const enableForeignKeyCheck = {
+    task: ({ mysqlConnection }) => mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;')
+};
+
+const disableForeignKeyCheck = {
+    task: ({ mysqlConnection }) => mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;')
+};
+
 /**
  * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
@@ -12,6 +20,7 @@ const fixDB = {
     task: async (ctx, task) => task.newListr([
         adjustMagentoConfiguration,
         configureElasticsearch,
+        enableForeignKeyCheck,
         {
             task: (ctx, task) => task.newListr([
                 deleteAdminUsers,
@@ -19,8 +28,10 @@ const fixDB = {
                 deleteCustomers
             ], {
                 concurrent: true
-            })
-        }
+            }),
+            rollback: disableForeignKeyCheck
+        },
+        disableForeignKeyCheck
     ], {
         concurrent: false,
         exitOnError: true,
