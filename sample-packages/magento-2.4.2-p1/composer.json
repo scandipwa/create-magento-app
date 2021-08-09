@@ -14,6 +14,7 @@
     "require": {
         "magento/composer-root-update-plugin": "~1.1",
         "magento/product-community-edition": "2.4.2-p1",
+        "maritos/magento2-performance-fixes": "^1.0",
         "scandipwa/scandipwa": "^0.0.1"
     },
     "autoload": {
@@ -79,6 +80,15 @@
         }
     },
     "extra": {
-        "magento-force": "override"
+        "magento-force": "override",
+        "enable-patching": true,
+        "composer-exit-on-patch-failure": true,
+        "patches": {
+            "magento/framework": {
+                "performance fix #1 - vendor/magento/framework/Config/Data.php": "vendor/maritos/magento2-performance-fixes/vendorPatch/magento/framework/Config/Data.patch",
+                "performance fix #2 - vendor/magento/framework/App/ObjectManager/ConfigLoader.patch": "vendor/maritos/magento2-performance-fixes/vendorPatch/magento/framework/App/ObjectManager/ConfigLoader.patch",
+                "performance fix #3 - vendor/magento/framework/Interception/Config/Config.patch": "vendor/maritos/magento2-performance-fixes/vendorPatch/magento/framework/Interception/Config/Config.patch"
+            }
+        }
     }
 }
