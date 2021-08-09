@@ -25,18 +25,18 @@ const readymageSSH = {
                  * create dump without customers and orders
                  */
                 await ssh.execCommand(
-                    `mysqldump magento --single-transaction --no-tablespaces ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
+                    `mysqldump magento --skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
                 );
 
                 const includedOrdersAndCustomerTables = [...orderTables, ...customerTables].join(' ');
 
                 await ssh.execCommand(
-                    `mysqldump magento --single-transaction --no-tablespaces --no-data --result-file=dump-1.sql ${ includedOrdersAndCustomerTables }`
+                    `mysqldump magento ---skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces --no-data --result-file=dump-1.sql ${ includedOrdersAndCustomerTables }`
                 );
             } else {
                 task.output = 'Making remote database dump file with customers data...';
                 await ssh.execCommand(
-                    'mysqldump magento --single-transaction --no-tablespaces --result-file=dump.sql'
+                    'mysqldump magento --skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces --result-file=dump.sql'
                 );
             }
 
