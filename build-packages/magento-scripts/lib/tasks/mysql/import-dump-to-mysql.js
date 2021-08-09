@@ -30,8 +30,11 @@ const importDumpToMySQL = {
                 `docker exec ${mysql.name} bash -c 'mysql -uroot -p${mysql.env.MYSQL_ROOT_PASSWORD} -e "SET GLOBAL log_bin_trust_function_creators = 1;"'`
             );
 
+            /**
+             * Using `mysql` instead of `mysqlimport` because `mysqlimport` has permission issues during import
+             */
             await execAsyncSpawn(
-                `docker exec ${mysql.name} bash -c "mysqlimport -umagento -pmagento magento ./dump.sql"`,
+                `docker exec ${mysql.name} bash -c "mysql -umagento -pmagento magento < ./dump.sql"`,
                 {
                     callback: (t) => {
                         task.output = t;
