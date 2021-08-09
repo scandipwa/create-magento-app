@@ -64,7 +64,7 @@ class ConsoleBlock {
     /**
      * @param {string} separator
      */
-    addSeparator(separator) {
+    addSeparator(separator = '') {
         this.data.push({
             type: 'separator',
             data: separator
@@ -87,14 +87,15 @@ class ConsoleBlock {
         this.data.forEach(({ type, data }) => {
             switch (type) {
             case 'header': {
-                const spacersLength = (longestLine - data.length) / 2;
+                const dataLength = data.replace(consoleStyleReplacer, '').length;
+                const spacersLength = (longestLine - (dataLength % 2 === 0 ? dataLength : (dataLength + 1))) / 2;
 
-                logger.log(`${TOP_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${EMPTY_CHAR}${data}${EMPTY_CHAR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${TOP_RIGHT_SEPARATOR}`);
+                logger.log(`${TOP_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${EMPTY_CHAR}${data}${EMPTY_CHAR}${HORIZONTAL_SEPARATOR.repeat(dataLength % 2 === 0 ? spacersLength : spacersLength + 1)}${TOP_RIGHT_SEPARATOR}`);
                 break;
             }
 
             case 'line': {
-                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR}${data}${EMPTY_CHAR.repeat((longestLine - data.replace(consoleStyleReplacer, '').length || 1) - 1)}${EMPTY_CHAR}${VERTICAL_SEPARATOR}`);
+                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR}${data}${EMPTY_CHAR.repeat(longestLine - data.replace(consoleStyleReplacer, '').length || 1)}${EMPTY_CHAR}${VERTICAL_SEPARATOR}`);
                 break;
             }
 
@@ -106,7 +107,7 @@ class ConsoleBlock {
             }
 
             case 'empty-line': {
-                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR.repeat(longestLine + 1)}${VERTICAL_SEPARATOR}`);
+                logger.log(`${VERTICAL_SEPARATOR}${EMPTY_CHAR.repeat(longestLine + 2)}${VERTICAL_SEPARATOR}`);
                 break;
             }
 
@@ -116,7 +117,7 @@ class ConsoleBlock {
             }
         });
 
-        logger.logN(`${BOTTOM_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(longestLine + 1)}${BOTTOM_RIGHT_SEPARATOR}`);
+        logger.logN(`${BOTTOM_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(longestLine + 2)}${BOTTOM_RIGHT_SEPARATOR}`);
     }
 }
 

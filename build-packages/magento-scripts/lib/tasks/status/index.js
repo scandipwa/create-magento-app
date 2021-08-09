@@ -1,16 +1,18 @@
+/* eslint-disable no-restricted-syntax */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 
 const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
+const ConsoleBlock = require('../../util/console-block');
 
 const prettyStatus = async ({
     ports,
     config,
     magentoVersion,
     dockerVersion,
-    phpBrewVersion,
+    PHPBrewVersion,
     platform,
     platformVersion,
     containers
@@ -20,51 +22,50 @@ const prettyStatus = async ({
         baseConfig,
         overridenConfiguration: { host, ssl }
     } = config;
-    const strings = [];
-    const separator = () => strings.push(`>${'-'.repeat(30)}`);
+    // const strings = [];
+    // const separator = () => block.addLine(`>${'-'.repeat(30)}`);
     const projectCreatedAt = getProjectCreatedAt();
 
-    separator();
+    // separator();
 
     const prefix = getPrefix();
 
     const { name: folderName } = path.parse(process.cwd());
 
-    strings.push(`Running magento-scripts version: ${ logger.style.link(packageVersion) }`);
+    const block = new ConsoleBlock();
 
-    separator();
-
-    strings.push(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'}`);
-    strings.push(`Project location: ${logger.style.link(process.cwd())}`);
+    block
+        .addHeader(`magento-scripts version: ${ logger.style.link(packageVersion) }`)
+        .addEmptyLine()
+        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'}`)
+        .addLine(`Project location: ${logger.style.link(process.cwd())}`);
 
     if (projectCreatedAt) {
-        strings.push(`Project created: ${logger.style.link(projectCreatedAt.toDateString())} at ${logger.style.link(projectCreatedAt.toTimeString())}`);
+        block.addLine(`Project created: ${logger.style.link(projectCreatedAt.toDateString())} at ${logger.style.link(projectCreatedAt.toTimeString())}`);
     }
-    strings.push(`Magento 2 version: ${logger.style.file(magentoVersion)}`);
-    strings.push(`PHP version: ${logger.style.file(config.php.version)}`);
-    strings.push(`PHP location: ${logger.style.link(config.php.binPath)}`);
-    strings.push(`Docker version: ${logger.style.file(dockerVersion)}`);
-    strings.push(`PHPBrew version: ${logger.style.file(phpBrewVersion)}`);
-    strings.push(`Platfrom: ${logger.style.code(platform)}`);
-    strings.push(`Platform version: ${logger.style.file(platformVersion)}`);
-    strings.push(`Platform architecture: ${logger.style.file(getArchSync())}`);
 
-    separator();
-
-    strings.push('Docker containers status:');
-
-    strings.push('');
-
-    const containersStrings = [];
+    block
+        .addLine(`Magento 2 version: ${logger.style.file(magentoVersion)}`)
+        .addLine(`PHP version: ${logger.style.file(config.php.version)}`)
+        .addLine(`PHP location: ${logger.style.link(config.php.binPath)}`)
+        .addLine(`Docker version: ${logger.style.file(dockerVersion)}`)
+        .addLine(`PHPBrew version: ${logger.style.file(PHPBrewVersion)}`)
+        .addLine(`Platform: ${logger.style.code(platform)}`)
+        .addLine(`Platform version: ${logger.style.file(platformVersion)}`)
+        .addLine(`Platform architecture: ${logger.style.file(getArchSync())}`)
+        .addEmptyLine()
+        .addSeparator('Docker containers status');
 
     Object.values(containers).forEach((container) => {
-        const containerString = [];
-        containerString.push(logger.style.misc(container._));
+        block
+            .addEmptyLine()
+            .addLine(`> ${logger.style.misc(container._)}`)
+            .addEmptyLine();
 
         let containerStatus;
         if (container.status) {
             if (container.status.Status === 'healthy') {
-                containerStatus = `✅ ${logger.style.file('running')}`;
+                containerStatus = `✓ ${logger.style.file('running')}`;
             } else {
                 containerStatus = logger.style.code(container.status.Status);
             }
@@ -72,38 +73,36 @@ const prettyStatus = async ({
             containerStatus = logger.style.code('stopped');
         }
 
-        containerString.push(`Status: ${containerStatus}`);
-        containerString.push(`Name: ${logger.style.misc(container.name)}`);
-        containerString.push(`Image: ${logger.style.file(container.image)}`);
-        containerString.push(`Network: ${logger.style.link(container.network)}`);
-        containerString.push(`Port forwarding: ${container.ports.map((port) => logger.style.link(port)).join(', ')}`);
-        if (container.env) {
-            containerString.push('Environment variables:');
-            const containerEnvStrings = [''];
-            // eslint-disable-next-line no-restricted-syntax
-            for (const [envName, envValue] of Object.entries(container.env)) {
-                containerEnvStrings.push(`${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
-            }
+        block
+            .addLine(`Status: ${containerStatus}`)
+            .addLine(`Name: ${logger.style.misc(container.name)}`)
+            .addLine(`Image: ${logger.style.file(container.image)}`)
+            .addLine(`Network: ${logger.style.link(container.network)}`);
 
-            containerString.push(containerEnvStrings.join('\n   '));
+        if (container.ports.length > 0) {
+            block.addLine(`Port forwarding: ${container.ports.map((port) => logger.style.link(port)).join(', ')}`);
         }
-        containersStrings.push(containerString.join('\n  '));
-        containersStrings.push('');
+
+        if (container.env) {
+            block.addLine('Environment variables:');
+            for (const [envName, envValue] of Object.entries(container.env)) {
+                block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+            }
+        }
     });
 
-    // containersStrings.push('');
+    block
+        .addEmptyLine()
+        .addSeparator('Magento status')
+        .addEmptyLine()
+        .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
+        .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
+        .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`)
+        .addEmptyLine();
 
-    strings.push(containersStrings.join('\n'));
+    block.log();
 
-    separator();
-
-    strings.push(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`);
-    strings.push(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`);
-    strings.push(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
-
-    separator();
-
-    logger.log(strings.join('\n'));
+    // logger.log(strings.join('\n'));
 };
 
 module.exports = { prettyStatus };
