@@ -10,14 +10,17 @@
         "Scandiweb",
         "bzip",
         "freetype",
+        "gtid",
         "libiconv",
         "libpng",
         "libsodium",
         "libxml",
         "libzip",
+        "mysqldump",
         "overriden",
         "portscanner",
-        "scandipwa"
+        "scandipwa",
+        "tablespaces"
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
