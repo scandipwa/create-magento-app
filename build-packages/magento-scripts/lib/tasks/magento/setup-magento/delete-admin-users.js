@@ -1,7 +1,7 @@
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const deleteAdminUsers = {
+const deleteAdminUsers = () => ({
     title: 'Deleting old admin users',
     task: async (ctx) => {
         const { mysqlConnection } = ctx;
@@ -9,6 +9,6 @@ const deleteAdminUsers = {
             TRUNCATE TABLE admin_user;
         `);
     }
-};
+});
 
 module.exports = deleteAdminUsers;

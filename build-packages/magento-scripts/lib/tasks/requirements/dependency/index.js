@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable consistent-return */
 const os = require('os');
 const osPlatform = require('../../../util/os-platform');
 const archDependenciesCheck = require('./arch');
@@ -12,24 +10,24 @@ const dependencyCheck = async () => {
     const currentPlatform = os.platform();
 
     if (currentPlatform === 'darwin') {
-        return macDependenciesCheck;
+        return macDependenciesCheck();
     }
 
     const { dist } = await osPlatform();
     switch (dist) {
     case 'Arch Linux':
     case 'Manjaro Linux': {
-        return archDependenciesCheck;
+        return archDependenciesCheck();
     }
     case 'Fedora': {
-        return fedoraDependenciesCheck;
+        return fedoraDependenciesCheck();
     }
     case 'CentOS': {
-        return centosDependenciesCheck;
+        return centosDependenciesCheck();
     }
     case 'Linux Mint':
     case 'Ubuntu': {
-        return ubuntuDependenciesCheck;
+        return ubuntuDependenciesCheck();
     }
     default: {
         // skip check

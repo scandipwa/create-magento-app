@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-// const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
 const importDump = require('../tasks/import-dump');
@@ -29,15 +27,18 @@ module.exports = (yargs) => {
             });
         },
         async (args = {}) => {
-            const tasks = new Listr([importDump], {
-                exitOnError: true,
-                ctx: args,
-                concurrent: false,
-                rendererOptions: {
-                    showErrorMessage: false,
-                    showTimer: true
+            const tasks = new Listr(
+                importDump(),
+                {
+                    exitOnError: true,
+                    ctx: args,
+                    concurrent: false,
+                    rendererOptions: {
+                        showErrorMessage: false,
+                        showTimer: true
+                    }
                 }
-            });
+            );
 
             try {
                 await tasks.run();

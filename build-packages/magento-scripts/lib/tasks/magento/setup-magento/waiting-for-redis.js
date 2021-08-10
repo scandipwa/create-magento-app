@@ -1,9 +1,9 @@
 const waitForIt = require('../../../util/wait-for-it');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Waiting for redis',
     task: async ({ ports }, task) => {
         await waitForIt({
@@ -19,4 +19,4 @@ module.exports = {
     options: {
         bottomBar: 10
     }
-};
+});

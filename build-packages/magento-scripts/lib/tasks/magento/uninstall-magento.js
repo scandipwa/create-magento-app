@@ -1,11 +1,10 @@
-/* eslint-disable no-param-reassign */
 const runMagentoCommand = require('../../util/run-magento');
 const pathExists = require('../../util/path-exists');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const uninstallMagento = {
+const uninstallMagento = () => ({
     title: 'Uninstall Magento App',
     task: async ({ config: { baseConfig } }, task) => {
         const appFolderExists = await pathExists(baseConfig.magentoDir);
@@ -32,6 +31,6 @@ const uninstallMagento = {
     options: {
         bottomBar: Infinity
     }
-};
+});
 
 module.exports = uninstallMagento;

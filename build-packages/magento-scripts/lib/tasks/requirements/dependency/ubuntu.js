@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return,no-param-reassign */
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
@@ -6,9 +5,9 @@ const installDependenciesTask = require('../../../util/install-dependencies-task
 const pkgRegex = /^(\S+)\/\S+\s(\S+)\s\S+\s\S+$/i;
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const ubuntuDependenciesCheck = {
+const ubuntuDependenciesCheck = () => ({
     title: 'Checking Ubuntu Linux dependencies',
     task: async (ctx, task) => {
         const installedDependencies = (await execAsyncSpawn('apt list --installed')).split('\n')
@@ -29,17 +28,17 @@ const ubuntuDependenciesCheck = {
             .map((dep) => (Array.isArray(dep) ? dep[0] : dep));
 
         if (dependenciesToInstall.length > 0) {
-            return task.newListr([
+            return task.newListr(
                 installDependenciesTask({
                     platform: 'Ubuntu',
                     dependenciesToInstall
                 })
-            ]);
+            );
         }
     },
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = ubuntuDependenciesCheck;

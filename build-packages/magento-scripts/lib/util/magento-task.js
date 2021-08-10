@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const runMagentoCommand = require('./run-magento');
 
 /**

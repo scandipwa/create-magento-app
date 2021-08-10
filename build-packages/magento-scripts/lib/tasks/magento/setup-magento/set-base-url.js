@@ -1,11 +1,9 @@
-// const runMagentoCommand = require('../../../util/run-magento');
-
 const { updateTableValues } = require('../../../util/database');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Setting baseurl and secure baseurl',
     task: async (ctx, task) => {
         const {
@@ -26,4 +24,4 @@ module.exports = {
             { path: 'web/secure/use_in_adminhtml', value: enableSecureFrontend }
         ], { mysqlConnection, task });
     }
-};
+});

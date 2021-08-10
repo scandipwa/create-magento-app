@@ -6,9 +6,9 @@ const pathExists = require('../../util/path-exists');
 const { isIpAddress } = require('../../util/ip');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createNginxConfig = {
+const createNginxConfig = () => ({
     title: 'Setting nginx config',
     task: async (ctx) => {
         const {
@@ -82,6 +82,6 @@ const createNginxConfig = {
             throw new Error(`Unexpected error accrued during nginx config creation\n\n${e}`);
         }
     }
-};
+});
 
 module.exports = createNginxConfig;

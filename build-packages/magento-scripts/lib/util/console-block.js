@@ -1,4 +1,3 @@
-/* eslint-disable no-control-regex */
 /**
  * @typedef {'header' | 'separator' | 'line' | 'empty-line'} BlockType
  *
@@ -17,6 +16,7 @@ const MIDDLE_RIGHT_SEPARATOR = '┤';
 const BOTTOM_LEFT_SEPARATOR = '└';
 const BOTTOM_RIGHT_SEPARATOR = '┘';
 
+// eslint-disable-next-line no-control-regex
 const consoleStyleReplacer = /[\u001b]\[\S+?m/g;
 
 class ConsoleBlock {

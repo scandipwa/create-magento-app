@@ -1,4 +1,3 @@
-/* eslint-disable arrow-body-style */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { Listr } = require('listr2');
@@ -17,8 +16,10 @@ const cmaGaTrackingId = 'UA-127741417-7';
  * @param {import('yargs')} yargs
  */
 module.exports = (yargs) => {
-    yargs.command('start', 'Deploy the application.', (yargs) => {
-        return yargs
+    yargs.command(
+        'start',
+        'Deploy the application.',
+        (yargs) => yargs
             .option('port', {
                 alias: 'p',
                 describe: 'Suggest a port for an application to run.',
@@ -61,108 +62,111 @@ module.exports = (yargs) => {
                 describe: 'Enable verbose logging',
                 type: 'boolean',
                 default: false
-            });
-    }, async (args = {}) => {
-        const tasks = new Listr([start], {
-            exitOnError: true,
-            ctx: args,
-            concurrent: false,
-            rendererOptions: {
-                showErrorMessage: false,
-                showTimer: true
+            }),
+        async (args = {}) => {
+            const tasks = new Listr(
+                start(), {
+                    exitOnError: true,
+                    ctx: args,
+                    concurrent: false,
+                    rendererOptions: {
+                        showErrorMessage: false,
+                        showTimer: true
+                    }
+                }
+            );
+            const timeStamp = Date.now() / 1000;
+
+            if (args.debug) {
+                logger.warn('You are running in debug mode. Magento setup will be slow.');
             }
-        });
-        const timeStamp = Date.now() / 1000;
-
-        if (args.debug) {
-            logger.warn('You are running in debug mode. Magento setup will be slow.');
-        }
-        const legacyMagentoConfigExists = await pathExists(path.join(baseConfig.cacheDir, 'app-config.json'));
-        const currentConfigExists = await pathExists(path.join(process.cwd(), 'cma.js'));
-        if (legacyMagentoConfigExists && !currentConfigExists) {
-            logger.warn('Magento configuration from app-config.json will be moved to cma.js in your projects directory.');
-        }
-
-        try {
-            const ctx = await tasks.run();
-
-            const {
-                ports,
-                config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
-                systemConfiguration: { analytics }
-            } = ctx;
-
-            const block = new ConsoleBlock();
-            block
-                .addHeader('Magento 2')
-                .addEmptyLine()
-                .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
-                .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
-                .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
-
-            const themes = await getCSAThemes();
-            if (themes.length > 0) {
-                const theme = themes[0];
-                block
-                    .addEmptyLine()
-                    .addSeparator('ScandiPWA')
-                    .addEmptyLine()
-                    .addLine('To run ScandiPWA theme in Magento mode, run the following command:')
-                    .addLine(`-> ${ logger.style.command(`cd ${ theme.themePath }`) }`)
-                    .addLine(`-> ${ logger.style.command(`BUILD_MODE=magento ${ shouldUseYarn() ? 'yarn start' : 'npm start' }`) }`);
-            }
-
-            block.addEmptyLine();
-
-            if (process.isOutOfDateVersion) {
-                block
-                    .addSeparator(logger.style.code('Warning'))
-                    .addEmptyLine();
-                process.isOutOfDateVersionMessage.forEach((line) => {
-                    block.addLine(line);
-                });
-
-                block.addEmptyLine();
-            }
-
-            block.log();
-
-            logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
-            logger.log('');
-
-            if (!analytics) {
-                process.exit(0);
+            const legacyMagentoConfigExists = await pathExists(path.join(baseConfig.cacheDir, 'app-config.json'));
+            const currentConfigExists = await pathExists(path.join(process.cwd(), 'cma.js'));
+            if (legacyMagentoConfigExists && !currentConfigExists) {
+                logger.warn('Magento configuration from app-config.json will be moved to cma.js in your projects directory.');
             }
 
             try {
-                googleAnalytics.setGaTrackingId(cmaGaTrackingId);
+                const ctx = await tasks.run();
 
-                if (!process.isFirstStart) {
-                    await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
-                    googleAnalytics.printAboutAnalytics();
+                const {
+                    ports,
+                    config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
+                    systemConfiguration: { analytics }
+                } = ctx;
+
+                const block = new ConsoleBlock();
+                block
+                    .addHeader('Magento 2')
+                    .addEmptyLine()
+                    .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
+                    .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
+                    .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
+
+                const themes = await getCSAThemes();
+                if (themes.length > 0) {
+                    const theme = themes[0];
+                    block
+                        .addEmptyLine()
+                        .addSeparator('ScandiPWA')
+                        .addEmptyLine()
+                        .addLine('To run ScandiPWA theme in Magento mode, run the following command:')
+                        .addLine(`-> ${ logger.style.command(`cd ${ theme.themePath }`) }`)
+                        .addLine(`-> ${ logger.style.command(`BUILD_MODE=magento ${ shouldUseYarn() ? 'yarn start' : 'npm start' }`) }`);
+                }
+
+                block.addEmptyLine();
+
+                if (process.isOutOfDateVersion) {
+                    block
+                        .addSeparator(logger.style.code('Warning'))
+                        .addEmptyLine();
+                    process.isOutOfDateVersionMessage.forEach((line) => {
+                        block.addLine(line);
+                    });
+
+                    block.addEmptyLine();
+                }
+
+                block.log();
+
+                logger.note(`MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.`);
+                logger.log('');
+
+                if (!analytics) {
                     process.exit(0);
                 }
 
-                const { manufacturer, brand } = await systeminformation.cpu();
-                const { platform, kernel } = await systeminformation.osInfo();
-                const { total } = await systeminformation.mem();
+                try {
+                    googleAnalytics.setGaTrackingId(cmaGaTrackingId);
 
-                // Get ram amount in MB
-                const totalRam = Math.round(total / 1024 / 1024);
-                const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
+                    if (!process.isFirstStart) {
+                        await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                        googleAnalytics.printAboutAnalytics();
+                        process.exit(0);
+                    }
 
-                await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
-                await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
-                googleAnalytics.printAboutAnalytics();
+                    const { manufacturer, brand } = await systeminformation.cpu();
+                    const { platform, kernel } = await systeminformation.osInfo();
+                    const { total } = await systeminformation.mem();
+
+                    // Get ram amount in MB
+                    const totalRam = Math.round(total / 1024 / 1024);
+                    const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
+
+                    await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
+                    await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                    googleAnalytics.printAboutAnalytics();
+                } catch (e) {
+                    await googleAnalytics.trackError(e.message || e);
+                }
+
+                process.exit(0);
             } catch (e) {
+                logger.error(e.message || e);
                 await googleAnalytics.trackError(e.message || e);
+                process.exit(1);
             }
-
-            process.exit(0);
-        } catch (e) {
-            logger.error(e.message || e);
-            await googleAnalytics.trackError(e.message || e);
-            process.exit(1);
         }
-    });
+    );
 };

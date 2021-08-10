@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const runPhpCode = require('./run-php');
 
 /**

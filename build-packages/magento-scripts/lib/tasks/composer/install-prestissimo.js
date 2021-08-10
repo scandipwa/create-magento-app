@@ -1,11 +1,10 @@
-/* eslint-disable no-param-reassign */
 const semver = require('semver');
 const runComposerCommand = require('../../util/run-composer');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const prestissimoInstall = {
+const prestissimoInstall = () => ({
     title: 'Installing Prestissimo',
     task: async ({ magentoVersion, config }, task) => {
         const { composer } = config;
@@ -34,6 +33,6 @@ const prestissimoInstall = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = prestissimoInstall;

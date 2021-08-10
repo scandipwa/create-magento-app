@@ -3,38 +3,38 @@ const network = require('./network');
 const volumes = require('./volumes');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const startServices = {
+const startServices = () => ({
     title: 'Starting docker services',
-    task: async (ctx, task) => task.newListr([
+    task: (ctx, task) => task.newListr([
         {
             title: 'Preparing services',
             task: (ctx, task) => task.newListr([
-                network.createNetwork,
-                volumes.createVolumes
+                network.createNetwork(),
+                volumes.createVolumes()
             ], {
                 concurrent: true,
                 exitOnError: true,
                 ctx
             })
         },
-        containers.startContainers
+        containers.startContainers()
     ], {
         concurrent: false,
         exitOnError: true
     })
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const stopServices = {
-    task: async (ctx, task) => task.newListr([
-        containers.stopContainers,
-        network.removeNetwork
+const stopServices = () => ({
+    task: (ctx, task) => task.newListr([
+        containers.stopContainers(),
+        network.removeNetwork()
     ])
-};
+});
 
 module.exports = {
     startServices,

@@ -6,9 +6,9 @@ const { getBaseConfig } = require('../../config/index');
 const getProcessId = require('./get-process-id');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const stopPhpFpmTask = {
+const stopPhpFpmTask = () => ({
     title: 'Stopping php-fpm',
     task: async ({ config: { overridenConfiguration }, projectPath }, task) => {
         const php = getPhpConfig(overridenConfiguration.configuration, getBaseConfig(projectPath));
@@ -43,6 +43,6 @@ const stopPhpFpmTask = {
         bottomBar: 10,
         showTimer: false
     }
-};
+});
 
 module.exports = stopPhpFpmTask;

@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return,no-param-reassign,no-await-in-loop,no-restricted-syntax */
 const path = require('path');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
@@ -10,9 +9,9 @@ const disablePageCache = require('../magento/setup-magento/disable-page-cache');
 const buildTheme = require('./build-theme');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const setupThemes = {
+const setupThemes = () => ({
     task: async (ctx, task) => {
         const { config: { baseConfig } } = ctx;
         const composerData = await getJsonfileData(path.join(baseConfig.magentoDir, 'composer.json'));
@@ -80,12 +79,12 @@ const setupThemes = {
                     buildTheme(theme)
                 ])
             })).concat([
-                upgradeMagento,
-                disablePageCache,
-                setupPersistedQuery
+                upgradeMagento(),
+                disablePageCache(),
+                setupPersistedQuery()
             ])
         );
     }
-};
+});
 
 module.exports = setupThemes;

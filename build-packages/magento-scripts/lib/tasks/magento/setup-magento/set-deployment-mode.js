@@ -1,11 +1,10 @@
-/* eslint-disable consistent-return */
 const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Switching magento mode',
     task: async ({ magentoVersion, config: { magentoConfiguration: { mode } } }, task) => {
         const { result } = await runMagentoCommand('deploy:mode:show', {
@@ -33,4 +32,4 @@ module.exports = {
             magentoModeSwitchTasks
         );
     }
-};
+});

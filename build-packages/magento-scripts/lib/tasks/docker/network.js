@@ -1,11 +1,10 @@
-/* eslint-disable consistent-return */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createNetwork = {
+const createNetwork = () => ({
     title: 'Deploying docker network',
     task: async ({ config: { docker } }, task) => {
         const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
@@ -25,9 +24,9 @@ Do you want remove all custom networks not used by at least one container?`
                 });
 
                 if (pruneNetworks) {
-                    return task.newListr([
-                        pruneNetworks
-                    ]);
+                    return task.newListr(
+                        pruneNetworks()
+                    );
                 }
 
                 throw new Error(`Unable to create network for your project.
@@ -36,12 +35,12 @@ Use command ${logger.style.command('docker network prune')}`);
             }
         }
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const removeNetwork = {
+const removeNetwork = () => ({
     title: 'Removing docker network',
     task: async ({ config: { docker } }, task) => {
         const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
@@ -53,17 +52,15 @@ const removeNetwork = {
 
         await execAsyncSpawn(`docker network rm ${ docker.network.name }`);
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const pruneNetworks = {
+const pruneNetworks = () => ({
     title: 'Removing custom networks not used by at least one container',
-    task: async () => {
-        await execAsyncSpawn('docker network prune -f');
-    }
-};
+    task: () => execAsyncSpawn('docker network prune -f')
+});
 
 module.exports = {
     createNetwork,

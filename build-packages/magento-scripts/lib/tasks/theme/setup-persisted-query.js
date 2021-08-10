@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const path = require('path');
 const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
@@ -6,9 +5,9 @@ const runMagentoCommand = require('../../util/run-magento');
 
 /**
  * TODO move this block inside theme folder as post installation command
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const persistedQuerySetup = {
+const persistedQuerySetup = () => ({
     title: 'Setting up redis configuration for persisted queries',
     task: async (ctx, task) => {
         const { ports, magentoVersion, verbose = false } = ctx;
@@ -58,6 +57,6 @@ const persistedQuerySetup = {
             );
         }
     }
-};
+});
 
 module.exports = persistedQuerySetup;

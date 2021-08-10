@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-await-in-loop,no-param-reassign */
 const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const sleep = require('./sleep');
@@ -76,14 +74,14 @@ To install missing ${ dependenciesWordFormatter } manually, run the following co
                 task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
             }
 
-            return task.newListr([
+            return task.newListr(
                 execCommandTask(cmd, {
                     callback: (t) => {
                         task.output = t;
                     },
                     pipeInput: true
                 })
-            ]);
+            );
         }
     },
     options: {

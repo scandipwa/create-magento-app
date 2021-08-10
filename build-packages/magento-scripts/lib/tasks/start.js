@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-param-reassign */
 const openBrowser = require('../util/open-browser');
 
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
@@ -30,18 +28,18 @@ const checkConfigurationFile = require('../config/check-configuration-file');
 const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const retrieveProjectConfiguration = {
+const retrieveProjectConfiguration = () => ({
     title: 'Retrieving project configuration',
     task: (ctx, task) => task.newListr([
-        getMagentoVersionConfig,
-        checkConfigurationFile,
-        getProjectConfiguration,
-        convertLegacyVolumes,
-        createCacheFolder,
-        getSystemConfigTask,
-        getCachedPorts
+        getMagentoVersionConfig(),
+        checkConfigurationFile(),
+        getProjectConfiguration(),
+        convertLegacyVolumes(),
+        createCacheFolder(),
+        getSystemConfigTask(),
+        getCachedPorts()
     ], {
         rendererOptions: {
             collapse: true
@@ -50,16 +48,16 @@ const retrieveProjectConfiguration = {
     options: {
         showTimer: false
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const stopProject = {
+const stopProject = () => ({
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
-        stopContainers,
-        stopPhpFpm
+        stopContainers(),
+        stopPhpFpm()
     ], {
         concurrent: true,
         rendererOptions: {
@@ -70,19 +68,19 @@ const stopProject = {
     options: {
         showTimer: false
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const retrieveFreshProjectConfiguration = {
+const retrieveFreshProjectConfiguration = () => ({
     title: 'Retrieving fresh project configuration',
     task: (ctx, task) => task.newListr([
-        setPrefix,
-        getProjectConfiguration,
+        setPrefix(),
+        getProjectConfiguration(),
         // get fresh ports
-        getAvailablePorts,
-        saveConfiguration
+        getAvailablePorts(),
+        saveConfiguration()
     ], {
         rendererOptions: {
             collapse: true
@@ -91,39 +89,39 @@ const retrieveFreshProjectConfiguration = {
     options: {
         showTimer: false
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const configureProject = {
+const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
-        installPhp,
+        installPhp(),
         {
             // title: 'Installing Composer, preparing filesystem and downloading container images',
             task: (ctx, task) => task.newListr([
-                installComposer,
-                prepareFileSystem,
-                pullContainers
+                installComposer(),
+                prepareFileSystem(),
+                pullContainers()
             ], {
                 concurrent: true,
                 exitOnError: true
             })
         },
-        configurePhp,
-        installPrestissimo,
-        installMagento,
-        startServices,
-        startPhpFpm,
-        connectToMySQL
+        configurePhp(),
+        installPrestissimo(),
+        installMagento(),
+        startServices(),
+        startPhpFpm(),
+        connectToMySQL()
     ])
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const finishProjectConfiguration = {
+const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     task: (ctx, task) => task.newListr([
         {
@@ -131,10 +129,10 @@ const finishProjectConfiguration = {
             task: (ctx, task) => {
                 task.title = 'Importing database dump';
                 return task.newListr([
-                    dumpThemeConfig,
-                    importDumpToMySQL,
-                    fixDB,
-                    restoreThemeConfig,
+                    dumpThemeConfig(),
+                    importDumpToMySQL(),
+                    fixDB(),
+                    restoreThemeConfig(),
                     setupMagento()
                 ], {
                     concurrent: false,
@@ -145,32 +143,32 @@ const finishProjectConfiguration = {
         {
             title: 'Setting up themes',
             skip: (ctx) => !ctx.magentoFirstInstall,
-            task: (subCtx, subTask) => subTask.newListr([
-                setupThemes
-            ])
+            task: (subCtx, subTask) => subTask.newListr(
+                setupThemes()
+            )
         }
     ], {
         rendererOptions: {
             collapse: true
         }
     })
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const start = {
+const start = () => ({
     title: 'Starting project',
     task: (ctx, task) => {
         task.title = `Starting project (magento-scripts@${pkg.version})`;
         return task.newListr([
-            checkRequirements,
-            retrieveProjectConfiguration,
-            stopProject,
-            retrieveFreshProjectConfiguration,
-            configureProject,
+            checkRequirements(),
+            retrieveProjectConfiguration(),
+            stopProject(),
+            retrieveFreshProjectConfiguration(),
+            configureProject(),
             setupMagento(),
-            finishProjectConfiguration,
+            finishProjectConfiguration(),
             {
                 title: 'Opening browser',
                 skip: (ctx) => ctx.noOpen,
@@ -189,7 +187,7 @@ const start = {
             }
         });
     }
-};
+});
 
 module.exports = {
     start,

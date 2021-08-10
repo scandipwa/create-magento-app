@@ -1,11 +1,9 @@
-/* eslint-disable no-restricted-syntax,no-await-in-loop */
-
 const { updateTableValues } = require('../../../util/database');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Configuring elasticsearch',
     task: async ({ ports, mysqlConnection }, task) => {
         await updateTableValues('core_config_data', [
@@ -14,4 +12,4 @@ module.exports = {
             { path: 'catalog/search/elasticsearch7_server_port', value: `${ports.elasticsearch}` }
         ], { mysqlConnection, task });
     }
-};
+});

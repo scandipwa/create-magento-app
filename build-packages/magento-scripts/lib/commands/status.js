@@ -15,12 +15,12 @@ const checkConfigurationFile = require('../config/check-configuration-file');
 module.exports = (yargs) => {
     yargs.command('status', 'Show application status', () => {}, async (args) => {
         const tasks = new Listr([
-            checkRequirements,
-            getMagentoVersionConfig,
-            checkConfigurationFile,
-            getProjectConfiguration,
-            getCachedPorts,
-            statusContainers
+            checkRequirements(),
+            getMagentoVersionConfig(),
+            checkConfigurationFile(),
+            getProjectConfiguration(),
+            getCachedPorts(),
+            statusContainers()
         ], {
             concurrent: false,
             exitOnError: true,

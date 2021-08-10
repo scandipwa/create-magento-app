@@ -2,9 +2,9 @@ const semver = require('semver');
 const setConfigFile = require('../../util/set-config');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createPhpConfig = {
+const createPhpConfig = () => ({
     title: 'Setting PHP config',
     task: async ({ config: { php, baseConfig, overridenConfiguration: { configuration } }, debug, ports }) => {
         const isXDebug2 = semver.satisfies(configuration.php.extensions.xdebug.version, '2');
@@ -24,6 +24,6 @@ const createPhpConfig = {
             throw new Error(`Unexpected error accrued during php.ini config creation\n\n${e}`);
         }
     }
-};
+});
 
 module.exports = createPhpConfig;

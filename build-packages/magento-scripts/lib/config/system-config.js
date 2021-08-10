@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -38,13 +37,13 @@ const getSystemConfig = async () => {
 
 /**
  * Get system configuration from configuration file located in user root directory.
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const getSystemConfigTask = {
+const getSystemConfigTask = () => ({
     task: async (ctx) => {
         ctx.systemConfiguration = await getSystemConfig();
     }
-};
+});
 
 module.exports = {
     defaultSystemConfig,

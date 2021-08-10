@@ -1,12 +1,12 @@
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
 const mergeFiles = require('merge-files');
 const { orderTables, customerTables } = require('../../magento-tables');
 const { execAsyncSpawn } = require('../../../../util/exec-async-command');
+const mysqlDumpCommandWithOptions = require('./mysqldump-command');
+
 /**
- * @type {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
+ * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
  */
-const readymageSSH = {
+const readymageSSH = () => ({
     task: async (ctx, task) => {
         const {
             ssh,
@@ -19,25 +19,29 @@ const readymageSSH = {
         if (makeRemoteDumps) {
             if (!withCustomersData) {
                 task.output = 'Making remote database dump files without customers data...';
-                const ignoredOrderAndCustomerTables = [...orderTables, ...customerTables].map((table) => `--ignore-table=magento.${table}`).join(' ');
 
                 /**
                  * create dump without customers and orders
                  */
                 await ssh.execCommand(
-                    `mysqldump magento --skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces ${ ignoredOrderAndCustomerTables } --result-file=dump-0.sql`
+                    [
+                        ...mysqlDumpCommandWithOptions,
+                        ...[...orderTables, ...customerTables].map((table) => `--ignore-table=magento.${table}`),
+                        '--result-file=dump-0.sql'
+                    ].join(' ')
                 );
 
-                const includedOrdersAndCustomerTables = [...orderTables, ...customerTables].join(' ');
-
                 await ssh.execCommand(
-                    `mysqldump magento ---skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces --no-data --result-file=dump-1.sql ${ includedOrdersAndCustomerTables }`
+                    [
+                        ...mysqlDumpCommandWithOptions,
+                        '--no-data',
+                        '--result-file=dump-1.sql',
+                        ...[...orderTables, ...customerTables]
+                    ].join(' ')
                 );
             } else {
                 task.output = 'Making remote database dump file with customers data...';
-                await ssh.execCommand(
-                    'mysqldump magento --skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB --no-tablespaces --result-file=dump.sql'
-                );
+                await ssh.execCommand([...mysqlDumpCommandWithOptions, '--result-file=dump.sql'].join(' '));
             }
 
             if (!noCompress) {
@@ -99,6 +103,6 @@ const readymageSSH = {
             }
         }
     }
-};
+});
 
 module.exports = readymageSSH;

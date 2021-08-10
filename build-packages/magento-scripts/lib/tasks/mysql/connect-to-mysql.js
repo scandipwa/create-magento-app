@@ -1,12 +1,11 @@
-/* eslint-disable no-await-in-loop,no-param-reassign */
 const mysql = require('mysql2/promise');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const sleep = require('../../util/sleep');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const connectToMySQL = {
+const connectToMySQL = () => ({
     title: 'Connecting to MySQL server...',
     task: async (ctx, task) => {
         const { config: { docker }, ports } = ctx;
@@ -52,6 +51,6 @@ Please wait, this will take some time and do not restart the MySQL container unt
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = connectToMySQL;

@@ -10,7 +10,7 @@ const setUrlRewrite = require('./set-url-rewrite');
 const updateEnvPHP = require('../../php/update-env-php');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
-const URNHighlighter = require('./urn-highlighter');
+const urnHighlighter = require('./urn-highlighter');
 
 /**
  * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -21,33 +21,33 @@ const setupMagento = (options = {}) => ({
     task: (ctx, task) => {
         if (options.onlyInstallMagento) {
             return task.newListr([
-                flushRedisConfig,
-                waitingForRedis,
-                updateEnvPHP,
+                flushRedisConfig(),
+                waitingForRedis(),
+                updateEnvPHP(),
                 migrateDatabase({ onlyInstallMagento: true })
             ]);
         }
 
         return task.newListr([
-            flushRedisConfig,
-            waitingForRedis,
-            updateEnvPHP,
+            flushRedisConfig(),
+            waitingForRedis(),
+            updateEnvPHP(),
             migrateDatabase(),
             {
                 title: 'Configuring Magento settings',
                 task: (ctx, task) => task.newListr([
-                    setBaseUrl,
-                    setUrlRewrite,
-                    increaseAdminSessionLifetime
+                    setBaseUrl(),
+                    setUrlRewrite(),
+                    increaseAdminSessionLifetime()
                 ], {
                     concurrent: true
                 })
             },
-            createAdmin,
-            setDeploymentMode,
-            disableMaintenanceMode,
-            disable2fa,
-            URNHighlighter,
+            createAdmin(),
+            setDeploymentMode(),
+            disableMaintenanceMode(),
+            disable2fa(),
+            urnHighlighter(),
             magentoTask('cache:flush')
         ], {
             concurrent: false,

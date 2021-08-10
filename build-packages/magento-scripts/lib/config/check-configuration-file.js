@@ -7,9 +7,9 @@ const { defaultMagentoConfig } = require('./magento-config');
 const setConfigFile = require('../util/set-config');
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const checkConfigurationFile = {
+const checkConfigurationFile = () => ({
     title: 'Checking configuration file',
     task: async (ctx) => {
         const { projectPath = process.cwd() } = ctx;
@@ -50,6 +50,6 @@ const checkConfigurationFile = {
             });
         }
     }
-};
+});
 
 module.exports = checkConfigurationFile;

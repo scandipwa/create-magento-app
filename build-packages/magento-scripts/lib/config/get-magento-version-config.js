@@ -1,12 +1,11 @@
-/* eslint-disable no-param-reassign */
 const { allVersions, defaultConfiguration } = require('./versions');
 const getInstalledMagentoVersion = require('../util/get-installed-magento-version');
 const sleep = require('../util/sleep');
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const getMagentoVersion = {
+const getMagentoVersion = () => ({
     // title: 'Loading Magento version',
     task: async (ctx, task) => {
         const { throwMagentoVersionMissing = false, projectPath = process.cwd() } = ctx;
@@ -65,6 +64,6 @@ const getMagentoVersion = {
 
         ctx.magentoVersion = magentoVersion;
     }
-};
+});
 
 module.exports = getMagentoVersion;

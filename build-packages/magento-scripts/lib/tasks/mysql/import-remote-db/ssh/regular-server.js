@@ -1,12 +1,11 @@
-/* eslint-disable max-len */
-/* eslint-disable no-constant-condition,no-await-in-loop,no-param-reassign */
 const mergeFiles = require('merge-files');
 const { orderTables, customerTables } = require('../../magento-tables');
 const { execAsyncSpawn } = require('../../../../util/exec-async-command');
+const mysqlDumpCommandWithOptions = require('./mysqldump-command');
 /**
- * @type {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
+ * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
  */
-const regularSSHServer = {
+const regularSSHServer = () => ({
     task: async (ctx, task) => {
         const {
             ssh,
@@ -27,7 +26,7 @@ Do not enter "--result-file" option, we need to control that part.
 
 (documentation reference available here: https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html)
 `,
-                initial: 'mysqldump magento --no-tablespaces --skip-lock-tables --set-gtid-purged=OFF --single-transaction=TRUE --column-statistics=0 --max_allowed_packet=1GB'
+                initial: mysqlDumpCommandWithOptions.join(' ')
             });
 
             if (dumpCommand.includes('--result-file')) {
@@ -123,6 +122,6 @@ Do not enter "--result-file" option, we need to control that part.
             }
         }
     }
-};
+});
 
 module.exports = regularSSHServer;

@@ -1,5 +1,3 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-param-reassign,consistent-return */
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -9,9 +7,9 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installPHPBrewDependencies = {
+const installPHPBrewDependencies = () => ({
     title: 'Installing PHPBrew dependencies',
     task: async (ctx, task) => {
         if (os.platform() === 'darwin') {
@@ -63,12 +61,12 @@ const installPHPBrewDependencies = {
         }
         }
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installXcode = {
+const installXcode = () => ({
     title: 'Installing XCode',
     task: async (ctx, task) => {
         const { code: XCODEInstallCode } = await execAsyncSpawn('xcode-select -p 1>/dev/null;echo $?', {
@@ -94,12 +92,12 @@ const installXcode = {
 
         task.skip();
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installPHPBrewBinary = {
+const installPHPBrewBinary = () => ({
     title: 'Installing PHPBrew binary',
     task: async (ctx, task) => {
         task.output = 'Downloading PHPbrew binary...';
@@ -127,12 +125,12 @@ const installPHPBrewBinary = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const addPHPBrewInitiatorLineToConfigFile = {
+const addPHPBrewInitiatorLineToConfigFile = () => ({
     task: async (ctx, task) => {
         const shellName = process.env.SHELL.split('/').pop();
 
@@ -177,31 +175,31 @@ Then you can continue installation.`);
             }
         }
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installPHPBrew = {
+const installPHPBrew = () => ({
     title: 'Installing PHPBrew',
     task: async (ctx, task) => {
         const currentPlatform = os.platform();
 
         if (currentPlatform === 'darwin') {
             return task.newListr([
-                installXcode,
-                installPHPBrewDependencies,
-                installPHPBrewBinary,
-                addPHPBrewInitiatorLineToConfigFile
+                installXcode(),
+                installPHPBrewDependencies(),
+                installPHPBrewBinary(),
+                addPHPBrewInitiatorLineToConfigFile()
             ]);
         }
 
         return task.newListr([
-            installPHPBrewDependencies,
-            installPHPBrewBinary,
-            addPHPBrewInitiatorLineToConfigFile
+            installPHPBrewDependencies(),
+            installPHPBrewBinary(),
+            addPHPBrewInitiatorLineToConfigFile()
         ]);
     }
-};
+});
 
 module.exports = installPHPBrew;

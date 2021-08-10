@@ -1,9 +1,9 @@
 const { updateTableValues } = require('../../../util/database');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const increaseAdminSessionLifetime = {
+const increaseAdminSessionLifetime = () => ({
     title: 'Increase admin session lifetime to 1 month',
     task: async (ctx, task) => {
         const { mysqlConnection } = ctx;
@@ -21,6 +21,6 @@ const increaseAdminSessionLifetime = {
             task
         });
     }
-};
+});
 
 module.exports = increaseAdminSessionLifetime;

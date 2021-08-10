@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign,consistent-return */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 const run = (options) => {
@@ -60,9 +59,9 @@ const stop = async (containers) => {
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const pullContainers = {
+const pullContainers = () => ({
     title: 'Pulling container images',
     task: async ({ config: { docker } }, task) => {
         const containers = Object.values(docker.getContainers());
@@ -81,19 +80,19 @@ const pullContainers = {
         return task.newListr(
             missingContainerImages.map((container) => ({
                 title: `Pulling ${container._} image`,
-                task: async () => pull(`${container.imageDetails.name}:${container.imageDetails.tag}`)
+                task: () => pull(`${container.imageDetails.name}:${container.imageDetails.tag}`)
             })), {
                 concurrent: true,
                 exitOnError: true
             }
         );
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const startContainers = {
+const startContainers = () => ({
     title: 'Starting containers',
     task: async ({ ports, config: { docker } }, task) => {
         const containerList = await execAsyncSpawn('docker container ls');
@@ -115,12 +114,12 @@ const startContainers = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const stopContainers = {
+const stopContainers = () => ({
     title: 'Stopping Docker containers',
     task: async ({ ports, config: { docker } }, task) => {
         const containerList = await execAsyncSpawn('docker container ls -a');
@@ -136,7 +135,7 @@ const stopContainers = {
 
         await stop(runningContainers.map(({ name }) => name));
     }
-};
+});
 
 const getContainerStatus = async (containerName) => {
     try {
@@ -147,9 +146,9 @@ const getContainerStatus = async (containerName) => {
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const statusContainers = {
+const statusContainers = () => ({
     task: async (ctx) => {
         const { config: { docker }, ports } = ctx;
         const containers = Object.values(docker.getContainers(ports));
@@ -164,7 +163,7 @@ const statusContainers = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = {
     startContainers,

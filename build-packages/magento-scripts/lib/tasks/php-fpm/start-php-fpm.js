@@ -1,13 +1,12 @@
-/* eslint-disable no-param-reassign */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const getPhpConfig = require('../../config/php');
 const { getBaseConfig } = require('../../config/index');
 const getProcessId = require('./get-process-id');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const startPhpFpm = {
+const startPhpFpm = () => ({
     title: 'Starting php-fpm',
     task: async ({ config: { overridenConfiguration }, projectPath }, task) => {
         const php = getPhpConfig(overridenConfiguration.configuration, getBaseConfig(projectPath));
@@ -43,6 +42,6 @@ const startPhpFpm = {
         bottomBar: 5,
         showTimer: false
     }
-};
+});
 
 module.exports = startPhpFpm;

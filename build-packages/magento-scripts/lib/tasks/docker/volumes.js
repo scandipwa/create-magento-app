@@ -15,9 +15,9 @@ const create = ({
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createVolumes = {
+const createVolumes = () => ({
     title: 'Creating volumes',
     task: async ({ config: { docker } }, task) => {
         const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
@@ -33,12 +33,12 @@ const createVolumes = {
 
         await Promise.all(missingVolumes.map((volume) => create(volume)));
     }
-};
+});
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const removeVolumes = {
+const removeVolumes = () => ({
     title: 'Removing volumes',
     task: async ({ config: { docker } }, task) => {
         const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
@@ -54,7 +54,7 @@ const removeVolumes = {
 
         await execAsyncSpawn(`docker volume rm ${deployedVolumes.map(({ name }) => name).join(' ')}`);
     }
-};
+});
 
 module.exports = {
     createVolumes,

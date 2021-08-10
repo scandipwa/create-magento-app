@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const os = require('os');
 const { NodeSSH } = require('node-ssh');
 const pathExists = require('../../../../util/path-exists');
@@ -6,9 +5,9 @@ const regularSSHServer = require('./regular-server');
 const readymageSSH = require('./readymage');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
-const sshDb = {
+const sshDb = () => ({
     task: async (ctx, task) => {
         const { remoteDbUrl, withCustomersData, noCompress } = ctx;
         const { hostname, username, password } = remoteDbUrl;
@@ -76,21 +75,19 @@ const sshDb = {
             ctx.makeRemoteDumps = true;
         }
 
-        // throw new Error('nono');
-
         if (hostname.endsWith('readymage.com')) {
-            return task.newListr([
-                readymageSSH
-            ]);
+            return task.newListr(
+                readymageSSH()
+            );
         }
 
-        return task.newListr([
-            regularSSHServer
-        ]);
+        return task.newListr(
+            regularSSHServer()
+        );
     },
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = sshDb;

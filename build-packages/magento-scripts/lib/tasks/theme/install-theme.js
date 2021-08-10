@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const runComposerCommand = require('../../util/run-composer');
 
 /**

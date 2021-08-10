@@ -1,17 +1,15 @@
-/* eslint-disable consistent-return,no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
-const safeRegexExtract = require('../../../util/safe-regex-extract');
 const installPHPBrew = require('./install');
 const getPHPBrewVersion = require('./version');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const checkPHPBrew = {
+const checkPHPBrew = () => ({
     title: 'Checking phpbrew',
     task: async (ctx, task) => {
-        const { result, code } = await execAsyncSpawn('phpbrew --version', {
+        const { code } = await execAsyncSpawn('phpbrew --version', {
             withCode: true
         });
 
@@ -24,8 +22,8 @@ Do you want to install it automatically?`
 
             if (automaticallyInstallPHPBrew) {
                 return task.newListr([
-                    installPHPBrew,
-                    getPHPBrewVersion,
+                    installPHPBrew(),
+                    getPHPBrewVersion(),
                     {
                         task: (ctx) => {
                             task.title = `Using PHPBrew version ${ctx.PHPBrewVersion}`;
@@ -43,7 +41,7 @@ When completed, try running this script again.`
         }
 
         return task.newListr([
-            getPHPBrewVersion,
+            getPHPBrewVersion(),
             {
                 task: (ctx) => {
                     task.title = `Using PHPBrew version ${ctx.PHPBrewVersion}`;
@@ -51,6 +49,6 @@ When completed, try running this script again.`
             }
         ]);
     }
-};
+});
 
 module.exports = checkPHPBrew;

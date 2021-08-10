@@ -1,11 +1,10 @@
-/* eslint-disable no-param-reassign */
 const fs = require('fs');
 const pathExists = require('../../util/path-exists');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createCacheFolder = {
+const createCacheFolder = () => ({
     task: async ({ config: { baseConfig } }, task) => {
         const cacheFolderExists = await pathExists(baseConfig.cacheDir);
 
@@ -18,6 +17,6 @@ const createCacheFolder = {
 
         await fs.promises.mkdir(baseConfig.cacheDir);
     }
-};
+});
 
 module.exports = createCacheFolder;

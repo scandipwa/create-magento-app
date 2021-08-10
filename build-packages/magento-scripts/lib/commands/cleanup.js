@@ -20,14 +20,15 @@ module.exports = (yargs) => {
         ),
         async (args) => {
             logger.warn('you should not use this command.');
-            const tasks = new Listr([
-                cleanup
-            ], {
-                concurrent: false,
-                exitOnError: true,
-                ctx: { force: args.force },
-                rendererOptions: { collapse: false }
-            });
+            const tasks = new Listr(
+                cleanup(),
+                {
+                    concurrent: false,
+                    exitOnError: true,
+                    ctx: { force: args.force },
+                    rendererOptions: { collapse: false }
+                }
+            );
 
             await tasks.run();
         }

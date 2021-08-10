@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return,no-param-reassign,no-unused-vars */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const os = require('os');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
@@ -7,9 +6,9 @@ const installDocker = require('./install');
 const getDockerVersion = require('./version');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const checkDocker = {
+const checkDocker = () => ({
     title: 'Checking docker',
     task: async (ctx, task) => {
         const { code } = await execAsyncSpawn('docker -v', {
@@ -28,8 +27,8 @@ NOTE: After installation it's recommended to log out and log back in so your gro
 
                 if (automaticallyInstallDocker) {
                     return task.newListr([
-                        installDocker,
-                        getDockerVersion,
+                        installDocker(),
+                        getDockerVersion(),
                         {
                             task: (ctx) => {
                                 task.title = `Using docker version ${ctx.dockerVersion}`;
@@ -61,7 +60,7 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
         }
 
         return task.newListr([
-            getDockerVersion,
+            getDockerVersion(),
             {
                 task: (ctx) => {
                     task.title = `Using docker version ${ctx.dockerVersion}`;
@@ -69,6 +68,6 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
             }
         ]);
     }
-};
+});
 
 module.exports = checkDocker;

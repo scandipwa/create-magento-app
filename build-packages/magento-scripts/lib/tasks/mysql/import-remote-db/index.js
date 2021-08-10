@@ -1,11 +1,9 @@
-/* eslint-disable no-param-reassign */
-
 const sshDb = require('./ssh');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const importRemoteDbSSH = {
+const importRemoteDbSSH = () => ({
     skip: (ctx) => typeof ctx.remoteDb === 'undefined',
     task: async (ctx, task) => {
         task.title = 'Importing database from remote server';
@@ -27,15 +25,15 @@ It can be a SSH (ssh://<url>) connection or mysql (mysql://<url>) connection.
 
         switch (protocol) {
         case 'ssh:': {
-            return task.newListr([
-                sshDb
-            ]);
+            return task.newListr(
+                sshDb()
+            );
         }
         default: {
             throw new Error(`Unsupported protocol ${protocol}`);
         }
         }
     }
-};
+});
 
 module.exports = importRemoteDbSSH;

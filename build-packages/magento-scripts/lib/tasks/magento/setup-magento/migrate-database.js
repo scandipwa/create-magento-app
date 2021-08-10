@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-param-reassign */
 const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
 const adjustMagentoConfiguration = require('./adjust-magento-configuration');
@@ -29,17 +27,17 @@ const migrateDatabase = (options = {}) => ({
             task.output = 'No Magento is installed in DB!\nInstalling...';
 
             if (options.onlyInstallMagento) {
-                return task.newListr([
-                    installMagento
-                ]);
+                return task.newListr(
+                    installMagento()
+                );
             }
 
             return task.newListr([
-                installMagento,
-                setupPersistedQuery,
-                upgradeMagento,
+                installMagento(),
+                setupPersistedQuery(),
+                upgradeMagento(),
                 magentoTask('cache:enable'),
-                configureElasticsearch
+                configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -55,8 +53,8 @@ const migrateDatabase = (options = {}) => ({
         case 0: {
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
-                setupPersistedQuery,
-                configureElasticsearch
+                setupPersistedQuery(),
+                configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -65,17 +63,17 @@ const migrateDatabase = (options = {}) => ({
         }
         case 1: {
             if (options.onlyInstallMagento) {
-                return task.newListr([
-                    installMagento
-                ]);
+                return task.newListr(
+                    installMagento()
+                );
             }
 
             return task.newListr([
-                installMagento,
-                setupPersistedQuery,
-                upgradeMagento,
+                installMagento(),
+                setupPersistedQuery(),
+                upgradeMagento(),
                 magentoTask('cache:enable'),
-                configureElasticsearch
+                configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -84,10 +82,10 @@ const migrateDatabase = (options = {}) => ({
         }
         case 2: {
             return task.newListr([
-                setupPersistedQuery,
-                adjustMagentoConfiguration,
-                configureElasticsearch,
-                upgradeMagento
+                setupPersistedQuery(),
+                adjustMagentoConfiguration(),
+                configureElasticsearch(),
+                upgradeMagento()
             ], {
                 concurrent: false,
                 exitOnError: true,

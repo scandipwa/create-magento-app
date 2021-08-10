@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 const Conf = require('conf');
 
 const pkg = require('../../package.json');

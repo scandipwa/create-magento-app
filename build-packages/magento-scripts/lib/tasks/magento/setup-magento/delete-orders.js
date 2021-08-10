@@ -3,7 +3,7 @@ const { orderTables } = require('../../mysql/magento-tables');
 /**
  * @type {import(listr2).ListrTask<import(../../../../typings/context).ListrContext>}
  */
-const deleteOrders = {
+const deleteOrders = () => ({
     title: 'Deleting orders',
     task: async (ctx, task) => {
         const { mysqlConnection, withCustomersData } = ctx;
@@ -19,6 +19,6 @@ const deleteOrders = {
             )
         );
     }
-};
+});
 
 module.exports = deleteOrders;

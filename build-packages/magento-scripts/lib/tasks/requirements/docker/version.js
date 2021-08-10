@@ -1,11 +1,10 @@
-/* eslint-disable no-param-reassign */
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const safeRegexExtract = require('../../../util/safe-regex-extract');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const getDockerVersion = {
+const getDockerVersion = () => ({
     task: async (ctx) => {
         const { result, code } = await execAsyncSpawn('docker -v', {
             withCode: true
@@ -23,6 +22,6 @@ const getDockerVersion = {
             ctx.dockerVersion = dockerVersion;
         }
     }
-};
+});
 
 module.exports = getDockerVersion;

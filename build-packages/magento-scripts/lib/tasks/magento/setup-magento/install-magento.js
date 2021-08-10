@@ -1,11 +1,10 @@
-/* eslint-disable no-await-in-loop,no-param-reassign */
 const semver = require('semver');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installMagento = {
+const installMagento = () => ({
     title: 'Installing magento...',
     task: async (ctx, task) => {
         const {
@@ -90,6 +89,6 @@ const installMagento = {
     options: {
         bottomBar: 15
     }
-};
+});
 
 module.exports = installMagento;

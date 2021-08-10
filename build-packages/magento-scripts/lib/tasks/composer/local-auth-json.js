@@ -1,13 +1,12 @@
-/* eslint-disable no-param-reassign */
 const path = require('path');
 const fs = require('fs');
 const pathExists = require('../../util/path-exists');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const localAuthJson = {
+const localAuthJson = () => ({
     task: async (ctx, task) => {
         if (await pathExists(path.join(process.cwd(), 'auth.json'))) {
             task.title = 'Using local auth.json';
@@ -30,6 +29,6 @@ const localAuthJson = {
     options: {
         showTimer: false
     }
-};
+});
 
 module.exports = localAuthJson;

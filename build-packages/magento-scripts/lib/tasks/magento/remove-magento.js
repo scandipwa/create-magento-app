@@ -33,9 +33,9 @@ const magentoFiles = [
 ];
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const removeMagento = {
+const removeMagento = () => ({
     title: 'Remove magento application folder',
     task: async (ctx, task) => {
         const { config: { baseConfig } } = ctx;
@@ -61,6 +61,6 @@ const removeMagento = {
 
         task.skip();
     }
-};
+});
 
 module.exports = removeMagento;

@@ -2,9 +2,9 @@ const path = require('path');
 const setConfigFile = require('../../util/set-config');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createPhpFpmConfig = {
+const createPhpFpmConfig = () => ({
     title: 'Setting php-fpm config',
     task: async ({ ports, config: { php, baseConfig } }) => {
         try {
@@ -20,6 +20,6 @@ const createPhpFpmConfig = {
             throw new Error(`Unexpected error accrued during php-fpm config creation\n\n${e}`);
         }
     }
-};
+});
 
 module.exports = createPhpFpmConfig;

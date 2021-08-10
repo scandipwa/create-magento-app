@@ -4,9 +4,9 @@ const os = require('os');
 const isLinux = os.platform() === 'linux';
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Flushing Magento redis cache',
     task: async ({ ports, config: { docker } }) => {
         const { redis: { name } } = docker.getContainers(ports);
@@ -18,4 +18,4 @@ module.exports = {
             throw new Error(`Unexpected output from redis flush command: ${result}`);
         }
     }
-};
+});

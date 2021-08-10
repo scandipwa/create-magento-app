@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return,no-param-reassign */
 const os = require('os');
 const macosVersion = require('macos-version');
 const systeminformation = require('systeminformation');
@@ -9,9 +8,9 @@ const { getArch } = require('../../util/arch');
 const getIsWsl = require('../../util/is-wsl');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkPlatform = {
+const checkPlatform = () => ({
     title: 'Checking platform',
     task: async (ctx, task) => {
         const currentPlatform = os.platform();
@@ -45,13 +44,16 @@ const checkPlatform = {
         const installDependenciesTask = await dependencyCheck();
 
         if (installDependenciesTask) {
-            return task.newListr([installDependenciesTask], {
-                rendererOptions: {
-                    showTimer: false
+            return task.newListr(
+                installDependenciesTask,
+                {
+                    rendererOptions: {
+                        showTimer: false
+                    }
                 }
-            });
+            );
         }
     }
-};
+});
 
 module.exports = checkPlatform;

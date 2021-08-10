@@ -12,14 +12,14 @@ const checkConfigurationFile = require('../config/check-configuration-file');
  */
 const linkTask = (themePath) => ({
     task: (ctx, task) => task.newListr([
-        getMagentoVersionConfig,
-        checkConfigurationFile,
-        getProjectConfiguration,
-        getCachedPorts,
-        startServices,
-        startPhpFpm,
+        getMagentoVersionConfig(),
+        checkConfigurationFile(),
+        getProjectConfiguration(),
+        getCachedPorts(),
+        startServices(),
+        startPhpFpm(),
         retrieveThemeData(themePath),
-        linkTheme
+        linkTheme()
     ])
 });
 

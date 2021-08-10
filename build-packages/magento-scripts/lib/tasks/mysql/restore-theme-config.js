@@ -1,10 +1,9 @@
-/* eslint-disable no-restricted-syntax,no-await-in-loop */
 const { updateTableValues } = require('../../util/database');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const restoreThemeConfig = {
+const restoreThemeConfig = () => ({
     title: 'Restoring themes and theme configuration',
     task: async (ctx, task) => {
         const { themeDump, mysqlConnection } = ctx;
@@ -41,6 +40,6 @@ const restoreThemeConfig = {
             `, Object.values(theme));
         }
     }
-};
+});
 
 module.exports = restoreThemeConfig;

@@ -1,7 +1,7 @@
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const adjustMagentoConfiguration = {
+const adjustMagentoConfiguration = () => ({
     title: 'Adjusting Magento Database Configuration',
     task: async (ctx) => {
         const { mysqlConnection } = ctx;
@@ -19,6 +19,6 @@ const adjustMagentoConfiguration = {
             WHERE path = ?;
         `, ['0', 'system/full_page_cache/caching_application']);
     }
-};
+});
 
 module.exports = adjustMagentoConfiguration;

@@ -1,9 +1,9 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-module.exports = {
+module.exports = () => ({
     title: 'Disabling 2fa for admin.',
     task: async ({ magentoVersion }, task) => {
         const { result } = await runMagentoCommand('module:status Magento_TwoFactorAuth', {
@@ -27,4 +27,4 @@ module.exports = {
 
         task.skip();
     }
-};
+});

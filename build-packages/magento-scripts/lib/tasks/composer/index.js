@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign, no-unused-vars */
 const fs = require('fs');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
@@ -28,9 +27,9 @@ const createComposerDir = async ({ composer }) => {
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installComposer = {
+const installComposer = () => ({
     title: 'Installing composer',
     task: async (ctx, task) => {
         const { composer, php } = ctx.config;
@@ -54,6 +53,6 @@ const installComposer = {
         const composerVersion = await getComposerVersion({ composer, php });
         task.title = `Using composer version ${composerVersion}`;
     }
-};
+});
 
 module.exports = { installComposer, installPrestissimo };

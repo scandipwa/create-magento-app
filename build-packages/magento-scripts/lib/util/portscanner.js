@@ -2,8 +2,6 @@
  * This is modified version of node-portscanner (https://github.com/baalexander/node-portscanner/blob/master/lib/portscanner.js)
  * with added option to ignore ports and reduced dependencies count
  */
-/* eslint-disable consistent-return */
-/* eslint-disable no-await-in-loop */
 const net = require('net');
 
 const { Socket } = net;

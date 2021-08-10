@@ -3,9 +3,9 @@
 const { updateTableValues } = require('../../../util/database');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const setUrlRewrite = {
+const setUrlRewrite = () => ({
     title: 'Setting up url-rewrites',
     task: async ({ mysqlConnection }, task) => {
         await updateTableValues('core_config_data', [
@@ -15,6 +15,6 @@ const setUrlRewrite = {
             }
         ], { mysqlConnection, task });
     }
-};
+});
 
 module.exports = setUrlRewrite;

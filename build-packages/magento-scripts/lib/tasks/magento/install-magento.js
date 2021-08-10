@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop,no-restricted-syntax,no-param-reassign */
 const path = require('path');
 const os = require('os');
 const runComposerCommand = require('../../util/run-composer');
@@ -123,9 +122,9 @@ const createMagentoProject = async ({
 };
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installMagento = {
+const installMagento = () => ({
     title: 'Installing Magento',
     task: async (ctx, task) => {
         const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
@@ -199,6 +198,6 @@ const installMagento = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = installMagento;

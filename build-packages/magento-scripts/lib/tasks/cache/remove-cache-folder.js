@@ -2,9 +2,9 @@ const fs = require('fs');
 const pathExists = require('../../util/path-exists');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const removeCacheFolder = {
+const removeCacheFolder = () => ({
     title: 'Cleaning cache',
     task: async ({ config: { baseConfig } }, task) => {
         const cacheExists = await pathExists(baseConfig.cacheDir);
@@ -17,6 +17,6 @@ const removeCacheFolder = {
             recursive: true
         });
     }
-};
+});
 
 module.exports = removeCacheFolder;

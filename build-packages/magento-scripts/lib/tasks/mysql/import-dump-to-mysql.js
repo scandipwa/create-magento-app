@@ -1,11 +1,11 @@
-/* eslint-disable max-len,no-param-reassign */
+/* eslint-disable max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const importDumpToMySQL = {
+const importDumpToMySQL = () => ({
     title: 'Importing Database Dump To MySQL',
     task: async (ctx, task) => {
         if (!await pathExists(ctx.importDb)) {
@@ -52,6 +52,6 @@ const importDumpToMySQL = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = importDumpToMySQL;

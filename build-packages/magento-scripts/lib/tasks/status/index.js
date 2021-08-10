@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');

@@ -6,23 +6,23 @@ const checkNodeVersion = require('./node-version');
 const localAuthJson = require('../composer/local-auth-json');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkRequirements = {
+const checkRequirements = () => ({
     title: 'Checking requirements',
     task: (ctx, task) => task.newListr([
         // TODO add support for mac
         // checking if user is on supported platform
-        checkPlatform,
+        checkPlatform(),
         // check the PHPBrew installation
-        checkPhpbrew,
+        checkPhpbrew(),
         // check the Docker installation
-        checkDocker,
+        checkDocker(),
         // check for COMPOSER_AUTH or auth.json
-        localAuthJson,
-        checkComposer,
+        localAuthJson(),
+        checkComposer(),
         // check for Node.js version
-        checkNodeVersion
+        checkNodeVersion()
     ], {
         concurrent: false,
         exitOnError: true,
@@ -34,6 +34,6 @@ const checkRequirements = {
     options: {
         showTimer: false
     }
-};
+});
 
 module.exports = { checkRequirements };

@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { checkRequirements } = require('./requirements');
 const {
     importDumpToMySQL,
@@ -17,24 +16,24 @@ const {
 const importRemoteDb = require('./mysql/import-remote-db');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const importDump = {
+const importDump = () => ({
     title: 'Importing Database Dump',
     task: (ctx, task) => task.newListr([
-        importRemoteDb,
-        checkRequirements,
-        retrieveProjectConfiguration,
-        stopProject,
-        retrieveFreshProjectConfiguration,
-        configureProject,
+        importRemoteDb(),
+        checkRequirements(),
+        retrieveProjectConfiguration(),
+        stopProject(),
+        retrieveFreshProjectConfiguration(),
+        configureProject(),
         setupMagento({ onlyInstallMagento: true }),
-        dumpThemeConfig,
-        importDumpToMySQL,
-        restoreThemeConfig,
-        fixDB,
+        dumpThemeConfig(),
+        importDumpToMySQL(),
+        restoreThemeConfig(),
+        fixDB(),
         setupMagento(),
-        indexProducts
+        indexProducts()
     ], {
         concurrent: false,
         exitOnError: true,
@@ -42,6 +41,6 @@ const importDump = {
             collapse: false
         }
     })
-};
+});
 
 module.exports = importDump;

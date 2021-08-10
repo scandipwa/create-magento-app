@@ -1,10 +1,9 @@
-/* eslint-disable no-param-reassign */
 const semver = require('semver');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkNodeVersion = {
+const checkNodeVersion = () => ({
     title: 'Checking Node.js',
     task: (ctx, task) => {
         const { node } = process.versions;
@@ -18,6 +17,6 @@ You need to upgrade Node.js to at lease version 12 to work with this software!`
 
         task.title = `Using Node.js version ${node} ${process.arch}`;
     }
-};
+});
 
 module.exports = checkNodeVersion;

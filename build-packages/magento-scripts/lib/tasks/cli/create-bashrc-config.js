@@ -2,9 +2,9 @@ const path = require('path');
 const setConfigFile = require('../../util/set-config');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createBashrcConfigFile = {
+const createBashrcConfigFile = () => ({
     title: 'Setting Bashrc config',
     task: async ({ config: { php, baseConfig } }) => {
         try {
@@ -20,6 +20,6 @@ const createBashrcConfigFile = {
             throw new Error(`Unexpected error accrued during php.ini config creation\n\n${e}`);
         }
     }
-};
+});
 
 module.exports = createBashrcConfigFile;

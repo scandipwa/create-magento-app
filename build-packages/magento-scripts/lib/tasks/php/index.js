@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
@@ -7,9 +6,9 @@ const configure = require('./configure');
 const updatePhpBrew = require('./update-phpbrew');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installPhp = {
+const installPhp = () => ({
     title: 'Installing PHP',
     task: async (ctx, task) => {
         const { config: { php }, recompilePhp } = ctx;
@@ -43,14 +42,14 @@ const installPhp = {
 
         // eslint-disable-next-line consistent-return
         return task.newListr([
-            updatePhpBrew,
-            compile
+            updatePhpBrew(),
+            compile()
         ], {
             concurrent: false,
             exitOnError: true
         });
     }
-};
+});
 
 module.exports = {
     installPhp,

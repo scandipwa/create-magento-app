@@ -1,9 +1,9 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkComposer = {
+const checkComposer = () => ({
     title: 'Checking composer environmental variables',
     task: () => {
         try {
@@ -31,6 +31,6 @@ const checkComposer = {
             );
         }
     }
-};
+});
 
 module.exports = checkComposer;

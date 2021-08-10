@@ -1,12 +1,11 @@
-/* eslint-disable consistent-return,no-param-reassign */
 const path = require('path');
 const pathExists = require('../../util/path-exists');
 const phpTask = require('../../util/php-task');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const updateEnvPHP = {
+const updateEnvPHP = () => ({
     title: 'Updating env.php',
     task: async (ctx, task) => {
         // update env.php only if it's exist
@@ -15,10 +14,10 @@ const updateEnvPHP = {
             return;
         }
 
-        return task.newListr([
+        return task.newListr(
             phpTask(`-f ${ path.join(__dirname, 'update-env.php') }`, { noTitle: true })
-        ]);
+        );
     }
-};
+});
 
 module.exports = updateEnvPHP;

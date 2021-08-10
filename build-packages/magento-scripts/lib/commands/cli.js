@@ -13,11 +13,11 @@ const checkConfigurationFile = require('../config/check-configuration-file');
 module.exports = (yargs) => {
     yargs.command('cli', 'Enter CLI (magento, php, composer).', () => {}, async () => {
         const tasks = new Listr([
-            getMagentoVersionConfig,
-            checkConfigurationFile,
-            getProjectConfiguration,
-            createBashrcConfigFile,
-            localAuthJson
+            getMagentoVersionConfig(),
+            checkConfigurationFile(),
+            getProjectConfiguration(),
+            createBashrcConfigFile(),
+            localAuthJson()
         ], {
             concurrent: false,
             exitOnError: true,

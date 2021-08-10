@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop, no-restricted-syntax */
 /**
  * Update table in **magento** database
  * @param {String} table Table name

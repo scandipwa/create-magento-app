@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return,max-len, no-await-in-loop,no-restricted-syntax, no-param-reassign */
+/* eslint-disable max-len */
 const { stopServices } = require('./index');
 const { getBaseConfig, getConfigFromMagentoVersion } = require('../../config');
 const getDockerConfig = require('../../config/docker');
@@ -7,9 +7,9 @@ const { folderName, legacyFolderName } = require('../../util/prefix');
 const { createVolume } = require('./volumes');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const convertLegacyVolumes = {
+const convertLegacyVolumes = () => ({
     task: async (ctx, task) => {
         const { config: { overridenConfiguration } } = ctx;
         const newDockerConfig = await getDockerConfig(overridenConfiguration, getBaseConfig(process.cwd(), folderName));
@@ -32,7 +32,7 @@ const convertLegacyVolumes = {
             ctx.config = await getConfigFromMagentoVersion(ctx.magentoVersion, process.cwd(), legacyFolderName);
 
             return task.newListr([
-                stopServices,
+                stopServices(),
                 {
                     title: 'Migrating data from legacy volumes to new ones',
                     task: async (subCtx, subTask) => {
@@ -80,6 +80,6 @@ const convertLegacyVolumes = {
             });
         }
     }
-};
+});
 
 module.exports = convertLegacyVolumes;

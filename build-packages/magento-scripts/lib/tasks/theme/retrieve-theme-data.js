@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const path = require('path');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');

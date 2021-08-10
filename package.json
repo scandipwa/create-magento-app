@@ -28,7 +28,13 @@
             "runtime-packages/cma/**",
             "**/node_modules/**",
             "build-packages/magento-scripts/lib/config/templates/**"
-        ]
+        ],
+        "rules": {
+            "no-param-reassign": "warn",
+            "no-restricted-syntax": "off",
+            "consistent-return": "off",
+            "no-await-in-loop": "off"
+        }
     },
     "workspaces": [
         "build-packages/*",

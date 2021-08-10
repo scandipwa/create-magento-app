@@ -1,4 +1,3 @@
-/* eslint-disable max-len,no-multi-str,no-param-reassign,consistent-return */
 const osPlatform = require('../../../util/os-platform');
 const { execCommandTask } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
@@ -12,9 +11,9 @@ const postInstallSteps = [
 ];
 
 /**
- * @type {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installDocker = {
+const installDocker = () => ({
     title: 'Installing Docker',
     task: async (ctx, task) => {
         const { dist } = await osPlatform();
@@ -56,6 +55,6 @@ Your distro ${dist} is not supported by automatic installation.`);
         }
         }
     }
-};
+});
 
 module.exports = installDocker;

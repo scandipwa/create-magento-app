@@ -1,10 +1,9 @@
-/* eslint-disable no-param-reassign */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const updatePhpBrew = {
+const updatePhpBrew = () => ({
     title: 'Updating PHPBrew PHP versions',
     task: async ({ config: { php } }, task) => {
         try {
@@ -27,6 +26,6 @@ const updatePhpBrew = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = updatePhpBrew;

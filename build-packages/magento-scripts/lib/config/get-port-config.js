@@ -12,9 +12,9 @@ const portConfigPath = path.join(baseConfig.cacheDir, 'port-config.json');
 
 /**
  * Get available ports on the system
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const getAvailablePorts = {
+const getAvailablePorts = () => ({
     title: 'Getting available ports',
     task: async (ctx) => {
         let ports = { ...defaultPorts };
@@ -48,12 +48,12 @@ const getAvailablePorts = {
         // eslint-disable-next-line no-param-reassign
         ctx.ports = availablePorts;
     }
-};
+});
 
 /**
  * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const getCachedPorts = {
+const getCachedPorts = () => ({
     title: 'Getting cached ports',
     task: async (ctx) => {
         let ports;
@@ -72,7 +72,7 @@ const getCachedPorts = {
         // eslint-disable-next-line no-param-reassign
         ctx.ports = ports;
     }
-};
+});
 
 module.exports = {
     getAvailablePorts,

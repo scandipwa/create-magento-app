@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const path = require('path');
 const pathExists = require('../../util/path-exists');
 const { execAsyncSpawn } = require('../../util/exec-async-command');

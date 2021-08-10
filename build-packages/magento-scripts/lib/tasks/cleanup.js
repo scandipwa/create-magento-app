@@ -10,23 +10,20 @@ const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const cleanup = {
+const cleanup = () => ({
     title: 'Cleanup project',
-    task: async (ctx, task) => task.newListr([
-        checkConfigurationFile,
-        getProjectConfiguration,
-        stopPhpFpm,
-        stopServices,
-        removeVolumes,
-        removeCacheFolder,
-        uninstallMagento,
-        removeMagento
-    ], {
-        concurrent: false,
-        exitOnError: true
-    })
-};
+    task: (ctx, task) => task.newListr([
+        checkConfigurationFile(),
+        getProjectConfiguration(),
+        stopPhpFpm(),
+        stopServices(),
+        removeVolumes(),
+        removeCacheFolder(),
+        uninstallMagento(),
+        removeMagento()
+    ])
+});
 
 module.exports = cleanup;

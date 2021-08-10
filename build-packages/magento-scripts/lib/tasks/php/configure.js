@@ -1,4 +1,4 @@
-/* eslint-disable consistent-return,no-await-in-loop,no-restricted-syntax,no-param-reassign,max-len */
+/* eslint-disable max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const macosVersion = require('macos-version');
 
@@ -9,7 +9,9 @@ const macosVersion = require('macos-version');
  * @returns {Promise<{[key: string]: string}}>}
  */
 const getInstalledModules = async ({ php }) => {
-    const output = await execAsyncSpawn(`${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`);
+    const output = await execAsyncSpawn(
+        `${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
+    );
 
     return output
         .split('\n')
@@ -49,9 +51,9 @@ const disablingExtensions = (extensions) => ({
 });
 
 /**
- * @type {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const configure = {
+const configure = () => ({
     title: 'Configuring PHP extensions',
     task: async ({ config, debug }, task) => {
         const { php, overridenConfiguration: { configuration: { php: { disabledExtensions = [] } } } } = config;
@@ -120,6 +122,6 @@ const configure = {
     options: {
         bottomBar: 10
     }
-};
+});
 
 module.exports = configure;
