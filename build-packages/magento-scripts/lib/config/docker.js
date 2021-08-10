@@ -1,7 +1,6 @@
 const os = require('os');
 const path = require('path');
-const macosVersion = require('macos-version');
-const { getArchSync } = require('../util/arch');
+const { getArch } = require('../util/arch');
 const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
@@ -42,8 +41,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
 
     const isLinux = os.platform() === 'linux';
     const isWsl = await getIsWsl();
-    const isArm = getArchSync() === 'arm64';
-    const isArmMac = macosVersion.isMacOS && isArm;
+    const isArm = (await getArch()) === 'arm64';
+    const isArmMac = (os.platform() === 'darwin') && isArm;
 
     if (!isLinux) {
         /**
