@@ -346,7 +346,6 @@ return [
         'ScandiPWA_WishlistGraphQl' => 1,
         'ScandiPWA_MenuOrganizer' => 1,
         'ScandiPWA_SliderGraphQl' => 1,
-        'Scandiweb_TutorialImport' => 1,
         'Temando_ShippingRemover' => 1,
         'Vertex_Tax' => 1,
         'Vertex_AddressValidationApi' => 1,

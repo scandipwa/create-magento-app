@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69a06c23c23596b3378dbe9a3f86df9a",
+    "content-hash": "115e8aa10e0c3140fec146daea8bff1a",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -1246,6 +1246,54 @@
             },
             "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
+        },
+        {
+            "name": "cweagans/composer-patches",
+            "version": "1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cweagans/composer-patches.git",
+                "reference": "9888dcc74993c030b75f3dd548bb5e20cdbd740c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/9888dcc74993c030b75f3dd548bb5e20cdbd740c",
+                "reference": "9888dcc74993c030b75f3dd548bb5e20cdbd740c",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "composer/composer": "~1.0 || ~2.0",
+                "phpunit/phpunit": "~4.6"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "cweagans\\Composer\\Patches"
+            },
+            "autoload": {
+                "psr-4": {
+                    "cweagans\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Eagans",
+                    "email": "me@cweagans.net"
+                }
+            ],
+            "description": "Provides a way to patch Composer packages.",
+            "support": {
+                "issues": "https://github.com/cweagans/composer-patches/issues",
+                "source": "https://github.com/cweagans/composer-patches/tree/1.7.1"
+            },
+            "time": "2021-06-08T15:12:46+00:00"
         },
         {
             "name": "dasprid/enum",
@@ -17148,6 +17196,41 @@
                 "source": "https://github.com/magento/zf1/tree/1.14.5"
             },
             "time": "2020-12-02T21:12:59+00:00"
+        },
+        {
+            "name": "maritos/magento2-performance-fixes",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maritos/magento2-performance-fixes.git",
+                "reference": "2f8be5378127891cd798117241436bcbea685742"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maritos/magento2-performance-fixes/zipball/2f8be5378127891cd798117241436bcbea685742",
+                "reference": "2f8be5378127891cd798117241436bcbea685742",
+                "shasum": ""
+            },
+            "require": {
+                "cweagans/composer-patches": "^1.7"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mariusz Lopuch",
+                    "email": "mariusz.lopuch92@gmail.com"
+                }
+            ],
+            "description": "Magento 2 performance fixes.",
+            "support": {
+                "issues": "https://github.com/maritos/magento2-performance-fixes/issues",
+                "source": "https://github.com/maritos/magento2-performance-fixes/tree/v1.0.0"
+            },
+            "time": "2021-07-08T23:33:51+00:00"
         },
         {
             "name": "monolog/monolog",
