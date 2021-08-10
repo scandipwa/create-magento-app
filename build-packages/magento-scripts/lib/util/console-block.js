@@ -100,9 +100,10 @@ class ConsoleBlock {
             }
 
             case 'separator': {
-                const spacersLength = (longestLine - data.replace(consoleStyleReplacer, '').length) / 2;
+                const dataLength = data.replace(consoleStyleReplacer, '').length;
+                const spacersLength = (longestLine - (dataLength % 2 === 0 ? dataLength : (dataLength + 1))) / 2;
 
-                logger.log(`${MIDDLE_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${EMPTY_CHAR}${data}${EMPTY_CHAR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${MIDDLE_RIGHT_SEPARATOR}`);
+                logger.log(`${MIDDLE_LEFT_SEPARATOR}${HORIZONTAL_SEPARATOR.repeat(spacersLength)}${EMPTY_CHAR}${data}${EMPTY_CHAR}${HORIZONTAL_SEPARATOR.repeat(dataLength % 2 === 0 ? spacersLength : spacersLength + 1)}${MIDDLE_RIGHT_SEPARATOR}`);
                 break;
             }
 
