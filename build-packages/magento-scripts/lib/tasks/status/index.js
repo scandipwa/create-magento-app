@@ -6,21 +6,22 @@ const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
 
-const prettyStatus = async ({
-    ports,
-    config,
-    magentoVersion,
-    dockerVersion,
-    PHPBrewVersion,
-    platform,
-    platformVersion,
-    containers
-}) => {
+const prettyStatus = async (ctx) => {
     const {
-        magentoConfiguration,
-        baseConfig,
-        overridenConfiguration: { host, ssl }
-    } = config;
+        ports,
+        config: {
+            magentoConfiguration,
+            baseConfig,
+            overridenConfiguration: { host, ssl },
+            php
+        },
+        magentoVersion,
+        dockerVersion,
+        PHPBrewVersion,
+        platform,
+        platformVersion,
+        containers
+    } = ctx;
     // const strings = [];
     // const separator = () => block.addLine(`>${'-'.repeat(30)}`);
     const projectCreatedAt = getProjectCreatedAt();
@@ -45,8 +46,8 @@ const prettyStatus = async ({
 
     block
         .addLine(`Magento 2 version: ${logger.style.file(magentoVersion)}`)
-        .addLine(`PHP version: ${logger.style.file(config.php.version)}`)
-        .addLine(`PHP location: ${logger.style.link(config.php.binPath)}`)
+        .addLine(`PHP version: ${logger.style.file(php.version)}`)
+        .addLine(`PHP location: ${logger.style.link(php.binPath)}`)
         .addLine(`Docker version: ${logger.style.file(dockerVersion)}`)
         .addLine(`PHPBrew version: ${logger.style.file(PHPBrewVersion)}`)
         .addLine(`Platform: ${logger.style.code(platform)}`)
