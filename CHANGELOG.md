@@ -1,5 +1,86 @@
 # Changelog
 
+## v1.10.0 (11/08/2021)
+# New status command look, more import-db improvements and new Magento versions support!
+
+## What's New
+
+- CMA now supports Magento version 2.4.3, 2.4.2-p2 and 2.3.7-p1!
+- [status](https://docs.create-magento-app.com/getting-started/available-commands/status) command has new look!
+  ![Screenshot_20210811_160521](https://user-images.githubusercontent.com/18352350/129033826-13dfc22e-c65f-4bb0-b17f-7fb8c58ca085.png)
+
+## Miscellaneous
+
+- Refactored DB sanitizing after database dump import.
+  Now it should be faster overall.
+- Added initial Magento setup to [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command, so it can be used even on empty CMA instances.
+- Added some options to mysqldump in [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db) command. 30a6e3158dcf0e3f2830a85db984a29da7ca9106
+- Rollback use of `mysql` to import db dump as `mysqlimport` has weird issues with permissions. 2275bed3722c10fa5a7b0833faef7aee01be9181
+- Source code has been refactored a bit to keep code consistency and follow our eslint rules.
+
+## Bug FIxes
+
+- If no tables exist in DB, do not dump & restore themes in [import-db](https://docs.create-magento-app.com/getting-started/available-commands/import-db). eb083bbdaa782c35713ed4f578d2f3cd51eef7e3
+---
+
+## v1.9.1 (05/08/2021)
+# Bug Fixes!
+
+## Bug Fixes
+
+- Fixed error which lead to **Cannot read property 'scandipwa' of null**
+---
+
+## v1.9.0 (04/08/2021)
+# Quality update!
+
+## What's New
+
+- Link command got the [verbose option](https://docs.create-magento-app.com/getting-started/available-commands/link#v-verbose).
+- URN generation is now built-in start command!
+  Magento documentation available [here](https://devdocs.magento.com/guides/v2.4/config-guide/cli/config-cli-subcommands-urn.html)!
+- Analytics is on!
+  Analytics help us to collect data about errors or possible slow-downs and help us to identify areas that should be fixed or improved!
+  Learn more [here](https://docs.scandipwa.com/about/data-analytics)!
+
+## Miscellaneous
+
+- Start command console output now has sections.
+  - The first section is about your Magento current status, where it is accessible and contains credentials for the admin panel.
+  - The second section will be about the ScandiPWA theme.
+  If CMA detects that you have the ScandiPWA theme installed, it will print commands to correctly run it in development mode.
+  - The last section will appear only if your CMA version is out of date.
+- Setup persisted query in the start command task was moved to be right after Magento install was done to the DB.
+  Now setup should not break if you have the theme installed but PQ is not yet set up.
+- Link command now updates `env.php` for PQ setup and the PQ setup itself was moved to be before theme build.
+- `env.php` parser error prints file result to the error message.
+  If your PHP instance is misconfigured for some reason you will know it right away.
+- Start command now will not recreate the Docker network for your project.
+  Should save some time during startup 
+- Import dump changes:
+  - DB sanitizing now should be faster due to query optimizations.
+  - Import of dump is now done using [mysqlimport](https://dev.mysql.com/doc/refman/8.0/en/mysqlimport.html) utility instead of `cat dump` file and pumping stream directly to MySQL as a query.
+  - Added more tables to sanitize table list: `review`, `review_detail`, `review_entity_summary`, `review_store` and `report_event`.
+
+## Bug FIxes
+
+- Added `LDFLAGS` env variable to macOS PHP compilation stage which should fix some issues with OpenSSL compilation. 9dbdcaf99c36f9d78733eb9b287dfb6e58fc7eec
+
+---
+
+## v1.8.1 (09/07/2021)
+# New PHP configuration option `disabledExtensions` and Bug Fixes
+
+## What's New
+
+- New PHP configuration option `disabledExtensions` is available.
+  Docs available [here](https://docs.create-magento-app.com/getting-started/config-file#php-configuration).
+
+## Bug Fixes
+
+- Fixed Magento setup install with the new verbose option.
+---
+
 ## v1.8.0 (09/07/2021)
 # IMPORTANT COMPATIBILITY CHANGES, Improved XDebug 2 support, compressing for `import-db` from remote databases and more!
 
@@ -7,8 +88,8 @@
 
 Recently was discovered a bug in prefix generation.
 
-In general, if you installs and runs a CMA project in a directory with a name that contains dots (.) this was treated as a file name, so everything after a dot was thrown away.
-This could lead to interference between projects since `project-2.4.1` was using the same prefix as `project-2.4.2`, although with folder name we use folder creation timestamp, so the chance of this very low.
+In general, if you install and run a CMA project in a directory with a name containing dots (.), this was treated as a file name, so everything after a dot was thrown away.
+This could lead to interference between projects since `project-2.4.1` was using the same prefix as `project-2.4.2`, although we use folder creation timestamp with folder name, so the chance of this is very low.
 
 For that reason, since **this release** this issue is fixed, now the full folder name is used and old MySQL, ElasticSearch and Redis volumes will be automatically converted to new use new prefixes when you run [start](https://docs.create-magento-app.com/getting-started/available-commands/start) command.
 
@@ -492,38 +573,3 @@ This pre-release contains the following changes:
 - Enabled [OPCache](https://www.php.net/manual/en/book.opcache.php) (Temporarily).
 - Improved support for Magento version picker. [Magento 2.4.2](https://devdocs.magento.com/guides/v2.4/release-notes/open-source-2-4-2.html) support is coming soon.
 - Bumped XDebug version to 3.0.3. ([Changelog](https://xdebug.org/announcements/2021-02-22))
----
-
-## @scandipwa/magento-scripts@1.2.3-alpha.1 (09/03/2021)
-This pre-release contains the following changes:
-
-- Update command now recognizes if a newer version is available but it is a pre-release alpha version.
-- Updated MySQL container health-check command. Now it should report the correct heath state.
-- Fixed type errors in a new setup with MySQL connection. #19 
----
-
-## @scandipwa/magento-scripts@1.2.3-alpha.0 (08/03/2021)
-This pre-release contains the following changes:
-
-- Now `magento-scripts` will validate the connection to MySQL before it starts running Magento setup.
-  This eliminates the famous **MySQL server has gone away** error during the first install and start of the project.
-  Also, this connection is used to setup Magento configurations for ElasticSearch, base URL and URL rewrites so the whole startup process received a *speed boost*.
-- Added check for ElasticSearch port configuration.
-- Fixed once and forever problem with tunability CMA project to start after system shut down without stopping CMA projects.
----
-
-## Bug Fixes and Improvements (26/02/2021)
-# What is New
-- Now `magento-scripts` can choose available ports not only if they are free on the system, but also if they are not used by other CMA instances.
-To enable this feature, set `useNonOverlappingPorts` property to `true` in config file.
-- Configuration file for the [cli command](https://docs.create-magento-app.com/getting-started/available-commands/cli) is now a template file that will be stored in the cache folder. This is needed if you are using a custom PHP version, rather default PHP version by `magento-scripts`, which currently is `7.4.13`.
-
-# Bug Fixes
-- Fixed inability for CMA project to start after the system is shut down without manually stopping CMA projects. #16 
----
-
-## @scandipwa/magento-scripts@1.2.2-alpha.0 (23/02/2021)
-This release contains the following changes:
-- Now `magento-scripts` will choose available ports not only if they are free on the system, but also if they are not used by other CMA instances.
-No more `app/etc/env.php` file deletion of ports have changed while your project was offline during other projects development.
-- Configuration file for `cli` command is now a template file that will be stored in the cache folder. This is needed if you are using custom PHP version, rather default PHP version by `magento-scripts`, which currently is `7.4.13`.
