@@ -59,7 +59,7 @@ Do not enter "--result-file" option, we need to control that part.
             } else {
                 task.output = 'Making remote database dump file with customers data...';
                 await ssh.execCommand(
-                    `${dumpCommand} --max_allowed_packet=1GB --result-file=dump.sql`
+                    `${dumpCommand} --result-file=dump.sql`
                 );
             }
 
