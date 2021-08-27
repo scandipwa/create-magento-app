@@ -98,10 +98,9 @@ const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
         installPhp(),
+        installComposer(),
         {
-            // title: 'Installing Composer, preparing filesystem and downloading container images',
             task: (ctx, task) => task.newListr([
-                installComposer(),
                 prepareFileSystem(),
                 pullContainers()
             ], {
