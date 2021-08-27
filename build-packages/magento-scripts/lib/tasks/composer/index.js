@@ -1,10 +1,15 @@
 const fs = require('fs');
+const semver = require('semver');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const downloadFile = require('../../util/download-file');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const safeRegexExtract = require('../../util/safe-regex-extract');
 const installPrestissimo = require('./install-prestissimo');
 
+/**
+ * @returns {Promise<string>}
+ */
 const getComposerVersion = async ({ composer, php }) => {
     const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.initPath} ${composer.binPath} --version --no-ansi`);
 
@@ -26,6 +31,19 @@ const createComposerDir = async ({ composer }) => {
     }
 };
 
+const downloadComposerBinary = async ({ composer }) => {
+    try {
+        await downloadFile(`https://getcomposer.org/download/latest-${composer.version}.x/composer.phar`, {
+            destination: composer.binPath
+        });
+    } catch (e) {
+        throw new Error(
+            `Unexpected issue, while installing composer.
+            Please see the error log below.\n\n${e}`
+        );
+    }
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
@@ -38,20 +56,32 @@ const installComposer = () => ({
         if (!hasComposerInCache) {
             task.title = 'Installing Composer';
             await createComposerDir({ composer });
-            try {
-                await downloadFile(`https://getcomposer.org/composer-${composer.version}.phar`, {
-                    destination: composer.binPath
+            await downloadComposerBinary({ composer });
+        } else {
+            const currentComposerVersion = await getComposerVersion({ composer, php });
+
+            if (!semver.satisfies(currentComposerVersion, `${composer.version}.x`)) {
+                const continueComposerBinaryVersionSwitch = await task.prompt({
+                    type: 'Toggle',
+                    message: `You have Composer ${logger.style.misc(`${currentComposerVersion}`)} while your Magento version requires ${logger.style.misc(`${composer.version}.x`)}!
+`,
+                    enabled: 'Install correct version and continue (you will probably have to fix composer dependencies versions)',
+                    disabled: 'Exit installation.'
                 });
-            } catch (e) {
-                throw new Error(
-                    `Unexpected issue, while installing composer.
-                    Please see the error log below.\n\n${e}`
-                );
+
+                if (!continueComposerBinaryVersionSwitch) {
+                    throw new Error(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(`${composer.version}.x`)}!`);
+                }
+
+                await downloadComposerBinary({ composer });
             }
         }
 
         const composerVersion = await getComposerVersion({ composer, php });
         task.title = `Using composer version ${composerVersion}`;
+    },
+    options: {
+        bottomBar: 10
     }
 });
 
