@@ -6,10 +6,10 @@ const runComposerCommand = require('../../util/run-composer');
  */
 const prestissimoInstall = () => ({
     title: 'Installing Prestissimo',
-    task: async ({ magentoVersion, config }, task) => {
-        const { composer } = config;
+    task: async (ctx, task) => {
+        const { magentoVersion, composerVersion } = ctx;
 
-        if (semver.satisfies(semver.coerce(composer.version).version, '^2')) {
+        if (semver.satisfies(composerVersion, '^2')) {
             task.skip();
             return;
         }

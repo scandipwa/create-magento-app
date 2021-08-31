@@ -62,23 +62,44 @@ const installComposer = () => ({
 
             if (!semver.satisfies(currentComposerVersion, `${composer.version}.x`)) {
                 const continueComposerBinaryVersionSwitch = await task.prompt({
-                    type: 'Toggle',
-                    message: `You have Composer ${logger.style.misc(`${currentComposerVersion}`)} while your Magento version requires ${logger.style.misc(`${composer.version}.x`)}!
-`,
-                    enabled: 'Install correct version and continue (you will probably have to fix composer dependencies versions)',
-                    disabled: 'Exit installation.'
+                    type: 'Select',
+                    message: `You have Composer ${logger.style.misc(`${currentComposerVersion}`)} while your Magento version requires ${logger.style.misc(`${composer.version}.x`)}!`,
+                    choices: [
+                        {
+                            message: `Continue with current installed version (${logger.style.misc(`${currentComposerVersion}`)})`,
+                            name: 'continue'
+                        },
+                        {
+                            message: 'Install correct version and continue (you will probably have to fix composer dependencies versions)',
+                            name: 'install-and-continue'
+                        },
+                        {
+                            message: 'Exit installation.',
+                            name: 'exit'
+                        }
+                    ]
                 });
 
-                if (!continueComposerBinaryVersionSwitch) {
+                switch (continueComposerBinaryVersionSwitch) {
+                case 'install-and-continue': {
+                    await downloadComposerBinary({ composer });
+                    break;
+                }
+                case 'exit': {
                     throw new Error(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(`${composer.version}.x`)}!`);
                 }
-
-                await downloadComposerBinary({ composer });
+                case 'continue':
+                default: {
+                    ctx.continueWithExistingComposerVersion = true;
+                    break;
+                }
+                }
             }
         }
 
         const composerVersion = await getComposerVersion({ composer, php });
         task.title = `Using composer version ${composerVersion}`;
+        ctx.composerVersion = composerVersion;
     },
     options: {
         bottomBar: 10
