@@ -6,6 +6,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const localAuthJson = require('../tasks/composer/local-auth-json');
 const checkConfigurationFile = require('../config/check-configuration-file');
+const { installComposer, installPrestissimo } = require('../tasks/composer');
 
 /**
  * @param {import('yargs')} yargs
@@ -16,12 +17,16 @@ module.exports = (yargs) => {
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
+            installComposer(),
+            installPrestissimo(),
             createBashrcConfigFile(),
             localAuthJson()
         ], {
             concurrent: false,
             exitOnError: true,
-            ctx: {},
+            ctx: {
+                throwMagentoVersionMissing: true
+            },
             rendererOptions: { collapse: false, clearOutput: true }
         });
 
