@@ -29,7 +29,7 @@ module.exports = (yargs) => {
         });
 
         try {
-            prettyStatus(await tasks.run());
+            await prettyStatus(await tasks.run());
         } catch (e) {
             logger.error(e.message || e);
             process.exit(1);

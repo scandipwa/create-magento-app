@@ -5,6 +5,7 @@ const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
+const { getComposerVersion } = require('../composer');
 
 const prettyStatus = async (ctx) => {
     const {
@@ -13,7 +14,8 @@ const prettyStatus = async (ctx) => {
             magentoConfiguration,
             baseConfig,
             overridenConfiguration: { host, ssl },
-            php
+            php,
+            composer
         },
         magentoVersion,
         dockerVersion,
@@ -22,11 +24,8 @@ const prettyStatus = async (ctx) => {
         platformVersion,
         containers
     } = ctx;
-    // const strings = [];
-    // const separator = () => block.addLine(`>${'-'.repeat(30)}`);
     const projectCreatedAt = getProjectCreatedAt();
-
-    // separator();
+    const composerVersion = await getComposerVersion({ composer, php });
 
     const prefix = getPrefix();
 
@@ -48,6 +47,8 @@ const prettyStatus = async (ctx) => {
         .addLine(`Magento 2 version: ${logger.style.file(magentoVersion)}`)
         .addLine(`PHP version: ${logger.style.file(php.version)}`)
         .addLine(`PHP location: ${logger.style.link(php.binPath)}`)
+        .addLine(`Composer version: ${logger.style.file(composerVersion)}`)
+        .addLine(`Composer location: ${logger.style.link(path.relative(process.cwd(), composer.binPath))}`)
         .addLine(`Docker version: ${logger.style.file(dockerVersion)}`)
         .addLine(`PHPBrew version: ${logger.style.file(PHPBrewVersion)}`)
         .addLine(`Platform: ${logger.style.code(platform)}`)
@@ -101,8 +102,6 @@ const prettyStatus = async (ctx) => {
         .addEmptyLine();
 
     block.log();
-
-    // logger.log(strings.join('\n'));
 };
 
 module.exports = { prettyStatus };

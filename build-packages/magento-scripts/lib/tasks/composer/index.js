@@ -106,4 +106,4 @@ const installComposer = () => ({
     }
 });
 
-module.exports = { installComposer, installPrestissimo };
+module.exports = { installComposer, installPrestissimo, getComposerVersion };
