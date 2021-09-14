@@ -1,0 +1,40 @@
+{
+    "name": "scandipwa",
+    "version": "0.0.1",
+    "license": "OSL-3.0",
+    "dependencies": {
+        "@scandipwa/scandipwa": "5.0.4",
+        "@scandipwa/scandipwa-scripts": "2.4.16",
+        "@scandipwa/eslint-config": "0.1.31",
+        "@tilework/mosaic": "0.1.4",
+        "@tilework/mosaic-craco": "0.0.5"
+    },
+    "scandipwa": {
+        "type": "theme",
+        "locales": {
+            "en_US": true
+        },
+        "parentTheme": "@scandipwa/scandipwa",
+        "extensions": {}
+    },
+    "scripts": {
+        "start": "scandipwa-scripts start",
+        "build": "scandipwa-scripts build"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "eslintConfig": {
+        "extends": "@scandipwa"
+    },
+    "proxy": "https://demo100-ors-1588667385-csa-qnb.scandipwa.cloud/"
+}
