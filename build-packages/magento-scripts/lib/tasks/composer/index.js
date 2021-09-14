@@ -11,7 +11,7 @@ const installPrestissimo = require('./install-prestissimo');
  * @returns {Promise<string>}
  */
 const getComposerVersion = async ({ composer, php }) => {
-    const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.initPath} ${composer.binPath} --version --no-ansi`);
+    const composerVersionOutput = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${composer.binPath} --version --no-ansi`);
 
     const composerVersion = safeRegexExtract({
         string: composerVersionOutput,
