@@ -145,7 +145,11 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                  *
                  * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
                  */
-                command: '--log_bin_trust_function_creators=1 --default-authentication-plugin=mysql_native_password',
+                command: [
+                    '--log_bin_trust_function_creators=1',
+                    '--default-authentication-plugin=mysql_native_password',
+                    '--max_allowed_packet=1GB'
+                ].join(' '),
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
