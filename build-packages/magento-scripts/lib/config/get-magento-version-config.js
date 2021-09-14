@@ -1,6 +1,19 @@
 const { allVersions, defaultConfiguration } = require('./versions');
 const getInstalledMagentoVersion = require('../util/get-installed-magento-version');
 const sleep = require('../util/sleep');
+const scandipwaMagentoVersionMapping = require('./scandipwa-versions');
+
+const longestMagentoName = allVersions.map(({ name }) => name).reduce((acc, val) => (val.length > acc ? val.length : acc), 0);
+
+const getMagentoVersionMessage = (version) => {
+    const pureMagentoVersion = version.name.replace(/-p[0-9]+$/i, '');
+    if (scandipwaMagentoVersionMapping[pureMagentoVersion]) {
+        const padding = longestMagentoName - version.name.length;
+        return `${ version.name }${ ' '.repeat(padding) } (Supported ScandiPWA version: ${ scandipwaMagentoVersionMapping[pureMagentoVersion] })`;
+    }
+
+    return version.name;
+};
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -45,7 +58,7 @@ const getMagentoVersion = () => ({
                             choices: allVersions.map((version) => (
                                 {
                                     name: version.name,
-                                    message: version.name
+                                    message: getMagentoVersionMessage(version)
                                 }
                             )),
                             initial: defaultConfiguration.name,

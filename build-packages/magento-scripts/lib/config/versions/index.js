@@ -24,7 +24,8 @@ const getConfigurations = (config = {}) => magentoVersions.reduce(
     {}
 );
 
-const allVersions = Object.entries(getConfigurations()).map(([name, magentoConfig]) => ({ ...magentoConfig, name }))
+const allVersions = Object.entries(getConfigurations())
+    .map(([name, magentoConfig]) => ({ ...magentoConfig, name }))
     .sort((a, b) => {
         if (a.magentoVersion.replace(/-p[0-9]+$/i, '') === b.magentoVersion.replace(/-p[0-9]+$/i, '')) {
             if (a.magentoVersion.includes('-p') && !b.magentoVersion.includes('-p')) {
