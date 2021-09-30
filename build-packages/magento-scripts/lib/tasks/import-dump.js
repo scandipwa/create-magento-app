@@ -27,7 +27,6 @@ const importDump = () => ({
         stopProject(),
         retrieveFreshProjectConfiguration(),
         configureProject(),
-        setupMagento({ onlyInstallMagento: true }),
         dumpThemeConfig(),
         importDumpToMySQL(),
         restoreThemeConfig(),
