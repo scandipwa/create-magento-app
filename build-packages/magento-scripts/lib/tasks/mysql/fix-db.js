@@ -26,18 +26,41 @@ const fixDB = () => ({
     task: async (ctx, task) => task.newListr([
         adjustMagentoConfiguration(),
         configureElasticsearch(),
-        enableForeignKeyCheck(),
         {
-            task: (ctx, task) => task.newListr([
-                deleteAdminUsers(),
-                deleteOrders(),
-                deleteCustomers()
-            ], {
-                concurrent: true
-            }),
-            rollback: disableForeignKeyCheck()
-        },
-        disableForeignKeyCheck()
+            title: 'Deleting customers data',
+            skip: ({ withCustomersData }) => withCustomersData,
+            task: async (ctx, subTask) => {
+                const deleteCustomerData = await subTask.prompt({
+                    type: 'Confirm',
+                    message: `Do you want to delete customers data (orders, customers and admin users) from this dump?
+This will reduce database size and remove possible interference for your setup.`
+                });
+
+                if (!deleteCustomerData) {
+                    subTask.skip();
+                    return;
+                }
+
+                return subTask.newListr([
+                    enableForeignKeyCheck(),
+                    {
+                        title: 'Deleting admin users, orders and customers...',
+                        task: (ctx, subSubTask) => subSubTask.newListr([
+                            deleteAdminUsers(),
+                            deleteOrders(),
+                            deleteCustomers()
+                        ], {
+                            concurrent: true
+                        }),
+                        rollback: disableForeignKeyCheck()
+                    },
+                    disableForeignKeyCheck()
+                ]);
+            },
+            options: {
+                rendererOptions: { collapse: false }
+            }
+        }
     ], {
         concurrent: false,
         exitOnError: true,
