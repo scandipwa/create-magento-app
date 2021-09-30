@@ -6,6 +6,9 @@ const dumpThemeConfig = () => ({
     task: async (ctx) => {
         const { mysqlConnection } = ctx;
 
+        /**
+         * @type {{ tableCount: number }[][]}
+         */
         const [[{ tableCount }]] = await mysqlConnection.query(`
             SELECT count (*) AS tableCount
             FROM INFORMATION_SCHEMA.TABLES
@@ -15,7 +18,10 @@ const dumpThemeConfig = () => ({
         if (tableCount !== 0) {
             const [themes] = await mysqlConnection.query('select * from theme;');
             if (themes.length === 0) {
-                throw new Error('Themes not found in theme table are not found');
+                ctx.themeDump = {
+                    themes: [],
+                    themeIdConfig: undefined // we don't have a config saved
+                };
             }
 
             const [themeIdConfig] = await mysqlConnection.query('select * from core_config_data where path = \'design/theme/theme_id\';');
