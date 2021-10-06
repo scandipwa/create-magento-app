@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "felixfbecker.php-debug",
+        "usernamehw.errorlens",
+        "github.vscode-pull-request-github",
+        "shardulm94.trailing-spaces",
+        "dbaeumer.vscode-eslint",
+        "visualstudioexptteam.vscodeintellicode",
+        "ms-azuretools.vscode-docker"
+    ]
+}

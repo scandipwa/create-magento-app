@@ -12,6 +12,14 @@
             "skipFiles": [
                 "<node_internals>/**"
             ]
+        },
+        {
+            "name": "Listen for Xdebug in Magento 2.4.3",
+            "type": "php",
+            "request": "launch",
+            "port": 9003,
+            "cwd": "${workspaceRoot}/sample-packages/magento-2.4.3",
+            "runtimeExecutable": "$HOME/.phpbrew/php/php-7.4.18/bin/php"
         }
     ]
 }
