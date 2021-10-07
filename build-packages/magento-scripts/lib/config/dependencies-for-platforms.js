@@ -12,7 +12,8 @@ const dependenciesForPlatforms = {
             'freetype',
             'oniguruma',
             'icu4c',
-            'libxml2'
+            'libxml2',
+            'openssl@1.1'
         ],
         installCommand: (deps) => `brew install ${deps}`
     },
