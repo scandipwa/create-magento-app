@@ -1,3 +1,4 @@
+const path = require('path');
 const { checkRequirements } = require('./requirements');
 const {
     importDumpToMySQL,
@@ -14,6 +15,7 @@ const {
     configureProject
 } = require('./start');
 const importRemoteDb = require('./mysql/import-remote-db');
+const matchFilesystem = require('../util/match-filesystem');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -27,6 +29,16 @@ const importDump = () => ({
         stopProject(),
         retrieveFreshProjectConfiguration(),
         configureProject(),
+        {
+            title: 'Installing Magento',
+            // skip setup if env.php and config.php are present in app/etc folder
+            skip: () => matchFilesystem(path.resolve('app/etc'), ['config.php', 'env.php']),
+            task: (subCtx, subTask) => subTask.newListr(
+                setupMagento({
+                    onlyInstallMagento: true
+                })
+            )
+        },
         dumpThemeConfig(),
         importDumpToMySQL(),
         restoreThemeConfig(),
