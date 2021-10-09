@@ -16,7 +16,7 @@ const {
 const importRemoteDb = require('./mysql/import-remote-db');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const importDump = () => ({
     title: 'Importing Database Dump',
