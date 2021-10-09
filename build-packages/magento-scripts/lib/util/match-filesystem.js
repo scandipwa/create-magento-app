@@ -5,6 +5,7 @@ const pathExists = require('./path-exists');
  * Check file system structure to detect possible unfinished installation
  * @param {String} cwd working directory
  * @param {Object} structure Object with template files structure
+ * @return {Promise<boolean>}
  */
 const matchFilesystem = async (cwd, structure) => {
     if (Array.isArray(structure)) {
