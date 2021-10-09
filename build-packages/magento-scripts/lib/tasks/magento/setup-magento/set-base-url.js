@@ -21,7 +21,8 @@ module.exports = () => ({
             { path: 'web/unsecure/base_url', value: httpUrl },
             { path: 'web/secure/base_url', value: httpsUrl },
             { path: 'web/secure/use_in_frontend', value: enableSecureFrontend },
-            { path: 'web/secure/use_in_adminhtml', value: enableSecureFrontend }
+            { path: 'web/secure/use_in_adminhtml', value: enableSecureFrontend },
+            { path: 'web/cookie/cookie_domain', value: null }
         ], { mysqlConnection, task });
     }
 });
