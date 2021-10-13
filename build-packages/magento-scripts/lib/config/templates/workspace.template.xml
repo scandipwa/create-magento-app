@@ -14,4 +14,7 @@
             <method v="2" />
         </configuration>
     </component>
+    <component name="PropertiesComponent">
+        <property name="DatabaseDriversLRU" value="<%~it.databaseDriver%>" />
+    </component>
 </project>
