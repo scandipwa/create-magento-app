@@ -16,6 +16,20 @@ module.exports = () => {
             version: '7.4',
             path: path.join(process.cwd(), '.idea', 'php.xml'),
             templatePath: path.join(__dirname, 'templates', 'php.template.xml')
+        },
+        database: {
+            driver: 'mysql',
+            dataSourceManagerName: 'mysql 8.0',
+            jdbcDriver: 'com.mysql.cj.jdbc.Driver',
+            jdbcUrl: 'jdbc:mysql://localhost:3306/magento',
+            dataSourcesLocal: {
+                path: path.join(process.cwd(), '.idea', 'dataSources.local.xml'),
+                templatePath: path.join(__dirname, 'templates', 'dataSources.local.template.xml')
+            },
+            dataSources: {
+                path: path.join(process.cwd(), '.idea', 'dataSources.xml'),
+                templatePath: path.join(__dirname, 'templates', 'dataSources.template.xml')
+            }
         }
     };
 

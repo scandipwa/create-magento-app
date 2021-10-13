@@ -1,5 +1,8 @@
 const setConfigFile = require('../../util/set-config');
 const phpStormConfiguration = require('../../config/php-storm');
+const pathExists = require('../../util/path-exists');
+const path = require('path');
+const fs = require('fs');
 
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
@@ -11,7 +14,12 @@ const createPhpStormConfig = () => ({
         const { serverName } = config.xdebug;
         const { runManagerName } = config.xdebug;
         const { sessionId } = config.xdebug;
+        const databaseDriver = config.database.driver;
+
         const phpVersion = config.php.version;
+
+        const { dataSourceManagerName } = config.database;
+        const { jdbcUrl } = config.database;
         try {
             await setConfigFile({
                 configPathname: config.xdebug.path,
@@ -23,7 +31,8 @@ const createPhpStormConfig = () => ({
                     debugServerAddress,
                     serverName,
                     runManagerName,
-                    sessionId
+                    sessionId,
+                    databaseDriver
                 }
             });
         } catch (e) {
@@ -41,6 +50,37 @@ const createPhpStormConfig = () => ({
             });
         } catch (e) {
             throw new Error(`Unexpected error accrued during php.xml config creation\n\n${e}`);
+        }
+
+        try {
+            await setConfigFile({
+                configPathname: config.database.dataSourcesLocal.path,
+                template: config.database.dataSourcesLocal.templatePath,
+                overwrite: true,
+                templateArgs: {
+                    dataSourceManagerName
+                }
+            });
+        } catch (e) {
+            throw new Error(`Unexpected error accrued during dataSources.local.xml config creation\n\n${e}`);
+        }
+
+        try {
+            await setConfigFile({
+                configPathname: config.database.dataSources.path,
+                template: config.database.dataSources.templatePath,
+                overwrite: true,
+                templateArgs: {
+                    dataSourceManagerName,
+                    jdbcUrl
+                }
+            });
+        } catch (e) {
+            throw new Error(`Unexpected error accrued during dataSources.xml config creation\n\n${e}`);
+        }
+
+        if (!await pathExists(path.resolve('./.idea/dataSources'))) {
+            await fs.promises.mkdir(path.resolve('./.idea/dataSources'));
         }
     }
 });
