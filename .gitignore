@@ -49,6 +49,7 @@ sample-packages/*/app/functions.php
 !sample-packages/*/cma.js
 !sample-packages/*/package.json
 !sample-packages/*/README.md
+!sample-packages/*/.gitignore
 
 !**/composer.*
 # !**/cma.js
