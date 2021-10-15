@@ -1,29 +1,27 @@
 const setConfigFile = require('../../util/set-config');
-const phpStormConfiguration = require('../../config/php-storm');
 const pathExists = require('../../util/path-exists');
 const path = require('path');
 const fs = require('fs');
 
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
-    task: async () => {
-        const config = phpStormConfiguration();
-        const xDebug2Port = config.xdebug.v2Port;
-        const xDebug3Port = config.xdebug.v3Port;
-        const { debugServerAddress } = config.xdebug;
-        const { serverName } = config.xdebug;
-        const { runManagerName } = config.xdebug;
-        const { sessionId } = config.xdebug;
-        const databaseDriver = config.database.driver;
+    task: async ({ config: { phpStorm }, ports }) => {
+        const xDebug2Port = phpStorm.xdebug.v2Port;
+        const xDebug3Port = phpStorm.xdebug.v3Port;
+        const { debugServerAddress } = phpStorm.xdebug;
+        const { serverName } = phpStorm.xdebug;
+        const { runManagerName } = phpStorm.xdebug;
+        const { sessionId } = phpStorm.xdebug;
+        const databaseDriver = phpStorm.database.driver;
 
-        const phpVersion = config.php.version;
+        const phpVersion = phpStorm.php.version;
 
-        const { dataSourceManagerName } = config.database;
-        const { jdbcUrl } = config.database;
+        const { dataSourceManagerName } = phpStorm.database;
+        const jdbcUrl = `jdbc:mysql://localhost:${ports.mysql}/magento`;
         try {
             await setConfigFile({
-                configPathname: config.xdebug.path,
-                template: config.xdebug.templatePath,
+                configPathname: phpStorm.xdebug.path,
+                template: phpStorm.xdebug.templatePath,
                 overwrite: true,
                 templateArgs: {
                     xDebug2Port,
@@ -41,8 +39,8 @@ const createPhpStormConfig = () => ({
 
         try {
             await setConfigFile({
-                configPathname: config.php.path,
-                template: config.php.templatePath,
+                configPathname: phpStorm.php.path,
+                template: phpStorm.php.templatePath,
                 overwrite: true,
                 templateArgs: {
                     phpVersion
@@ -54,8 +52,8 @@ const createPhpStormConfig = () => ({
 
         try {
             await setConfigFile({
-                configPathname: config.database.dataSourcesLocal.path,
-                template: config.database.dataSourcesLocal.templatePath,
+                configPathname: phpStorm.database.dataSourcesLocal.path,
+                template: phpStorm.database.dataSourcesLocal.templatePath,
                 overwrite: true,
                 templateArgs: {
                     dataSourceManagerName
@@ -67,8 +65,8 @@ const createPhpStormConfig = () => ({
 
         try {
             await setConfigFile({
-                configPathname: config.database.dataSources.path,
-                template: config.database.dataSources.templatePath,
+                configPathname: phpStorm.database.dataSources.path,
+                template: phpStorm.database.dataSources.templatePath,
                 overwrite: true,
                 templateArgs: {
                     dataSourceManagerName,
