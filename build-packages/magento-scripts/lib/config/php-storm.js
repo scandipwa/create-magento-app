@@ -1,13 +1,12 @@
 const path = require('path');
 
-module.exports = (app, config) => {
+const getPhpStormConfig = (app, config) => {
     const { templateDir } = config;
-
     const phpStormConfiguration = {
         xdebug: {
             v2Port: '9111',
             v3Port: '9003',
-            debugServerAddress: `http://${ app.host}`,
+            debugServerAddress: `http://${ app.host }`,
             serverName: 'create-magento-app',
             runManagerName: 'create-magento-app',
             sessionId: 'PHPSTORM',
@@ -34,4 +33,8 @@ module.exports = (app, config) => {
     };
 
     return phpStormConfiguration;
+};
+
+module.exports = {
+    getPhpStormConfig
 };

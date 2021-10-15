@@ -6,31 +6,16 @@ const fs = require('fs');
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
     task: async ({ config: { phpStorm }, ports }) => {
-        const xDebug2Port = phpStorm.xdebug.v2Port;
-        const xDebug3Port = phpStorm.xdebug.v3Port;
-        const { debugServerAddress } = phpStorm.xdebug;
-        const { serverName } = phpStorm.xdebug;
-        const { runManagerName } = phpStorm.xdebug;
-        const { sessionId } = phpStorm.xdebug;
-        const databaseDriver = phpStorm.database.driver;
-
         const phpVersion = phpStorm.php.version;
-
-        const { dataSourceManagerName } = phpStorm.database;
         const jdbcUrl = `jdbc:mysql://localhost:${ports.mysql}/magento`;
+
         try {
             await setConfigFile({
                 configPathname: phpStorm.xdebug.path,
                 template: phpStorm.xdebug.templatePath,
                 overwrite: true,
                 templateArgs: {
-                    xDebug2Port,
-                    xDebug3Port,
-                    debugServerAddress,
-                    serverName,
-                    runManagerName,
-                    sessionId,
-                    databaseDriver
+                    phpStorm
                 }
             });
         } catch (e) {
@@ -56,7 +41,7 @@ const createPhpStormConfig = () => ({
                 template: phpStorm.database.dataSourcesLocal.templatePath,
                 overwrite: true,
                 templateArgs: {
-                    dataSourceManagerName
+                    phpStorm
                 }
             });
         } catch (e) {
@@ -69,7 +54,7 @@ const createPhpStormConfig = () => ({
                 template: phpStorm.database.dataSources.templatePath,
                 overwrite: true,
                 templateArgs: {
-                    dataSourceManagerName,
+                    phpStorm,
                     jdbcUrl
                 }
             });
