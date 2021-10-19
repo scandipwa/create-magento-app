@@ -1,6 +1,8 @@
 const path = require('path');
 
 const getPhpStormConfig = (app, config) => {
+    const [majorPHPVersion, minorPHPVersion] = app.configuration.php.version.split('.');
+    const phpLanguageLevel = `${ majorPHPVersion }.${ minorPHPVersion }`;
     const { templateDir } = config;
     const phpStormConfiguration = {
         xdebug: {
@@ -14,7 +16,7 @@ const getPhpStormConfig = (app, config) => {
             templatePath: path.join(templateDir, 'workspace.template.xml')
         },
         php: {
-            version: `${ app.configuration.php.version.split('.')[0] }.${ app.configuration.php.version.split('.')[1] }`,
+            phpLanguageLevel,
             path: path.join(process.cwd(), '.idea', 'php.xml'),
             templatePath: path.join(templateDir, 'php.template.xml')
         },

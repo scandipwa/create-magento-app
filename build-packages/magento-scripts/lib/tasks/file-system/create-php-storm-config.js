@@ -6,7 +6,7 @@ const fs = require('fs');
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
     task: async ({ config: { phpStorm }, ports }) => {
-        const phpVersion = phpStorm.php.version;
+        const { phpLanguageLevel } = phpStorm.php;
         const jdbcUrl = `jdbc:mysql://localhost:${ports.mysql}/magento`;
 
         try {
@@ -28,7 +28,7 @@ const createPhpStormConfig = () => ({
                 template: phpStorm.php.templatePath,
                 overwrite: true,
                 templateArgs: {
-                    phpVersion
+                    phpLanguageLevel
                 }
             });
         } catch (e) {
