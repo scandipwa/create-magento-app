@@ -65,6 +65,17 @@ const createPhpStormConfig = () => ({
         if (!await pathExists(path.resolve('./.idea/dataSources'))) {
             await fs.promises.mkdir(path.resolve('./.idea/dataSources'));
         }
+
+        try {
+            await setConfigFile({
+                configPathname: phpStorm.inspectionTools.path,
+                template: phpStorm.inspectionTools.templatePath,
+                overwrite: true,
+                templateArgs: {}
+            });
+        } catch (e) {
+            throw new Error(`Unexpected error accrued during Project_Default.xml config creation\n\n${e}`);
+        }
     }
 });
 

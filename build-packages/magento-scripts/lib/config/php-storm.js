@@ -31,6 +31,10 @@ const getPhpStormConfig = (app, config) => {
                 path: path.join(process.cwd(), '.idea', 'dataSources.xml'),
                 templatePath: path.join(templateDir, 'dataSources.template.xml')
             }
+        },
+        inspectionTools: {
+            path: path.join(process.cwd(), '.idea', 'inspectionProfiles', 'Project_Default.xml'),
+            templatePath: path.join(templateDir, 'Project_Default.template.xml')
         }
     };
 
