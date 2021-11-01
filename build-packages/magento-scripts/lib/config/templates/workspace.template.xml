@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+    <component name="PhpDebugGeneral" xdebug_debug_port="<%~ it.phpStorm.xdebug.v3Port %>" ignore_connections_through_unregistered_servers="true">
+        <xdebug_debug_ports port="<%~ it.phpStorm.xdebug.v3Port %>" />
+        <xdebug_debug_ports port="<%~ it.phpStorm.xdebug.v2Port %>" />
+    </component>
+    <component name="PhpServers">
+        <servers>
+            <server host="<%~ it.phpStorm.xdebug.debugServerAddress %>" id="7e16e907-9ce3-4559-9d26-a30a5650d11f" name="<%~ it.phpStorm.xdebug.serverName %>" />
+        </servers>
+    </component>
+    <component name="RunManager">
+        <configuration name="<%~ it.phpStorm.xdebug.runManagerName %>" type="PhpRemoteDebugRunConfigurationType" factoryName="PHP Remote Debug" filter_connections="FILTER" server_name="<%~ it.phpStorm.xdebug.serverName %>" session_id="<%~ it.phpStorm.xdebug.sessionId %>">
+            <method v="2" />
+        </configuration>
+    </component>
+    <component name="PropertiesComponent">
+        <property name="DatabaseDriversLRU" value="<%~ it.phpStorm.database.driver %>" />
+    </component>
+</project>

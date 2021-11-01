@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="PS-212.5284.49">
+    <data-source name="<%~ it.phpStorm.database.dataSourceManagerName %>" uuid="a2eadb3c-6fc9-4d85-b5f4-d8114906ce2f">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" exact-version="0" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>magento</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>

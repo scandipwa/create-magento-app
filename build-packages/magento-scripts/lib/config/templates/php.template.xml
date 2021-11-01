@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+    <component name="PhpCodeSniffer">
+        <phpcs_settings>
+            <PhpCSConfiguration beautifier_path="$PROJECT_DIR$/vendor/bin/phpcbf" standards="Magento2;MySource;PEAR;PHPCompatibility;PSR1;PSR12;PSR2;Squiz;Zend" tool_path="$PROJECT_DIR$/vendor/bin/phpcs" />
+        </phpcs_settings>
+    </component>
+    <component name="PhpStan">
+        <PhpStan_settings>
+            <PhpStanConfiguration tool_path="$PROJECT_DIR$/vendor/bin/phpstan" />
+        </PhpStan_settings>
+    </component>
+    <component name="PhpProjectSharedConfiguration" php_language_level="<%~ it.phpLanguageLevel %>" />
+</project>
