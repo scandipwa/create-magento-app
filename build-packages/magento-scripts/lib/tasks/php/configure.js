@@ -3,12 +3,13 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
-const macosVersion = require('macos-version');
+const enableExtension = require('./extensions/enable');
+const installExtension = require('./extensions/install');
+const disableExtension = require('./extensions/disable');
 
 /**
  * Get enabled extensions list with versions
- * @param {Object} param0
- * @param {import('../../../typings/context').ListrContext['config']['php']} param0.php
+ * @param {import('../../../typings/context').ListrContext['config']} param0
  * @returns {Promise<{[key: string]: string}}>}
  */
 const getEnabledExtensions = async ({ php }) => {
@@ -29,8 +30,7 @@ const getEnabledExtensions = async ({ php }) => {
 
 /**
  * Get installed extensions
- * @param {Object} param0
- * @param {import('../../../typings/context').ListrContext['config']['php']} param0.php
+ * @param {import('../../../typings/context').ListrContext['config']} param0
  * @returns {Promise<string[]>}
  */
 const getInstalledExtensions = async ({ php }) => {
@@ -44,45 +44,20 @@ const getInstalledExtensions = async ({ php }) => {
 };
 
 /**
- * @type {(extensions: string[]) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
- */
-const disablingExtensions = (extensions) => ({
-    title: `Disabling extensions ${extensions.join(', ')}`,
-    task: async ({ config: { overridenConfiguration: { configuration: { php } } } }, task) => {
-        try {
-            for (const extension of extensions) {
-                await execAsyncSpawn(`
-                source ~/.phpbrew/bashrc && \
-                phpbrew use ${ php.version } && \
-                phpbrew ext disable ${extension}`, {
-                    callback: (t) => {
-                        task.output = t;
-                    }
-                });
-            }
-        } catch (e) {
-            throw new Error(`Something went wrong during extension disabling.\n\n${e}`);
-        }
-    },
-    options: {
-        bottomBar: 10
-    }
-});
-
-/**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const configure = () => ({
     title: 'Configuring PHP extensions',
     task: async ({ config, debug }, task) => {
-        const { php, overridenConfiguration: { configuration: { php: { disabledExtensions = [] } } } } = config;
-        const enabledExtensions = await getEnabledExtensions({ php });
-        const installedExtensions = await getInstalledExtensions({ php });
+        const { php, php: { disabledExtensions = [] } } = config;
+        const enabledExtensions = await getEnabledExtensions(config);
+        const installedExtensions = await getInstalledExtensions(config);
 
         if (!debug && enabledExtensions.xdebug && !disabledExtensions.includes('xdebug')) {
             disabledExtensions.push('xdebug');
         }
 
+        /** @type {[string, import('../../../typings/index').PHPExtension][]} */
         const missingExtensions = Object.entries(php.extensions)
             .filter(([name, options]) => {
                 const extensionName = options.extensionName || name;
@@ -106,47 +81,39 @@ const configure = () => ({
                 return false;
             });
 
+        /** @type {import('listr2').ListrTask[]} */
+        const extensionTasks = [];
+
         if (missingExtensions.length > 0) {
-            try {
-                for (const [extensionName, extensionOptions] of missingExtensions) {
-                    const options = macosVersion.isMacOS ? extensionOptions.macOptions : extensionOptions.options;
-                    const { hooks = {} } = extensionOptions;
-                    if (hooks.preInstall) {
-                        await Promise.resolve(hooks.preInstall(config));
-                    }
-                    if (installedExtensions.includes(extensionName)) {
-                        await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
-                        phpbrew use ${ php.version } && \
-                        phpbrew ext enable ${ extensionName }`,
-                        {
-                            callback: (t) => {
-                                task.output = t;
-                            }
-                        });
-                    } else {
-                        await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
-                        phpbrew use ${ php.version } && \
-                        phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
-                        {
-                            callback: (t) => {
-                                task.output = t;
-                            }
-                        });
-                    }
-                    if (hooks.postInstall) {
-                        await Promise.resolve(hooks.postInstall(config));
-                    }
+            missingExtensions.forEach(([extensionName, extensionOptions]) => {
+                if (installedExtensions.includes(extensionName)) {
+                    extensionTasks.push(enableExtension(extensionName, extensionOptions));
+                } else {
+                    extensionTasks.push(installExtension(extensionName, extensionOptions));
                 }
-            } catch (e) {
-                throw new Error(`Something went wrong during the extension installation.\n\n${e}`);
-            }
+            });
         }
 
         if (disabledExtensions.length > 0) {
-            return task.newListr(
-                disablingExtensions(disabledExtensions)
-            );
+            disabledExtensions.forEach((extensionName) => {
+                extensionTasks.push(disableExtension(extensionName));
+            });
         }
+
+        if (extensionTasks.length === 0) {
+            task.skip();
+            return;
+        }
+
+        return task.newListr(
+            extensionTasks,
+            {
+                concurrent: false,
+                rendererOptions: {
+                    collapse: false
+                }
+            }
+        );
     },
     options: {
         bottomBar: 10

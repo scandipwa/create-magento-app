@@ -1,3 +1,7 @@
+import { ListrTaskWrapper } from 'listr2';
+
+import { ListrContext } from './context';
+
 /* eslint-disable no-use-before-define */
 export interface ServiceWithVersion {
     /**
@@ -37,11 +41,40 @@ export interface PHPExtension extends Record<string, unknown> {
      * }
      * ```
      */
+    linuxOptions?: string
+    macosOptions?: string
     extensionName?: string
     hooks?: {
-        preInstall: (config: CMAConfiguration['configuration']) => Promise<void>
-        postInstall: (config: CMAConfiguration['configuration']) => Promise<void>
+        preEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
+        postEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
+        preDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
+        postDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
+        preInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
+        postInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
     }
+    /**
+     * Allow to define custom logic to install extension
+     */
+    install?: (
+        ctx: ListrContext,
+        task: ListrTaskWrapper<ListrContext, any>
+    ) => Promise<void> | void
+
+    /**
+     * Allow to define custom logic to enable an extension
+     */
+    enable?: (
+        ctx: ListrContext,
+        task: ListrTaskWrapper<ListrContext, any>
+    ) => Promise<void> | void
+
+    /**
+     * Allow to define custom logic to disable an extension
+     */
+    disable?: (
+        ctx: ListrContext,
+        task: ListrTaskWrapper<ListrContext, any>
+    ) => Promise<void> | void
 }
 
 export interface PHPExtensions {
@@ -54,6 +87,7 @@ export interface PHPExtensions {
     xdebug: PHPExtension
     fileinfo: PHPExtension
     libsodium: PHPExtension
+    [key: string]: PHPExtension
 }
 
 export interface PHPConfiguration {

@@ -1,4 +1,4 @@
-import { CMAConfiguration, PHPExtension } from './index';
+import { CMAConfiguration, PHPExtensions } from './index';
 
 export interface ListrContext {
     magentoVersion: string
@@ -29,7 +29,7 @@ export interface ListrContext {
             fpmBinPath: string
             fpmConfPath: string
             fpmPidFilePath: string
-            extensions: PHPExtension
+            extensions: PHPExtensions
             version: string
         }
         composer: {
