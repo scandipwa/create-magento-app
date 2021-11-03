@@ -5,7 +5,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createNetwork = () => ({
-    title: 'Deploying docker network',
+    title: 'Deploying Docker network',
     task: async ({ config: { docker } }, task) => {
         const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
 
@@ -41,7 +41,7 @@ Use command ${logger.style.command('docker network prune')}`);
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const removeNetwork = () => ({
-    title: 'Removing docker network',
+    title: 'Removing Docker network',
     task: async ({ config: { docker } }, task) => {
         const networkList = (await execAsyncSpawn("docker network ls --format '{{.Name}}'")).split('\n');
 
