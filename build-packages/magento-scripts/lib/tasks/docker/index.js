@@ -6,7 +6,7 @@ const volumes = require('./volumes');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const startServices = () => ({
-    title: 'Starting docker services',
+    title: 'Starting Docker services',
     task: (ctx, task) => task.newListr([
         {
             title: 'Preparing services',

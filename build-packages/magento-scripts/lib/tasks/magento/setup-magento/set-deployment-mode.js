@@ -5,7 +5,7 @@ const runMagentoCommand = require('../../../util/run-magento');
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
-    title: 'Switching magento mode',
+    title: 'Switching Magento mode',
     task: async ({ magentoVersion, config: { magentoConfiguration: { mode } } }, task) => {
         const { result } = await runMagentoCommand('deploy:mode:show', {
             throwNonZeroCode: false,

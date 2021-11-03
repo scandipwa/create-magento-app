@@ -9,7 +9,7 @@ const getDockerVersion = require('./version');
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDocker = () => ({
-    title: 'Checking docker',
+    title: 'Checking Docker',
     task: async (ctx, task) => {
         const { code } = await execAsyncSpawn('docker -v', {
             withCode: true
@@ -63,7 +63,7 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
             getDockerVersion(),
             {
                 task: (ctx) => {
-                    task.title = `Using docker version ${ctx.dockerVersion}`;
+                    task.title = `Using Docker version ${ctx.dockerVersion}`;
                 }
             }
         ]);

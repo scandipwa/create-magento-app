@@ -48,7 +48,7 @@ const downloadComposerBinary = async ({ composer }) => {
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installComposer = () => ({
-    title: 'Installing composer',
+    title: 'Installing Composer',
     task: async (ctx, task) => {
         const { composer, php } = ctx.config;
         const hasComposerInCache = await pathExists(composer.binPath);
@@ -98,7 +98,7 @@ const installComposer = () => ({
         }
 
         const composerVersion = await getComposerVersion({ composer, php });
-        task.title = `Using composer version ${composerVersion}`;
+        task.title = `Using Composer version ${composerVersion}`;
         ctx.composerVersion = composerVersion;
     },
     options: {

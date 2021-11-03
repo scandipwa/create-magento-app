@@ -7,7 +7,7 @@ const getProcessId = require('./get-process-id');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const startPhpFpm = () => ({
-    title: 'Starting php-fpm',
+    title: 'Starting PHP-FPM',
     task: async ({ config: { overridenConfiguration }, projectPath }, task) => {
         const php = getPhpConfig(overridenConfiguration.configuration, getBaseConfig(projectPath));
         const processId = await getProcessId(php.fpmPidFilePath);
@@ -35,7 +35,7 @@ const startPhpFpm = () => ({
                 }
             );
         } catch (e) {
-            throw new Error(`Error during php-fpm start\n\n${e}`);
+            throw new Error(`Error during PHP-FPM start\n\n${e}`);
         }
     },
     options: {

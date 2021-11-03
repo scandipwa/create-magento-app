@@ -9,7 +9,7 @@ const getProcessId = require('./get-process-id');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const stopPhpFpmTask = () => ({
-    title: 'Stopping php-fpm',
+    title: 'Stopping PHP-FPM',
     task: async ({ config: { overridenConfiguration }, projectPath }, task) => {
         const php = getPhpConfig(overridenConfiguration.configuration, getBaseConfig(projectPath));
         const processId = await getProcessId(php.fpmPidFilePath);

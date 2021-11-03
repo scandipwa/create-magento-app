@@ -4,7 +4,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkComposer = () => ({
-    title: 'Checking composer environmental variables',
+    title: 'Checking Composer environmental variables',
     task: () => {
         try {
             if (!process.env.COMPOSER_AUTH) {
