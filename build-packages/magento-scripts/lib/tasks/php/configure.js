@@ -1,14 +1,17 @@
 /* eslint-disable max-len */
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const macosVersion = require('macos-version');
 
 /**
- * Get installed modules list with versions
+ * Get enabled extensions list with versions
  * @param {Object} param0
  * @param {import('../../../typings/context').ListrContext['config']['php']} param0.php
  * @returns {Promise<{[key: string]: string}}>}
  */
-const getInstalledModules = async ({ php }) => {
+const getEnabledExtensions = async ({ php }) => {
     const output = await execAsyncSpawn(
         `${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
     );
@@ -22,6 +25,22 @@ const getInstalledModules = async ({ php }) => {
             return [moduleName, moduleVersion];
         })
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {});
+};
+
+/**
+ * Get installed extensions
+ * @param {Object} param0
+ * @param {import('../../../typings/context').ListrContext['config']['php']} param0.php
+ * @returns {Promise<string[]>}
+ */
+const getInstalledExtensions = async ({ php }) => {
+    const extensionDirectory = path.join(os.homedir(), '.phpbrew', 'build', `php-${php.version}`, 'ext');
+
+    const availableExtensions = await fs.promises.readdir(extensionDirectory, {
+        encoding: 'utf-8'
+    });
+
+    return availableExtensions;
 };
 
 /**
@@ -57,9 +76,10 @@ const configure = () => ({
     title: 'Configuring PHP extensions',
     task: async ({ config, debug }, task) => {
         const { php, overridenConfiguration: { configuration: { php: { disabledExtensions = [] } } } } = config;
-        const loadedModules = await getInstalledModules({ php });
+        const enabledExtensions = await getEnabledExtensions({ php });
+        const installedExtensions = await getInstalledExtensions({ php });
 
-        if (!debug && loadedModules.xdebug && !disabledExtensions.includes('xdebug')) {
+        if (!debug && enabledExtensions.xdebug && !disabledExtensions.includes('xdebug')) {
             disabledExtensions.push('xdebug');
         }
 
@@ -75,11 +95,11 @@ const configure = () => ({
                 if (extensionName === 'xdebug' && !debug) {
                     return false;
                 }
-                if (!loadedModules[extensionName]) {
+                if (!enabledExtensions[extensionName]) {
                     return true;
                 }
 
-                if (options && options.version && loadedModules[extensionName] !== options.version) {
+                if (options && options.version && enabledExtensions[extensionName] !== options.version) {
                     return true;
                 }
 
@@ -91,19 +111,28 @@ const configure = () => ({
                 for (const [extensionName, extensionOptions] of missingExtensions) {
                     const options = macosVersion.isMacOS ? extensionOptions.macOptions : extensionOptions.options;
                     const { hooks = {} } = extensionOptions;
-
                     if (hooks.preInstall) {
                         await Promise.resolve(hooks.preInstall(config));
                     }
-                    await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
-                phpbrew use ${ php.version } && \
-                phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
-                    {
-                        callback: (t) => {
-                            task.output = t;
-                        }
-                    });
-
+                    if (installedExtensions.includes(extensionName)) {
+                        await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
+                        phpbrew use ${ php.version } && \
+                        phpbrew ext enable ${ extensionName }`,
+                        {
+                            callback: (t) => {
+                                task.output = t;
+                            }
+                        });
+                    } else {
+                        await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
+                        phpbrew use ${ php.version } && \
+                        phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
+                        {
+                            callback: (t) => {
+                                task.output = t;
+                            }
+                        });
+                    }
                     if (hooks.postInstall) {
                         await Promise.resolve(hooks.postInstall(config));
                     }
