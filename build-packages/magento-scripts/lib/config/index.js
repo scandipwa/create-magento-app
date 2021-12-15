@@ -4,7 +4,7 @@ const {
     getConfigurations,
     defaultConfiguration
 } = require('./versions');
-const getPhpConfig = require('./php');
+const getPhpConfig = require('./php-config');
 const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const { getPhpStormConfig } = require('./phpstorm/debug-config');

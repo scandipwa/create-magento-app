@@ -1,5 +1,5 @@
 const { execAsyncSpawn } = require('../../util/exec-async-command');
-const getPhpConfig = require('../../config/php');
+const getPhpConfig = require('../../config/php-config');
 const { getBaseConfig } = require('../../config/index');
 const getProcessId = require('./get-process-id');
 
