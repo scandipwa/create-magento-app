@@ -7,7 +7,7 @@ const {
 const getPhpConfig = require('./php');
 const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
-const { getPhpStormConfig } = require('./php-storm');
+const { getPhpStormConfig } = require('./phpstorm/debug-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
 
