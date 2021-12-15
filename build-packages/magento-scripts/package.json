@@ -27,6 +27,7 @@
         "enquirer": "2.3.6",
         "eta": "1.12.3",
         "getos": "3.2.1",
+        "hjson": "^3.2.2",
         "is-installed-globally": "0.4.0",
         "joi": "17.4.2",
         "listr2": "3.13.0",
