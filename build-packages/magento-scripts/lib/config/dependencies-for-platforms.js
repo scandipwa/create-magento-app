@@ -86,7 +86,6 @@ const dependenciesForPlatforms = {
             'libreadline-dev',
             'libsodium-dev',
             'libsqlite3-dev',
-            'libssl-dev',
             'libxml2-dev',
             ['libxslt-dev', 'libxslt1-dev'],
             'libonig-dev',
