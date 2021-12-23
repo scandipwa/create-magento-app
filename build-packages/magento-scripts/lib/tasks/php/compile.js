@@ -17,8 +17,8 @@ const compile = () => ({
                 platformCompileOptions.extraOptions.push('--with-libdir=lib64');
             }
         }
-        const exportEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `export ${key}="${value}"`).join(' && ');
-        const phpCompileCommand = `${exportEnv ? `${exportEnv} && ` : ''} \
+        const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' && ');
+        const phpCompileCommand = `${commandEnv ? `${commandEnv} && ` : ''} \
         phpbrew install -j ${platformCompileOptions.cpuCount} ${php.version} ${platformCompileOptions.variants.join(' ')} \
         -- ${platformCompileOptions.extraOptions.join(' ')}`;
 
