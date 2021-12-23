@@ -17,7 +17,7 @@ module.exports = ({ templateDir } = {}) => ({
                 SimpleXML: {},
                 libsodium,
                 xdebug: {
-                    version: '3.0.4'
+                    version: '3.1.2'
                 }
             }
         },

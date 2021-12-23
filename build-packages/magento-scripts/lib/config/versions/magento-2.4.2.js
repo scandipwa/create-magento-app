@@ -18,7 +18,7 @@ module.exports = ({ templateDir } = {}) => ({
                 libsodium,
                 fileinfo: {},
                 xdebug: {
-                    version: '3.0.4'
+                    version: '3.1.2'
                 }
             }
         },
