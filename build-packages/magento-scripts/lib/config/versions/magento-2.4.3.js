@@ -7,7 +7,7 @@ module.exports = ({ templateDir } = {}) => ({
     isDefault: true,
     configuration: {
         php: {
-            version: '7.4.18',
+            version: '7.4.27',
             configTemplate: path.join(templateDir || '', 'php.template.ini'),
             extensions: {
                 gd: {},
