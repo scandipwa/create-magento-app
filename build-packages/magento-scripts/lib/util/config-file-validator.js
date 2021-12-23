@@ -83,7 +83,13 @@ const serviceConfigurationSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']['composer']>}
  */
 const composerConfigurationSchema = Joi.object({
-    version: Joi.string().optional().allow('1', '2')
+    version: Joi.string().optional().custom((value) => {
+        if (['1', '2'].includes(value)) {
+            return undefined;
+        }
+
+        return versionValidator(value);
+    })
 });
 
 /**
