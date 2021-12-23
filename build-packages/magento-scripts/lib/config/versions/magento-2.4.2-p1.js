@@ -40,7 +40,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '7.12.1'
         },
         composer: {
-            version: '2'
+            version: '2.1.14'
         }
     },
     magento: defaultMagentoConfig,
