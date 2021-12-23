@@ -32,8 +32,12 @@ const createComposerDir = async ({ composer }) => {
 };
 
 const downloadComposerBinary = async ({ composer }) => {
+    const composerVersion = /^\d$/.test(composer.version)
+        ? `latest-${composer.version}.x`
+        : composer.version;
+
     try {
-        await downloadFile(`https://getcomposer.org/download/latest-${composer.version}.x/composer.phar`, {
+        await downloadFile(`https://getcomposer.org/download/${composerVersion}/composer.phar`, {
             destination: composer.binPath
         });
     } catch (e) {
