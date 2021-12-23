@@ -63,11 +63,14 @@ const installComposer = () => ({
             await downloadComposerBinary({ composer });
         } else {
             const currentComposerVersion = await getComposerVersion({ composer, php });
+            const expectedComposerVersion = /^\d$/.test(composer.version)
+                ? `${composer.version}.x`
+                : composer.version;
 
-            if (!semver.satisfies(currentComposerVersion, `${composer.version}.x`)) {
+            if (!semver.satisfies(currentComposerVersion, expectedComposerVersion)) {
                 const continueComposerBinaryVersionSwitch = await task.prompt({
                     type: 'Select',
-                    message: `You have Composer ${logger.style.misc(`${currentComposerVersion}`)} while your Magento version requires ${logger.style.misc(`${composer.version}.x`)}!`,
+                    message: `You have Composer ${logger.style.misc(`${currentComposerVersion}`)} while your Magento version requires ${logger.style.misc(expectedComposerVersion)}!`,
                     choices: [
                         {
                             message: `Continue with current installed version (${logger.style.misc(`${currentComposerVersion}`)})`,
@@ -90,7 +93,7 @@ const installComposer = () => ({
                     break;
                 }
                 case 'exit': {
-                    throw new Error(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(`${composer.version}.x`)}!`);
+                    throw new Error(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(expectedComposerVersion)}!`);
                 }
                 case 'continue':
                 default: {
