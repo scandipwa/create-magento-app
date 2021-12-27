@@ -1,5 +1,5 @@
 {
-  "name": "@scandipwa/magento-scripts-php-ioncude-extension",
+  "name": "@scandipwa/magento-scripts-php-ioncube-extension",
   "description": "PHP iouncube extension installer for CMA",
   "homepage": "https://docs.create-magento-app.com/",
   "repository": "github:scandipwa/create-magento-app",
