@@ -1,11 +1,12 @@
 /* eslint-disable max-len */
 const path = require('path');
-const os = require('os');
 const fs = require('fs');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const pathExists = require('../../util/path-exists');
 const enableExtension = require('./extensions/enable');
 const installExtension = require('./extensions/install');
 const disableExtension = require('./extensions/disable');
+const phpbrewConfig = require('../../config/phpbrew');
 
 /**
  * Get enabled extensions list with versions
@@ -29,12 +30,35 @@ const getEnabledExtensions = async ({ php }) => {
 };
 
 /**
+ * Get disabled extensions list
+ * @param {import('../../../typings/context').ListrContext['config']} param0
+ * @returns {Promise<string[]>}
+ */
+const getDisabledExtensions = async ({ php }) => {
+    const extensionsIniDirectory = path.join(phpbrewConfig.phpPath, `php-${php.version}`, 'var', 'db');
+
+    if (!await pathExists(extensionsIniDirectory)) {
+        return [];
+    }
+
+    const extensionIniList = await fs.promises.readdir(
+        extensionsIniDirectory,
+        {
+            encoding: 'utf-8',
+            withFileTypes: true
+        }
+    );
+
+    return extensionIniList.filter((f) => f.isFile() && f.name.endsWith('.disabled')).map((f) => f.name.replace('.disabled', ''));
+};
+
+/**
  * Get installed extensions
  * @param {import('../../../typings/context').ListrContext['config']} param0
  * @returns {Promise<string[]>}
  */
 const getInstalledExtensions = async ({ php }) => {
-    const extensionDirectory = path.join(os.homedir(), '.phpbrew', 'build', `php-${php.version}`, 'ext');
+    const extensionDirectory = path.join(phpbrewConfig.buildPath, `php-${php.version}`, 'ext');
 
     const availableExtensions = await fs.promises.readdir(extensionDirectory, {
         encoding: 'utf-8'
@@ -52,6 +76,7 @@ const configure = () => ({
         const { php, php: { disabledExtensions = [] } } = config;
         const enabledExtensions = await getEnabledExtensions(config);
         const installedExtensions = await getInstalledExtensions(config);
+        const disabledExtensionsInPHP = await getDisabledExtensions(config);
 
         if (!debug && enabledExtensions.xdebug && !disabledExtensions.includes('xdebug')) {
             disabledExtensions.push('xdebug');
@@ -86,7 +111,7 @@ const configure = () => ({
 
         if (missingExtensions.length > 0) {
             missingExtensions.forEach(([extensionName, extensionOptions]) => {
-                if (installedExtensions.includes(extensionName)) {
+                if (installedExtensions.includes(extensionName) && disabledExtensionsInPHP.includes(extensionName)) {
                     extensionTasks.push(enableExtension(extensionName, extensionOptions));
                 } else {
                     extensionTasks.push(installExtension(extensionName, extensionOptions));
