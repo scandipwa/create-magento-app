@@ -1,0 +1,20 @@
+{
+  "name": "@scandipwa/magento-scripts-php-ioncude-extension",
+  "description": "PHP iouncube extension installer for CMA",
+  "homepage": "https://docs.create-magento-app.com/",
+  "repository": "github:scandipwa/create-magento-app",
+  "main": "./index.js",
+  "license": "OSL-3.0",
+  "version": "0.0.0",
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "publishConfig": {
+      "access": "public"
+  }
+}
