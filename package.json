@@ -33,7 +33,8 @@
             "no-param-reassign": "warn",
             "no-restricted-syntax": "off",
             "consistent-return": "off",
-            "no-await-in-loop": "off"
+            "no-await-in-loop": "off",
+            "@scandipwa/scandipwa-guidelines/export-level-one": "off"
         }
     },
     "workspaces": [
