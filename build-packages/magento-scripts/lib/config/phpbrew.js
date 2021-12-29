@@ -1,7 +1,7 @@
 const os = require('os');
 const path = require('path');
 
-const homePath = process.env.PHPBREW_HOME || os.homedir();
+const homePath = process.env.PHPBREW_HOME || path.join(os.homedir(), '.phpbrew');
 const phpbrewConfig = {
     homePath,
     buildPath: path.join(homePath, 'build'),
