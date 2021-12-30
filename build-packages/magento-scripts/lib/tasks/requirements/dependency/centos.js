@@ -5,7 +5,7 @@ const installDependenciesTask = require('../../../util/install-dependencies-task
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const fedoraDependenciesCheck = () => ({
+const centosDependenciesCheck = () => ({
     title: 'Checking CentOS dependencies',
     task: async (ctx, task) => {
         const installedDependencies = (await execAsyncSpawn('yum list installed')).split('\n')
@@ -32,4 +32,4 @@ const fedoraDependenciesCheck = () => ({
     }
 });
 
-module.exports = fedoraDependenciesCheck;
+module.exports = centosDependenciesCheck;
