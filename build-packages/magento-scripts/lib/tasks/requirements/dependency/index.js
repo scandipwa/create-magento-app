@@ -1,4 +1,3 @@
-const os = require('os');
 const osPlatform = require('../../../util/os-platform');
 const archDependenciesCheck = require('./arch');
 const fedoraDependenciesCheck = require('./fedora');
@@ -7,9 +6,7 @@ const ubuntuDependenciesCheck = require('./ubuntu');
 const macDependenciesCheck = require('./mac');
 
 const dependencyCheck = async () => {
-    const currentPlatform = os.platform();
-
-    if (currentPlatform === 'darwin') {
+    if (process.platform === 'darwin') {
         return macDependenciesCheck();
     }
 
