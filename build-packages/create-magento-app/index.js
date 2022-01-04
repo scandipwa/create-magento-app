@@ -8,6 +8,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const createFilesystem = require('@scandipwa/scandipwa-dev-utils/create-filesystem');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps');
+const { checkDependencies } = require('./lib/dependency');
 
 const greet = (name, pathname) => {
     const relativePathname = `./${pathname}`;
@@ -97,6 +98,8 @@ const createApp = async (options) => {
 };
 
 const init = async (options) => {
+    await checkDependencies();
+
     try {
         // Validate we are on the latest version of the application
         const latest = await getLatestVersion('create-magento-app');
