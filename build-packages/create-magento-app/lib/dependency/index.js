@@ -9,7 +9,9 @@ const checkDependencies = async () => {
     if (process.platform === 'darwin') {
         return macDependenciesCheck();
     }
+
     const { dist } = await osPlatform();
+
     switch (dist) {
     case 'Arch Linux':
     case 'Manjaro Linux': {
