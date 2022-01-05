@@ -44,3 +44,8 @@ This extension simplifies installation if Ioncube extension in CMA project.
 
     yarn start
     ```
+
+
+## Demo
+
+Demo setup available [here](https://github.com/scandipwa/create-magento-app/tree/master/sample-packages/magento-2.4.3-p1-ioncube)
