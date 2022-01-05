@@ -1,6 +1,6 @@
 # magento-scripts-php-ioncube-extension
 
-This extension simplifies installation if Ioncube extension in CMA project.
+This extension simplifies installation of Ioncube extension in CMA project.
 
 ## Installation
 
