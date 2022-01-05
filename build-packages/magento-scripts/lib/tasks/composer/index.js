@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const semver = require('semver');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const downloadFile = require('../../util/download-file');
@@ -8,6 +9,7 @@ const safeRegexExtract = require('../../util/safe-regex-extract');
 const installPrestissimo = require('./install-prestissimo');
 
 /**
+ * @param {import('../../../typings/context').ListrContext['config']} param0
  * @returns {Promise<string>}
  */
 const getComposerVersion = async ({ composer, php }) => {
@@ -17,13 +19,23 @@ const getComposerVersion = async ({ composer, php }) => {
         string: composerVersionOutput,
         regex: /Composer version ([\d.]+)/i,
         onNoMatch: () => {
-            throw new Error(`No composer version found in composer version output!\n\n${composerVersionOutput}`);
+            throw new Error(`
+No composer version found in composer version output!\n\n${composerVersionOutput}
+
+Follow steps below to resolve this issue:
+1. Check ${logger.style.file(path.relative(process.cwd(), composer.binPath))} file content, inside this file should be Composer PHP code.
+2. If file content is not correct, try deleting this file and run ${logger.style.command('start')} command again, CMA will try re-download this file.
+3. If steps above didn't help, manually download Composer version ${composer.version} from ${logger.style.code('https://getcomposer.org/download/')} and put it inside cache directory ${logger.style.file(path.relative(process.cwd(), composer.dirPath))} with ${logger.style.code('composer.phar')} file name.
+`);
         }
     });
 
     return composerVersion;
 };
 
+/**
+ * @param {import('../../../typings/context').ListrContext['config']} param0
+ */
 const createComposerDir = async ({ composer }) => {
     const dirExists = await pathExists(composer.dirPath);
     if (!dirExists) {
@@ -31,6 +43,9 @@ const createComposerDir = async ({ composer }) => {
     }
 };
 
+/**
+ * @param {import('../../../typings/context').ListrContext['config']} param0
+ */
 const downloadComposerBinary = async ({ composer }) => {
     const composerVersion = /^\d$/.test(composer.version)
         ? `latest-${composer.version}.x`
