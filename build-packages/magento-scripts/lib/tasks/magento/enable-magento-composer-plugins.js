@@ -92,14 +92,16 @@ const enableMagentoComposerPlugins = () => ({
             const missingPlugins = composerPlugins.filter((p) => !allowPluginsKeys.includes(p));
             const answerForEnablingPlugins = await task.prompt({
                 type: 'Select',
-                message: `Composer 2.2 introduces strengthening of security by manually requiring allowing composer-plugins to run.
-Magento requires the following plugins to correctly operate: ${missingPlugins.map((p) => logger.style.code(p)).join(', ')}
+                message: `Composer 2.2 requires manually allowing composer-plugins to run.
+Magento requires the following plugins to correctly operate:
+
+${missingPlugins.map((p) => logger.style.code(p)).join('\n')}
 
 Do you want to enable them all or disable some of them?`,
-                choices: ['enable all', 'configure manually', 'skip this step']
+                choices: ['Enable all', 'Configure manually', 'Skip this step']
             });
 
-            switch (answerForEnablingPlugins) {
+            switch (answerForEnablingPlugins.toLowerCase()) {
             case 'enable all': {
                 const userConfirmation = await task.prompt({
                     type: 'Confirm',
