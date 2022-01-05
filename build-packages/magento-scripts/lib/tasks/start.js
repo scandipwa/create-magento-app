@@ -26,6 +26,7 @@ const setupThemes = require('./theme/setup-themes');
 const pkg = require('../../package.json');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
+const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-plugins');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -111,6 +112,7 @@ const configureProject = () => ({
         configurePhp(),
         installPrestissimo(),
         installMagento(),
+        enableMagentoComposerPlugins(),
         startServices(),
         startPhpFpm(),
         connectToMySQL()
