@@ -11,17 +11,11 @@ const setConfigFile = require('../util/set-config');
  */
 const checkConfigurationFile = () => ({
     title: 'Checking configuration file',
-    task: async (ctx) => {
+    task: async (ctx, task) => {
         const { projectPath = process.cwd() } = ctx;
         const { cacheDir, templateDir } = getBaseConfig(projectPath);
         const configJSFilePath = path.join(projectPath, 'cma.js');
         const magentoConfigFilePath = path.join(cacheDir, 'app-config.json');
-
-        if (ctx.edition) {
-            if (!['community', 'enterprise'].includes(ctx.edition)) {
-                throw new Error(`Magento edition "${ctx.edition}" does not exists or not supported!`);
-            }
-        }
 
         if (!await pathExists(configJSFilePath)) {
             const legacyMagentoConfigExists = await pathExists(magentoConfigFilePath);
@@ -35,8 +29,16 @@ const checkConfigurationFile = () => ({
 
                 magentoConfiguration = legacyMagentoConfig.magento || legacyMagentoConfig;
             } else {
+                const magentoEdition = await task.prompt({
+                    type: 'Select',
+                    message: `Please select Magento edition you want to install.
+
+Note that Enterprise edition requires Magento Enterprise License keys.`,
+                    choices: ['Community', 'Enterprise']
+                });
+
                 magentoConfiguration = deepmerge(defaultMagentoConfig, {
-                    edition: ctx.edition || 'community'
+                    edition: magentoEdition.toLowerCase()
                 });
             }
 
