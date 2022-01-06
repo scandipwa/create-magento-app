@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const macosVersion = require('macos-version');
+const phpbrewConfig = require('../../../config/phpbrew');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
@@ -25,7 +26,7 @@ const installExtension = (extensionName, extensionOptions) => ({
                 await Promise.resolve(hooks.preInstall(config));
             }
 
-            await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
+            await execAsyncSpawn(`source ${phpbrewConfig.bashrcPath} && \
                 phpbrew use ${ php.version } && \
                 phpbrew ext install ${ extensionName }${ extensionOptions.version ? ` ${extensionOptions.version}` : ''}${ options ? ` -- ${ options }` : ''}`,
             {
