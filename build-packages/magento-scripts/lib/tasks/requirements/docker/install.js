@@ -45,7 +45,7 @@ const installDocker = () => ({
                 execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
                 executeSudoCommand('sudo sh get-docker.sh'),
                 executeSudoCommand('sudo service docker start'),
-                executeSudoCommand('sudo service docker enable'),
+                executeSudoCommand('sudo systemctl enable docker.service'),
                 ...postInstallSteps
             ]);
         }
