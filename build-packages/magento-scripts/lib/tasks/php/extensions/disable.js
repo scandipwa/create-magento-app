@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+const phpbrewConfig = require('../../../config/phpbrew');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
@@ -20,7 +21,7 @@ const disableExtension = (extensionName) => ({
             if (hooks && hooks.preDisable) {
                 await Promise.resolve(hooks.preDisable(config));
             }
-            await execAsyncSpawn(`source ~/.phpbrew/bashrc && \
+            await execAsyncSpawn(`source ${phpbrewConfig.bashrcPath} && \
             phpbrew use ${ php.version } && \
             phpbrew ext disable ${ extensionName }`,
             {
