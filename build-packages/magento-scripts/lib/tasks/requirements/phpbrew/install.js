@@ -12,7 +12,7 @@ const installDependenciesTask = require('../../../util/install-dependencies-task
 const installPHPBrewDependencies = () => ({
     title: 'Installing PHPBrew dependencies',
     task: async (ctx, task) => {
-        if (os.platform() === 'darwin') {
+        if (process.platform === 'darwin') {
             return task.newListr(
                 installDependenciesTask({
                     platform: 'darwin',
@@ -183,9 +183,7 @@ Then you can continue installation.`);
 const installPHPBrew = () => ({
     title: 'Installing PHPBrew',
     task: async (ctx, task) => {
-        const currentPlatform = os.platform();
-
-        if (currentPlatform === 'darwin') {
+        if (process.platform === 'darwin') {
             return task.newListr([
                 installXcode(),
                 installPHPBrewDependencies(),
