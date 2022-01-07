@@ -1,9 +1,10 @@
+const fs = require('fs');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const compile = require('./compile');
 const configure = require('./configure');
 const updatePhpBrew = require('./update-phpbrew');
+const phpbrewConfig = require('../../config/phpbrew');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -21,12 +22,17 @@ const installPhp = () => ({
         }
 
         task.title = `Installing PHP ${php.version}`;
-        const versionRegex = new RegExp(php.version);
 
         try {
-            const phpVersions = await execAsyncSpawn('phpbrew list');
+            const hasPHPVersion = (
+                await fs.promises.readdir(phpbrewConfig.phpPath, {
+                    encoding: 'utf-8',
+                    withFileTypes: true
+                })
+            )
+                .some((f) => f.isDirectory() && f.name === `php-${php.version}`);
 
-            if (versionRegex.test(phpVersions) && !recompilePhp) {
+            if (hasPHPVersion && !recompilePhp) {
                 task.skip();
                 // eslint-disable-next-line consistent-return
                 return;
