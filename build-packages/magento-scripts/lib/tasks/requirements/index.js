@@ -1,8 +1,9 @@
 const checkPlatform = require('./platform');
-const checkPhpbrew = require('./phpbrew');
+const checkPHPbrew = require('./phpbrew');
 const checkComposer = require('./composer');
 const checkDocker = require('./docker');
 const checkNodeVersion = require('./node-version');
+const checkPHPVersion = require('./php-version');
 const localAuthJson = require('../composer/local-auth-json');
 
 /**
@@ -11,11 +12,12 @@ const localAuthJson = require('../composer/local-auth-json');
 const checkRequirements = () => ({
     title: 'Checking requirements',
     task: (ctx, task) => task.newListr([
-        // TODO add support for mac
         // checking if user is on supported platform
         checkPlatform(),
         // check the PHPBrew installation
-        checkPhpbrew(),
+        checkPHPbrew(),
+        // check installed PHP version
+        checkPHPVersion(),
         // check the Docker installation
         checkDocker(),
         // check for COMPOSER_AUTH or auth.json
