@@ -82,11 +82,6 @@ const checkPHPVersion = () => ({
         if (phpVersionResponseResult.length > 0) {
             const phpVersion = phpVersionResponseResult[1];
 
-            if (semver.satisfies(phpVersion, '<=7.2.x')) {
-                throw new Error(`Your installed PHP version ${phpVersion} is not supported by PHPBrew.
-Please install PHP 7.3 and newer to operate!`);
-            }
-
             if (semver.satisfies(phpVersion, '>=8.1.x')) {
                 const userConfirmation = await task.prompt({
                     type: 'Confirm',
