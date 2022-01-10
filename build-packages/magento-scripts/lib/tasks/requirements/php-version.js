@@ -19,10 +19,12 @@ const installPHPForPHPBrew = () => ({
         const platformCompileOptions = compileOptions[process.platform];
 
         if (!await pathExists(path.join(phpbrewConfig.phpPath, `${phpbrewPHPName}`, 'bin'))) {
+            const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' && ');
+
             try {
                 await execAsyncSpawn(
                     // eslint-disable-next-line max-len
-                    `phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName}`,
+                    `${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName}`,
                     {
                         callback: (t) => {
                             task.output = t;
