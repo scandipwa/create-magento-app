@@ -10,21 +10,41 @@ const compileOptions = require('../php/compile-options');
 const latestStablePHP74 = '7.4.27';
 const phpbrewPHPName = `php-${latestStablePHP74}-phpbrew`;
 
+const compileOptionsForPhp = {
+    linux: {
+        ...compileOptions.linux,
+        variants: [
+            '+default'
+        ],
+        extraOptions: []
+    },
+    darwin: {
+        ...compileOptions.darwin,
+        variants: [
+            '+default',
+            '+openssl=$(brew --prefix openssl@1.1)'
+        ],
+        extraOptions: []
+    }
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installPHPForPHPBrew = () => ({
     title: `Installing PHP ${latestStablePHP74} for PHPBrew...`,
     task: async (ctx, task) => {
-        const platformCompileOptions = compileOptions[process.platform];
+        const platformCompileOptions = compileOptionsForPhp[process.platform];
 
         if (!await pathExists(path.join(phpbrewConfig.phpPath, `${phpbrewPHPName}`, 'bin'))) {
-            const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' && ');
+            const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' ');
+
+            // eslint-disable-next-line max-len
+            const compileCommand = `${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
 
             try {
                 await execAsyncSpawn(
-                    // eslint-disable-next-line max-len
-                    `${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName}`,
+                    compileCommand,
                     {
                         callback: (t) => {
                             task.output = t;
