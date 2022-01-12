@@ -10,7 +10,7 @@ const dumpThemeConfig = () => ({
          * @type {{ tableCount: number }[][]}
          */
         const [[{ tableCount }]] = await mysqlConnection.query(`
-            SELECT count (*) AS tableCount
+            SELECT count(*) AS tableCount
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = 'magento';
         `);
