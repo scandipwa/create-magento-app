@@ -99,9 +99,9 @@ const checkPHPVersion = () => ({
     task: async (ctx, task) => {
         const phpVersionResponse = await execAsyncSpawn('php --version');
 
-        const phpVersionResponseResult = phpVersionResponse.match(/^PHP\s(\d\.\d\.\d)/i);
+        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d\.\d\.\d)/i);
 
-        if (phpVersionResponseResult.length > 0) {
+        if (phpVersionResponseResult && phpVersionResponseResult.length > 0) {
             const phpVersion = phpVersionResponseResult[1];
 
             if (semver.satisfies(phpVersion, '>=8.1.x')) {
