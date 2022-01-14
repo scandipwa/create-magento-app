@@ -1,8 +1,11 @@
+const { isTableExists } = require('../../../util/database');
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const adjustMagentoConfiguration = () => ({
     title: 'Adjusting Magento Database Configuration',
+    skip: async (ctx) => !(await isTableExists('magento', 'core_config_data', ctx)),
     task: async (ctx) => {
         const { mysqlConnection } = ctx;
 
