@@ -2,7 +2,7 @@
  * Update table in **magento** database
  * @param {String} table Table name
  * @param {{path: string, value: string}[]} values
- * @param {Object} param1
+ * @param {import('../../typings/context').ListrContext} param1
  */
 const updateTableValues = async (table, values, { mysqlConnection, task }) => {
     const [rows] = await mysqlConnection.query(`
@@ -58,6 +58,25 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
     }
 };
 
+/**
+* @param {String} database
+* @param {String} tableName
+* @param {import('../../typings/context').ListrContext} param2
+*/
+const isTableExists = async (database, tableName, { mysqlConnection }) => {
+    /**
+    * @type {{ tableCount: number }[][]}
+    */
+    const [[{ tableCount }]] = await mysqlConnection.query(`
+   SELECT count(*) as tableCount
+   FROM information_schema.TABLES
+   WHERE (TABLE_SCHEMA = ?) AND (TABLE_NAME = ?);
+`, [database, tableName]);
+
+    return tableCount > 0;
+};
+
 module.exports = {
-    updateTableValues
+    updateTableValues,
+    isTableExists
 };
