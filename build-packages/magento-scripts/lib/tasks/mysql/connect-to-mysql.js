@@ -27,7 +27,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
             }
             try {
                 const connection = await mysql.createConnection({
-                    host: 'localhost',
+                    host: '127.0.0.1',
                     port: ports.mysql,
                     user: env.MYSQL_USER,
                     password: env.MYSQL_PASSWORD,
