@@ -1,3 +1,5 @@
+import mysql2 from 'mysql2';
+
 import { CMAConfiguration, PHPExtensions } from './index';
 
 export interface ListrContext {
@@ -85,4 +87,5 @@ export interface ListrContext {
         analytics: boolean
         useNonOverlappingPorts: boolean
     }
+    mysqlConnection: mysql2.Connection
 }
