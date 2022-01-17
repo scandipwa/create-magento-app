@@ -1,6 +1,7 @@
 const symlinkTheme = require('./symlink-theme');
 const installTheme = require('./install-theme');
 const disablePageCache = require('../magento/setup-magento/disable-page-cache');
+const disablePageBuilder = require('../magento/setup-magento/disable-page-builder');
 const buildTheme = require('./build-theme');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
 const setupPersistedQuery = require('./setup-persisted-query');
@@ -12,7 +13,20 @@ const updateEnvPHP = require('../php/update-env-php');
 const linkTheme = () => ({
     title: 'Linking theme',
     task: async (ctx, task) => {
-        const { absoluteThemePath, themePath, composerData } = ctx;
+        const {
+            config: { overridenConfiguration },
+            absoluteThemePath,
+            themePath,
+            composerData
+        } = ctx;
+        const {
+            magento: { edition: magentoEdition },
+            magentoVersion
+        } = overridenConfiguration;
+
+        const isEnterprise = magentoEdition === 'enterprise';
+        const isPageBuilderInstalled = isEnterprise && /^2.[4-9]/.test(magentoVersion);
+
         /**
          * @type {import('../../../typings/theme').Theme}
          */
@@ -31,6 +45,7 @@ const linkTheme = () => ({
             setupPersistedQuery(),
             upgradeMagento(),
             disablePageCache(),
+            ...(isPageBuilderInstalled ? [disablePageBuilder()] : []),
             buildTheme(theme)
         ]);
     },
