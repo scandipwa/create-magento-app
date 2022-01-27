@@ -26,7 +26,7 @@ const linkTheme = () => ({
         } = overridenConfiguration;
 
         const isEnterprise = magentoEdition === 'enterprise';
-        const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4.0');
+        const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4');
 
         /**
          * @type {import('../../../typings/theme').Theme}
