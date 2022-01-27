@@ -6,6 +6,7 @@ const buildTheme = require('./build-theme');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
 const setupPersistedQuery = require('./setup-persisted-query');
 const updateEnvPHP = require('../php/update-env-php');
+const semver = require('semver');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -25,7 +26,7 @@ const linkTheme = () => ({
         } = overridenConfiguration;
 
         const isEnterprise = magentoEdition === 'enterprise';
-        const isPageBuilderInstalled = isEnterprise && /^2.[4-9]/.test(magentoVersion);
+        const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4.0');
 
         /**
          * @type {import('../../../typings/theme').Theme}
