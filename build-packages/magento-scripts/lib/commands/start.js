@@ -95,12 +95,14 @@ module.exports = (yargs) => {
                     systemConfiguration: { analytics }
                 } = ctx;
 
+                const webLocation = `${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`;
+
                 const block = new ConsoleBlock();
                 block
                     .addHeader('Magento 2')
                     .addEmptyLine()
-                    .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
-                    .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
+                    .addLine(`Web location: ${logger.style.link(webLocation)}`)
+                    .addLine(`Magento Admin panel location: ${logger.style.link(`${webLocation}${magentoConfiguration.adminuri}`)}`)
                     .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
 
                 const themes = await getCSAThemes();

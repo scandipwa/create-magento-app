@@ -174,7 +174,7 @@ const start = () => ({
                 title: 'Opening browser',
                 skip: (ctx) => ctx.noOpen,
                 task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
-                    openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`);
+                    openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`);
                 },
                 options: {
                     showTimer: false
