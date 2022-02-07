@@ -37,29 +37,27 @@ const magentoFiles = [
  */
 const removeMagento = () => ({
     title: 'Remove magento application folder',
-    task: async (ctx, task) => {
+    skip: async (ctx) => {
         const { config: { baseConfig } } = ctx;
         const appPathExists = await pathExists(baseConfig.magentoDir);
 
-        if (appPathExists && ctx.force) {
-            await Promise.all(magentoFiles.map(async (fileName) => {
-                const filePath = path.join(baseConfig.magentoDir, fileName);
-                const fileExists = await pathExists(filePath);
-                if (!fileExists) {
-                    return;
-                }
-                const file = await fs.promises.stat(filePath);
-                if (file.isFile()) {
-                    await fs.promises.unlink(filePath);
-                } else if (file.isDirectory()) {
-                    await fs.promises.rmdir(filePath, { recursive: true });
-                }
-            }));
-
-            return;
-        }
-
-        task.skip();
+        return !(appPathExists && ctx.force);
+    },
+    task: async (ctx) => {
+        const { config: { baseConfig } } = ctx;
+        await Promise.all(magentoFiles.map(async (fileName) => {
+            const filePath = path.join(baseConfig.magentoDir, fileName);
+            const fileExists = await pathExists(filePath);
+            if (!fileExists) {
+                return;
+            }
+            const file = await fs.promises.stat(filePath);
+            if (file.isFile()) {
+                await fs.promises.unlink(filePath);
+            } else if (file.isDirectory()) {
+                await fs.promises.rmdir(filePath, { recursive: true });
+            }
+        }));
     }
 });
 
