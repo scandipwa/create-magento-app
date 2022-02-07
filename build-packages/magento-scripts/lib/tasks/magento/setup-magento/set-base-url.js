@@ -11,11 +11,11 @@ module.exports = () => ({
             config: { overridenConfiguration: { host, ssl } },
             mysqlConnection
         } = ctx;
-        const location = `${host}${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
-        const httpUrl = `http://${location}`;
-        const httpsUrl = `https://${location}`;
-
         const enableSecureFrontend = ssl.enabled ? '1' : '0';
+        const location = `${host}${ ports.app !== 80 ? `:${ports.app}` : '' }/`;
+        const secureLocation = `${host}/`; // SSL will work only on port 443, so you cannot run multiple projects with SSL at the same time.
+        const httpUrl = `http://${location}`;
+        const httpsUrl = `https://${secureLocation}`;
 
         await updateTableValues('core_config_data', [
             { path: 'web/unsecure/base_url', value: httpUrl },
