@@ -5,7 +5,7 @@
   "repository": "github:scandipwa/create-magento-app",
   "main": "./index.js",
   "license": "OSL-3.0",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "os": [
     "darwin",
     "linux"
@@ -15,6 +15,6 @@
     "arm64"
   ],
   "publishConfig": {
-      "access": "public"
+    "access": "public"
   }
 }
