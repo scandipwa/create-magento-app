@@ -14,5 +14,7 @@
     "x64",
     "arm64"
   ],
-  "private": true
+  "publishConfig": {
+      "access": "public"
+  }
 }
