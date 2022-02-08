@@ -92,7 +92,8 @@ const dependenciesForPlatforms = {
             'php-cli',
             'php-bz2',
             'pkg-config',
-            'autoconf'
+            'autoconf',
+            'cmake'
         ],
         installCommand: (deps) => `sudo apt-get install ${deps} -y`
     }
