@@ -7,7 +7,7 @@ const installDependenciesTask = require('../../../util/install-dependencies-task
 const pkgRegex = /^(\S+)\/\S+\s(\S+)\s\S+\s\S+$/i;
 
 const updateSystem = () => ({
-    title: 'Updating your system',
+    title: 'Updating Ubuntu system',
     task: async (ctx, task) => {
         task.output = 'Enter your sudo password!';
         task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
