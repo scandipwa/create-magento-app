@@ -10,6 +10,18 @@ module.exports = (yargs) => {
         'logs <scope>',
         'Display application logs.',
         (yargs) => {
+            yargs.usage(`Usage: npm run logs <scope>
+
+Available scopes:
+- magento
+- mysql
+- redis
+- nginx
+- elasticsearch
+
+And you can use name matching:
+npm run logs ma (will match magento)
+npm run logs re (will match redis)`);
             yargs.option(
                 'tail',
                 {
@@ -91,7 +103,7 @@ module.exports = (yargs) => {
 
                 return;
             }
-
+            console.log(argv);
             logger.error(`No service found "${argv.scope}"`);
             process.exit(1);
         }
