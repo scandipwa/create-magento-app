@@ -16,7 +16,7 @@ const checkForXDGOpen = async () => {
                     withFileTypes: true
                 });
 
-                return files.some((file) => file.isFile() && file.name === 'open');
+                return files.some((file) => file.isFile() && file.name === 'xdg-open');
             }
         )
     );
