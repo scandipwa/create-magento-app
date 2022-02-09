@@ -81,7 +81,7 @@ const enableMagentoComposerPlugins = () => ({
         const {
             config: {
                 'allow-plugins': allowPlugins = {}
-            }
+            } = {}
         } = composerJsonData;
         const allowPluginsKeys = Object.keys(allowPlugins);
 
@@ -110,7 +110,7 @@ Do you want to enable them all or disable some of them?`,
 
                 if (userConfirmation) {
                     composerJsonData.config = {
-                        ...composerJsonData.config,
+                        ...(composerJsonData.config || {}),
                         'allow-plugins': {
                             ...allowPlugins,
                             ...missingPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
@@ -141,7 +141,7 @@ Do you want to enable them all or disable some of them?`,
                     const disabledPlugins = composerPlugins.filter((p) => !userEnabledPlugins.includes(p));
 
                     composerJsonData.config = {
-                        ...composerJsonData.config,
+                        ...(composerJsonData.config || {}),
                         'allow-plugins': {
                             ...allowPlugins,
                             ...disabledPlugins.reduce((acc, val) => ({ ...acc, [val]: false }), {}),
