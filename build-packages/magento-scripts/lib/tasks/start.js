@@ -27,6 +27,8 @@ const pkg = require('../../package.json');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
 const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-plugins');
+const getIsWsl = require('../util/is-wsl');
+const checkForXDGOpen = require('../util/xdg-open-exists');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -172,7 +174,21 @@ const start = () => ({
             finishProjectConfiguration(),
             {
                 title: 'Opening browser',
-                skip: (ctx) => ctx.noOpen,
+                skip: async (ctx) => {
+                    if (ctx.noOpen) {
+                        return true;
+                    }
+
+                    if (await getIsWsl()) {
+                        const canOpenBrowser = await checkForXDGOpen();
+
+                        if (!canOpenBrowser) {
+                            return 'Cannot open the browser, xdg-open is not available.';
+                        }
+                    }
+
+                    return false;
+                },
                 task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
                     openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`);
                 },
