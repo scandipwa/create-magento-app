@@ -7,6 +7,7 @@ const sleep = require('../../util/sleep');
  */
 const connectToMySQL = () => ({
     title: 'Connecting to MySQL server...',
+    skip: (ctx) => ctx.skipSetup,
     task: async (ctx, task) => {
         const { config: { docker }, ports } = ctx;
         const { mysql: { env, name } } = docker.getContainers();
