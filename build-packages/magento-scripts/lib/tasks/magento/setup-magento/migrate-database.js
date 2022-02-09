@@ -24,16 +24,14 @@ const migrateDatabase = (options = {}) => ({
         `);
 
         if (tableCount === 0) {
-            task.output = 'No Magento is installed in DB!\nInstalling...';
-
             if (options.onlyInstallMagento) {
                 return task.newListr(
-                    installMagento()
+                    installMagento({ isDbEmpty: true })
                 );
             }
 
             return task.newListr([
-                installMagento(),
+                installMagento({ isDbEmpty: true }),
                 setupPersistedQuery(),
                 upgradeMagento(),
                 magentoTask('cache:enable'),

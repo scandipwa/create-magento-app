@@ -2,11 +2,14 @@ const semver = require('semver');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @type {({ isDbEmpty }: { isDbEmpty: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installMagento = () => ({
-    title: 'Installing magento...',
+const installMagento = ({ isDbEmpty = false } = {}) => ({
+    title: 'Installing magento',
     task: async (ctx, task) => {
+        if (isDbEmpty) {
+            task.output = 'No Magento is installed in DB!\nInstalling...';
+        }
         const {
             magentoVersion,
             config: {
