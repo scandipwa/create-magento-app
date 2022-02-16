@@ -18,7 +18,8 @@ const linkTheme = () => ({
             config: { overridenConfiguration },
             absoluteThemePath,
             themePath,
-            composerData
+            composerData,
+            mysqlConnection
         } = ctx;
         const {
             magento: { edition: magentoEdition },
@@ -27,6 +28,13 @@ const linkTheme = () => ({
 
         const isEnterprise = magentoEdition === 'enterprise';
         const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4');
+        const [queryResult] = await mysqlConnection.query(`
+                SELECT value AS isPagebuilderEnabled
+                FROM core_config_data
+                WHERE path = 'cms/pagebuilder/enabled'
+            `);
+
+        const [{ isPagebuilderEnabled = 1 }] = queryResult.length ? queryResult : [{}];
 
         /**
          * @type {import('../../../typings/theme').Theme}
@@ -46,7 +54,7 @@ const linkTheme = () => ({
             setupPersistedQuery(),
             upgradeMagento(),
             disablePageCache(),
-            ...(isPageBuilderInstalled ? [disablePageBuilder()] : []),
+            ...(isPageBuilderInstalled && Number(isPagebuilderEnabled) ? [disablePageBuilder()] : []),
             buildTheme(theme)
         ]);
     },
