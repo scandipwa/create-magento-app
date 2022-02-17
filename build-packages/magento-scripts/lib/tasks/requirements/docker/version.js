@@ -1,23 +1,16 @@
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
-const safeRegexExtract = require('../../../util/safe-regex-extract');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const getDockerVersion = () => ({
     task: async (ctx) => {
-        const { result, code } = await execAsyncSpawn('docker -v', {
+        const { result, code } = await execAsyncSpawn('docker version --format {{.Server.Version}}', {
             withCode: true
         });
 
         if (code === 0) {
-            const dockerVersion = safeRegexExtract({
-                string: result,
-                regex: /docker version ([\d.]+)/i,
-                onNoMatch: () => {
-                    throw new Error(`No docker version found in docker version output!\n\n${result}`);
-                }
-            });
+            const dockerVersion = result.split('').filter((c) => /[\d.]/i.test(c)).join('') || result;
 
             ctx.dockerVersion = dockerVersion;
         }
