@@ -1064,6 +1064,11 @@
     eslint-traverse "^1.0.0"
     requireindex "~1.1.0"
 
+"@scandipwa/magento-scripts-php-ioncube-extension@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@scandipwa/magento-scripts-php-ioncube-extension/-/magento-scripts-php-ioncube-extension-0.0.1.tgz#c4c6abfe5a723ab7cfb01314b5643f19e598d2f6"
+  integrity sha512-nsSlsZziZmwteH98hFyPPuF+6ZUAvxHPVg3igQ6mj3DkvMfF1nchiyGb4C7HDyyyqA9lMOJyPSDZM/mN7LbsYw==
+
 "@scandipwa/scandipwa-dev-utils@0.1.10":
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.10.tgz#9519dc201c35781aecc029945f5d9a22399c2a5e"
