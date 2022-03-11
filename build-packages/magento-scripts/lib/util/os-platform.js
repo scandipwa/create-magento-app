@@ -1,9 +1,51 @@
-const getos = require('getos');
+const fs = require('fs');
+const systeminformation = require('systeminformation');
+const pathExists = require('./path-exists');
+const dependenciesForPlatforms = require('../config/dependencies-for-platforms');
 
+const packageManagers = Object.entries(dependenciesForPlatforms).map((d) => ({
+    platform: d[0],
+    packageManager: d[1].packageManager
+}));
 /**
  *
- * @returns {Promise<import('getos').OS>}
+ * @returns {Promise<keyof typeof dependenciesForPlatforms>}
  */
-const osPlatform = () => new Promise((resolve, reject) => getos((err, os) => (err ? reject(err) : resolve(os))));
+const osPlatform = async () => {
+    const binPaths = process.env.PATH.split(':');
+
+    const platforms = await Promise.all(binPaths.map(async (binPath) => {
+        if (!await pathExists(binPath)) {
+            return null;
+        }
+        const bins = await fs.promises.readdir(binPath);
+
+        for (const bin of bins) {
+            const possiblePlatforms = packageManagers.filter((p) => p.packageManager === bin);
+
+            if (possiblePlatforms.length > 0) {
+                if (possiblePlatforms.length > 1) {
+                    const { distro } = await systeminformation.osInfo();
+
+                    const foundDistro = possiblePlatforms.find((p) => p.platform.toLowerCase().includes(distro.toLowerCase()));
+
+                    if (foundDistro) {
+                        return foundDistro.platform;
+                    }
+
+                    return possiblePlatforms[0].platform;
+                }
+
+                return possiblePlatforms[0].platform;
+            }
+        }
+
+        return null;
+    }));
+
+    const filteredPlatforms = platforms.filter(Boolean);
+
+    return filteredPlatforms.shift();
+};
 
 module.exports = osPlatform;

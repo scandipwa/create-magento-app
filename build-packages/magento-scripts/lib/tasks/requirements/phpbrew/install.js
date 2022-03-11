@@ -1,7 +1,7 @@
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
-const osPlatform = require('../../../util/os-platform');
+const systeminformation = require('systeminformation');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
@@ -20,9 +20,10 @@ const installPHPBrewDependencies = () => ({
                 })
             );
         }
-        const { dist } = await osPlatform();
-        switch (dist) {
+        const { distro } = await systeminformation.osInfo();
+        switch (distro) {
         case 'Arch Linux':
+        case 'EndeavourOS':
         case 'Manjaro Linux': {
             return task.newListr(
                 installDependenciesTask({

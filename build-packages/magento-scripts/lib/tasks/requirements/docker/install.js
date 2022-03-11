@@ -16,10 +16,9 @@ const postInstallSteps = [
 const installDocker = () => ({
     title: 'Installing Docker',
     task: async (ctx, task) => {
-        const { dist } = await osPlatform();
-        switch (dist) {
-        case 'Arch Linux':
-        case 'Manjaro Linux': {
+        const distro = await osPlatform();
+        switch (distro) {
+        case 'Arch Linux': {
             return task.newListr([
                 installDependenciesTask({
                     platform: 'Arch Linux',
@@ -39,7 +38,6 @@ const installDocker = () => ({
                 executeSudoCommand('sudo systemctl enable docker')
             ]);
         }
-        case 'Linux Mint':
         case 'Ubuntu': {
             return task.newListr([
                 execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
@@ -51,7 +49,7 @@ const installDocker = () => ({
         }
         default: {
             throw new Error(`Docker is not installed!
-Your distro ${dist} is not supported by automatic installation.`);
+Your distro ${distro} is not supported by automatic installation.`);
         }
         }
     }

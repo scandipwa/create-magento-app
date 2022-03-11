@@ -10,11 +10,10 @@ const checkDependencies = async () => {
         return macDependenciesCheck();
     }
 
-    const { dist } = await osPlatform();
+    const distro = await osPlatform();
 
-    switch (dist) {
-    case 'Arch Linux':
-    case 'Manjaro Linux': {
+    switch (distro) {
+    case 'Arch Linux': {
         return archDependenciesCheck();
     }
     case 'Fedora': {
@@ -23,7 +22,6 @@ const checkDependencies = async () => {
     case 'CentOS': {
         return centosDependenciesCheck();
     }
-    case 'Linux Mint':
     case 'Ubuntu': {
         return ubuntuDependenciesCheck();
     }

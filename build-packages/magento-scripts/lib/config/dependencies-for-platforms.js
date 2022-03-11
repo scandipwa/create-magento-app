@@ -15,7 +15,8 @@ const dependenciesForPlatforms = {
             'libxml2',
             'openssl@1.1'
         ],
-        installCommand: (deps) => `brew install ${deps}`
+        installCommand: (deps) => `brew install ${deps}`,
+        packageManager: 'brew'
     },
     'Arch Linux': {
         dependencies: [
@@ -35,7 +36,8 @@ const dependenciesForPlatforms = {
             'perl',
             'libsodium'
         ],
-        installCommand: (deps) => `sudo pacman -S ${deps} --noconfirm`
+        installCommand: (deps) => `sudo pacman -S ${deps} --noconfirm`,
+        packageManager: 'pacman'
     },
     Fedora: {
         dependencies: [
@@ -51,7 +53,8 @@ const dependenciesForPlatforms = {
             'libtool-ltdl-devel',
             'oniguruma-devel'
         ],
-        installCommand: (deps) => `sudo yum install ${deps} -y`
+        installCommand: (deps) => `sudo yum install ${deps} -y`,
+        packageManager: 'yum'
     },
     CentOS: {
         dependencies: [
@@ -67,7 +70,8 @@ const dependenciesForPlatforms = {
             'libtool-ltdl-devel',
             'oniguruma-devel'
         ],
-        installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`
+        installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`,
+        packageManager: 'yum'
     },
     Ubuntu: {
         dependencies: [
@@ -95,7 +99,8 @@ const dependenciesForPlatforms = {
             'autoconf',
             'cmake'
         ],
-        installCommand: (deps) => `sudo apt-get install ${deps} -y`
+        installCommand: (deps) => `sudo apt install ${deps} -y`,
+        packageManager: 'apt'
     }
 };
 

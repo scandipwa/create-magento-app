@@ -1,4 +1,4 @@
-const osPlatform = require('../../util/os-platform');
+const systeminformation = require('systeminformation');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const compileOptions = require('./compile-options');
@@ -11,8 +11,8 @@ const compile = () => ({
     task: async ({ config: { php } }, task) => {
         const platformCompileOptions = compileOptions[process.platform];
         if (process.platform === 'linux') {
-            const { dist } = await osPlatform();
-            if (['Fedora', 'Manjaro'].some((distro) => dist.includes(distro))) {
+            const { distro } = await systeminformation.osInfo();
+            if (['Fedora', 'Manjaro'].some((d) => distro.includes(d))) {
                 platformCompileOptions.extraOptions.push('--with-libdir=lib64');
             }
         }
