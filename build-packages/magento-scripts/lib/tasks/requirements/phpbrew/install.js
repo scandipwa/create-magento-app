@@ -1,10 +1,10 @@
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
-const osPlatform = require('../../../util/os-platform');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
+const osPlatform = require('../../../util/os-platform');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -20,10 +20,9 @@ const installPHPBrewDependencies = () => ({
                 })
             );
         }
-        const { dist } = await osPlatform();
-        switch (dist) {
-        case 'Arch Linux':
-        case 'Manjaro Linux': {
+        const distro = await osPlatform();
+        switch (distro) {
+        case 'Arch Linux': {
             return task.newListr(
                 installDependenciesTask({
                     platform: 'Arch Linux',
@@ -47,7 +46,6 @@ const installPHPBrewDependencies = () => ({
                 })
             );
         }
-        case 'Linux Mint':
         case 'Ubuntu': {
             return task.newListr(
                 installDependenciesTask({
