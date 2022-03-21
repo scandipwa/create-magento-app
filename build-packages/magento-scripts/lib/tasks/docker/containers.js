@@ -151,7 +151,7 @@ const stopContainers = () => ({
 
 const getContainerStatus = async (containerName) => {
     try {
-        return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State.Health}}' ${containerName}`));
+        return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State}}' ${containerName}`));
     } catch {
         return null;
     }

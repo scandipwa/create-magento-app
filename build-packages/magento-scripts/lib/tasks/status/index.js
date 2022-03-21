@@ -7,6 +7,20 @@ const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
 const { getComposerVersion } = require('../composer');
 
+/**
+ * @param {string} port
+ * @return {{ host: string, hostPort: string, containerPort: string }}
+ */
+const parsePort = (port) => {
+    const [host, hostPort, containerPort] = port.split(':');
+
+    return {
+        host,
+        hostPort,
+        containerPort
+    };
+};
+
 const prettyStatus = async (ctx) => {
     const {
         ports,
@@ -64,14 +78,11 @@ const prettyStatus = async (ctx) => {
             .addEmptyLine();
 
         let containerStatus;
-        if (container.status) {
-            if (container.status.Status === 'healthy') {
-                containerStatus = `✓ ${logger.style.file('running')}`;
-            } else {
-                containerStatus = logger.style.code(container.status.Status);
-            }
+
+        if (container.status && container.status.Health) {
+            containerStatus = `✓ ${ logger.style.file(container.status.Health.Status) } and ${ logger.style.file('running') }`;
         } else {
-            containerStatus = logger.style.code('stopped');
+            containerStatus = logger.style.file(container.status.Status);
         }
 
         block
@@ -81,10 +92,14 @@ const prettyStatus = async (ctx) => {
             .addLine(`Network: ${logger.style.link(container.network)}`);
 
         if (container.ports.length > 0) {
-            block.addLine(`Port forwarding: ${container.ports.map((port) => logger.style.link(port)).join(', ')}`);
+            block.addLine('Port forwarding:');
+            container.ports.forEach((port) => {
+                const { host, hostPort, containerPort } = parsePort(port);
+                block.addLine(`${' '.repeat(3)} ${logger.style.link(`${host}:${hostPort}`)} -> ${logger.style.file(containerPort)}`);
+            });
         }
 
-        if (container.env) {
+        if (container.env && Object.keys(container.env).length > 0) {
             block.addLine('Environment variables:');
             for (const [envName, envValue] of Object.entries(container.env)) {
                 block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
