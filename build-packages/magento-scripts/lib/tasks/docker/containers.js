@@ -1,8 +1,22 @@
+/* eslint-disable max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
+/**
+ * @param {Object} options
+ * @param {number[]} [options.ports] Publish or expose port [docs](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose)
+ * @param {number[]} [options.mounts] Add bind mounts or volumes using the --mount flag [docs](https://docs.docker.com/engine/reference/commandline/run/#add-bind-mounts-or-volumes-using-the---mount-flag)
+ * @param {number[]} [options.mountVolumes] Mount volume [docs](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)
+ * @param {Record<string, string>} [options.env] Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
+ * @param {string} [options.image]
+ * @param {string} [options.restart] Restart policies [docs](https://docs.docker.com/engine/reference/commandline/run/#restart-policies---restart)
+ * @param {string} [options.name] Container name
+ * @param {string} [options.entrypoint] Container entrypoint
+ * @param {string} [options.command] Container command
+ * @param {Record<"cmd" | "interval" | "retries" | "start-period" | "timeout", string>} [options.healthCheck] Container heathcheck properties
+ * @param {string[]} [options.securityOptions] Security options [docs](https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt)
+ */
 const run = (options) => {
     const {
-        expose = [],
         ports = [],
         mounts = [],
         mountVolumes = [],
@@ -19,7 +33,6 @@ const run = (options) => {
 
     const restartArg = restart && `--restart ${ restart }`;
     const networkArg = network && `--network ${ network }`;
-    const exposeArgs = expose.map((port) => `--expose ${ port }`).join(' ');
     const portsArgs = ports.map((port) => `-p ${ port }`).join(' ');
     const mountsArgs = mounts.map((mount) => `--mount ${ mount }`).join(' ');
     const mountVolumesArgs = mountVolumes.map((mount) => `-v ${mount}`).join(' ');
@@ -36,7 +49,6 @@ const run = (options) => {
         nameArg,
         networkArg,
         restartArg,
-        exposeArgs,
         portsArgs,
         mountsArgs,
         mountVolumesArgs,
