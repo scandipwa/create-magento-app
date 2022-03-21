@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const semver = require('semver');
 const phpbrewConfig = require('../../config/phpbrew');
+const { CMAInstallError } = require('../../util/cma-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const compileOptions = require('../php/compile-options');
@@ -82,9 +83,11 @@ export PHPBREW_PATH=${phpbrewConfig.homePath}/php/${phpbrewPHPName}/bin
             throw new Error(`Something went wrong when trying to switch PHP to ${phpbrewPHPName}!\n\n${e}`);
         }
 
-        throw new Error(`You will need to restart your terminal and run ${logger.style.command('start')} again.
+        throw new CMAInstallError(`You will need to restart your terminal and run ${logger.style.command('start')} again.
 
-You can use keyboard shortcut ${logger.style.command('CTRL+D')} to close terminal.`);
+You can use keyboard shortcut ${logger.style.command('CTRL+D')} to close terminal.`, {
+            reportAnalytics: false
+        });
     },
     options: {
         bottomBar: 10
