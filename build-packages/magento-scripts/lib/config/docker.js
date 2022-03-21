@@ -12,7 +12,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         redis,
         mysql,
         elasticsearch,
-        mariadb
+        mariadb,
+        maildev
     } = configuration;
 
     const {
@@ -186,6 +187,21 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     tag: elasticsearch.version
                 },
                 name: `${ prefix }_elasticsearch`
+            },
+            maildev: {
+                _: 'MailDev',
+                ports: [
+                    `127.0.0.1:${ ports.maildevWeb }:80`,
+                    `127.0.0.1:${ ports.maildevSMTP }:25`
+                ],
+                name: `${ prefix }_maildev`,
+                network: network.name,
+                image: `maildev/maildev:${ maildev.version }`,
+                imageDetails: {
+                    name: 'maildev/maildev',
+                    tag: maildev.version
+                },
+                env: maildev.environment
             }
         };
 

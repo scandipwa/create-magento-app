@@ -37,6 +37,10 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: {
             version: '1'
+        },
+        maildev: {
+            version: '1.1.0',
+            environment: {}
         }
     },
     magento: defaultMagentoConfig,
