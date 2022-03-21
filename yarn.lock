@@ -1069,28 +1069,6 @@
   resolved "https://registry.yarnpkg.com/@scandipwa/magento-scripts-php-ioncube-extension/-/magento-scripts-php-ioncube-extension-0.0.1.tgz#c4c6abfe5a723ab7cfb01314b5643f19e598d2f6"
   integrity sha512-nsSlsZziZmwteH98hFyPPuF+6ZUAvxHPVg3igQ6mj3DkvMfF1nchiyGb4C7HDyyyqA9lMOJyPSDZM/mN7LbsYw==
 
-"@scandipwa/magento-scripts@1.13.4":
-  version "1.13.4"
-  resolved "https://registry.yarnpkg.com/@scandipwa/magento-scripts/-/magento-scripts-1.13.4.tgz#49d7e815583f95b7594c7704c94cb1a86fb2c821"
-  integrity sha512-23gcIWB5x1MtDrsVyZ3dsI6hoQuxGXQkSpjMQflhOQQQXbEb7J4+lfICL3NEefT2rZuno1dln/y3iyfBMwaodw==
-  dependencies:
-    "@scandipwa/scandipwa-dev-utils" "0.1.12"
-    conf "10.0.3"
-    enquirer "2.3.6"
-    eta "1.12.3"
-    getos "3.2.1"
-    hjson "^3.2.2"
-    is-installed-globally "0.4.0"
-    joi "17.4.2"
-    listr2 "3.13.0"
-    macos-version "5.2.1"
-    merge-files "0.1.2"
-    mysql2 "2.3.2"
-    node-ssh "12.0.0"
-    semver "7.3.5"
-    systeminformation "5.9.8"
-    yargs "17.2.1"
-
 "@scandipwa/scandipwa-dev-utils@0.1.10":
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.10.tgz#9519dc201c35781aecc029945f5d9a22399c2a5e"
@@ -1124,7 +1102,7 @@
     semver "^7.3.2"
     validate-npm-package-name "^3.0.0"
 
-"@sideway/address@^4.1.0", "@sideway/address@^4.1.3":
+"@sideway/address@^4.1.3":
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/@sideway/address/-/address-4.1.3.tgz#d93cce5d45c5daec92ad76db492cc2ee3c64ab27"
   integrity sha512-8ncEUtmnTsMmL7z1YPB47kPUq7LpKWJNFPsRzHiIajGC5uXlWGn+AmkYPcHNl8S4tcEGx+cnORnNYaw2wvL+LQ==
@@ -1701,11 +1679,6 @@ async@0.9.x:
   version "0.9.2"
   resolved "https://registry.yarnpkg.com/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
   integrity sha1-rqdNXmHB+JlhO/ZL2mbUx48v0X0=
-
-async@^3.2.0:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
-  integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -2407,22 +2380,6 @@ concat-stream@^2.0.0:
     inherits "^2.0.3"
     readable-stream "^3.0.2"
     typedarray "^0.0.6"
-
-conf@10.0.3:
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/conf/-/conf-10.0.3.tgz#af266186cc754daefd2749398861ec538c50da17"
-  integrity sha512-4gtQ/Q36qVxBzMe6B7gWOAfni1VdhuHkIzxydHkclnwGmgN+eW4bb6jj73vigCfr7d3WlmqawvhZrpCUCTPYxQ==
-  dependencies:
-    ajv "^8.6.3"
-    ajv-formats "^2.1.1"
-    atomically "^1.7.0"
-    debounce-fn "^4.0.0"
-    dot-prop "^6.0.1"
-    env-paths "^2.2.1"
-    json-schema-typed "^7.0.3"
-    onetime "^5.1.2"
-    pkg-up "^3.1.0"
-    semver "^7.3.5"
 
 conf@10.1.1:
   version "10.1.1"
@@ -3980,13 +3937,6 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
 
-getos@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/getos/-/getos-3.2.1.tgz#0134d1f4e00eb46144c5a9c0ac4dc087cbb27dc5"
-  integrity sha512-U56CfOK17OKgTVqozZjUKNdkfEv6jk5WISBJ8SHoagjE6L69zOwl3Z+O8myjY9MEW3i2HPWQBt/LTbCgcC973Q==
-  dependencies:
-    async "^3.2.0"
-
 getpass@^0.1.1:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/getpass/-/getpass-0.1.7.tgz#5eff8e3e684d569ae4cb2b1282604e8ba62149fa"
@@ -5062,17 +5012,6 @@ jake@^10.6.1:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-joi@17.4.2:
-  version "17.4.2"
-  resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.2.tgz#02f4eb5cf88e515e614830239379dcbbe28ce7f7"
-  integrity sha512-Lm56PP+n0+Z2A2rfRvsfWVDXGEWjXxatPopkQ8qQ5mxCEhwHG+Ettgg5o98FFaxilOxozoa14cFhrE/hOzh/Nw==
-  dependencies:
-    "@hapi/hoek" "^9.0.0"
-    "@hapi/topo" "^5.0.0"
-    "@sideway/address" "^4.1.0"
-    "@sideway/formula" "^3.0.0"
-    "@sideway/pinpoint" "^2.0.0"
-
 joi@17.6.0:
   version "17.6.0"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.6.0.tgz#0bb54f2f006c09a96e75ce687957bd04290054b2"
@@ -5479,19 +5418,6 @@ lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
-
-listr2@3.13.0:
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/listr2/-/listr2-3.13.0.tgz#6a320803401d2b2503974d386a802dc4eb9f2e2e"
-  integrity sha512-3BplcPqzZOSBMiIjKvRMJ/O4PmOf3JiHUXSrqC9NidkXkxn4Su5saHOuUstEaOfzFy//vxxcbOzhq0ZTw1CuTg==
-  dependencies:
-    cli-truncate "^2.1.0"
-    colorette "^2.0.16"
-    log-update "^4.0.0"
-    p-map "^4.0.0"
-    rxjs "^6.6.7"
-    through "^2.3.8"
-    wrap-ansi "^7.0.0"
 
 listr2@4.0.5:
   version "4.0.5"
@@ -8076,7 +8002,7 @@ rx-lite@*, rx-lite@^4.0.8:
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-4.0.8.tgz#0b1e11af8bc44836f04a6407e92da42467b79444"
   integrity sha1-Cx4Rr4vESDbwSmQH6S2kJGe3lEQ=
 
-rxjs@^6.5.3, rxjs@^6.6.0, rxjs@^6.6.7:
+rxjs@^6.5.3, rxjs@^6.6.0:
   version "6.6.7"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
@@ -8780,11 +8706,6 @@ systeminformation@5.11.7:
   version "5.11.7"
   resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.11.7.tgz#9a418d8719e3450cb475420f925a6290c614cb68"
   integrity sha512-MI6HtSoBF2e1pTpRGQC8b5X5QDln8mazQTD3KyFFlLGkk7291kQv+mjeriz30TDVTcWEnEfKPxZwHnZBFYnr6w==
-
-systeminformation@5.9.8:
-  version "5.9.8"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.9.8.tgz#470d5781647418fd2f2ec945e507cd522a69d565"
-  integrity sha512-Dt54Vuu4Q5pGCsBtbVjIzD3Lahek7qIL+2vqAPqcPtPAlFRPf+ef4VKB4F5AL5UmdjYm7NFCTnwjoiu7qtxmQQ==
 
 table@^6.0.9:
   version "6.7.1"
@@ -9552,19 +9473,6 @@ yargs-parser@^7.0.0:
   integrity sha1-jQrELxbqVd69MyyvTEA4s+P139k=
   dependencies:
     camelcase "^4.1.0"
-
-yargs@17.2.1:
-  version "17.2.1"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.2.1.tgz#e2c95b9796a0e1f7f3bf4427863b42e0418191ea"
-  integrity sha512-XfR8du6ua4K6uLGm5S6fA+FIJom/MdJcFNVY8geLlp2v8GYbOXD4EB1tPNZsRn4vBzKGMgb5DRZMeWuFc2GO8Q==
-  dependencies:
-    cliui "^7.0.2"
-    escalade "^3.1.1"
-    get-caller-file "^2.0.5"
-    require-directory "^2.1.1"
-    string-width "^4.2.0"
-    y18n "^5.0.5"
-    yargs-parser "^20.2.2"
 
 yargs@17.3.1, yargs@^17.3.1:
   version "17.3.1"
