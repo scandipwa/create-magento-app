@@ -43,7 +43,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '2'
         },
         maildev: {
-            version: '1.1.0',
+            version: '1.1.1',
             environment: {}
         }
     },
