@@ -191,8 +191,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             maildev: {
                 _: 'MailDev',
                 ports: [
-                    `127.0.0.1:${ ports.maildevWeb }:80`,
-                    `127.0.0.1:${ ports.maildevSMTP }:25`
+                    `127.0.0.1:${ ports.maildevWeb }:1080`,
+                    `127.0.0.1:${ ports.maildevSMTP }:1025`
                 ],
                 name: `${ prefix }_maildev`,
                 network: network.name,
