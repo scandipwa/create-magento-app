@@ -64,8 +64,18 @@ const run = (options) => {
 };
 
 const stop = async (containers) => {
-    await execAsyncSpawn(`docker container stop ${containers.join(' ')}`);
-    await execAsyncSpawn(`docker container rm ${containers.join(' ')}`);
+    const runningContainers = (await execAsyncSpawn('docker container ls --format "{{.Names}}"')).split('\n');
+
+    const containersToStop = containers.filter((container) => runningContainers.includes(container));
+
+    if (containersToStop.length === 0) {
+        return;
+    }
+
+    await Promise.all(containersToStop.map(async (container) => {
+        await execAsyncSpawn(`docker container stop ${container}`);
+        await execAsyncSpawn(`docker container rm ${container}`);
+    }));
 };
 
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
@@ -80,9 +90,18 @@ const pullContainers = () => ({
         const containerFilters = containers
             .map((container) => `-f=reference='${container.imageDetails.name}:${container.imageDetails.tag}'`)
             .join(' ');
-        const existingImages = await execAsyncSpawn(`docker images ${containerFilters}`);
-        const missingContainerImages = containers.filter((container) => !existingImages.split('\n')
-            .some((line) => line.includes(container.imageDetails.name) && line.includes(container.imageDetails.tag)));
+        const existingImages = await execAsyncSpawn(`docker images ${containerFilters} --format "{{.Repository}} {{.Tag}}"`);
+        const existingImagesList = existingImages.split('\n').map((i) => i.split(' '));
+        const missingContainerImages = containers
+            .filter(
+                (container) => !existingImagesList.some(
+                    (i) => {
+                        const [imageRepository, imageTag] = i;
+
+                        return imageRepository === container.imageDetails.name && imageTag === container.imageDetails.tag;
+                    }
+                )
+            );
 
         if (missingContainerImages.length === 0) {
             task.skip();

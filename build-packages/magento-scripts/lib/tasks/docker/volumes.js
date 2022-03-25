@@ -1,6 +1,6 @@
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
-const create = ({
+const createVolume = ({
     driver,
     opts = {},
     name
@@ -14,16 +14,18 @@ const create = ({
     return execAsyncSpawn(`${ command } ${ name }`);
 };
 
+const getVolumeList = async () => (await execAsyncSpawn('docker volume ls --format "{{.Name}}"')).split('\n');
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createVolumes = () => ({
     title: 'Creating volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
+        const volumeList = await getVolumeList();
 
         const missingVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => !volumeList.some((volume) => volume === name)
+            ({ name }) => !volumeList.includes(name)
         );
 
         if (missingVolumes.length === 0) {
@@ -31,7 +33,7 @@ const createVolumes = () => ({
             return;
         }
 
-        await Promise.all(missingVolumes.map((volume) => create(volume)));
+        await Promise.all(missingVolumes.map((volume) => createVolume(volume)));
     }
 });
 
@@ -41,10 +43,10 @@ const createVolumes = () => ({
 const removeVolumes = () => ({
     title: 'Removing volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
+        const volumeList = await getVolumeList();
 
         const deployedVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => volumeList.some((volume) => volume === name)
+            ({ name }) => volumeList.includes(name)
         );
 
         if (deployedVolumes.length === 0) {
@@ -59,5 +61,5 @@ const removeVolumes = () => ({
 module.exports = {
     createVolumes,
     removeVolumes,
-    createVolume: create
+    createVolume
 };
