@@ -6,7 +6,6 @@ const { platforms, darwinMinimalVersion } = require('../../config');
 const dependencyCheck = require('./dependency');
 const { getArch } = require('../../util/arch');
 const getIsWsl = require('../../util/is-wsl');
-const { CMAError } = require('../../util/cma-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -17,7 +16,7 @@ const checkPlatform = () => ({
         const currentPlatform = os.platform();
 
         if (!platforms.includes(currentPlatform)) {
-            throw new CMAError(
+            throw new Error(
                 `Your current OS platform is ${ logger.style.misc(currentPlatform) }.
                 Unfortunately, currently we only support ${ platforms.map((platform) => logger.style.misc(platform)).join(',') }.`
             );

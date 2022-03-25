@@ -1,6 +1,5 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const os = require('os');
-const { CMAInstallError } = require('../../../util/cma-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
 const installDocker = require('./install');
@@ -34,36 +33,28 @@ NOTE: After installation it's recommended to log out and log back in so your gro
                             task: (ctx) => {
                                 task.title = `Using docker version ${ctx.dockerVersion}`;
 
-                                throw new CMAInstallError(
+                                throw new Error(
                                     `Docker is installed successfully!
 Please log out and log back to so your group membership is re-evaluated!
-Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`, {
-                                        reportAnalytics: false
-                                    }
+Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`
                                 );
                             }
                         }
                     ]);
                 }
 
-                throw new CMAInstallError('Docker is not installed!', {
-                    reportAnalytics: false
-                });
+                throw new Error('Docker is not installed!');
             } else if (isWsl) {
-                throw new CMAInstallError(
+                throw new Error(
                     `You don't have Docker installed!
 Follow this instructions to install Docker on Windows:
-${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements#2-install-docker-desktop-for-windows') }`, {
-                        reportAnalytics: false
-                    }
+${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements#2-install-docker-desktop-for-windows') }`
                 );
             } else {
-                throw new CMAInstallError(
+                throw new Error(
                     `You don't have Docker installed!
 Follow this instructions to install Docker on Mac:
-${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos#3-install-docker-for-mac') }`, {
-                        reportAnalytics: false
-                    }
+${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos#3-install-docker-for-mac') }`
                 );
             }
         }

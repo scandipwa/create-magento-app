@@ -1,5 +1,4 @@
 const semver = require('semver');
-const { CMAInstallError } = require('../../util/cma-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -10,11 +9,9 @@ const checkNodeVersion = () => ({
         const { node } = process.versions;
 
         if (!semver.gte(node, '12.0.0')) {
-            throw new CMAInstallError(
+            throw new Error(
                 `Your Node.js version is out of date!
-You need to upgrade Node.js to at lease version 12 to work with this software!`, {
-                    reportAnalytics: false
-                }
+You need to upgrade Node.js to at lease version 12 to work with this software!`
             );
         }
 

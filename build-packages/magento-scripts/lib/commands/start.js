@@ -169,11 +169,7 @@ module.exports = (yargs) => {
                 process.exit(0);
             } catch (e) {
                 logger.error(e.message || e);
-                if (e && e.reportAnalytics) {
-                    await googleAnalytics.trackError(e.message || e);
-                } else {
-                    logger.logN('skipping reporting...');
-                }
+                await googleAnalytics.trackError(e.message || e);
                 process.exit(1);
             }
         }
