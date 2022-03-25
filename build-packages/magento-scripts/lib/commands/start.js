@@ -75,7 +75,7 @@ module.exports = (yargs) => {
                     }
                 }
             );
-            const timeStamp = Date.now() / 1000;
+            const timeStamp = Date.now();
 
             if (args.debug) {
                 logger.warn('You are running in debug mode. Magento setup will be slow.');
@@ -146,7 +146,7 @@ module.exports = (yargs) => {
                     googleAnalytics.setGaTrackingId(cmaGaTrackingId);
 
                     if (!process.isFirstStart) {
-                        await googleAnalytics.trackTiming('CMA start time', Date.now() / 1000 - timeStamp);
+                        await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                         googleAnalytics.printAboutAnalytics();
                         process.exit(0);
                     }
@@ -160,7 +160,7 @@ module.exports = (yargs) => {
                     const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
 
                     await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
-                    await googleAnalytics.trackTiming('CMA first start time', Date.now() / 1000 - timeStamp);
+                    await googleAnalytics.trackTiming('CMA first start time', Date.now() - timeStamp);
                     googleAnalytics.printAboutAnalytics();
                 } catch (e) {
                     await googleAnalytics.trackError(e.message || e);
