@@ -196,9 +196,9 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 name: `${ prefix }_maildev`,
                 network: network.name,
-                image: `maildev/maildev:${ maildev.version }`,
+                image: `soulteary/maildev:${ maildev.version }`,
                 imageDetails: {
-                    name: 'maildev/maildev',
+                    name: 'soulteary/maildev',
                     tag: maildev.version
                 },
                 env: maildev.environment
