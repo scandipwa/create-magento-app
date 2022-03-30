@@ -12,6 +12,8 @@ export interface ListrContext {
         mysql: number
         redis: number
         elasticsearch: number
+        maildevSMTP: number
+        maildevWeb: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
