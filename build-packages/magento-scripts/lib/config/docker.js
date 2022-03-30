@@ -37,6 +37,9 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         },
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
+        },
+        maildev: {
+            name: `${ prefix }_maildev-data`
         }
     };
 
@@ -194,6 +197,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     `127.0.0.1:${ ports.maildevWeb }:1080`,
                     `127.0.0.1:${ ports.maildevSMTP }:1025`
                 ],
+                mounts: [`source=${ volumes.maildev.name },target=/tmp/maildev-1`],
                 name: `${ prefix }_maildev`,
                 network: network.name,
                 image: `soulteary/maildev:${ maildev.version }`,
