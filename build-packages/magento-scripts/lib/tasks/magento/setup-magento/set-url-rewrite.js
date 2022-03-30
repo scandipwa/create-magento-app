@@ -1,5 +1,3 @@
-// const runMagentoCommand = require('../../../util/run-magento');
-
 const { updateTableValues } = require('../../../util/database');
 
 /**
