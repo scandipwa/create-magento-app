@@ -107,16 +107,22 @@ module.exports = (yargs) => {
                     .addEmptyLine();
 
                 block.addLine(logger.style.misc('Frontend'));
-                instanceMetadata.frontend.forEach(({ title, text }) => {
+
+                const metadataMapper = ({ title, text }) => {
                     block.addLine(`  ${title}: ${text}`);
-                });
+                };
+
+                instanceMetadata.frontend.forEach(metadataMapper);
 
                 block.addEmptyLine();
 
                 block.addLine(logger.style.misc('Admin'));
-                instanceMetadata.admin.forEach(({ title, text }) => {
-                    block.addLine(`  ${title}: ${text}`);
-                });
+                instanceMetadata.admin.forEach(metadataMapper);
+
+                block.addEmptyLine();
+
+                block.addLine(logger.style.misc('Maildev'));
+                instanceMetadata.maildev.forEach(metadataMapper);
 
                 const themes = await getCSAThemes();
                 if (themes.length > 0) {

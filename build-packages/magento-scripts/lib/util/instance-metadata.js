@@ -4,6 +4,7 @@ const WEB_LOCAL_LOCATION_TITLE = `Location on ${ logger.style.misc('localhost') 
 const WEB_LOCATION_TITLE = 'Location on the Web';
 const WEB_ADMIN_LOCATION_TITLE = 'Panel location';
 const WEB_ADMIN_CREDENTIALS_TITLE = 'Panel credentials';
+const WEB_MAILDEV_LOCATION_TITLE = 'Panel location';
 
 const mapDataStyle = ({ title, text }) => ({
     title,
@@ -12,7 +13,7 @@ const mapDataStyle = ({ title, text }) => ({
 
 /**
  * @param {import("../../typings/context").ListrContext} ctx
- * @return {{ frontend: { title: string, text: string }[], admin: { title: string, url: string }[]}}
+ * @return {{ frontend: { title: string, text: string }[], admin: { title: string, url: string }[], maildev: { title: string, url: string }[] }}
  */
 const getInstanceMetadata = (ctx) => {
     const {
@@ -32,6 +33,11 @@ const getInstanceMetadata = (ctx) => {
      * @type {{ title: string, text: string }[]}
      */
     const admin = [];
+
+    /**
+     * @type {{ title: string, text: string }[]}
+     */
+    const maildev = [];
 
     const isNgrok = host.endsWith('ngrok.io');
 
@@ -63,9 +69,15 @@ const getInstanceMetadata = (ctx) => {
         text: `${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`
     });
 
+    maildev.push({
+        title: WEB_MAILDEV_LOCATION_TITLE,
+        text: `http://${host}:${ports.maildevWeb}/`
+    });
+
     return {
         admin,
-        frontend: frontend.map(mapDataStyle)
+        frontend: frontend.map(mapDataStyle),
+        maildev: maildev.map(mapDataStyle)
     };
 };
 
