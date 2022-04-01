@@ -9,8 +9,11 @@ const systeminformation = require('systeminformation');
 const { getCSAThemes } = require('../util/CSA-theme');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const ConsoleBlock = require('../util/console-block');
+const { getInstanceMetadata } = require('../util/instance-metadata');
 
 const cmaGaTrackingId = 'UA-127741417-7';
+
+googleAnalytics.setGaTrackingId(cmaGaTrackingId);
 
 /**
  * @param {import('yargs')} yargs
@@ -64,6 +67,9 @@ module.exports = (yargs) => {
                 default: false
             }),
         async (args = {}) => {
+            /**
+             * @type {Listr<import('../../typings/context').ListrContext>}
+             */
             const tasks = new Listr(
                 start(), {
                     exitOnError: true,
@@ -90,20 +96,27 @@ module.exports = (yargs) => {
                 const ctx = await tasks.run();
 
                 const {
-                    ports,
-                    config: { magentoConfiguration, overridenConfiguration: { host, ssl } },
                     systemConfiguration: { analytics }
                 } = ctx;
 
-                const webLocation = `${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`;
+                const instanceMetadata = getInstanceMetadata(ctx);
 
                 const block = new ConsoleBlock();
                 block
                     .addHeader('Magento 2')
-                    .addEmptyLine()
-                    .addLine(`Web location: ${logger.style.link(webLocation)}`)
-                    .addLine(`Magento Admin panel location: ${logger.style.link(`${webLocation}${magentoConfiguration.adminuri}`)}`)
-                    .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`);
+                    .addEmptyLine();
+
+                block.addLine(logger.style.misc('Frontend'));
+                instanceMetadata.frontend.forEach(({ title, text }) => {
+                    block.addLine(`  ${title}: ${text}`);
+                });
+
+                block.addEmptyLine();
+
+                block.addLine(logger.style.misc('Admin'));
+                instanceMetadata.admin.forEach(({ title, text }) => {
+                    block.addLine(`  ${title}: ${text}`);
+                });
 
                 const themes = await getCSAThemes();
                 if (themes.length > 0) {
@@ -143,8 +156,6 @@ module.exports = (yargs) => {
                 }
 
                 try {
-                    googleAnalytics.setGaTrackingId(cmaGaTrackingId);
-
                     if (!process.isFirstStart) {
                         await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                         googleAnalytics.printAboutAnalytics();

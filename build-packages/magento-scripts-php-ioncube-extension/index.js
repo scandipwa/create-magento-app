@@ -74,6 +74,12 @@ const ioncubeExtensionInstall = async (ctx, task) => {
 
     if (!await pathExists(downloadDestination)) {
         task.output = `Downloading extension into ${downloadDestination} folder...`;
+
+        // There's no ~/Downloads folder on RD so we need to check for it
+        if (!await pathExists(downloadsPath)) {
+            await fs.promises.mkdir(downloadsPath);
+        }
+
         await downloadFile(
             downloadLink,
             downloadDestination
