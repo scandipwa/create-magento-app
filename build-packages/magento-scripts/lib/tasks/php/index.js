@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const pathExists = require('../../util/path-exists');
 const compile = require('./compile');
@@ -24,15 +25,28 @@ const installPhp = () => ({
         task.title = `Installing PHP ${php.version}`;
 
         try {
-            const hasPHPVersion = (
-                await fs.promises.readdir(phpbrewConfig.phpPath, {
-                    encoding: 'utf-8',
-                    withFileTypes: true
-                })
-            )
-                .some((f) => f.isDirectory() && f.name === `php-${php.version}`);
+            const hasPHPVersionDirectory = (
+                await Promise.all(
+                    (
+                        await fs.promises.readdir(phpbrewConfig.phpPath, {
+                            encoding: 'utf-8',
+                            withFileTypes: true
+                        })
+                    ).map(async (f) => {
+                        if (!f.isDirectory()) {
+                            return false;
+                        }
 
-            if (hasPHPVersion && !recompilePhp) {
+                        if (f.name !== `php-${php.version}`) {
+                            return false;
+                        }
+
+                        return pathExists(path.join(phpbrewConfig.phpPath, f.name, 'bin', 'php'));
+                    })
+                ))
+                .includes(true);
+
+            if (hasPHPVersionDirectory && !recompilePhp) {
                 task.skip();
                 // eslint-disable-next-line consistent-return
                 return;
