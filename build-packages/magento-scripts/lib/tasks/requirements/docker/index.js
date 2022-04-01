@@ -3,6 +3,7 @@ const os = require('os');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
 const installDocker = require('./install');
+const { checkDockerSocketPermissions } = require('./permissions');
 const getDockerVersion = require('./version');
 
 /**
@@ -70,4 +71,14 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
     }
 });
 
-module.exports = checkDocker;
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
+module.exports = () => ({
+    task: (ctx, task) => task.newListr([
+        checkDockerSocketPermissions(),
+        checkDocker()
+    ], {
+        concurrent: false
+    })
+});
