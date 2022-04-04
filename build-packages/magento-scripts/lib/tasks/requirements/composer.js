@@ -159,7 +159,11 @@ const checkComposerCredentials = () => ({
 
         if (!problems.has(MISSING_AUTH_JSON)) {
             try {
-                composerAuthContent = JSON.parse(await fs.promises.readFile(authJsonPath, 'utf-8'));
+                const composerAuthFileContent = await fs.promises.readFile(authJsonPath, 'utf-8');
+
+                composerAuthContent = JSON.parse(composerAuthFileContent);
+
+                process.env.COMPOSER_AUTH = composerAuthFileContent;
             } catch (e) {
                 throw new Error(
                     `We found an error in your ${ logger.style.file('./auth.json') } file.
