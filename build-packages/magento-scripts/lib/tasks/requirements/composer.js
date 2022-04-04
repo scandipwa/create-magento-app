@@ -172,7 +172,7 @@ Would you like to load them now?`
 
                     if (loadCredentialsFrom) {
                         const credentialsLine = lines.find((line) => line.startsWith('export COMPOSER_AUTH='));
-                        process.env.COMPOSER_AUTH = credentialsLine.replace('export COMPOSER_AUTH=', '').replace(/'/ig, '');
+                        process.env.COMPOSER_AUTH = credentialsLine.replace('export COMPOSER_AUTH=', '').replace(/'/ig, '').trim();
                         problems.delete(MISSING_COMPOSER_AUTH_ENV);
                     }
                 }
