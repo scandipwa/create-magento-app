@@ -7,6 +7,7 @@ const pathExists = require('../../util/path-exists');
 const authJsonPath = path.join(process.cwd(), 'auth.json');
 const shellName = process.env.SHELL.split('/').pop();
 const shellConfigFileName = `.${shellName}rc`;
+const shellConfigFilePath = path.join(os.homedir(), shellConfigFileName);
 
 const pasteKeybinding = process.platform === 'darwin' ? 'CMD + V' : 'CTRL + SHIFT + V';
 
@@ -150,9 +151,38 @@ const checkComposerCredentials = () => ({
         }
 
         if (problems.has(MISSING_COMPOSER_AUTH_ENV) && problems.has(MISSING_AUTH_JSON)) {
-            return task.newListr(
-                configureComposerCredentials()
-            );
+            let doConfigure = true;
+            if (await pathExists(shellConfigFilePath)) {
+                const rcFileContent = await fs.promises.readFile(shellConfigFilePath, 'utf-8');
+
+                const lines = rcFileContent.split('\n');
+                const composerAuthInRcFile = lines.some((line) => line.startsWith('export COMPOSER_AUTH='));
+
+                if (composerAuthInRcFile) {
+                    doConfigure = false;
+                    const loadCredentialsFrom = await task.prompt({
+                        type: 'Confirm',
+                        message: `We detected that you have ${ logger.style.misc('COMPOSER_AUTH') } environment variable set in ${ logger.style.file(shellConfigFilePath) } file,
+but we do not see this variable inside ${ logger.style.code('magento-scripts') } process.
+
+${ logger.style.misc('! Don\'t forget to reload your shell after process is finished !') }
+
+Would you like to load them now?`
+                    });
+
+                    if (loadCredentialsFrom) {
+                        const credentialsLine = lines.find((line) => line.startsWith('export COMPOSER_AUTH='));
+                        process.env.COMPOSER_AUTH = credentialsLine.replace('export COMPOSER_AUTH=', '').replace(/'/ig, '');
+                        problems.delete(MISSING_COMPOSER_AUTH_ENV);
+                    }
+                }
+            }
+
+            if (doConfigure) {
+                return task.newListr(
+                    configureComposerCredentials()
+                );
+            }
         }
 
         let composerAuthContent;
