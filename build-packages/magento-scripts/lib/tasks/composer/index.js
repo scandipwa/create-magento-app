@@ -17,7 +17,7 @@ const getComposerVersion = async ({ composer, php }) => {
 
     const composerVersion = safeRegexExtract({
         string: composerVersionOutput,
-        regex: /(\d+\.\d+\.\d+)/i,
+        regex: /composer.+(\d+\.\d+\.\d+)/i,
         onNoMatch: () => {
             throw new Error(`
 No composer version found in composer version output!\n\n${composerVersionOutput}
