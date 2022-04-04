@@ -8,7 +8,9 @@ module.exports = ({ templateDir } = {}) => ({
             version: '7.3.28',
             configTemplate: path.join(templateDir || '', 'php.template.ini'),
             extensions: {
-                gd: {},
+                gd: {
+                    macosOptions: '--with-zlib-dir=$(brew --prefix zlib) --with-freetype-dir=$(brew --prefix freetype)'
+                },
                 intl: {},
                 zlib: {},
                 openssl: {},
