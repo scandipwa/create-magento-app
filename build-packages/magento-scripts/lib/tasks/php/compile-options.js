@@ -74,7 +74,8 @@ const compileOptions = {
             CPATH: '$CPATH:$(brew --prefix openssl@1.1)/include',
             CXX: 'g++ -DTRUE=1 -DFALSE=0',
             CC: 'gcc -DTRUE=1 -DFALSE=0',
-            LDFLAGS: '$(brew --prefix openssl@1.1)/lib/libssl.dylib $(brew --prefix openssl@1.1)/lib/libcrypto.dylib'
+            LDFLAGS: '$(brew --prefix openssl@1.1)/lib/libssl.dylib $(brew --prefix openssl@1.1)/lib/libcrypto.dylib',
+            CFLAGS: '-Wno-implicit-function-declaration' // https://github.com/phpbrew/phpbrew/issues/1222
         }
     }
 };
