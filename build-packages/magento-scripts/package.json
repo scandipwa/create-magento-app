@@ -40,5 +40,15 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "keywords": [
+        "magento",
+        "docker",
+        "php",
+        "nginx",
+        "redis",
+        "elasticsearch",
+        "mysql",
+        "scandipwa"
+    ]
 }
