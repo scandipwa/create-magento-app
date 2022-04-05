@@ -4,7 +4,6 @@ const checkComposer = require('./composer');
 const checkDocker = require('./docker');
 const checkNodeVersion = require('./node-version');
 const checkPHPVersion = require('./php-version');
-const localAuthJson = require('../composer/local-auth-json');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -21,7 +20,7 @@ const checkRequirements = () => ({
         // check the Docker installation
         checkDocker(),
         // check for COMPOSER_AUTH or auth.json
-        localAuthJson(),
+        // localAuthJson(),
         checkComposer(),
         // check for Node.js version
         checkNodeVersion()
