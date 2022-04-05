@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
