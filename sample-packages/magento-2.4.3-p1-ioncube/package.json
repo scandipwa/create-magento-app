@@ -18,6 +18,6 @@
     },
     "dependencies": {
         "@scandipwa/magento-scripts": "1.14.0",
-        "@scandipwa/magento-scripts-php-ioncube-extension": "0.0.1"
+        "@scandipwa/magento-scripts-php-ioncube-extension": "0.0.3"
     }
 }
