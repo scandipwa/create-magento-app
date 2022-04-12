@@ -70,3 +70,6 @@ atlassian*
 /generated/*
 !/generated/.htaccess
 .DS_Store
+
+!package.json
+!package-lock.json
