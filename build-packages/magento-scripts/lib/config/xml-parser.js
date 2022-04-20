@@ -6,7 +6,6 @@ const fs = require('fs');
  */
 const xmlParserConfig = {
     ignoreAttributes: false,
-    preserveOrder: true,
     parseAttributeValue: false,
     trimValues: true
 };
