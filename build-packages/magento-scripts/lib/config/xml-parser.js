@@ -7,7 +7,8 @@ const fs = require('fs');
 const xmlParserConfig = {
     ignoreAttributes: false,
     parseAttributeValue: false,
-    trimValues: true
+    trimValues: true,
+    allowBooleanAttributes: true
 };
 
 /**
@@ -16,7 +17,8 @@ const xmlParserConfig = {
 const xmlBuilderConfig = {
     ...xmlParserConfig,
     format: true,
-    suppressEmptyNode: true
+    suppressEmptyNode: true,
+    suppressBooleanAttributes: false
 };
 
 const parser = new XMLParser(xmlParserConfig);
