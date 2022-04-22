@@ -79,8 +79,8 @@ const setupDataSourceLocalConfig = () => ({
                 '@_exact-version': '0'
             };
             const isDatabaseInfoChangeNeeded = dataSource['database-info']
-                ? Object.entries(dataSource['database-info'])
-                    .some(([key, value]) => defaultDatabaseInfoConfig[key] !== value)
+                ? Object.entries(defaultDatabaseInfoConfig)
+                    .some(([key, value]) => dataSource['database-info'][key] !== value)
                 : true;
 
             if (isDatabaseInfoChangeNeeded) {
@@ -101,8 +101,8 @@ const setupDataSourceLocalConfig = () => ({
             };
 
             const isDataSourceDataChangeNeeded = dataSource
-                ? Object.entries(dataSource)
-                    .some(([key, value]) => dataSourceDefaultData[key] !== value)
+                ? Object.entries(dataSourceDefaultData)
+                    .some(([key, value]) => dataSource[key] !== value)
                 : true;
 
             if (isDataSourceDataChangeNeeded) {
@@ -187,8 +187,8 @@ const setupDataSourceConfig = () => ({
             };
 
             const isDataSourceNeedChanges = dataSource
-                ? Object.entries(dataSource)
-                    .some(([key, value]) => expectedDataSourceData[key] !== value)
+                ? Object.entries(expectedDataSourceData)
+                    .some(([key, value]) => dataSource[key] !== value)
                 : true;
 
             if (isDataSourceNeedChanges) {
