@@ -80,7 +80,7 @@ const setupDataSourceLocalConfig = () => ({
             };
             const isDatabaseInfoChangeNeeded = dataSource['database-info']
                 ? Object.entries(defaultDatabaseInfoConfig)
-                    .some(([key, value]) => dataSource['database-info'][key] !== value)
+                    .some(([key]) => !(key in dataSource['database-info']))
                 : true;
 
             if (isDatabaseInfoChangeNeeded) {
@@ -89,15 +89,17 @@ const setupDataSourceLocalConfig = () => ({
                     dataSource['database-info'] = defaultDatabaseInfoConfig;
                 } else {
                     Object.entries(defaultDatabaseInfoConfig).forEach(([key, value]) => {
-                        dataSource['database-info'][key] = value;
+                        if (!(key in dataSource['database-info'])) {
+                            dataSource['database-info'][key] = value;
+                        }
+                        // ^^^ only set missing properties, only ones should be in place
                     });
                 }
             }
 
             const dataSourceDefaultData = {
                 'secret-storage': 'master_key',
-                'user-name': 'magento',
-                'schema-mapping': ''
+                'user-name': 'magento'
             };
 
             const isDataSourceDataChangeNeeded = dataSource
@@ -110,6 +112,11 @@ const setupDataSourceLocalConfig = () => ({
                 Object.entries(dataSourceDefaultData).forEach(([key, value]) => {
                     dataSource[key] = value;
                 });
+            }
+
+            if (!('schema-mapping' in dataSource)) {
+                hasChanges = true;
+                dataSource['schema-mapping'] = '';
             }
 
             if (hasChanges) {
@@ -188,7 +195,7 @@ const setupDataSourceConfig = () => ({
 
             const isDataSourceNeedChanges = dataSource
                 ? Object.entries(expectedDataSourceData)
-                    .some(([key, value]) => dataSource[key] !== value)
+                    .some(([key]) => !(key in dataSource))
                 : true;
 
             if (isDataSourceNeedChanges) {
@@ -197,7 +204,9 @@ const setupDataSourceConfig = () => ({
                     dataSourcesData.project.component['data-source'] = expectedDataSourceData;
                 } else {
                     Object.entries(expectedDataSourceData).forEach(([key, value]) => {
-                        dataSource[key] = value;
+                        if (!(key in dataSource)) {
+                            dataSource[key] = value;
+                        }
                     });
                 }
             }

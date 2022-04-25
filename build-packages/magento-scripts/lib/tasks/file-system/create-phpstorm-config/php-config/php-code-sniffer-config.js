@@ -7,7 +7,7 @@ const PHP_CODE_SNIFFER_COMPONENT_NAME = 'PhpCodeSniffer';
 
 const beautifierPathKey = '@_beautifier_path';
 
-const phpCodeSnifferStandards = 'MySource;PEAR;PHPCompatibility;PSR1;PSR12;PSR2;Squiz;Zend';
+const phpCodeSnifferStandards = 'Magento;MySource;PEAR;PHPCompatibility;PSR1;PSR12;PSR2;Squiz;Zend';
 const phpCodeSnifferBinaryPath = path.join(process.cwd(), 'vendor', 'bin', 'phpcs');
 const phpCodeSnifferBinaryFormattedPath = formatPathForPHPStormConfig(phpCodeSnifferBinaryPath);
 

@@ -1,7 +1,9 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
-const setConfigFile = require('../../../../util/set-config');
 const setupMessDetector = require('./mess-detector-config');
+const setupPHPCodeSniffer = require('./php-code-sniffer-config');
+const setupPHPCSFixer = require('./php-cs-fixer-config');
+const setupPHPProjectSharedConfiguration = require('./php-project-shared-configuration-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
@@ -24,10 +26,10 @@ const setupPhpConfig = () => ({
             const phpConfigContent = await loadXmlFile(phpStorm.php.path);
             const phpConfigs = phpConfigContent.project.component;
             const hasChanges = await Promise.all([
-                setupMessDetector(phpConfigs)
-                // setupPhpCSValidationInspection(phpConfigs),
-                // setupStyleLintInspection(phpConfigs),
-                // setupMessDetectorValidationInspection(phpConfigs)
+                setupMessDetector(phpConfigs),
+                setupPHPCodeSniffer(phpConfigs),
+                setupPHPCSFixer(phpConfigs),
+                setupPHPProjectSharedConfiguration(phpConfigs, phpLanguageLevel)
             ]);
 
             if (hasChanges.includes(true)) {
@@ -38,18 +40,27 @@ const setupPhpConfig = () => ({
 
             return;
         }
-        try {
-            await setConfigFile({
-                configPathname: phpStorm.php.path,
-                template: phpStorm.php.templatePath,
-                overwrite: true,
-                templateArgs: {
-                    phpLanguageLevel
-                }
-            });
-        } catch (e) {
-            throw new Error(`Unexpected error accrued during php.xml config creation\n\n${e}`);
-        }
+
+        const phpConfigContent = {
+            '?xml': {
+                '@_version': '1.0',
+                '@_encoding': 'UTF-8'
+            },
+            project: {
+                '@_version': '4',
+                component: []
+            }
+        };
+        const phpConfigs = phpConfigContent.project.component;
+
+        await Promise.all([
+            setupMessDetector(phpConfigs),
+            setupPHPCodeSniffer(phpConfigs),
+            setupPHPCSFixer(phpConfigs),
+            setupPHPProjectSharedConfiguration(phpConfigs, phpLanguageLevel)
+        ]);
+
+        await buildXmlFile(phpStorm.php.path, phpConfigContent);
     }
 });
 

@@ -3,6 +3,7 @@ const setupPhpConfig = require('./php-config');
 const setupDatabaseConfig = require('./database-config');
 const setupInspectionToolsConfig = require('./inspection-tools-config');
 const setupExcludedFoldersConfig = require('./exclude-folder-config');
+const setupStylelintConfig = require('./stylelint-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -14,7 +15,8 @@ const createPhpStormConfig = () => ({
         setupPhpConfig(),
         setupDatabaseConfig(),
         setupInspectionToolsConfig(),
-        setupExcludedFoldersConfig()
+        setupExcludedFoldersConfig(),
+        setupStylelintConfig()
     ], {
         concurrent: true
     })
