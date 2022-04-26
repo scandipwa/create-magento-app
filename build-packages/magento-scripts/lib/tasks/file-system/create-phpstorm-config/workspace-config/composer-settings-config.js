@@ -13,6 +13,20 @@ const composerJsonFormattedPath = formatPathForPHPStormConfig(composerJsonPath);
 const composerPharPath = path.join(baseConfig.cacheDir, 'composer', 'composer.phar');
 const composerPharFormattedPath = formatPathForPHPStormConfig(composerPharPath);
 
+// TODO Ideally, we want to setup interpreter for compose.phar
+// but ATM I have no idea how to properly setup it
+
+// It should look like this:
+// <component name="ComposerSettings" synchronizationState="DONT_SYNCHRONIZE">
+//     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+//     <execution>
+//         <phar
+//             pharPath="$PROJECT_DIR$/node_modules/.create-magento-app-cache/composer/composer.phar"
+//             interpreterId="f19b09e2-16e7-491f-9056-3299df58e578"
+//         />
+//     </execution>
+// </component>
+
 /**
  * @param {Array} workspaceConfigs
  * @returns {Promise<Boolean>}
