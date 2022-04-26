@@ -1,5 +1,6 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
+const setupComposerSettings = require('./composer-settings-config');
 const setupPHPDebugGeneral = require('./php-debug-general-config');
 const setupPHPServers = require('./php-server-config');
 const setupRunManager = require('./run-manager-config');
@@ -22,7 +23,8 @@ const setupXDebugConfig = () => ({
             const hasChanges = await Promise.all([
                 setupPHPDebugGeneral(workspaceConfigs, phpStorm),
                 setupPHPServers(workspaceConfigs, phpStorm),
-                setupRunManager(workspaceConfigs, phpStorm)
+                setupRunManager(workspaceConfigs, phpStorm),
+                setupComposerSettings(workspaceConfigs)
             ]);
 
             if (hasChanges.includes(true)) {
@@ -49,7 +51,8 @@ const setupXDebugConfig = () => ({
         await Promise.all([
             setupPHPDebugGeneral(workspaceConfigs, phpStorm),
             setupPHPServers(workspaceConfigs, phpStorm),
-            setupRunManager(workspaceConfigs, phpStorm)
+            setupRunManager(workspaceConfigs, phpStorm),
+            setupComposerSettings(workspaceConfigs)
         ]);
 
         await buildXmlFile(phpStorm.php.path, workspaceConfiguration);
