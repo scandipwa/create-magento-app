@@ -1,5 +1,7 @@
 const { XMLParser, XMLBuilder } = require('fast-xml-parser');
 const fs = require('fs');
+const path = require('path');
+const pathExists = require('../util/path-exists');
 
 /**
  * @type {import('fast-xml-parser').X2jOptions}
@@ -41,6 +43,14 @@ const loadXmlFile = async (filePath) => {
  */
 const buildXmlFile = async (filePath, fileData) => {
     const xmlFileData = builder.build(fileData);
+
+    const { dir } = path.parse(filePath);
+
+    if (!await pathExists(dir)) {
+        await fs.promises.mkdir(dir, {
+            recursive: true
+        });
+    }
 
     await fs.promises.writeFile(filePath, xmlFileData, 'utf-8');
 };
