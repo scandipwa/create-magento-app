@@ -1,4 +1,4 @@
-const setupXDebugConfig = require('./xdebug-config');
+const setupWorkspaceConfig = require('./workspace-config');
 const setupPhpConfig = require('./php-config');
 const setupDatabaseConfig = require('./database-config');
 const setupInspectionToolsConfig = require('./inspection-tools-config');
@@ -11,7 +11,7 @@ const setupStylelintConfig = require('./stylelint-config');
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
     task: (ctx, task) => task.newListr([
-        setupXDebugConfig(),
+        setupWorkspaceConfig(),
         setupPhpConfig(),
         setupDatabaseConfig(),
         setupInspectionToolsConfig(),

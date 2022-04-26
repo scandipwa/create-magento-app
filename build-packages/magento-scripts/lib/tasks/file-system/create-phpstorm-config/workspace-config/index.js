@@ -8,8 +8,8 @@ const setupRunManager = require('./run-manager-config');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
-const setupXDebugConfig = () => ({
-    title: 'Set up XDebug configuration',
+const setupWorkspaceConfig = () => ({
+    title: 'Set up Workspace configuration',
     task: async (ctx, task) => {
         const {
             config: {
@@ -59,4 +59,4 @@ const setupXDebugConfig = () => ({
     }
 });
 
-module.exports = setupXDebugConfig;
+module.exports = setupWorkspaceConfig;
