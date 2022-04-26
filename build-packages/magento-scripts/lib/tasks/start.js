@@ -29,6 +29,7 @@ const convertLegacyVolumes = require('./docker/convert-legacy-volumes');
 const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-plugins');
 const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
+const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -189,8 +190,11 @@ const start = () => ({
 
                     return false;
                 },
-                task: ({ ports, config: { overridenConfiguration: { host, ssl } } }) => {
-                    openBrowser(`${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`);
+                task: (ctx) => {
+                    const instanceMetadata = getInstanceMetadata(ctx);
+                    const locationOnTheWeb = instanceMetadata.frontend.find(({ title }) => title === WEB_LOCATION_TITLE);
+
+                    openBrowser(locationOnTheWeb.text);
                 },
                 options: {
                     showTimer: false

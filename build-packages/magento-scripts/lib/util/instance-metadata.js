@@ -70,5 +70,11 @@ const getInstanceMetadata = (ctx) => {
 };
 
 module.exports = {
-    getInstanceMetadata
+    getInstanceMetadata,
+    constants: {
+        WEB_LOCAL_LOCATION_TITLE,
+        WEB_LOCATION_TITLE,
+        WEB_ADMIN_LOCATION_TITLE,
+        WEB_ADMIN_CREDENTIALS_TITLE
+    }
 };
