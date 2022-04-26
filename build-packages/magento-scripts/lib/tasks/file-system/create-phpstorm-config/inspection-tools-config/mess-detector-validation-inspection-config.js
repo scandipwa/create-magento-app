@@ -9,7 +9,8 @@ const {
         DESIGN_OPTION_NAME,
         UNUSED_CODE_OPTION_NAME,
         NAMING_OPTION_NAME,
-        CUSTOM_RULESETS_OPTION_NAME
+        CUSTOM_RULESETS_OPTION_NAME,
+        PHP_MD_RULESET_OPTION_VALUE
     }
 } = require('./config');
 const {
@@ -32,7 +33,7 @@ const messDetectorDefaultRuleSetsListContent = {
         option: [
             {
                 [nameKey]: 'name',
-                [valueKey]: CUSTOM_RULESETS_OPTION_NAME
+                [valueKey]: PHP_MD_RULESET_OPTION_VALUE
             },
             {
                 [nameKey]: 'path',
@@ -94,27 +95,27 @@ const setupMessDetectorValidationInspection = async (inspectionToolsData) => {
             );
 
             if (customRulesetsOption) {
-                if (customRulesetsOption.list) {
-                    if (!Array.isArray(customRulesetsOption.list)) {
-                        hasChanges = true;
-                        customRulesetsOption.list = [customRulesetsOption.list];
-                    }
-
-                    const correctRulesetExists = customRulesetsOption.list.some(
-                        (r) => r.RulesetDescriptor.option.some(
-                            (o) => o[nameKey] === 'path' && o[valueKey] === phpMDRuleSetFormattedPath
-                        )
-                    );
-
-                    if (!correctRulesetExists) {
-                        hasChanges = true;
-                        customRulesetsOption.list.push(
-                            messDetectorDefaultRuleSetsListContent
-                        );
-                    }
-                } else {
+                if (!customRulesetsOption.list) {
                     hasChanges = true;
-                    customRulesetsOption.list = messDetectorDefaultRuleSetsListContent;
+                    customRulesetsOption.list = [];
+                }
+
+                if (customRulesetsOption.list && !Array.isArray(customRulesetsOption.list)) {
+                    hasChanges = true;
+                    customRulesetsOption.list = [customRulesetsOption.list];
+                }
+
+                const correctRulesetsExists = customRulesetsOption.list.some(
+                    (r) => r.RulesetDescriptor.option.some(
+                        (o) => o[nameKey] === 'path' && o[valueKey] === phpMDRuleSetFormattedPath
+                    )
+                );
+
+                if (!correctRulesetsExists) {
+                    hasChanges = true;
+                    customRulesetsOption.list.push(
+                        messDetectorDefaultRuleSetsListContent
+                    );
                 }
             } else {
                 hasChanges = true;
