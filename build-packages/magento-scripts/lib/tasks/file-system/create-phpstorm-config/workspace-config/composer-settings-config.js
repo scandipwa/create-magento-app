@@ -7,23 +7,20 @@ const { formatPathForPHPStormConfig } = require('../xml-utils');
 const COMPOSER_SETTINGS_COMPONENT_NAME = 'ComposerSettings';
 
 const pharPathKey = '@_pharPath';
+const doNotAskKey = '@_doNotAsk';
+const synchronizationStateKey = '@_synchronizationState';
 
 const composerJsonPath = path.join(process.cwd(), 'composer.json');
 const composerJsonFormattedPath = formatPathForPHPStormConfig(composerJsonPath);
 const composerPharPath = path.join(baseConfig.cacheDir, 'composer', 'composer.phar');
 const composerPharFormattedPath = formatPathForPHPStormConfig(composerPharPath);
 
-/**
- *
-  <component name="ComposerSettings" doNotAsk="true" notifyAboutMissingVendor="false" synchronizationState="DONT_SYNCHRONIZE">
-    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
-    <execution>
-      <phar pharPath="$PROJECT_DIR$/node_modules/.create-magento-app-cache/composer/composer.phar" />
-    </execution>
-  </component>
- */
+const defaultComposerSettingsProperties = {
+    [doNotAskKey]: 'true',
+    [synchronizationStateKey]: 'SYNCHRONIZE'
+};
+
 // TODO Ideally, we want to setup interpreter for compose.phar
-// but ATM I have no idea how to properly setup it
 
 // It should look like this:
 // <component name="ComposerSettings" synchronizationState="DONT_SYNCHRONIZE">
@@ -71,10 +68,21 @@ const setupComposerSettings = async (workspaceConfigs) => {
                 [pharPathKey]: composerPharFormattedPath
             };
         }
+
+        const composerSettingsMissingProperties = Object.entries(defaultComposerSettingsProperties)
+            .filter(([key]) => !(key in composerSettingsComponent));
+
+        if (composerSettingsMissingProperties.length > 0) {
+            hasChanges = true;
+            composerSettingsMissingProperties.forEach(([key, value]) => {
+                composerSettingsComponent[key] = value;
+            });
+        }
     } else {
         hasChanges = true;
         workspaceConfigs.push({
             [nameKey]: COMPOSER_SETTINGS_COMPONENT_NAME,
+            ...defaultComposerSettingsProperties,
             pharConfigPath: composerJsonFormattedPath,
             execution: {
                 phar: {
