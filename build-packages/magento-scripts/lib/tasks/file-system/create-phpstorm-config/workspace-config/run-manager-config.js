@@ -1,6 +1,6 @@
 const { nameKey } = require('../keys');
 
-const RUN_MANAGER_COMPONENT_NAME = 'PhpDebugGeneral';
+const RUN_MANAGER_COMPONENT_NAME = 'RunManager';
 
 const PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE = 'PhpRemoteDebugRunConfigurationType';
 

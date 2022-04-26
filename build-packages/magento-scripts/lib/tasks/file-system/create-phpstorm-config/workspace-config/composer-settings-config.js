@@ -4,7 +4,7 @@ const pathExists = require('../../../../util/path-exists');
 const { nameKey } = require('../keys');
 const { formatPathForPHPStormConfig } = require('../xml-utils');
 
-const COMPOSER_SETTINGS_COMPONENT_NAME = 'PhpDebugGeneral';
+const COMPOSER_SETTINGS_COMPONENT_NAME = 'ComposerSettings';
 
 const pharPathKey = '@_pharPath';
 
@@ -13,6 +13,15 @@ const composerJsonFormattedPath = formatPathForPHPStormConfig(composerJsonPath);
 const composerPharPath = path.join(baseConfig.cacheDir, 'composer', 'composer.phar');
 const composerPharFormattedPath = formatPathForPHPStormConfig(composerPharPath);
 
+/**
+ *
+  <component name="ComposerSettings" doNotAsk="true" notifyAboutMissingVendor="false" synchronizationState="DONT_SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution>
+      <phar pharPath="$PROJECT_DIR$/node_modules/.create-magento-app-cache/composer/composer.phar" />
+    </execution>
+  </component>
+ */
 // TODO Ideally, we want to setup interpreter for compose.phar
 // but ATM I have no idea how to properly setup it
 

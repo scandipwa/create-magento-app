@@ -1,6 +1,7 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
 const setupComposerSettings = require('./composer-settings-config');
+const setupFormatOnSave = require('./format-setting-config');
 const setupPHPDebugGeneral = require('./php-debug-general-config');
 const setupPHPServers = require('./php-server-config');
 const setupRunManager = require('./run-manager-config');
@@ -24,7 +25,8 @@ const setupWorkspaceConfig = () => ({
                 setupPHPDebugGeneral(workspaceConfigs, phpStorm),
                 setupPHPServers(workspaceConfigs, phpStorm),
                 setupRunManager(workspaceConfigs, phpStorm),
-                setupComposerSettings(workspaceConfigs)
+                setupComposerSettings(workspaceConfigs),
+                setupFormatOnSave(workspaceConfigs)
             ]);
 
             if (hasChanges.includes(true)) {
@@ -52,10 +54,11 @@ const setupWorkspaceConfig = () => ({
             setupPHPDebugGeneral(workspaceConfigs, phpStorm),
             setupPHPServers(workspaceConfigs, phpStorm),
             setupRunManager(workspaceConfigs, phpStorm),
-            setupComposerSettings(workspaceConfigs)
+            setupComposerSettings(workspaceConfigs),
+            setupFormatOnSave(workspaceConfigs)
         ]);
 
-        await buildXmlFile(phpStorm.php.path, workspaceConfiguration);
+        await buildXmlFile(phpStorm.xdebug.path, workspaceConfiguration);
     }
 });
 

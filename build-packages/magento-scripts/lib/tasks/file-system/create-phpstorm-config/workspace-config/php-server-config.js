@@ -1,6 +1,6 @@
 const { nameKey } = require('../keys');
 
-const PHP_SERVERS_COMPONENT_NAME = 'PhpDebugGeneral';
+const PHP_SERVERS_COMPONENT_NAME = 'PhpServers';
 
 const hostKey = '@_host';
 
