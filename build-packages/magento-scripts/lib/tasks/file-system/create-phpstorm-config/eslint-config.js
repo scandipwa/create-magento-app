@@ -61,18 +61,20 @@ const setupESLintConfig = () => ({
             }
         };
         const themes = await getCSAThemes();
-        const theme = themes[0];
 
-        if (await pathExists(theme.themePath)) {
-            styleLintConfigurationData.project.component['work-dir-pattern'] = {
-                [valueKey]: formatPathForPHPStormConfig(theme.themePath)
-            };
-            const packageJsonPath = path.join(theme.themePath, 'package.json');
-            if (await pathExists(packageJsonPath)) {
-                styleLintConfigurationData.project.component['custom-configuration-file'] = {
-                    '@_used': 'true',
-                    '@_path': formatPathForPHPStormConfig(packageJsonPath)
+        if (themes.length > 0) {
+            const theme = themes[0];
+            if (await pathExists(theme.themePath)) {
+                styleLintConfigurationData.project.component['work-dir-pattern'] = {
+                    [valueKey]: formatPathForPHPStormConfig(theme.themePath)
                 };
+                const packageJsonPath = path.join(theme.themePath, 'package.json');
+                if (await pathExists(packageJsonPath)) {
+                    styleLintConfigurationData.project.component['custom-configuration-file'] = {
+                        '@_used': 'true',
+                        '@_path': formatPathForPHPStormConfig(packageJsonPath)
+                    };
+                }
             }
         }
 
