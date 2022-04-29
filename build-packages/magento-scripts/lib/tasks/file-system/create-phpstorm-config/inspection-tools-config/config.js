@@ -2,6 +2,7 @@
 const PHP_CS_FIXER_VALIDATION_INSPECTION = 'PhpCSFixerValidationInspection';
 const PHP_CS_VALIDATION_INSPECTION = 'PhpCSValidationInspection';
 const STYLELINT_INSPECTION = 'Stylelint';
+const ESLINT_INSPECTION = 'Eslint';
 const MESS_DETECTOR_VALIDATION_INSPECTION = 'MessDetectorValidationInspection';
 
 // options
@@ -47,6 +48,7 @@ module.exports = {
         PHP_CS_FIXER_VALIDATION_INSPECTION,
         PHP_CS_VALIDATION_INSPECTION,
         STYLELINT_INSPECTION,
+        ESLINT_INSPECTION,
         MESS_DETECTOR_VALIDATION_INSPECTION
     }
 };

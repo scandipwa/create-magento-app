@@ -1,13 +1,13 @@
 const path = require('path');
-const fs = require('fs');
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const pathExists = require('../../../util/path-exists');
 const { valueKey, nameKey } = require('./keys');
+const { getCSAThemes } = require('../../../util/CSA-theme');
+const { formatPathForPHPStormConfig } = require('./xml-utils');
 
 const ESLINT_COMPONENT_NAME = 'EslintConfiguration';
 
 const pathToESLintConfig = path.join(process.cwd(), '.idea', 'jsLinters', 'eslint.xml');
-const pathToESLintConfigDir = path.parse(pathToESLintConfig).dir;
 
 const defaultESLintComponentConfiguration = {
     [nameKey]: ESLINT_COMPONENT_NAME,
@@ -50,12 +50,6 @@ const setupESLintConfig = () => ({
             return;
         }
 
-        if (!await pathExists(pathToESLintConfigDir)) {
-            await fs.promises.mkdir(pathToESLintConfigDir, {
-                recursive: true
-            });
-        }
-
         const styleLintConfigurationData = {
             '?xml': {
                 '@_version': '1.0',
@@ -63,11 +57,24 @@ const setupESLintConfig = () => ({
             },
             project: {
                 '@_version': '4',
-                component: [
-                    defaultESLintComponentConfiguration
-                ]
+                component: defaultESLintComponentConfiguration
             }
         };
+        const themes = await getCSAThemes();
+        const theme = themes[0];
+
+        if (await pathExists(theme.themePath)) {
+            styleLintConfigurationData.project.component['work-dir-pattern'] = {
+                [valueKey]: formatPathForPHPStormConfig(theme.themePath)
+            };
+            const packageJsonPath = path.join(theme.themePath, 'package.json');
+            if (await pathExists(packageJsonPath)) {
+                styleLintConfigurationData.project.component['custom-configuration-file'] = {
+                    '@_used': 'true',
+                    '@_path': formatPathForPHPStormConfig(packageJsonPath)
+                };
+            }
+        }
 
         await buildXmlFile(pathToESLintConfig, styleLintConfigurationData);
     }

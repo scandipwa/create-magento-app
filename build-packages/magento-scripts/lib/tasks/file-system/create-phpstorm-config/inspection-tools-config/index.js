@@ -5,6 +5,7 @@ const {
     valueKey,
     classKey
 } = require('../keys');
+const setupESLintInspection = require('./eslint-inspection-config');
 const setupMessDetectorValidationInspection = require('./mess-detector-validation-inspection-config');
 const setupPhpCSFixerValidationInspection = require('./php-cs-fixer-validation-inspection-config');
 const setupPhpCSValidationInspection = require('./php-cs-validation-inspection-config');
@@ -67,7 +68,9 @@ const setupInspectionToolsConfig = () => ({
             setupPhpCSFixerValidationInspection(inspectionTools),
             setupPhpCSValidationInspection(inspectionTools),
             setupStyleLintInspection(inspectionTools),
-            setupMessDetectorValidationInspection(inspectionTools)
+            setupMessDetectorValidationInspection(inspectionTools),
+            setupStyleLintInspection(inspectionTools),
+            setupESLintInspection(inspectionTools)
         ]);
 
         await buildXmlFile(phpStorm.inspectionTools.path, inspectionToolsData);
