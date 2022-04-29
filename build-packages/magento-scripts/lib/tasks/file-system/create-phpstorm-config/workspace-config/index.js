@@ -4,6 +4,7 @@ const setupComposerSettings = require('./composer-settings-config');
 const setupFormatOnSave = require('./format-setting-config');
 const setupPHPDebugGeneral = require('./php-debug-general-config');
 const setupPHPServers = require('./php-server-config');
+const setupPropertiesComponent = require('./properties-component-config');
 const setupRunManager = require('./run-manager-config');
 
 /**
@@ -24,7 +25,8 @@ const setupWorkspaceConfig = () => ({
             const hasChanges = await Promise.all([
                 setupPHPDebugGeneral(workspaceConfigs, phpStorm),
                 setupPHPServers(workspaceConfigs, phpStorm),
-                setupRunManager(workspaceConfigs, phpStorm)
+                setupRunManager(workspaceConfigs, phpStorm),
+                setupPropertiesComponent(workspaceConfigs)
             ]);
 
             if (hasChanges.includes(true)) {
@@ -52,6 +54,7 @@ const setupWorkspaceConfig = () => ({
             setupPHPDebugGeneral(workspaceConfigs, phpStorm),
             setupPHPServers(workspaceConfigs, phpStorm),
             setupRunManager(workspaceConfigs, phpStorm),
+            setupPropertiesComponent(workspaceConfigs),
             setupComposerSettings(workspaceConfigs),
             setupFormatOnSave(workspaceConfigs)
         ]);
