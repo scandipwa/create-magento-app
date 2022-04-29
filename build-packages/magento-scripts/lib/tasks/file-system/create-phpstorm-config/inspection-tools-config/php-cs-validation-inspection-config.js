@@ -1,23 +1,14 @@
-const pathExists = require('../../../../util/path-exists');
-const {
-    phpCompatibilityRuleSetPath,
-    phpCompatibilityFormattedPath,
-    phpCSConfigFormattedPath
-} = require('./paths');
 const {
     classes: {
         PHP_CS_VALIDATION_INSPECTION
     },
     options: {
         CODING_STANDARD_OPTION_NAME,
-        CUSTOM_CODING_STANDARD_OPTION_VALUE,
-        CUSTOM_RULE_SET_PATH_OPTION_NAME,
+        MAGENTO2_CODING_STANDARD_OPTION_VALUE,
         EXTENSIONS_OPTION_NAME,
         WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_NAME,
         WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_VALUE,
-        SHOW_SNIFF_NAMES_OPTION_NAME,
-        USE_INSTALLED_PATHS_OPTION_NAME,
-        INSTALLED_PATHS_OPTION_NAME
+        SHOW_SNIFF_NAMES_OPTION_NAME
     }
 } = require('./config');
 const {
@@ -25,18 +16,13 @@ const {
     nameKey,
     valueKey
 } = require('../keys');
-const setupCodingStandardOption = require('./coding-standard-config');
-const setupCustomRuleSetPathOption = require('./custom-ruleset-path-config');
 const setupDefaultProperties = require('./default-properties-config');
+const setupMagento2CodingStandardOption = require('./magento-coding-standard-config');
 
 const phpCSConfigDefaultOptions = [
     {
         [nameKey]: CODING_STANDARD_OPTION_NAME,
-        [valueKey]: CUSTOM_CODING_STANDARD_OPTION_VALUE
-    },
-    {
-        [nameKey]: CUSTOM_RULE_SET_PATH_OPTION_NAME,
-        [valueKey]: phpCSConfigFormattedPath
+        [valueKey]: MAGENTO2_CODING_STANDARD_OPTION_VALUE
     },
     {
         [nameKey]: WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_NAME,
@@ -45,14 +31,6 @@ const phpCSConfigDefaultOptions = [
     {
         [nameKey]: SHOW_SNIFF_NAMES_OPTION_NAME,
         [valueKey]: 'true'
-    },
-    {
-        [nameKey]: USE_INSTALLED_PATHS_OPTION_NAME,
-        [valueKey]: 'true'
-    },
-    {
-        [nameKey]: INSTALLED_PATHS_OPTION_NAME,
-        [valueKey]: phpCompatibilityFormattedPath
     },
     {
         [nameKey]: EXTENSIONS_OPTION_NAME,
@@ -73,13 +51,8 @@ const setupPhpCSValidationInspection = async (inspectionToolsData) => {
         }
 
         if (phpCSConfig.option) {
-            const hasCodingStandardChanges = await setupCodingStandardOption(phpCSConfig);
+            const hasCodingStandardChanges = await setupMagento2CodingStandardOption(phpCSConfig);
             if (hasCodingStandardChanges) {
-                hasChanges = true;
-            }
-
-            const hasCustomRuleSetChanges = await setupCustomRuleSetPathOption(phpCSConfig);
-            if (hasCustomRuleSetChanges) {
                 hasChanges = true;
             }
 
@@ -87,10 +60,7 @@ const setupPhpCSValidationInspection = async (inspectionToolsData) => {
                 (option) => option[nameKey] === WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_NAME
             );
 
-            if (warningHighlightLevelNameOption && warningHighlightLevelNameOption[valueKey] !== WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_VALUE) {
-                hasChanges = true;
-                warningHighlightLevelNameOption[valueKey] = WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_VALUE;
-            } else if (!warningHighlightLevelNameOption) {
+            if (!warningHighlightLevelNameOption) {
                 hasChanges = true;
                 phpCSConfig.option.push({
                     [nameKey]: WARNING_HIGHLIGHT_LEVEL_NAME_OPTION_NAME,
@@ -102,44 +72,12 @@ const setupPhpCSValidationInspection = async (inspectionToolsData) => {
                 (option) => option[nameKey] === SHOW_SNIFF_NAMES_OPTION_NAME
             );
 
-            if (showSniffNamesOption && showSniffNamesOption[valueKey] !== 'true') {
-                hasChanges = true;
-                showSniffNamesOption[valueKey] = 'true';
-            } else if (!showSniffNamesOption) {
+            if (!showSniffNamesOption) {
                 hasChanges = true;
                 phpCSConfig.option.push({
                     [nameKey]: SHOW_SNIFF_NAMES_OPTION_NAME,
                     [valueKey]: 'true'
                 });
-            }
-
-            const useInstalledPathsOption = phpCSConfig.option.find(
-                (option) => option[nameKey] === USE_INSTALLED_PATHS_OPTION_NAME
-            );
-
-            if (useInstalledPathsOption && useInstalledPathsOption[valueKey] !== 'true') {
-                hasChanges = true;
-                useInstalledPathsOption[valueKey] = 'true';
-            } else if (!useInstalledPathsOption) {
-                hasChanges = true;
-                phpCSConfig.option.push({
-                    [nameKey]: USE_INSTALLED_PATHS_OPTION_NAME,
-                    [valueKey]: 'true'
-                });
-            }
-
-            const installedPathsOption = phpCSConfig.option.find(
-                (option) => option[nameKey] === INSTALLED_PATHS_OPTION_NAME
-            );
-
-            if (!installedPathsOption) {
-                if (await pathExists(phpCompatibilityRuleSetPath)) {
-                    hasChanges = true;
-                    phpCSConfig.option.push({
-                        [nameKey]: INSTALLED_PATHS_OPTION_NAME,
-                        [valueKey]: phpCompatibilityFormattedPath
-                    });
-                }
             }
 
             // we want php code sniffer to lint only php files

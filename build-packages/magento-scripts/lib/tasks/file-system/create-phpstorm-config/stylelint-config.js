@@ -4,10 +4,19 @@ const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const pathExists = require('../../../util/path-exists');
 const { valueKey, nameKey } = require('./keys');
 
+const STYLELINT_CONFIGURATION_COMPONENT_NAME = 'StylelintConfiguration';
+
 const pathToStylelintConfig = path.join(process.cwd(), '.idea', 'stylesheetLinters', 'stylelint.xml');
 const pathToStylelintConfigDir = path.parse(pathToStylelintConfig).dir;
 
 const DEFAULT_STYLE_PATTERN = '{**/*,*}.{css,scss}';
+
+const defaultESLintComponentConfiguration = {
+    [nameKey]: STYLELINT_CONFIGURATION_COMPONENT_NAME,
+    'file-patterns': {
+        [valueKey]: DEFAULT_STYLE_PATTERN
+    }
+};
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -24,17 +33,13 @@ const setupStylelintConfig = () => ({
                 styleLintConfigurationData.project.component = [styleLintConfigurationData.project.component];
             }
 
-            const styleLintFilePatternsConfig = styleLintConfigurationData.project.component.find(
-                (config) => config['file-patterns']
+            const styleLintConfigurationComponent = styleLintConfigurationData.project.component.find(
+                (component) => component[nameKey] === STYLELINT_CONFIGURATION_COMPONENT_NAME
             );
 
-            if (!styleLintFilePatternsConfig) {
+            if (!styleLintConfigurationComponent) {
                 hasChanges = true;
-                styleLintConfigurationData.project.component.push({
-                    'file-patterns': {
-                        [valueKey]: DEFAULT_STYLE_PATTERN
-                    }
-                });
+                styleLintConfigurationData.project.component.push(defaultESLintComponentConfiguration);
             }
 
             if (hasChanges) {
@@ -60,12 +65,7 @@ const setupStylelintConfig = () => ({
             project: {
                 '@_version': '4',
                 component: [
-                    {
-                        [nameKey]: 'StylelintConfiguration',
-                        'file-patterns': {
-                            [valueKey]: DEFAULT_STYLE_PATTERN
-                        }
-                    }
+                    defaultESLintComponentConfiguration
                 ]
             }
         };

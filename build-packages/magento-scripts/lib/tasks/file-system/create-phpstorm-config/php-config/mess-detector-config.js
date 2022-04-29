@@ -6,6 +6,12 @@ const { formatPathForPHPStormConfig } = require('../xml-utils');
 const phpMDBinaryPath = path.join(process.cwd(), 'vendor', 'bin', 'phpmd');
 const phpMDBinaryFormattedPath = formatPathForPHPStormConfig(phpMDBinaryPath);
 
+const defaultMessDetectorSetting = {
+    MessDetectorConfiguration: {
+        [toolPathKey]: phpMDBinaryFormattedPath
+    }
+};
+
 /**
  * @param {Array} phpConfigs
  * @returns {Promise<Boolean>}
@@ -33,22 +39,14 @@ const setupMessDetector = async (phpConfigs) => {
             messDetectorConfiguration[toolPathKey] = phpMDBinaryFormattedPath;
         } else if (!messDetectorConfiguration) {
             hasChanges = true;
-            messDetectorComponent.phpmd_settings.push({
-                MessDetectorConfiguration: {
-                    [toolPathKey]: phpMDBinaryFormattedPath
-                }
-            });
+            messDetectorComponent.phpmd_settings.push(defaultMessDetectorSetting);
         }
     } else if (isPhpMDBinPathExists) {
         hasChanges = true;
         phpConfigs.push({
             [nameKey]: 'MessDetector',
             phpmd_settings: [
-                {
-                    MessDetectorConfiguration: {
-                        [toolPathKey]: phpMDBinaryFormattedPath
-                    }
-                }
+                defaultMessDetectorSetting
             ]
         });
     }

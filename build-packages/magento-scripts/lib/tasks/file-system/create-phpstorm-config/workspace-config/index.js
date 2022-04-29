@@ -24,9 +24,7 @@ const setupWorkspaceConfig = () => ({
             const hasChanges = await Promise.all([
                 setupPHPDebugGeneral(workspaceConfigs, phpStorm),
                 setupPHPServers(workspaceConfigs, phpStorm),
-                setupRunManager(workspaceConfigs, phpStorm),
-                setupComposerSettings(workspaceConfigs),
-                setupFormatOnSave(workspaceConfigs)
+                setupRunManager(workspaceConfigs, phpStorm)
             ]);
 
             if (hasChanges.includes(true)) {

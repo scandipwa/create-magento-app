@@ -7,12 +7,20 @@ const PHP_CODE_SNIFFER_COMPONENT_NAME = 'PhpCodeSniffer';
 
 const beautifierPathKey = '@_beautifier_path';
 
-const phpCodeSnifferStandards = 'Magento;MySource;PEAR;PHPCompatibility;PSR1;PSR12;PSR2;Squiz;Zend';
+const phpCodeSnifferStandards = 'MySource;PEAR;PHPCompatibility;PSR1;PSR12;PSR2;Squiz;Zend';
 const phpCodeSnifferBinaryPath = path.join(process.cwd(), 'vendor', 'bin', 'phpcs');
 const phpCodeSnifferBinaryFormattedPath = formatPathForPHPStormConfig(phpCodeSnifferBinaryPath);
 
 const phpCodeSnifferBeautifierBinaryPath = path.join(process.cwd(), 'vendor', 'bin', 'phpcbf');
 const phpCodeSnifferBeautifierBinaryFormattedPath = formatPathForPHPStormConfig(phpCodeSnifferBeautifierBinaryPath);
+
+const defaultPHPCSSetting = {
+    PhpCSConfiguration: {
+        [toolPathKey]: phpCodeSnifferBinaryFormattedPath,
+        [standardsKey]: phpCodeSnifferStandards,
+        [beautifierPathKey]: phpCodeSnifferBeautifierBinaryFormattedPath
+    }
+};
 
 /**
  * @param {Array} phpConfigs
@@ -44,37 +52,20 @@ const setupPHPCodeSniffer = async (phpConfigs) => {
                 phpCodeSnifferConfiguration[toolPathKey] = phpCodeSnifferBinaryFormattedPath;
             }
 
-            if (phpCodeSnifferConfiguration[standardsKey] !== phpCodeSnifferStandards) {
-                hasChanges = true;
-                phpCodeSnifferConfiguration[standardsKey] = phpCodeSnifferStandards;
-            }
-
             if (phpCodeSnifferConfiguration[beautifierPathKey] !== phpCodeSnifferBeautifierBinaryFormattedPath) {
                 hasChanges = true;
                 phpCodeSnifferConfiguration[beautifierPathKey] = phpCodeSnifferBeautifierBinaryFormattedPath;
             }
         } else {
             hasChanges = true;
-            phpCodeSnifferComponent.phpcsfixer_settings.push({
-                PhpCSConfiguration: {
-                    [toolPathKey]: phpCodeSnifferBinaryFormattedPath,
-                    [standardsKey]: phpCodeSnifferStandards,
-                    [beautifierPathKey]: phpCodeSnifferBeautifierBinaryFormattedPath
-                }
-            });
+            phpCodeSnifferComponent.phpcs_settings.push(defaultPHPCSSetting);
         }
     } else if (isAllPHPCSBinsExists) {
         hasChanges = true;
         phpConfigs.push({
             [nameKey]: PHP_CODE_SNIFFER_COMPONENT_NAME,
             phpcs_settings: [
-                {
-                    PhpCSConfiguration: {
-                        [toolPathKey]: phpCodeSnifferBinaryFormattedPath,
-                        [standardsKey]: phpCodeSnifferStandards,
-                        [beautifierPathKey]: phpCodeSnifferBeautifierBinaryFormattedPath
-                    }
-                }
+                defaultPHPCSSetting
             ]
         });
     }

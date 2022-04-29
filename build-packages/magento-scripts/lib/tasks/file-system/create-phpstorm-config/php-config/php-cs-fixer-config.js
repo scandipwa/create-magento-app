@@ -9,6 +9,13 @@ const phpCSFixerStandards = 'PSR1;PSR2;Symfony;DoctrineAnnotation;PHP70Migration
 const phpCSFixerBinaryPath = path.join(process.cwd(), 'vendor', 'bin', 'php-cs-fixer');
 const phpCSFixerBinaryFormattedPath = formatPathForPHPStormConfig(phpCSFixerBinaryPath);
 
+const defaultPHPCSFixerSettings = {
+    PhpCSFixerConfiguration: {
+        [toolPathKey]: phpCSFixerBinaryFormattedPath,
+        [standardsKey]: phpCSFixerStandards
+    }
+};
+
 /**
  * @param {Array} phpConfigs
  * @returns {Promise<Boolean>}
@@ -36,31 +43,16 @@ const setupPHPCSFixer = async (phpConfigs) => {
                 hasChanges = true;
                 phpCSFixerConfiguration[toolPathKey] = phpCSFixerBinaryFormattedPath;
             }
-
-            if (phpCSFixerConfiguration[standardsKey] !== phpCSFixerStandards) {
-                hasChanges = true;
-                phpCSFixerConfiguration[standardsKey] = phpCSFixerStandards;
-            }
         } else {
             hasChanges = true;
-            phpCSFixerComponent.phpcsfixer_settings.push({
-                PhpCSFixerConfiguration: {
-                    [toolPathKey]: phpCSFixerBinaryFormattedPath,
-                    [standardsKey]: phpCSFixerStandards
-                }
-            });
+            phpCSFixerComponent.phpcsfixer_settings.push(defaultPHPCSFixerSettings);
         }
     } else if (isPhpCSFixerBinPathExists) {
         hasChanges = true;
         phpConfigs.push({
             [nameKey]: PHP_CS_FIXER_COMPONENT_NAME,
             phpcsfixer_settings: [
-                {
-                    PhpCSFixerConfiguration: {
-                        [toolPathKey]: phpCSFixerBinaryFormattedPath,
-                        [standardsKey]: phpCSFixerStandards
-                    }
-                }
+                defaultPHPCSFixerSettings
             ]
         });
     }

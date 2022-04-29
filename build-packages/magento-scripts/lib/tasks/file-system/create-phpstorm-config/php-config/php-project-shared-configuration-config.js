@@ -20,6 +20,11 @@ const setupPHPProjectSharedConfiguration = async (phpConfigs, currentPhpLanguage
         (phpConfig) => phpConfig[nameKey] === PHP_PROJECT_SHARED_CONFIGURATION_COMPONENT_NAME
     );
 
+    const defaultSuggestChangeDefaultLanguageLevelOption = {
+        [nameKey]: SUGGESTED_CHANGE_DEFAULT_LANGUAGE_LEVEL_OPTION_NAME,
+        [valueKey]: currentPhpLanguageLevel
+    };
+
     if (phpProjectSharedConfigurationComponent) {
         if (phpProjectSharedConfigurationComponent.option && !Array.isArray(phpProjectSharedConfigurationComponent.option)) {
             hasChanges = true;
@@ -45,10 +50,7 @@ const setupPHPProjectSharedConfiguration = async (phpConfigs, currentPhpLanguage
             }
         } else {
             hasChanges = true;
-            phpProjectSharedConfigurationComponent.option.push({
-                [nameKey]: SUGGESTED_CHANGE_DEFAULT_LANGUAGE_LEVEL_OPTION_NAME,
-                [valueKey]: currentPhpLanguageLevel
-            });
+            phpProjectSharedConfigurationComponent.option.push(defaultSuggestChangeDefaultLanguageLevelOption);
         }
     } else {
         hasChanges = true;
@@ -56,10 +58,7 @@ const setupPHPProjectSharedConfiguration = async (phpConfigs, currentPhpLanguage
             [nameKey]: PHP_PROJECT_SHARED_CONFIGURATION_COMPONENT_NAME,
             [phpLanguageLevelKey]: currentPhpLanguageLevel,
             option: [
-                {
-                    [nameKey]: SUGGESTED_CHANGE_DEFAULT_LANGUAGE_LEVEL_OPTION_NAME,
-                    [valueKey]: currentPhpLanguageLevel
-                }
+                defaultSuggestChangeDefaultLanguageLevelOption
             ]
         });
     }
