@@ -27,6 +27,7 @@ This action requires root privileges.`
 
                 return;
             }
+            task.skip('User skipped running Docker');
         } else if (!isRunning) {
             const dockerStartConfirmation = await task.prompt({
                 type: 'Confirm',
@@ -40,9 +41,8 @@ This action requires root privileges.`
 
                 return;
             }
+            task.skip('User skipped running Docker');
         }
-
-        task.skip('User skipped running Docker');
     }
 });
 
