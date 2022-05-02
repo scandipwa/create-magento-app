@@ -4,6 +4,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
 const installDocker = require('./install');
 const { checkDockerSocketPermissions } = require('./permissions');
+const checkDockerStatus = require('./running-status');
 const getDockerVersion = require('./version');
 
 /**
@@ -61,6 +62,7 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
         }
 
         return task.newListr([
+            checkDockerStatus(),
             getDockerVersion(),
             {
                 task: (ctx) => {

@@ -13,6 +13,8 @@ const getDockerVersion = () => ({
             const dockerVersion = result.split('').filter((c) => /[\d.]/i.test(c)).join('') || result;
 
             ctx.dockerVersion = dockerVersion;
+        } else {
+            throw new Error(`Got unexpected result during Docker version retrieval!\n\n${ result }`);
         }
     }
 });
