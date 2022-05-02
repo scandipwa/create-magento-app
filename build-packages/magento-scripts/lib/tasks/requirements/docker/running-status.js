@@ -1,3 +1,5 @@
+const os = require('os');
+const getIsWsl = require('../../../util/is-wsl');
 const { systemctlControl } = require('../../../util/systemctl');
 
 /**
@@ -5,6 +7,7 @@ const { systemctlControl } = require('../../../util/systemctl');
  */
 const checkDockerStatus = () => ({
     title: 'Checking Docker status',
+    skip: () => os.platform() !== 'linux' || getIsWsl(),
     task: async (ctx, task) => {
         const dockerService = systemctlControl('docker');
 
