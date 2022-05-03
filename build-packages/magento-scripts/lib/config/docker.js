@@ -43,7 +43,6 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     const isLinux = os.platform() === 'linux';
     const isWsl = await getIsWsl();
     const isArm = (await getArch()) === 'arm64';
-    const isArmMac = (os.platform() === 'darwin') && isArm;
 
     if (!isLinux) {
         /**
@@ -54,7 +53,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_nginx-data`,
             opts: {
                 type: 'nfs',
-                device: `${cacheDir}/nginx/conf.d`,
+                device: `${ path.join(cacheDir, 'nginx', 'conf.d') }`,
                 o: 'bind'
             }
         };
@@ -70,7 +69,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_setup-data`,
             opts: {
                 type: 'nfs',
-                device: `${path.join(magentoDir, 'setup')}`,
+                device: `${ path.join(magentoDir, 'setup') }`,
                 o: 'bind'
             }
         };
@@ -91,7 +90,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             nginx: {
                 _: 'Nginx',
                 ports: (!isLinux || isWsl) ? [
-                    `${isIpAddress(host) ? host : '127.0.0.1'}:${ ports.app }:80`
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.app }:80`
                 ] : [],
                 healthCheck: {
                     cmd: 'service nginx status'
@@ -137,7 +136,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 connectCommand: ['redis-cli']
             },
             mysql: {
-                _: !isArmMac ? 'MySQL' : 'MariaDB',
+                _: !isArm ? 'MySQL' : 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
@@ -165,15 +164,15 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: !isArmMac ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
-                imageDetails: !isArmMac ? {
+                image: !isArm ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
+                imageDetails: !isArm ? {
                     name: 'mysql',
                     tag: mysql.version
                 } : {
                     name: 'mariadb',
                     tag: mariadb.version
                 },
-                name: !isArmMac ? `${ prefix }_mysql` : `${ prefix }_mariadb`
+                name: !isArm ? `${ prefix }_mysql` : `${ prefix }_mariadb`
             },
             elasticsearch: {
                 _: 'ElasticSearch',
