@@ -91,7 +91,7 @@ const prettyStatus = async (ctx) => {
             .addLine(`Image: ${logger.style.file(container.image)}`)
             .addLine(`Network: ${logger.style.link(container.network)}`);
 
-        if (container.ports.length > 0) {
+        if (container.ports && container.ports.length > 0) {
             block.addLine('Port forwarding:');
             container.ports.forEach((port) => {
                 const { host, hostPort, containerPort } = parsePort(port);
