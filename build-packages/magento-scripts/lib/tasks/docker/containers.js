@@ -107,7 +107,7 @@ const pullContainers = () => ({
 const startContainers = () => ({
     title: 'Starting containers',
     task: async ({ ports, config: { docker } }, task) => {
-        const containerList = await execAsyncSpawn('docker container ls');
+        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
         const missingContainers = Object.values(docker.getContainers(ports)).filter(
             ({ name }) => !containerList.includes(name)
@@ -134,7 +134,7 @@ const startContainers = () => ({
 const stopContainers = () => ({
     title: 'Stopping Docker containers',
     task: async ({ ports, config: { docker } }, task) => {
-        const containerList = await execAsyncSpawn('docker container ls -a');
+        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
         const runningContainers = Object.values(docker.getContainers(ports)).filter(
             ({ name }) => containerList.includes(name)
