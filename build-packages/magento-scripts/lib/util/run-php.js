@@ -10,6 +10,7 @@ const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config
  * @param {() => {}} options.callback
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
+ * @param {Record<string, string>} options.env Environment variables
  */
 const runPhpCode = async (command, options = {}) => {
     const {
@@ -17,7 +18,12 @@ const runPhpCode = async (command, options = {}) => {
         magentoVersion = defaultConfiguration.magentoVersion
     } = options;
     const { php } = await getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${command}`, {
+    let spawnCommand = `${php.binPath} -c ${php.iniPath} ${command}`;
+    if (options.env && Object.keys(options.env).length > 0) {
+        const env = Object.entries(options.env).map(([key, value]) => `${key}=${value}`).join(' ');
+        spawnCommand = `${env} ${spawnCommand}`;
+    }
+    const { code, result } = await execAsyncSpawn(spawnCommand, {
         ...options,
         withCode: true
     });

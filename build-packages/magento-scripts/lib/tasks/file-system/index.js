@@ -2,6 +2,7 @@ const createNginxConfig = require('./create-nginx-config');
 const createPhpConfig = require('./create-php-config');
 const createPhpFpmConfig = require('./create-php-fpm-config');
 const createPhpStormConfig = require('./create-php-storm-config');
+const createVarnishConfig = require('./create-varnish-config');
 const createVSCodeConfig = require('./create-vscode-config');
 
 /**
@@ -14,7 +15,8 @@ const prepareFileSystem = () => ({
         createPhpFpmConfig(),
         createPhpConfig(),
         createPhpStormConfig(),
-        createVSCodeConfig()
+        createVSCodeConfig(),
+        createVarnishConfig()
     ], {
         concurrent: true
     })

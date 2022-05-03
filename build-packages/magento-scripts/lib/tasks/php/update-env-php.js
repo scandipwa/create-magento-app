@@ -1,4 +1,5 @@
 const path = require('path');
+const os = require('os');
 const pathExists = require('../../util/path-exists');
 const phpTask = require('../../util/php-task');
 
@@ -14,8 +15,21 @@ const updateEnvPHP = () => ({
             return;
         }
 
+        const isLinux = os.platform() === 'linux';
+
+        const useVarinsh = ctx.config.overridenConfiguration.configuration.varnish.enabled ? '1' : '';
+        const varnishHost = (isLinux && !ctx.isWsl) ? '127.0.0.1' : 'host.docker.internal';
+        const varnishPort = ctx.ports.varnish;
+
         return task.newListr(
-            phpTask(`-f ${ path.join(__dirname, 'update-env.php') }`, { noTitle: true })
+            phpTask(`-f ${ path.join(__dirname, 'update-env.php') }`, {
+                noTitle: true,
+                env: {
+                    USE_VARNISH: useVarinsh,
+                    VARNISH_PORT: varnishPort,
+                    VARNISH_HOST: varnishHost
+                }
+            })
         );
     }
 });

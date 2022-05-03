@@ -51,7 +51,7 @@ const getAvailablePorts = () => ({
 });
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getCachedPorts = () => ({
     title: 'Getting cached ports',
@@ -65,6 +65,7 @@ const getCachedPorts = () => ({
                     'utf-8'
                 )
             );
+            ctx.cachedPorts = { ...ports };
         } else {
             ports = { ...defaultPorts };
         }

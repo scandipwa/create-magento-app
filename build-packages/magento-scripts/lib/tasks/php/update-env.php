@@ -122,6 +122,39 @@ class EnvUpdater {
                 }
             }
         }
+
+        if (getenv('USE_VARNISH') == '1') {
+            $httpCacheHosts = &$this->config['http_cache_hosts'];
+            $varnishHost = getenv('VARNISH_HOST');
+            $varnishPort = getenv('VARNISH_PORT');
+            $varnishConfig = [
+                'host' => $varnishHost,
+                'port' => $varnishPort
+            ];
+
+            if (isset($httpCacheHosts)) {
+                $varnishHostExists = false;
+                foreach ($httpCacheHosts as $host) {
+                    if ($host['host'] == $varnishHost && $host['port'] == $varnishPort) {
+                        $varnishHostExists = true;
+                        break;
+                    }
+                }
+
+                if (!$varnishHostExists) {
+                    if (size($httpCacheHosts) === 1) {
+                        $httpCacheHosts = [
+                            $varnishConfig
+                        ];
+                    } else {
+                        $httpCacheHosts[] = $varnishConfig;
+                    }
+                }
+            } else {
+                $this->config['http_cache_hosts'] = [];
+                $this->config['http_cache_hosts'][] = $varnishConfig;
+            }
+        }
     }
 
     public function saveConfig(string $filePath){

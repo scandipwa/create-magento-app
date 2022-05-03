@@ -12,7 +12,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         redis,
         mysql,
         elasticsearch,
-        mariadb
+        mariadb,
+        varnish
     } = configuration;
 
     const {
@@ -73,6 +74,16 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 o: 'bind'
             }
         };
+
+        if (varnish.enabled) {
+            volumes.varnish = {
+                name: `${ prefix }_varnish-vcl-data`,
+                opts: {
+                    type: 'nfs',
+                    device: `${ path.join(cacheDir, 'varnish', 'default.vcl') }`
+                }
+            };
+        }
     }
 
     const getContainers = (ports = {}) => {
@@ -193,6 +204,30 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             dockerConfig.nginx.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             );
+        }
+
+        if (varnish.enabled) {
+            dockerConfig.varnish = {
+                _: 'Varnish',
+                image: `varnish:${ varnish.version }`,
+                imageDetails: {
+                    name: 'varnish',
+                    tag: varnish.version
+                },
+                name: `${ prefix }_varnish`,
+                mountVolumes: isLinux ? [
+                    `${ path.join(cacheDir, 'varnish', 'default.vcl') }:/etc/varnish/default.vcl`
+                ] : [
+                    `${ volumes.varnish.name }:/etc/varnish/default.vcl`
+                ],
+                // ports: [`127.0.0.1:${ ports.varnish }:80`],
+                env: {
+                    VARNISH_SIZE: '2G'
+                },
+                restart: 'on-failure:30',
+                network: (!isLinux || isWsl) ? network.name : 'host',
+                command: `varnishd -F -a :${ ports.varnish } -t 600 -f /etc/varnish/default.vcl`
+            };
         }
 
         return dockerConfig;

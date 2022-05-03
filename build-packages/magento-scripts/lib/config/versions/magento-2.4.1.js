@@ -37,6 +37,11 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: {
             version: '1'
+        },
+        varnish: {
+            enabled: true,
+            version: '6.2',
+            configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
         }
     },
     magento: defaultMagentoConfig,
