@@ -35,11 +35,15 @@ const migrateDatabase = (options = {}) => ({
                 setupPersistedQuery(),
                 upgradeMagento(),
                 magentoTask('cache:enable'),
+                varnishConfigSetup(),
                 configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         const { code } = await runMagentoCommand('setup:db:status', {
@@ -52,11 +56,15 @@ const migrateDatabase = (options = {}) => ({
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
                 setupPersistedQuery(),
+                varnishConfigSetup(),
                 configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         case 1: {
@@ -71,12 +79,15 @@ const migrateDatabase = (options = {}) => ({
                 setupPersistedQuery(),
                 upgradeMagento(),
                 magentoTask('cache:enable'),
-                configureElasticsearch()
                 varnishConfigSetup(),
+                configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         case 2: {
@@ -88,7 +99,10 @@ const migrateDatabase = (options = {}) => ({
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         default: {
