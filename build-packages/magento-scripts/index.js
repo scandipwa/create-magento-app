@@ -5,6 +5,19 @@ const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version'
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const isInstalledGlobally = require('is-installed-globally');
+const isRunningRoot = require('./lib/util/is-running-root');
+
+if (isRunningRoot()) {
+    logger.error('Root privileges detected!');
+    console.log(`
+We detected that you are running ${ logger.style.misc('magento-scripts') } as root user.
+We cannot allow you to run ${ logger.style.misc('magento-scripts') } with root privileges, this will only cause more problems.
+
+If you are experiencing problems with ${ logger.style.misc('Docker') }, ${ logger.style.misc('PHPBrew') } and ${ logger.style.misc('PHP') } compilation or ${ logger.style.misc('Magento') } setup, running ${ logger.style.misc('magento-scripts') } as root will not solve those problems.
+`);
+
+    process.exit(1);
+}
 
 const commands = [
     require('./lib/commands/link'),
