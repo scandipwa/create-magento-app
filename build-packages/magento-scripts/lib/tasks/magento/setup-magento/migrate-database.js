@@ -72,6 +72,7 @@ const migrateDatabase = (options = {}) => ({
                 upgradeMagento(),
                 magentoTask('cache:enable'),
                 configureElasticsearch()
+                varnishConfigSetup(),
             ], {
                 concurrent: false,
                 exitOnError: true,
