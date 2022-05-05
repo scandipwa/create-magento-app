@@ -133,19 +133,17 @@ const startContainers = () => ({
  */
 const stopContainers = () => ({
     title: 'Stopping Docker containers',
-    task: async ({ ports, config: { docker } }, task) => {
+    task: async ({ config: { baseConfig: { prefix } } }, task) => {
         const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
-        const runningContainers = Object.values(docker.getContainers(ports)).filter(
-            ({ name }) => containerList.includes(name)
-        );
+        const runningContainers = containerList.filter((containerName) => containerName.startsWith(prefix));
 
         if (runningContainers.length === 0) {
             task.skip();
             return;
         }
 
-        await stop(runningContainers.map(({ name }) => name));
+        await stop(runningContainers);
     }
 });
 
