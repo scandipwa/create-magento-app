@@ -29,8 +29,8 @@ const persistedQuerySetup = () => ({
         if (
             persistedQueryConfig
             && persistedQueryConfig.redis
-            && persistedQueryConfig.redis.port === ports.redis
-            && persistedQueryConfig.redis.localhost === 'localhost'
+            && persistedQueryConfig.redis.port === `${ ports.redis }`
+            && persistedQueryConfig.redis.host === 'localhost'
         ) {
             task.skip();
             return;
