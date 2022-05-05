@@ -123,10 +123,11 @@ class EnvUpdater {
             }
         }
 
+        $httpCacheHosts = &$this->config['http_cache_hosts'];
         if (getenv('USE_VARNISH') == '1') {
-            $httpCacheHosts = &$this->config['http_cache_hosts'];
             $varnishHost = getenv('VARNISH_HOST');
             $varnishPort = getenv('VARNISH_PORT');
+            $previousVarnishPort = getenv('PREVIOUS_VARNISH_PORT');
             $varnishConfig = [
                 'host' => $varnishHost,
                 'port' => $varnishPort
@@ -135,24 +136,24 @@ class EnvUpdater {
             if (isset($httpCacheHosts)) {
                 $varnishHostExists = false;
                 foreach ($httpCacheHosts as $host) {
-                    if ($host['host'] == $varnishHost && $host['port'] == $varnishPort) {
+                    if ($host['host'] == $varnishHost && $host['port'] == $previousVarnishPort) {
+                        $host['port'] = $varnishPort;
                         $varnishHostExists = true;
                         break;
                     }
                 }
 
                 if (!$varnishHostExists) {
-                    if (size($httpCacheHosts) === 1) {
-                        $httpCacheHosts = [
-                            $varnishConfig
-                        ];
-                    } else {
-                        $httpCacheHosts[] = $varnishConfig;
-                    }
+                    $httpCacheHosts[] = $varnishConfig;
                 }
             } else {
                 $this->config['http_cache_hosts'] = [];
                 $this->config['http_cache_hosts'][] = $varnishConfig;
+            }
+        } else {
+            // if varnish is disabled, delete http_cache_hosts entries
+            if (isset($httpCacheHosts)) {
+                $httpCacheHosts = [];
             }
         }
     }
