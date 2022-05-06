@@ -99,7 +99,7 @@ const checkPHPVersion = () => ({
     task: async (ctx, task) => {
         const phpVersionResponse = await execAsyncSpawn('php --version');
 
-        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d\.\d\.\d)/i);
+        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d+\.\d+\.\d+)/i);
 
         if (phpVersionResponseResult && phpVersionResponseResult.length > 0) {
             const phpVersion = phpVersionResponseResult[1];
@@ -123,6 +123,8 @@ To fix that we will build special PHP version that will be used by PHPBrew, plea
                     );
                 }
             }
+
+            task.title = `Using PHP version ${phpVersion} in system`;
         }
     }
 });

@@ -8,7 +8,7 @@ const runMagentoCommand = require('../../util/run-magento');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const persistedQuerySetup = () => ({
-    title: 'Setting up redis configuration for persisted queries',
+    title: 'Setting up Redis configuration for persisted queries',
     task: async (ctx, task) => {
         const { ports, magentoVersion, verbose = false } = ctx;
         const composerLockData = await getJsonfileData(path.join(process.cwd(), 'composer.lock'));

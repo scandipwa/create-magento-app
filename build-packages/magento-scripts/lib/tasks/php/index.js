@@ -17,7 +17,7 @@ const installPhp = () => ({
         const phpBinExists = await pathExists(php.binPath);
 
         if (phpBinExists && !recompilePhp) {
-            task.title = `Using PHP version ${php.version}`;
+            task.title = `Using PHP version ${php.version} in project`;
 
             return;
         }
