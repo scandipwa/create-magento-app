@@ -145,7 +145,6 @@ const finishProjectConfiguration = () => ({
         },
         {
             title: 'Setting up themes',
-            skip: (ctx) => !ctx.magentoFirstInstall,
             task: (subCtx, subTask) => subTask.newListr(
                 setupThemes()
             )
