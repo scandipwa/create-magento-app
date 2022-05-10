@@ -16,6 +16,10 @@ module.exports = ({ templateDir } = {}) => ({
                 SimpleXML: {},
                 xdebug: {
                     version: '3.1.2'
+                },
+                apcu: {},
+                opcache: {
+                    extensionName: 'Zend OPcache'
                 }
             }
         },

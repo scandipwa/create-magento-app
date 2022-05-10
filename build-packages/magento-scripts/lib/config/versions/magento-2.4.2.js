@@ -19,6 +19,10 @@ module.exports = ({ templateDir } = {}) => ({
                 fileinfo: {},
                 xdebug: {
                     version: '3.1.2'
+                },
+                apcu: {},
+                opcache: {
+                    extensionName: 'Zend OPcache'
                 }
             }
         },
