@@ -215,17 +215,19 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 name: `${ prefix }_varnish`,
                 mountVolumes: isLinux ? [
-                    `${ path.join(cacheDir, 'varnish', 'default.vcl') }:/etc/varnish/default.vcl`
+                    `${ path.join(cacheDir, 'varnish', 'default.vcl') }:/etc/varnish/default.vcl:ro`
                 ] : [
                     `${ volumes.varnish.name }:/etc/varnish/default.vcl`
                 ],
-                // ports: [`127.0.0.1:${ ports.varnish }:80`],
                 env: {
                     VARNISH_SIZE: '2G'
                 },
                 restart: 'on-failure:30',
                 network: (!isLinux || isWsl) ? network.name : 'host',
-                command: `varnishd -F -a :${ ports.varnish } -t 600 -f /etc/varnish/default.vcl`
+                command: `varnishd -F -a :${ ports.varnish } -t 600 -f /etc/varnish/default.vcl`,
+                tmpfs: [
+                    '/var/lib/varnish:exec'
+                ]
             };
         }
 
