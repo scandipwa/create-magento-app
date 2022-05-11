@@ -36,6 +36,11 @@ const createNginxConfig = () => ({
                 throw new Error('ssl.ssl_certificate_key file does not exist!');
             }
 
+            const nginxCacheDir = path.join(baseConfig.cacheDir, 'nginx', 'conf.d');
+            if (!await pathExists(nginxCacheDir)) {
+                await fs.promises.mkdir(nginxCacheDir, { recursive: true });
+            }
+
             await fs.promises.copyFile(
                 ssl.ssl_certificate,
                 path.join(
