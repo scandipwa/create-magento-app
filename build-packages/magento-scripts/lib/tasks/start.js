@@ -126,6 +126,7 @@ const configureProject = () => ({
  */
 const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
+    skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
         {
             skip: (ctx) => !ctx.importDb,
@@ -143,15 +144,15 @@ const finishProjectConfiguration = () => ({
                 });
             }
         },
-        {
-            title: 'Setting up themes',
-            task: (subCtx, subTask) => subTask.newListr(
-                setupThemes()
-            )
-        }
+        // {
+        //     title: 'Setting up themes',
+        //     task: (subCtx, subTask) => subTask.newListr(
+        setupThemes()
+        //     )
+        // }
     ], {
         rendererOptions: {
-            collapse: true
+            collapse: false
         }
     })
 });

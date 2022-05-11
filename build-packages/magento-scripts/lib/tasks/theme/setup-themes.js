@@ -13,6 +13,7 @@ const checkTheme = require('./check-theme');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const setupThemes = () => ({
+    title: 'Setting up themes',
     task: async (ctx, task) => {
         const { config: { baseConfig } } = ctx;
         const composerData = await getJsonfileData(path.join(baseConfig.magentoDir, 'composer.json'));
@@ -84,7 +85,12 @@ const setupThemes = () => ({
                 upgradeMagento(),
                 disablePageCache(),
                 setupPersistedQuery()
-            ])
+            ]),
+            {
+                rendererOptions: {
+                    collapse: false
+                }
+            }
         );
     }
 });

@@ -25,6 +25,7 @@ const migrateDatabase = (options = {}) => ({
 
         if (tableCount === 0) {
             if (options.onlyInstallMagento) {
+                ctx.isSetupUpgradeNeeded = false;
                 return task.newListr(
                     installMagento({ isDbEmpty: true })
                 );
@@ -49,6 +50,7 @@ const migrateDatabase = (options = {}) => ({
 
         switch (code) {
         case 0: {
+            ctx.isSetupUpgradeNeeded = false;
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
                 setupPersistedQuery(),
@@ -61,6 +63,7 @@ const migrateDatabase = (options = {}) => ({
         }
         case 1: {
             if (options.onlyInstallMagento) {
+                ctx.isSetupUpgradeNeeded = false;
                 return task.newListr(
                     installMagento()
                 );

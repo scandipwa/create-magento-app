@@ -7,7 +7,8 @@ const runComposerCommand = require('../../util/run-composer');
  */
 const symlinkTheme = (theme) => ({
     title: 'Setting symbolic link for theme in composer.json',
-    task: async ({ magentoVersion, verbose = false }, task) => {
+    task: async (ctx, task) => {
+        const { magentoVersion, verbose = false } = ctx;
         const composerJsonData = await getJsonfileData(path.join(process.cwd(), 'composer.json'));
         const repositories = Array.isArray(composerJsonData.repositories)
             ? composerJsonData.repositories.reduce((acc, repo, index) => ({ ...acc, [`${index}`]: repo }), {})
@@ -31,6 +32,8 @@ const symlinkTheme = (theme) => ({
                 See ERROR log above.\n\n${e}`
             );
         }
+
+        ctx.isSetupUpgradeNeeded = true;
     }
 });
 
