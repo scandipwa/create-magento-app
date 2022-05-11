@@ -130,7 +130,6 @@ sub vcl_hash {
     if (req.http.X-Forwarded-Proto) {
         hash_data(req.http.X-Forwarded-Proto);
     }
-    
 
     if (req.url ~ "/graphql") {
         call process_graphql_headers;

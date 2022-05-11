@@ -6,14 +6,17 @@ const setConfigFile = require('../../util/set-config');
  */
 const createBashrcConfigFile = () => ({
     title: 'Setting Bashrc config',
-    task: async ({ config: { php, baseConfig } }) => {
+    task: async (ctx) => {
+        const { config: { php, baseConfig, overridenConfiguration } } = ctx;
+        const varnishEnabled = overridenConfiguration.configuration.varnish.enabled;
         try {
             await setConfigFile({
                 configPathname: path.join(baseConfig.cacheDir, '.magentorc'),
                 template: path.join(baseConfig.templateDir, 'magentorc.template'),
                 overwrite: true,
                 templateArgs: {
-                    php
+                    php,
+                    varnishEnabled
                 }
             });
         } catch (e) {
