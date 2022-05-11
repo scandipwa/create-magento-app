@@ -13,7 +13,8 @@ const matchFilesystem = async (cwd, structure) => {
             .every((value) => value === true);
 
         return ok;
-    } if (typeof structure === 'object') {
+    }
+    if (typeof structure === 'object') {
         const ok = (await Promise.all(Object.entries(structure).map(([key, value]) => {
             if (typeof value === 'boolean') {
                 return pathExists(path.join(cwd, key));

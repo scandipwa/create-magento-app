@@ -1,8 +1,8 @@
 const path = require('path');
 const pathExists = require('../../util/path-exists');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
-// const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const matchFilesystem = require('../../util/match-filesystem');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -31,7 +31,15 @@ If you have ${logger.style.file('package-lock.json')} in theme directory make su
             }
         }
 
-        if (await pathExists(path.join(themePath, 'magento', 'Magento_Theme'))) {
+        const magentoThemeDirPath = path.join(themePath, 'magento', 'Magento_Theme');
+        const isMagentoThemeDirMatching = await matchFilesystem(magentoThemeDirPath, {
+            templates: true,
+            web: [
+                'static'
+            ]
+        });
+
+        if (isMagentoThemeDirMatching) {
             task.skip();
             return;
         }

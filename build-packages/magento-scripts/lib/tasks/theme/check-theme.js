@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
+const matchFilesystem = require('../../util/match-filesystem');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -27,17 +28,23 @@ const checkTheme = (theme) => ({
         /**
          * now we're in scandipwa territory
          */
-        const themeTemplatesPath = path.join(theme.absoluteThemePath, 'magento', 'Magento_Theme', 'templates');
+        const magentoThemeDirPath = path.join(theme.themePath, 'magento', 'Magento_Theme');
+        const isMagentoThemeDirMatching = await matchFilesystem(magentoThemeDirPath, {
+            templates: true,
+            web: [
+                'static'
+            ]
+        });
         const noticeMessage = {
             title: `${theme.themePath} theme`,
             message: `Theme ${theme.themePath} requires building!
 You can build your theme by running the following command:
 ${logger.style.code(`cd ${theme.themePath}`)}
-${logger.style.code('BUILD_MODE=magento npm run build')} or to run with a dev server ${logger.style.code('BUILD_MODE=magento npm start')}`
+${logger.style.code('BUILD_MODE=magento npm run build')} or to run with a dev server run the following: ${logger.style.code('BUILD_MODE=magento npm start')}`
         };
 
-        if (await pathExists(themeTemplatesPath)) {
-            const files = await fs.promises.readdir(themeTemplatesPath, { withFileTypes: true });
+        if (isMagentoThemeDirMatching) {
+            const files = await fs.promises.readdir(path.join(magentoThemeDirPath, 'templates'), { withFileTypes: true });
             if (files.some(({ name }) => name.endsWith('.phtml'))) {
                 task.skip();
                 return;
