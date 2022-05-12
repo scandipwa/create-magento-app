@@ -126,6 +126,7 @@ const configureProject = () => ({
  */
 const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
+    skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
         {
             skip: (ctx) => !ctx.importDb,
@@ -143,16 +144,10 @@ const finishProjectConfiguration = () => ({
                 });
             }
         },
-        {
-            title: 'Setting up themes',
-            skip: (ctx) => !ctx.magentoFirstInstall,
-            task: (subCtx, subTask) => subTask.newListr(
-                setupThemes()
-            )
-        }
+        setupThemes()
     ], {
         rendererOptions: {
-            collapse: true
+            collapse: false
         }
     })
 });

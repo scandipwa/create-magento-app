@@ -89,4 +89,5 @@ export interface ListrContext {
         useNonOverlappingPorts: boolean
     }
     mysqlConnection: mysql2.Connection
+    isSetupUpgradeNeeded?: boolean
 }
