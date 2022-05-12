@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca84b0eb6d6d2c61a2b161fcb4b34050",
+    "content-hash": "36fbe8e8c0362c2c8973518e73d0026b",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -19882,6 +19882,40 @@
             "time": "2020-11-19T14:00:34+00:00"
         },
         {
+            "name": "scandipwa/sample-data",
+            "version": "1.1.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scandipwa/sample-data.git",
+                "reference": "adbb1f89788e68eb11f8f9c9537779734dccb08c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scandipwa/sample-data/zipball/adbb1f89788e68eb11f8f9c9537779734dccb08c",
+                "reference": "adbb1f89788e68eb11f8f9c9537779734dccb08c",
+                "shasum": ""
+            },
+            "require": {
+                "magento/magento2-base": "^2.3.2"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "src/registration.php"
+                ],
+                "psr-4": {
+                    "ScandiPWA\\SampleData\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Sample data for ScandiPWA",
+            "support": {
+                "email": "info@scandiweb.com",
+                "source": "https://github.com/scandipwa/sample-data/tree/1.1.7"
+            },
+            "time": "2021-09-29T15:25:43+00:00"
+        },
+        {
             "name": "scandipwa/scandipwa",
             "version": "0.0.1",
             "dist": {
@@ -28967,5 +29001,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

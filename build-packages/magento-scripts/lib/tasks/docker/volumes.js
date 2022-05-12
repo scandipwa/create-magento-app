@@ -20,10 +20,10 @@ const create = ({
 const createVolumes = () => ({
     title: 'Creating volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
+        const volumeList = (await execAsyncSpawn('docker volume ls --format "{{.Name}}"')).split('\n');
 
         const missingVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => !volumeList.some((volume) => volume === name)
+            ({ name }) => !volumeList.includes(name)
         );
 
         if (missingVolumes.length === 0) {
@@ -41,10 +41,10 @@ const createVolumes = () => ({
 const removeVolumes = () => ({
     title: 'Removing volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls -q')).split('\n');
+        const volumeList = (await execAsyncSpawn('docker volume ls --format "{{.Name}}"')).split('\n');
 
         const deployedVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => volumeList.some((volume) => volume === name)
+            ({ name }) => volumeList.includes(name)
         );
 
         if (deployedVolumes.length === 0) {

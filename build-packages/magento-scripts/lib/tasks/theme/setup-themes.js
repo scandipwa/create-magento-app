@@ -5,7 +5,7 @@ const symlinkTheme = require('./symlink-theme');
 const installTheme = require('./install-theme');
 const setupPersistedQuery = require('./setup-persisted-query');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
-const disablePageCache = require('../magento/setup-magento/disable-page-cache');
+const disableFullPageCache = require('../magento/setup-magento/disable-full-page-cache');
 const buildTheme = require('./build-theme');
 
 /**
@@ -80,7 +80,7 @@ const setupThemes = () => ({
                 ])
             })).concat([
                 upgradeMagento(),
-                disablePageCache(),
+                disableFullPageCache(),
                 setupPersistedQuery()
             ])
         );

@@ -55,6 +55,7 @@ const savePortsConfig = async (ports) => {
 // Map of default ports (key:value)
 const defaultPorts = {
     app: 80,
+    varnish: 8080,
     fpm: 9000,
     xdebug: 9111,
     mysql: 3306,

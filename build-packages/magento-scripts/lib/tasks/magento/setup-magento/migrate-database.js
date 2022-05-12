@@ -1,10 +1,10 @@
 const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
-const adjustMagentoConfiguration = require('./adjust-magento-configuration');
 const configureElasticsearch = require('./configure-elasticsearch');
 const installMagento = require('./install-magento');
 const upgradeMagento = require('./upgrade-magento');
 const setupPersistedQuery = require('../../theme/setup-persisted-query');
+const varnishConfigSetup = require('./varnish-config');
 
 /**
  * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -35,11 +35,15 @@ const migrateDatabase = (options = {}) => ({
                 setupPersistedQuery(),
                 upgradeMagento(),
                 magentoTask('cache:enable'),
+                varnishConfigSetup(),
                 configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         const { code } = await runMagentoCommand('setup:db:status', {
@@ -52,11 +56,15 @@ const migrateDatabase = (options = {}) => ({
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
                 setupPersistedQuery(),
+                varnishConfigSetup(),
                 configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         case 1: {
@@ -71,23 +79,30 @@ const migrateDatabase = (options = {}) => ({
                 setupPersistedQuery(),
                 upgradeMagento(),
                 magentoTask('cache:enable'),
+                varnishConfigSetup(),
                 configureElasticsearch()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         case 2: {
             return task.newListr([
                 setupPersistedQuery(),
-                adjustMagentoConfiguration(),
+                varnishConfigSetup(),
                 configureElasticsearch(),
                 upgradeMagento()
             ], {
                 concurrent: false,
                 exitOnError: true,
-                ctx
+                ctx,
+                rendererOptions: {
+                    collapse: false
+                }
             });
         }
         default: {

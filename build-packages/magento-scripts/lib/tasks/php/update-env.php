@@ -1,13 +1,17 @@
 <?php
 
-function varexport($expression, $return=FALSE): string
+function varexport($expression, $return=false): string
 {
-    $export = var_export($expression, TRUE);
+    $export = var_export($expression, true);
     $export = preg_replace("/^([ ]*)(.*)/m", '$1$1$2', $export);
     $array = preg_split("/\r\n|\n|\r/", $export);
-    $array = preg_replace(["/\s*array\s\($/", "/\)(,)?$/", "/\s=>\s$/"], [NULL, ']$1', ' => ['], $array);
+    $array = preg_replace(["/\s*array\s\($/", "/\)(,)?$/", "/\s=>\s$/"], [null, ']$1', ' => ['], $array);
     $export = join(PHP_EOL, array_filter(["["] + $array));
-    if ((bool)$return) return $export; else echo $export;
+    if ((bool)$return) {
+        return $export;
+    } else {
+        echo $export;
+    }
 }
 
 function joinpaths(): string
@@ -15,13 +19,16 @@ function joinpaths(): string
     $paths = array();
 
     foreach (func_get_args() as $arg) {
-        if ($arg !== '') { $paths[] = $arg; }
+        if ($arg !== '') {
+            $paths[] = $arg;
+        }
     }
 
-    return preg_replace('#/+#','/',join('/', $paths));
+    return preg_replace('#/+#', '/', join('/', $paths));
 }
 
-class EnvUpdater {
+class EnvUpdater
+{
 
     /**
      * @var array
@@ -33,7 +40,8 @@ class EnvUpdater {
      */
     private $portConfig;
 
-    public function loadConfig() {
+    public function loadConfig()
+    {
         $this->config = require './app/etc/env.php';
     }
 
@@ -53,7 +61,8 @@ class EnvUpdater {
         return $this->portConfig;
     }
 
-    public function loadPortConfig() {
+    public function loadPortConfig()
+    {
         $portConfigContent = file_get_contents('./node_modules/.create-magento-app-cache/port-config.json');
         if ($portConfigContent === false) {
             throw new Error('Port config file does not exists in cache directory');
@@ -67,7 +76,8 @@ class EnvUpdater {
         $this->portConfig = $portConfigJsonData;
     }
 
-    public function modifyConfig() {
+    public function modifyConfig()
+    {
         // update mysql config
         if (isset($this->config['db']['connection']['default'])) {
             $conn = &$this->config['db']['connection']['default'];
@@ -122,16 +132,48 @@ class EnvUpdater {
                 }
             }
         }
+
+        $httpCacheHosts = &$this->config['http_cache_hosts'];
+        $httpCacheHosts = [];
+
+        if (getenv('USE_VARNISH') == '1') {
+            $varnishHost = getenv('VARNISH_HOST');
+            $varnishPort = getenv('VARNISH_PORT');
+            $previousVarnishPort = getenv('PREVIOUS_VARNISH_PORT');
+            $varnishConfig = [
+                'host' => $varnishHost,
+                'port' => $varnishPort
+            ];
+
+            if (isset($httpCacheHosts)) {
+                $varnishHostExists = false;
+                foreach ($httpCacheHosts as $host) {
+                    if ($host['host'] == $varnishHost && $host['port'] == $previousVarnishPort) {
+                        $host['port'] = $varnishPort;
+                        $varnishHostExists = true;
+                        break;
+                    }
+                }
+
+                if (!$varnishHostExists) {
+                    $httpCacheHosts = [$varnishConfig];
+                }
+            } else {
+                $this->config['http_cache_hosts'] = [$varnishConfig];
+            }
+        }
     }
 
-    public function saveConfig(string $filePath){
+    public function saveConfig(string $filePath)
+    {
         file_put_contents(
             $filePath,
             '<?php'.PHP_EOL.'return '.varexport($this->config, true).';' . PHP_EOL
         );
     }
 
-    public function update(){
+    public function update()
+    {
         $this->loadConfig();
         $this->loadPortConfig();
         $this->modifyConfig();

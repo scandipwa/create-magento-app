@@ -14,6 +14,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
  * @param {string} [options.command] Container command
  * @param {Record<"cmd" | "interval" | "retries" | "start-period" | "timeout", string>} [options.healthCheck] Container heathcheck properties
  * @param {string[]} [options.securityOptions] Security options [docs](https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt)
+ * @param {string[]} [options.tmpfs]
  */
 const run = (options) => {
     const {
@@ -28,7 +29,8 @@ const run = (options) => {
         entrypoint,
         command = '',
         healthCheck,
-        securityOptions = []
+        securityOptions = [],
+        tmpfs = []
     } = options;
 
     const restartArg = restart && `--restart ${ restart }`;
@@ -41,6 +43,7 @@ const run = (options) => {
     const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
     const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
     const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt ${opt}`).join(' ');
+    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs ${t}`).join(' ');
 
     const dockerCommand = [
         'docker',
@@ -56,6 +59,7 @@ const run = (options) => {
         entrypointArg,
         healthCheckArg,
         securityArg,
+        tmpfsArg,
         image,
         command
     ].filter(Boolean).join(' ');
@@ -107,7 +111,7 @@ const pullContainers = () => ({
 const startContainers = () => ({
     title: 'Starting containers',
     task: async ({ ports, config: { docker } }, task) => {
-        const containerList = await execAsyncSpawn('docker container ls');
+        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
         const missingContainers = Object.values(docker.getContainers(ports)).filter(
             ({ name }) => !containerList.includes(name)
@@ -133,19 +137,17 @@ const startContainers = () => ({
  */
 const stopContainers = () => ({
     title: 'Stopping Docker containers',
-    task: async ({ ports, config: { docker } }, task) => {
-        const containerList = await execAsyncSpawn('docker container ls -a');
+    task: async ({ config: { baseConfig: { prefix } } }, task) => {
+        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
-        const runningContainers = Object.values(docker.getContainers(ports)).filter(
-            ({ name }) => containerList.includes(name)
-        );
+        const runningContainers = containerList.filter((containerName) => containerName.startsWith(prefix));
 
         if (runningContainers.length === 0) {
             task.skip();
             return;
         }
 
-        await stop(runningContainers.map(({ name }) => name));
+        await stop(runningContainers);
     }
 });
 

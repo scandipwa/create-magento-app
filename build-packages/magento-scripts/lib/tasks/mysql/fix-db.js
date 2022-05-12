@@ -1,8 +1,8 @@
-const adjustMagentoConfiguration = require('../magento/setup-magento/adjust-magento-configuration');
 const configureElasticsearch = require('../magento/setup-magento/configure-elasticsearch');
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users');
 const deleteCustomers = require('../magento/setup-magento/delete-customers');
 const deleteOrders = require('../magento/setup-magento/delete-orders');
+const varnishConfigSetup = require('../magento/setup-magento/varnish-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -24,7 +24,7 @@ const disableForeignKeyCheck = () => ({
 const fixDB = () => ({
     title: 'Fixing database',
     task: async (ctx, task) => task.newListr([
-        adjustMagentoConfiguration(),
+        varnishConfigSetup(),
         configureElasticsearch(),
         {
             title: 'Deleting customers data',

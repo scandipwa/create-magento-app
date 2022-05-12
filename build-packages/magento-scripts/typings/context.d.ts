@@ -12,6 +12,7 @@ export interface ListrContext {
         mysql: number
         redis: number
         elasticsearch: number
+        varnish: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
