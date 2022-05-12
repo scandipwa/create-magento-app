@@ -79,7 +79,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 name: `${ prefix }_varnish-vcl-data`,
                 opts: {
                     type: 'nfs',
-                    device: `${ path.join(cacheDir, 'varnish', 'default.vcl') }`
+                    device: `${ path.join(cacheDir, 'varnish', 'default.vcl') }`,
+                    o: 'bind'
                 }
             };
         }
