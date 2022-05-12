@@ -48,7 +48,7 @@ module.exports = ({ templateDir } = {}) => ({
         },
         varnish: {
             enabled: true,
-            version: '6.5',
+            version: '6.6',
             configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
         }
     },
