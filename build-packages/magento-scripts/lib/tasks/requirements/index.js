@@ -13,17 +13,17 @@ const checkRequirements = () => ({
     task: (ctx, task) => task.newListr([
         // checking if user is on supported platform
         checkPlatform(),
+        // check the Docker installation
+        checkDocker(),
+        // check for Node.js version
+        checkNodeVersion(),
         // check the PHPBrew installation
         checkPHPbrew(),
         // check installed PHP version
         checkPHPVersion(),
-        // check the Docker installation
-        checkDocker(),
         // check for COMPOSER_AUTH or auth.json
         // localAuthJson(),
-        checkComposer(),
-        // check for Node.js version
-        checkNodeVersion()
+        checkComposer()
     ], {
         concurrent: false,
         exitOnError: true,

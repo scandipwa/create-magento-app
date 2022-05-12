@@ -16,6 +16,10 @@ module.exports = ({ templateDir } = {}) => ({
                 SimpleXML: {},
                 xdebug: {
                     version: '3.1.2'
+                },
+                apcu: {},
+                opcache: {
+                    extensionName: 'Zend OPcache'
                 }
             }
         },
@@ -37,6 +41,11 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: {
             version: '2'
+        },
+        varnish: {
+            enabled: true,
+            version: '6.5',
+            configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
         }
     },
     magento: defaultMagentoConfig,

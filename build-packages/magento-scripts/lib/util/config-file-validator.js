@@ -73,6 +73,15 @@ const nginxConfigurationSchema = Joi.object({
 });
 
 /**
+ * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
+ */
+const varnishConfigurationSchema = Joi.object({
+    enabled: Joi.boolean().optional(),
+    version: Joi.string().optional(),
+    configTemplate: Joi.string().optional().custom(fileExistsValidator)
+});
+
+/**
  * @type {Joi.ObjectSchema<import('../../typings').ServiceWithVersion>}
  */
 const serviceConfigurationSchema = Joi.object({
@@ -101,7 +110,8 @@ const configurationSchema = Joi.object({
     mysql: serviceConfigurationSchema.optional(),
     elasticsearch: serviceConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
-    composer: composerConfigurationSchema.optional()
+    composer: composerConfigurationSchema.optional(),
+    varnish: varnishConfigurationSchema.optional()
 });
 
 /**

@@ -10,5 +10,9 @@ module.exports = {
         mode: 'developer',
         edition: 'community'
     },
-    configuration: {}
+    configuration: {
+        varnish: {
+            enabled: false
+        }
+    }
 };

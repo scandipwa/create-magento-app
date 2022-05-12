@@ -16,7 +16,8 @@ Available containers:
 - mysql
 - nginx
 - redis
-- elasticsearch`);
+- elasticsearch
+- varnish (if enabled)`);
         },
         async (argv) => {
             const containers = (await docker).getContainers();

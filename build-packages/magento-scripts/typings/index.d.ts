@@ -21,6 +21,20 @@ export interface NginxConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
+export interface VarnishConfiguration extends ServiceWithVersion {
+    /**
+     * Enable or disable Varnish in the project
+     */
+    enabled: boolean
+
+    /**
+     * Configuration file location
+     *
+     * @example ./my-varnish-config.vcl
+     */
+    configTemplate: string
+}
+
 export interface PHPExtension extends Record<string, unknown> {
     version?: string
     /**
@@ -175,6 +189,11 @@ export interface CMAConfiguration {
          * Composer configuration
          */
         composer: ServiceWithVersion
+
+        /**
+         * Varnish configuration
+         */
+        varnish: VarnishConfiguration
     }
     /**
      * Magento configuration

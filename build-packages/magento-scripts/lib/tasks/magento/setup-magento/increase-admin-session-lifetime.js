@@ -5,22 +5,20 @@ const { updateTableValues } = require('../../../util/database');
  */
 const increaseAdminSessionLifetime = () => ({
     title: 'Increase admin session lifetime to 1 month',
-    task: async (ctx, task) => {
-        const { mysqlConnection } = ctx;
-        await updateTableValues('core_config_data', [
-            {
-                path: 'admin/security/session_lifetime',
-                value: '2800000'
-            },
-            {
-                path: 'admin/security/password_lifetime',
-                value: null
-            }
-        ], {
-            mysqlConnection,
-            task
-        });
-    }
+    task: async ({ mysqlConnection }, task) => updateTableValues('core_config_data', [
+        {
+            path: 'admin/security/session_lifetime',
+            value: '2800000'
+        },
+        {
+            path: 'admin/security/password_lifetime',
+            value: null
+        }
+    ], {
+        mysqlConnection,
+        task
+    })
+
 });
 
 module.exports = increaseAdminSessionLifetime;
