@@ -144,12 +144,7 @@ const finishProjectConfiguration = () => ({
                 });
             }
         },
-        // {
-        //     title: 'Setting up themes',
-        //     task: (subCtx, subTask) => subTask.newListr(
         setupThemes()
-        //     )
-        // }
     ], {
         rendererOptions: {
             collapse: false
