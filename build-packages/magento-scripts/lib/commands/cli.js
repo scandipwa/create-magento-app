@@ -53,12 +53,14 @@ module.exports = (yargs) => {
         }
 
         block
-            .addLine(`Clear Composer cache: ${logger.style.command('c cc')}`)
             .addLine(`Clear Magento cache: ${logger.style.command('m c:c')}`)
             .addLine(`Magento setup upgrade: ${logger.style.command('m se:up')}`)
             .addLine(`Magento DI compile: ${logger.style.command('m s:d:c')}`);
 
-        block.addEmptyLine();
+        block
+            .addEmptyLine()
+            .addLine(`Clear Composer cache: ${logger.style.command('c cc')}`)
+            .addEmptyLine();
 
         block.log();
 
