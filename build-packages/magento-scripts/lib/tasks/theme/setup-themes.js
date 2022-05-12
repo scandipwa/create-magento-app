@@ -7,7 +7,6 @@ const setupPersistedQuery = require('./setup-persisted-query');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
 const disableFullPageCache = require('../magento/setup-magento/disable-full-page-cache');
 const buildTheme = require('./build-theme');
-const checkTheme = require('./check-theme');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -78,19 +77,13 @@ const setupThemes = () => ({
                 task: (subCtx, subTask) => subTask.newListr([
                     symlinkTheme(theme),
                     installTheme(theme),
-                    buildTheme(theme),
-                    checkTheme(theme)
+                    buildTheme(theme)
                 ])
             })).concat([
                 upgradeMagento(),
                 disableFullPageCache(),
                 setupPersistedQuery()
-            ]),
-            {
-                rendererOptions: {
-                    collapse: false
-                }
-            }
+            ])
         );
     }
 });
