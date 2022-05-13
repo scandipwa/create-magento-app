@@ -79,7 +79,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 name: `${ prefix }_varnish-vcl-data`,
                 opts: {
                     type: 'nfs',
-                    device: `${ path.join(cacheDir, 'varnish', 'default.vcl') }`,
+                    device: `${ path.join(cacheDir, 'varnish') }`,
                     o: 'bind'
                 }
             };
@@ -216,9 +216,9 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 name: `${ prefix }_varnish`,
                 mountVolumes: isLinux ? [
-                    `${ path.join(cacheDir, 'varnish', 'default.vcl') }:/etc/varnish/default.vcl:ro`
+                    `${ path.join(cacheDir, 'varnish') }:/etc/varnish`
                 ] : [
-                    `${ volumes.varnish.name }:/etc/varnish/default.vcl`
+                    `${ volumes.varnish.name }:/etc/varnish`
                 ],
                 env: {
                     VARNISH_SIZE: '2G'
