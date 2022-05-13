@@ -1,3 +1,5 @@
+const { getBrewCommandSync } = require('../util/get-brew-bin-path');
+
 const dependenciesForPlatforms = {
     darwin: {
         dependencies: [
@@ -15,7 +17,7 @@ const dependenciesForPlatforms = {
             'libxml2',
             'openssl@1.1'
         ],
-        installCommand: (deps) => `brew install ${deps}`,
+        installCommand: (deps) => `${getBrewCommandSync()} install ${deps}`,
         packageManager: 'brew'
     },
     'Arch Linux': {

@@ -5,6 +5,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const osPlatform = require('../../../util/os-platform');
+const { getBrewCommand } = require('../../../util/get-brew-bin-path');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -13,10 +14,19 @@ const installPHPBrewDependencies = () => ({
     title: 'Installing PHPBrew dependencies',
     task: async (ctx, task) => {
         if (process.platform === 'darwin') {
+            const installedDependencies = (await execAsyncSpawn(`${await getBrewCommand()} list`)).split('\n');
+
+            const dependenciesToInstall = ['php', 'autoconf', 'pkg-config'].filter((dep) => !installedDependencies.includes(dep));
+
+            if (dependenciesToInstall.length === 0) {
+                task.skip();
+                return;
+            }
+
             return task.newListr(
                 installDependenciesTask({
                     platform: 'darwin',
-                    dependenciesToInstall: ['php', 'autoconf', 'pkg-config']
+                    dependenciesToInstall
                 })
             );
         }
