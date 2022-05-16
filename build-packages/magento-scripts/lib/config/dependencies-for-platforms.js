@@ -2,6 +2,7 @@ const { getBrewCommandSync } = require('../util/get-brew-bin-path');
 
 const dependenciesForPlatforms = {
     darwin: {
+        // TODO find a way to install both dependencies for native and rosetta brew
         dependencies: [
             'zlib',
             'bzip2',
@@ -15,9 +16,10 @@ const dependenciesForPlatforms = {
             'oniguruma',
             'icu4c',
             'libxml2',
-            'openssl@1.1'
+            'openssl@1.1',
+            'pkg-config'
         ],
-        installCommand: (deps) => `${getBrewCommandSync()} install ${deps}`,
+        installCommand: (deps, { native } = { native: false }) => `${getBrewCommandSync({ native })} install ${deps}`,
         packageManager: 'brew'
     },
     'Arch Linux': {

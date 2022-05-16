@@ -25,20 +25,28 @@ const getBrewBinPathSync = () => {
     return BREW_BIN_PATH_INTEL;
 };
 
-const getBrewCommand = async () => {
+const getBrewCommand = async ({ native } = { native: false }) => {
     const arch = await getArch();
 
     if (arch === 'arm64') {
+        if (native) {
+            return `arch -arm64 ${BREW_BIN_PATH_ARM_NATIVE}`;
+        }
+
         return `arch -x86_64 ${BREW_BIN_PATH_ARM_ROSETTA}`;
     }
 
     return BREW_BIN_PATH_INTEL;
 };
 
-const getBrewCommandSync = () => {
+const getBrewCommandSync = ({ native } = { native: false }) => {
     const arch = getArchSync();
 
     if (arch === 'arm64') {
+        if (native) {
+            return `arch -arm64 ${BREW_BIN_PATH_ARM_NATIVE}`;
+        }
+
         return `arch -x86_64 ${BREW_BIN_PATH_ARM_ROSETTA}`;
     }
 

@@ -1,32 +1,16 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const semver = require('semver');
 const phpbrewConfig = require('../../config/phpbrew');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const { getBrewCommandSync } = require('../../util/get-brew-bin-path');
 const pathExists = require('../../util/path-exists');
 const compileOptions = require('../php/compile-options');
 
 const latestStablePHP74 = '7.4.27';
 const phpbrewPHPName = `php-${latestStablePHP74}-phpbrew`;
-
-const compileOptionsForPhp = {
-    linux: {
-        ...compileOptions.linux,
-        variants: [
-            '+default'
-        ],
-        extraOptions: []
-    },
-    darwin: {
-        ...compileOptions.darwin,
-        variants: [
-            '+default',
-            '+openssl=$(brew --prefix openssl@1.1)'
-        ],
-        extraOptions: []
-    }
-};
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -34,13 +18,33 @@ const compileOptionsForPhp = {
 const installPHPForPHPBrew = () => ({
     title: `Installing PHP ${latestStablePHP74} for PHPBrew...`,
     task: async (ctx, task) => {
+        const compileOptionsForPhp = {
+            linux: {
+                ...compileOptions.linux,
+                variants: [
+                    '+default'
+                ],
+                extraOptions: []
+            },
+            darwin: {
+                ...compileOptions.darwin,
+                variants: [
+                    '+default',
+                    `+openssl=$(${getBrewCommandSync()} --prefix openssl@1.1)`
+                ],
+                extraOptions: []
+            }
+        };
         const platformCompileOptions = compileOptionsForPhp[process.platform];
 
         if (!await pathExists(path.join(phpbrewConfig.phpPath, `${phpbrewPHPName}`, 'bin'))) {
             const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' ');
-
+            let compileCommand = '';
+            if (os.platform() === 'darwin' && ctx.arch === 'arm64') {
+                compileCommand += 'arch -x86_64 ';
+            }
             // eslint-disable-next-line max-len
-            const compileCommand = `${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
+            compileCommand = ` ${commandEnv ? `${commandEnv} && ` : ''}${compileCommand || '' }phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
 
             try {
                 await execAsyncSpawn(
