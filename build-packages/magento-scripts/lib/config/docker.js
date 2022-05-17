@@ -43,6 +43,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     const isLinux = os.platform() === 'linux';
     const isWsl = await getIsWsl();
     const isArm = (await getArch()) === 'arm64';
+    const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
         /**
@@ -90,7 +91,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         const dockerConfig = {
             nginx: {
                 _: 'Nginx',
-                ports: (!isLinux || isWsl) ? [
+                ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.app }:80`
                 ] : [],
                 healthCheck: {
@@ -110,7 +111,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: (!isLinux || isWsl) ? network.name : 'host',
+                network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 imageDetails: {
                     name: 'nginx',
@@ -220,14 +221,14 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ] : [
                     `${ volumes.varnish.name }:/etc/varnish`
                 ],
-                ports: isNotLinux ? [
+                ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
                 ] : [],
                 env: {
                     VARNISH_SIZE: '2G'
                 },
                 restart: 'on-failure:30',
-                network: (!isLinux || isWsl) ? network.name : 'host',
+                network: isNotNativeLinux ? network.name : 'host',
                 command: `varnishd -F -a :${ ports.varnish } -t 600 -f /etc/varnish/default.vcl`,
                 tmpfs: [
                     '/var/lib/varnish:exec'
