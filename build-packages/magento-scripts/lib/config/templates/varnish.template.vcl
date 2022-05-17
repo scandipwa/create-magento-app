@@ -7,19 +7,27 @@ import std;
 
 backend default {
     .host = "<%= it.hostMachine %>";
+    .host_header = "Host: localhost";
     .port = "<%= it.hostPort %>";
     .first_byte_timeout = 600s;
     .probe = {
-        .url = "/health_check.php";
-        .timeout = 2s;
-        .interval = 5s;
-        .window = 10;
-        .threshold = 5;
+        # .url = "/health_check.php";
+        .request =
+            "GET /health_check.php HTTP/1.1"
+            "Host: localhost"
+            "Connection: close"
+            "User-Agent: Varnish Health Probe";
+        .interval  = 10s;
+        .timeout   = 5s;
+        .window    = 5;
+        .threshold = 3;
    }
 }
 
 acl purge {
     "<%= it.hostMachine %>";
+    "localhost";
+    "::1";
 }
 
 sub vcl_recv {
