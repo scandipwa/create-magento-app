@@ -1,6 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { libsodium } = require('../php/extensions');
+const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.2-p1',
@@ -46,11 +47,7 @@ module.exports = ({ templateDir } = {}) => ({
         composer: {
             version: '2'
         },
-        varnish: {
-            enabled: true,
-            version: '6.6',
-            configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
-        }
+        varnish: varnish66({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

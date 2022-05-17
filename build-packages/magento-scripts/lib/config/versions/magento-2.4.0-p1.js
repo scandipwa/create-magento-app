@@ -1,5 +1,6 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { varnish60 } = require('../varnish/varnish-6-0');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.0-p1',
@@ -42,11 +43,7 @@ module.exports = ({ templateDir } = {}) => ({
         composer: {
             version: '1'
         },
-        varnish: {
-            enabled: true,
-            version: '6.0',
-            configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
-        }
+        varnish: varnish60({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',
