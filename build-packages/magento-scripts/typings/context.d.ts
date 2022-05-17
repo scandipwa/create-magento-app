@@ -52,7 +52,7 @@ export interface ListrContext {
                     o: string
                 }
             }>
-            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch', {
+            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch' | 'varnish', {
                 _: string
                 ports: string[]
                 healthCheck: {
