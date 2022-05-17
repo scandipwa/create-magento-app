@@ -220,6 +220,9 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ] : [
                     `${ volumes.varnish.name }:/etc/varnish`
                 ],
+                ports: isNotLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
+                ] : [],
                 env: {
                     VARNISH_SIZE: '2G'
                 },
