@@ -161,6 +161,8 @@ class EnvUpdater
             } else {
                 $this->config['http_cache_hosts'] = [$varnishConfig];
             }
+        } else {
+            unset($this->config['http_cache_hosts']);
         }
     }
 
