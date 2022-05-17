@@ -30,9 +30,11 @@ const run = (options) => {
         command = '',
         healthCheck,
         securityOptions = [],
-        tmpfs = []
+        tmpfs = [],
+        expose = []
     } = options;
 
+    const exposeArg = expose && expose.map((e) => `--expose=${ e }`);
     const restartArg = restart && `--restart ${ restart }`;
     const networkArg = network && `--network ${ network }`;
     const portsArgs = ports.map((port) => `-p ${ port }`).join(' ');
@@ -53,6 +55,7 @@ const run = (options) => {
         networkArg,
         restartArg,
         portsArgs,
+        exposeArg,
         mountsArgs,
         mountVolumesArgs,
         envArgs,
