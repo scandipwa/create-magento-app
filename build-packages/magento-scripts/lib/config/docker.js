@@ -229,7 +229,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 restart: 'on-failure:30',
                 network: isNotNativeLinux ? network.name : 'host',
-                command: `varnishd -F -a :${ ports.varnish } -t 600 -f /etc/varnish/default.vcl`,
+                command: `varnishd -F -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl`,
                 tmpfs: [
                     '/var/lib/varnish:exec'
                 ]
