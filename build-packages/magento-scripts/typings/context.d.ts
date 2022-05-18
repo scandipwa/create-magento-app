@@ -16,6 +16,7 @@ export interface ListrContext {
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
+    isWsl: boolean
     platform?: NodeJS.Platform
     platformVersion?: string
     /**
