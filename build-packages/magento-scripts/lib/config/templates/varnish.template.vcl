@@ -8,7 +8,7 @@ import std;
 backend default {
     .host = "<%= it.hostMachine %>";
     .host_header = "Host: localhost";
-    .port = "<%= it.hostPort %>";
+    .port = "<%= it.nginxPort %>";
     .first_byte_timeout = 600s;
     .probe = {
         # .url = "/health_check.php";
@@ -27,7 +27,8 @@ backend default {
 acl purge {
     "<%= it.hostMachine %>";
     "localhost";
-    "::1";
+    "172.0.0.0"/8;
+    "192.168.0.0"/16;
 }
 
 sub vcl_recv {

@@ -1,5 +1,4 @@
 const path = require('path');
-const os = require('os');
 const pathExists = require('../../util/path-exists');
 const phpTask = require('../../util/php-task');
 
@@ -15,7 +14,7 @@ const updateEnvPHP = () => ({
             return;
         }
 
-        const useVarnish = (os.platform() !== 'darwin' && ctx.config.overridenConfiguration.configuration.varnish.enabled) ? '1' : '';
+        const useVarnish = ctx.config.overridenConfiguration.configuration.varnish.enabled ? '1' : '';
         const varnishHost = '127.0.0.1';
         const varnishPort = ctx.ports.varnish;
         const previousVarnishPort = ctx.cachedPorts

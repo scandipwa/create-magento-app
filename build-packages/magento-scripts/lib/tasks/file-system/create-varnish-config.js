@@ -1,4 +1,3 @@
-const os = require('os');
 const path = require('path');
 const setConfigFile = require('../../util/set-config');
 
@@ -17,7 +16,8 @@ const createVarnishConfig = () => ({
                     cacheDir
                 }
             },
-            isWsl
+            isWsl,
+            platform
         } = ctx;
 
         const {
@@ -26,7 +26,8 @@ const createVarnishConfig = () => ({
             }
         } = overridenConfiguration;
 
-        const isLinux = os.platform() === 'linux';
+        const isLinux = platform === 'linux';
+        const isNativeLinux = isLinux && !isWsl;
 
         try {
             await setConfigFile({
@@ -38,8 +39,8 @@ const createVarnishConfig = () => ({
                 template: varnish.configTemplate,
                 overwrite: true,
                 templateArgs: {
-                    hostMachine: (isLinux && !isWsl) ? '127.0.0.1' : 'host.docker.internal',
-                    hostPort: (isLinux && !isWsl) ? ports.app : 80
+                    hostMachine: isNativeLinux ? '127.0.0.1' : 'host.docker.internal',
+                    nginxPort: ports.app
                 }
             });
         } catch (e) {

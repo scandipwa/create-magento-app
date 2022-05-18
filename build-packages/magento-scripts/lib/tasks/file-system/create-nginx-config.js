@@ -63,6 +63,9 @@ const createNginxConfig = () => ({
 
         const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
         const isLinux = os.platform() === 'linux';
+        const isNativeLinux = isLinux && !isWsl;
+        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
+        const hostPort = isNativeLinux ? ports.app : 80;
 
         try {
             await setConfigFile({
@@ -77,8 +80,8 @@ const createNginxConfig = () => ({
                 templateArgs: {
                     ports,
                     mageRoot: baseConfig.magentoDir,
-                    hostMachine: (isLinux && !isWsl) ? '127.0.0.1' : 'host.docker.internal',
-                    hostPort: (isLinux && !isWsl) ? ports.app : 80,
+                    hostMachine,
+                    hostPort,
                     config: overridenConfiguration,
                     networkToBindTo
                 }
