@@ -77,7 +77,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
 
         if (varnish.enabled) {
             volumes.varnish = {
-                name: `${ prefix }_varnish-vcl-data`,
+                name: `${ prefix }_varnish-data`,
                 opts: {
                     type: 'nfs',
                     device: `${ path.join(cacheDir, 'varnish') }`,
