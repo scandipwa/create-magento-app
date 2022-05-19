@@ -1,5 +1,6 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { sslTerminator } = require('../ssl-terminator');
 const { varnish60 } = require('../varnish/varnish-6-0');
 
 module.exports = ({ templateDir } = {}) => ({
@@ -43,7 +44,8 @@ module.exports = ({ templateDir } = {}) => ({
         composer: {
             version: '1'
         },
-        varnish: varnish60({ templateDir })
+        varnish: varnish60({ templateDir }),
+        sslTerminator: sslTerminator({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

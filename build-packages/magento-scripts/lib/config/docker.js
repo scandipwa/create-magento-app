@@ -54,7 +54,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_nginx-data`,
             opts: {
                 type: 'nfs',
-                device: `${ path.join(cacheDir, 'nginx', 'conf.d') }`,
+                device: path.join(cacheDir, 'nginx', 'conf.d'),
                 o: 'bind'
             }
         };
@@ -62,7 +62,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_pub-data`,
             opts: {
                 type: 'nfs',
-                device: `${ path.join(magentoDir, 'pub') }`,
+                device: path.join(magentoDir, 'pub'),
                 o: 'bind'
             }
         };
@@ -70,7 +70,15 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_setup-data`,
             opts: {
                 type: 'nfs',
-                device: `${ path.join(magentoDir, 'setup') }`,
+                device: path.join(magentoDir, 'setup'),
+                o: 'bind'
+            }
+        };
+        volumes.sslTerminator = {
+            name: `${ prefix }_ssl-terminator-data`,
+            opts: {
+                type: 'nfs',
+                device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
                 o: 'bind'
             }
         };
@@ -80,7 +88,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 name: `${ prefix }_varnish-data`,
                 opts: {
                     type: 'nfs',
-                    device: `${ path.join(cacheDir, 'varnish') }`,
+                    device: path.join(cacheDir, 'varnish'),
                     o: 'bind'
                 }
             };
@@ -89,6 +97,31 @@ module.exports = async ({ configuration, ssl, host }, config) => {
 
     const getContainers = (ports = {}) => {
         const dockerConfig = {
+            sslTerminator: {
+                _: 'SSL Terminator (Nginx)',
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.sslTerminator }:80`
+                ] : [],
+                healthCheck: {
+                    cmd: 'service nginx status'
+                },
+                /**
+                 * Mount volumes directly on linux
+                 */
+                mountVolumes: [
+                    `${ isLinux ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
+                ],
+                restart: 'on-failure:5',
+                // TODO: use connect instead
+                network: isNotNativeLinux ? network.name : 'host',
+                image: `nginx:${ nginx.version }`,
+                imageDetails: {
+                    name: 'nginx',
+                    tag: nginx.version
+                },
+                name: `${ prefix }_ssl-terminator`,
+                command: "nginx -g 'daemon off;'"
+            },
             nginx: {
                 _: 'Nginx',
                 ports: isNotNativeLinux ? [
@@ -216,10 +249,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     tag: varnish.version
                 },
                 name: `${ prefix }_varnish`,
-                mountVolumes: isLinux ? [
-                    `${ path.join(cacheDir, 'varnish') }:/etc/varnish`
-                ] : [
-                    `${ volumes.varnish.name }:/etc/varnish`
+                mountVolumes: [
+                    `${ isLinux ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`
                 ],
                 ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
@@ -229,7 +260,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 restart: 'on-failure:30',
                 network: isNotNativeLinux ? network.name : 'host',
-                command: `varnishd -F -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl`,
+                // eslint-disable-next-line max-len
+                command: `/bin/bash -c "varnishd -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s malloc,512m && varnishlog"`,
                 tmpfs: [
                     '/var/lib/varnish:exec'
                 ]

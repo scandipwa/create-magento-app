@@ -26,6 +26,10 @@ const getAvailablePorts = () => ({
                     'utf-8'
                 )
             );
+            if (!ports.sslTerminator) {
+                ports.sslTerminator = ports.app;
+                ports.app = defaultPorts.app;
+            }
         }
         const {
             systemConfiguration: {
@@ -41,7 +45,7 @@ const getAvailablePorts = () => ({
             if (!isPortAvailable) {
                 throw new Error(`Port ${ctx.port} is not available`);
             } else {
-                availablePorts.app = ctx.port;
+                availablePorts.sslTerminator = ctx.port;
             }
         }
 

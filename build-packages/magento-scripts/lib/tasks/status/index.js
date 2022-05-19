@@ -6,6 +6,7 @@ const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
 const { getComposerVersion } = require('../composer');
+const { getInstanceMetadata } = require('../../util/instance-metadata');
 
 /**
  * @param {string} port
@@ -23,11 +24,8 @@ const parsePort = (port) => {
 
 const prettyStatus = async (ctx) => {
     const {
-        ports,
         config: {
-            magentoConfiguration,
             baseConfig,
-            overridenConfiguration: { host, ssl },
             php,
             composer
         },
@@ -107,14 +105,32 @@ const prettyStatus = async (ctx) => {
         }
     });
 
+    const instanceMetadata = getInstanceMetadata(ctx);
+
     block
         .addEmptyLine()
-        .addSeparator('Magento status')
-        .addEmptyLine()
-        .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
-        .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
-        .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`)
+        .addSeparator('Magento 2')
         .addEmptyLine();
+
+    block.addLine(logger.style.misc('Frontend'));
+    instanceMetadata.frontend.forEach(({ title, text }) => {
+        block.addLine(`  ${title}: ${text}`);
+    });
+
+    block.addEmptyLine();
+
+    block.addLine(logger.style.misc('Admin'));
+    instanceMetadata.admin.forEach(({ title, text }) => {
+        block.addLine(`  ${title}: ${text}`);
+    });
+    // block
+    //     .addEmptyLine()
+    //     .addSeparator('Magento status')
+    //     .addEmptyLine()
+    //     .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
+    //     .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
+    //     .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`)
+    //     .addEmptyLine();
 
     block.log();
 };

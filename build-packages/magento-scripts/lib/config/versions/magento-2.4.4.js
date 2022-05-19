@@ -1,6 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { libsodium } = require('../php/extensions');
+const { sslTerminator } = require('../ssl-terminator');
 const { varnish70 } = require('../varnish/varnish-7-0');
 
 module.exports = ({ templateDir } = {}) => ({
@@ -47,7 +48,8 @@ module.exports = ({ templateDir } = {}) => ({
         composer: {
             version: '2'
         },
-        varnish: varnish70({ templateDir })
+        varnish: varnish70({ templateDir }),
+        sslTerminator: sslTerminator({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

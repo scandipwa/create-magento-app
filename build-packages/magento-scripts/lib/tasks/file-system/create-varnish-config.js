@@ -46,6 +46,28 @@ const createVarnishConfig = () => ({
         } catch (e) {
             throw new Error(`Unexpected error accrued during varnish config creation\n\n${e}`);
         }
+
+        // try {
+        //     await setConfigFile({
+        //         configPathname: path.join(
+        //             cacheDir,
+        //             'nginx-cache-router',
+        //             'conf.d',
+        //             'default.conf'
+        //         ),
+        //         template: path.join(templateDir, 'nginx-cache-router.template.conf'),
+        //         overwrite: true,
+        //         templateArgs: {
+        //             ports,
+        //             hostMachine,
+        //             hostPort,
+        //             config: overridenConfiguration,
+        //             networkToBindTo
+        //         }
+        //     });
+        // } catch (e) {
+        //     throw new Error(`Unexpected error accrued during nginx-cache-router config creation\n\n${e}`);
+        // }
     }
 });
 
