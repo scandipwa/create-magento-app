@@ -6,6 +6,7 @@ const compile = require('./compile');
 const configure = require('./configure');
 const updatePhpBrew = require('./update-phpbrew');
 const phpbrewConfig = require('../../config/phpbrew');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -52,7 +53,7 @@ const installPhp = () => ({
                 return;
             }
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Failed to extract the list of installed PHP versions.
                 Possibly, you forgot to setup PHPBrew?
                 Follow these instruction: ${ logger.style.link('https://phpbrew.github.io/phpbrew/#setting-up') }

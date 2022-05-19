@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -17,7 +18,7 @@ const createPhpFpmConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during php-fpm config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during php-fpm config creation\n\n${e}`);
         }
     }
 });

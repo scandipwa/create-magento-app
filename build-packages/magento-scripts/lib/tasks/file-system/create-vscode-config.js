@@ -5,6 +5,7 @@ const os = require('os');
 const hjson = require('hjson');
 const pathExists = require('../../util/path-exists');
 const setConfigFile = require('../../util/set-config');
+const UnknownError = require('../../errors/unknown-error');
 
 const phpXDebug2port = 9111;
 const phpXDebug3port = 9003;
@@ -103,7 +104,7 @@ const createPhpFpmConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during launch.json config creation!\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during launch.json config creation!\n\n${e}`);
         }
     }
 });

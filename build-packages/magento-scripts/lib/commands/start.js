@@ -4,12 +4,14 @@ const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
-const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+const googleAnalytics = require('../util/analytics');
 const systeminformation = require('systeminformation');
 const { getCSAThemes } = require('../util/CSA-theme');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const ConsoleBlock = require('../util/console-block');
 const { getInstanceMetadata } = require('../util/instance-metadata');
+const UnknownError = require('../errors/unknown-error');
+const KnownError = require('../errors/known-error');
 
 const cmaGaTrackingId = 'UA-127741417-7';
 
@@ -180,7 +182,15 @@ module.exports = (yargs) => {
                 process.exit(0);
             } catch (e) {
                 logger.error(e.message || e);
-                await googleAnalytics.trackError(e.message || e);
+                if (e instanceof UnknownError || e instanceof KnownError) {
+                    // console.log('shall report this? ', e);
+                    if (e.reportToAnalytics) {
+                        // console.log('reported as ', e.name, e);
+                        await googleAnalytics.trackError(e.message || e);
+                    }
+                } else {
+                    await googleAnalytics.trackError(e.message || e);
+                }
                 process.exit(1);
             }
         }

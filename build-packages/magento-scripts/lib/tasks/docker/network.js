@@ -1,4 +1,5 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const KnownError = require('../../errors/known-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 /**
@@ -29,7 +30,7 @@ Do you want remove all custom networks not used by at least one container?`
                     );
                 }
 
-                throw new Error(`Unable to create network for your project.
+                throw new KnownError(`Unable to create network for your project.
 You need to delete unused networks yourself.
 Use command ${logger.style.command('docker network prune')}`);
             }

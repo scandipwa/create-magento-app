@@ -1,3 +1,4 @@
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 
 /**
@@ -20,7 +21,7 @@ const updatePhpBrew = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error while updating phpbrew known php versions\n\n${e}`);
+            throw new UnknownError(`Unexpected error while updating phpbrew known php versions\n\n${e}`);
         }
     },
     options: {

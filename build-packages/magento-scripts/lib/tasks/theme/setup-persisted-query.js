@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const runMagentoCommand = require('../../util/run-magento');
@@ -51,7 +52,7 @@ const persistedQuerySetup = () => ({
                 magentoVersion
             });
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Unexpected error while setting redis for pq!.
                 See ERROR log below.\n\n${e}`
             );

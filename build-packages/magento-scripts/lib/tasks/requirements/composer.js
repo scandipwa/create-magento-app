@@ -3,6 +3,8 @@ const fs = require('fs');
 const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const pathExists = require('../../util/path-exists');
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 
 const authJsonPath = path.join(process.cwd(), 'auth.json');
 const shellName = process.env.SHELL.split('/').pop();
@@ -112,7 +114,7 @@ ${ logger.style.misc('Password') } (${ logger.style.misc('Private key') }):`,
             break;
         }
         default: {
-            throw new Error(
+            throw new KnownError(
                 `Unfortunately we cannot automatically add credentials for your shell ${process.env.SHELL}!
 
 You will need to that manually!
@@ -195,7 +197,7 @@ Would you like to load them now?`
 
                 process.env.COMPOSER_AUTH = composerAuthFileContent;
             } catch (e) {
-                throw new Error(
+                throw new UnknownError(
                     `We found an error in your ${ logger.style.file('./auth.json') } file.
 
 Make sure that this file contains a valid JSON!
@@ -211,7 +213,7 @@ Error message that we got: ${e}`
             try {
                 composerAuthContent = JSON.parse(process.env.COMPOSER_AUTH);
             } catch (e) {
-                throw new Error(
+                throw new UnknownError(
                     `We found an error in your ${ logger.style.misc('$COMPOSER_AUTH') } environment variable.
 
 Make sure that this variable contains a valid JSON!

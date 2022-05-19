@@ -10,6 +10,7 @@ const { getMagentoConfig } = require('./magento-config');
 const { getPhpStormConfig } = require('./phpstorm/debug-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
+const UnknownError = require('../errors/unknown-error');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
@@ -38,7 +39,7 @@ module.exports = {
         const newBaseConfig = getBaseConfig(projectPath, prefix);
         const configurations = getConfigurations(newBaseConfig);
         if (!configurations[magentoVersion]) {
-            throw new Error(`No config found for magento version ${magentoVersion}`);
+            throw new UnknownError(`No config found for magento version ${magentoVersion}`);
         }
 
         const {

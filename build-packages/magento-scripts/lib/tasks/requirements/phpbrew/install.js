@@ -5,6 +5,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const osPlatform = require('../../../util/os-platform');
+const KnownError = require('../../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -167,7 +168,7 @@ When you ready, press select Yes and installation will continue.`
             });
 
             if (!continueInstall) {
-                throw new Error(`Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
+                throw new KnownError(`Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
 
 Then you can continue installation.`);
             }

@@ -1,3 +1,4 @@
+const UnknownError = require('../../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
@@ -14,7 +15,7 @@ const getDockerVersion = () => ({
 
             ctx.dockerVersion = dockerVersion;
         } else {
-            throw new Error(`Got unexpected result during Docker version retrieval!\n\n${ result }`);
+            throw new UnknownError(`Got unexpected result during Docker version retrieval!\n\n${ result }`);
         }
     }
 });

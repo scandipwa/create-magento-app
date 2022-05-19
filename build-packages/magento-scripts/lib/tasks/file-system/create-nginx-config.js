@@ -4,6 +4,8 @@ const fs = require('fs');
 const setConfigFile = require('../../util/set-config');
 const pathExists = require('../../util/path-exists');
 const { isIpAddress } = require('../../util/ip');
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -30,10 +32,10 @@ const createNginxConfig = () => ({
 
         if (ssl.enabled) {
             if (!(await pathExists(ssl.ssl_certificate))) {
-                throw new Error('ssl.ssl_certificate file does not exist!');
+                throw new KnownError('ssl.ssl_certificate file does not exist!');
             }
             if (!(await pathExists(ssl.ssl_certificate_key))) {
-                throw new Error('ssl.ssl_certificate_key file does not exist!');
+                throw new KnownError('ssl.ssl_certificate_key file does not exist!');
             }
 
             const nginxCacheDir = path.join(baseConfig.cacheDir, 'nginx', 'conf.d');
@@ -87,7 +89,7 @@ const createNginxConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during nginx config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during nginx config creation\n\n${e}`);
         }
     }
 });

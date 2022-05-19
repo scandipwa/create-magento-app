@@ -3,6 +3,7 @@ const pathExists = require('../../util/path-exists');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const matchFilesystem = require('../../util/match-filesystem');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -26,7 +27,7 @@ const buildTheme = ({ themePath }) => ({
                     }
                 });
             } catch (e) {
-                throw new Error(`We were unable to install theme dependencies in ${themePath} using ${logger.style.code(commandToInstallDependencies)} command!
+                throw new UnknownError(`We were unable to install theme dependencies in ${themePath} using ${logger.style.code(commandToInstallDependencies)} command!
 If you have ${logger.style.file('package-lock.json')} in theme directory make sure it's up to date with ${logger.style.file('package.json')} file content.`);
             }
         }

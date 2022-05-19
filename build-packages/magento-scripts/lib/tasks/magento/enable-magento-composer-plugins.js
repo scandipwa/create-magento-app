@@ -4,6 +4,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const pathExists = require('../../util/path-exists');
 const getJsonfileData = require('../../util/get-jsonfile-data');
+const KnownError = require('../../errors/known-error');
 
 const vendorPath = path.join(process.cwd(), 'vendor');
 const composerJsonPath = path.join(process.cwd(), 'composer.json');
@@ -121,7 +122,7 @@ Do you want to enable them all or disable some of them?`,
                         encoding: 'utf-8'
                     });
                 } else {
-                    throw new Error('Please confirm your choice or choose other option.');
+                    throw new KnownError('Please confirm your choice or choose other option.');
                 }
                 break;
             }
@@ -153,7 +154,7 @@ Do you want to enable them all or disable some of them?`,
                         encoding: 'utf-8'
                     });
                 } else {
-                    throw new Error('Please confirm your choice or choose other option.');
+                    throw new KnownError('Please confirm your choice or choose other option.');
                 }
 
                 break;

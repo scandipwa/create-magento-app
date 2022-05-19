@@ -2,6 +2,7 @@ const setConfigFile = require('../../util/set-config');
 const pathExists = require('../../util/path-exists');
 const path = require('path');
 const fs = require('fs');
+const UnknownError = require('../../errors/unknown-error');
 
 const createPhpStormConfig = () => ({
     title: 'Setting PHPStorm config',
@@ -19,7 +20,7 @@ const createPhpStormConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during workspace.xml config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during workspace.xml config creation\n\n${e}`);
         }
 
         try {
@@ -32,7 +33,7 @@ const createPhpStormConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during php.xml config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during php.xml config creation\n\n${e}`);
         }
 
         try {
@@ -45,7 +46,7 @@ const createPhpStormConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during dataSources.local.xml config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during dataSources.local.xml config creation\n\n${e}`);
         }
 
         try {
@@ -59,7 +60,7 @@ const createPhpStormConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during dataSources.xml config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during dataSources.xml config creation\n\n${e}`);
         }
 
         if (!await pathExists(path.resolve('./.idea/dataSources'))) {
@@ -74,7 +75,7 @@ const createPhpStormConfig = () => ({
                 templateArgs: {}
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during Project_Default.xml config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during Project_Default.xml config creation\n\n${e}`);
         }
     }
 });

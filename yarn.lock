@@ -8437,6 +8437,11 @@ smart-buffer@^4.1.0, smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
+smol-request@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/smol-request/-/smol-request-2.1.1.tgz#0b66d844d903440c8a66a55e78f8bf2f4ef1481b"
+  integrity sha512-c8/jordlG2vF0ul5hQ5Lcpy8fZxKumLWH8z2n7RW9w9GgddrqU+qgabx3MmjaZIkHk8EO7niyI7i6P7pPzevFQ==
+
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"

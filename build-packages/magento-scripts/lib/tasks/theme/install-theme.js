@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const runComposerCommand = require('../../util/run-composer');
 
@@ -24,7 +25,7 @@ const installTheme = (theme) => ({
                 }
             });
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Unexpected error while installing theme.
 See ERROR log below.\n\n${e}`
             );

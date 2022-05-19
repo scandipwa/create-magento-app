@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
@@ -42,7 +43,7 @@ const importDumpToMySQL = () => ({
                 }
             );
         } catch (e) {
-            throw new Error(`Unexpected error during dump import.\n\n${e}`);
+            throw new UnknownError(`Unexpected error during dump import.\n\n${e}`);
         }
 
         clearInterval(tickInterval);

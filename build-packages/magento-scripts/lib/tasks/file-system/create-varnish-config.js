@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -44,7 +45,7 @@ const createVarnishConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during varnish config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during varnish config creation\n\n${e}`);
         }
     }
 });
