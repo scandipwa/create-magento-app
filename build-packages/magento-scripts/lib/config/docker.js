@@ -227,7 +227,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 network: network.name,
                 image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
                 imageDetails: {
-                    name: 'docker.elastic.co/elasticsearch/elasticsearch',
+                    name: 'elasticsearch',
                     tag: elasticsearch.version
                 },
                 name: `${ prefix }_elasticsearch`
