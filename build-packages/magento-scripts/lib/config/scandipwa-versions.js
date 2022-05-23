@@ -10,7 +10,7 @@ const scandipwaMagentoVersionMapping = {
     '2.4.1': '3.2.0 - 4.2.1',
     '2.4.2': '4.3.0 - 5.0.3',
     '2.4.3': '5.0.4 - 5.2.7',
-    '2.4.4': '5.3.0'
+    '2.4.4': '5.3.0+'
 };
 
 module.exports = scandipwaMagentoVersionMapping;
