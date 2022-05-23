@@ -38,7 +38,7 @@ const getInstanceMetadata = (ctx) => {
     if (isNgrok) {
         frontend.push({
             title: WEB_LOCAL_LOCATION_TITLE,
-            text: `${ssl.enabled ? 'https' : 'http'}://localhost${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`
+            text: `${ssl.enabled ? 'https' : 'http'}://localhost${ssl.enabled || ports.sslTerminator === 80 ? '' : `:${ports.sslTerminator}`}/`
         });
         frontend.push({
             title: WEB_LOCATION_TITLE,
@@ -47,7 +47,7 @@ const getInstanceMetadata = (ctx) => {
     } else {
         frontend.push({
             title: WEB_LOCATION_TITLE,
-            text: `${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.app === 80 ? '' : `:${ports.app}`}/`
+            text: `${ssl.enabled ? 'https' : 'http'}://${host}${ssl.enabled || ports.sslTerminator === 80 ? '' : `:${ports.sslTerminator}`}/`
         });
     }
 
@@ -70,5 +70,11 @@ const getInstanceMetadata = (ctx) => {
 };
 
 module.exports = {
-    getInstanceMetadata
+    getInstanceMetadata,
+    constants: {
+        WEB_LOCAL_LOCATION_TITLE,
+        WEB_LOCATION_TITLE,
+        WEB_ADMIN_LOCATION_TITLE,
+        WEB_ADMIN_CREDENTIALS_TITLE
+    }
 };

@@ -111,7 +111,8 @@ const configurationSchema = Joi.object({
     elasticsearch: serviceConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
-    varnish: varnishConfigurationSchema.optional()
+    varnish: varnishConfigurationSchema.optional(),
+    sslTerminator: nginxConfigurationSchema.optional()
 });
 
 /**

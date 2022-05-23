@@ -13,6 +13,7 @@ export interface ListrContext {
         redis: number
         elasticsearch: number
         varnish: number
+        sslTerminator: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
