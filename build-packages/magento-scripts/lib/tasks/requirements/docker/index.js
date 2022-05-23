@@ -36,7 +36,7 @@ NOTE: After installation it's recommended to log out and log back in so your gro
                             task: (ctx) => {
                                 task.title = `Using docker version ${ctx.dockerVersion}`;
 
-                                throw new Error(
+                                throw new KnownError(
                                     `Docker is installed successfully!
 Please log out and log back to so your group membership is re-evaluated!
 Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`

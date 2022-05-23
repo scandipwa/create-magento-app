@@ -2,6 +2,7 @@ const osPlatform = require('../../../util/os-platform');
 const { execCommandTask } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const executeSudoCommand = require('../../../util/execute-sudo-command');
+const KnownError = require('../../../errors/known-error');
 
 const downloadDockerInstallScriptCommand = () => execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh');
 const runDockerInstallScriptCommand = () => executeSudoCommand('sudo sh get-docker.sh');
@@ -48,7 +49,7 @@ const installDocker = () => ({
             ]);
         }
         default: {
-            throw new Error(`Docker is not installed!
+            throw new KnownError(`Docker is not installed!
 Your distro ${distro} is not supported by automatic installation.`);
         }
         }

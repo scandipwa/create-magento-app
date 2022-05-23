@@ -1,5 +1,6 @@
 const { execAsyncSpawn } = require('./exec-async-command');
 const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config');
+const UnknownError = require('../errors/unknown-error');
 /**
  * Execute composer command
  * @param {String} command composer command
@@ -24,8 +25,8 @@ const runComposerCommand = async (command, options = {}) => {
     });
 
     if (throwNonZeroCode && code !== 0) {
-        throw new Error(`Code: ${code}
-        Response: ${result}`);
+        throw new UnknownError(`Code: ${code}
+Response: ${result}`);
     }
 
     return { code, result };

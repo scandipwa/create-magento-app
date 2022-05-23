@@ -3,6 +3,7 @@ const { NodeSSH } = require('node-ssh');
 const pathExists = require('../../../../util/path-exists');
 const regularSSHServer = require('./regular-server');
 const readymageSSH = require('./readymage');
+const KnownError = require('../../../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
@@ -25,7 +26,7 @@ const sshDb = () => ({
             });
 
             if (!(await pathExists(privateKey))) {
-                throw new Error(`Private key not found: ${privateKey}`);
+                throw new KnownError(`Private key not found: ${privateKey}`);
             }
 
             ctx.privateKey = privateKey;

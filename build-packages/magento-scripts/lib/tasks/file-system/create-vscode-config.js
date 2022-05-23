@@ -88,7 +88,7 @@ const createPhpFpmConfig = () => ({
             try {
                 await fs.promises.mkdir(path.join(process.cwd(), '.vscode'));
             } catch (e) {
-                throw new Error(`Unable to creade .vscode directory in your project!\n\n${e}`);
+                throw new UnknownError(`Unable to creade .vscode directory in your project!\n\n${e}`);
             }
         }
 

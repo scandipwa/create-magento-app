@@ -1,4 +1,5 @@
 const net = require('net');
+const UnknownError = require('../errors/unknown-error');
 const sleep = require('./sleep');
 
 const connectToHostPort = ({ host, port }) => new Promise((resolve, reject) => {
@@ -14,7 +15,7 @@ const connectToHostPort = ({ host, port }) => new Promise((resolve, reject) => {
     });
     socket.on('timeout', () => {
         socket.end();
-        reject(new Error('Connection timeout'));
+        reject(new UnknownError('Connection timeout'));
     });
 });
 
@@ -29,7 +30,7 @@ const waitForIt = async ({
             // eslint-disable-next-line no-await-in-loop
             await Promise.race([
                 sleep(300).then(() => {
-                    throw new Error('Connection timeout');
+                    throw new UnknownError('Connection timeout');
                 }),
                 connectToHostPort({ host, port })
             ]);

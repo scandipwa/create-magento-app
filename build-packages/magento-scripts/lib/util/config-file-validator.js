@@ -1,12 +1,13 @@
 const Joi = require('joi');
 const semver = require('semver');
+const KnownError = require('../errors/known-error');
 const pathExistsSync = require('./path-exists-sync');
 
 const fileExistsValidator = (value) => {
     const fileExists = pathExistsSync(value);
 
     if (!fileExists) {
-        throw new Error(`File "${value}" does not exists!`);
+        throw new KnownError(`File "${value}" does not exists!`);
     }
 
     return undefined;

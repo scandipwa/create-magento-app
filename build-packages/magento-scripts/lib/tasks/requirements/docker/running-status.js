@@ -32,7 +32,7 @@ const checkDockerStatusMacOS = () => ({
                 let attempts = 0;
                 while (!ready) {
                     if (attempts > 24 && !ready) {
-                        throw new Error('Docker haven\'t started in 2 mins, exiting...');
+                        throw new KnownError('Docker haven\'t started in 2 mins, exiting...');
                     }
                     try {
                         const { code: startupCode } = await getDockerVersion();

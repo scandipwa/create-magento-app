@@ -1,4 +1,5 @@
 const fs = require('fs');
+const UnknownError = require('../errors/unknown-error');
 const pathExists = require('./path-exists');
 
 const getJsonfileData = async (filePath) => {
@@ -11,7 +12,7 @@ const getJsonfileData = async (filePath) => {
     try {
         return JSON.parse(await fs.promises.readFile(filePath, 'utf-8'));
     } catch (e) {
-        throw new Error(`Ooops! Something went wrong when trying to json parse ${filePath} file!\n\n${e}`);
+        throw new UnknownError(`Ooops! Something went wrong when trying to json parse ${filePath} file!\n\n${e}`);
     }
 };
 

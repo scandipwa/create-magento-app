@@ -3,6 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const sleep = require('./sleep');
 const { execCommandTask } = require('./exec-async-command');
 const dependenciesForPlatforms = require('../config/dependencies-for-platforms');
+const KnownError = require('../errors/known-error');
 
 /**
  * Install dependencies
@@ -56,7 +57,7 @@ const installDependenciesTask = (options) => ({
         promptSkipper = true;
 
         if (installAnswer === 'timeout') {
-            throw new Error(`Timeout!
+            throw new KnownError(`Timeout!
 
 To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
         }
