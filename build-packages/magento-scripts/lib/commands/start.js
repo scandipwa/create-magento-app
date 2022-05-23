@@ -158,8 +158,8 @@ module.exports = (yargs) => {
                 }
 
                 try {
+                    await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                     if (!process.isFirstStart) {
-                        await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                         googleAnalytics.printAboutAnalytics();
                         process.exit(0);
                     }
@@ -173,7 +173,6 @@ module.exports = (yargs) => {
                     const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
 
                     await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
-                    await googleAnalytics.trackTiming('CMA first start time', Date.now() - timeStamp);
                     googleAnalytics.printAboutAnalytics();
                 } catch (e) {
                     await googleAnalytics.trackError(e.message || e);
@@ -181,15 +180,17 @@ module.exports = (yargs) => {
 
                 process.exit(0);
             } catch (e) {
-                logger.error(e.message || e);
                 if (e instanceof UnknownError || e instanceof KnownError) {
-                    // console.log('shall report this? ', e);
+                    logger.error(e.message);
                     if (e.reportToAnalytics) {
-                        // console.log('reported as ', e.name, e);
-                        await googleAnalytics.trackError(e.message || e);
+                        await googleAnalytics.trackError(e.stack);
                     }
+                } else if (e instanceof Error) {
+                    logger.error(e.stack);
+                    await googleAnalytics.trackError(e.stack);
                 } else {
-                    await googleAnalytics.trackError(e.message || e);
+                    logger.error(e);
+                    await googleAnalytics.trackError(e); // track non-errors throws
                 }
                 process.exit(1);
             }
