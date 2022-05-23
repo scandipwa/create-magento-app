@@ -225,7 +225,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
                 network: network.name,
-                image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
+                image: `elasticsearch:${ elasticsearch.version }`,
                 imageDetails: {
                     name: 'elasticsearch',
                     tag: elasticsearch.version
