@@ -18,6 +18,7 @@ Available scopes:
 - redis
 - nginx
 - elasticsearch
+- varnish (if enabled)
 
 And you can use name matching:
 npm run logs ma (will match magento)
