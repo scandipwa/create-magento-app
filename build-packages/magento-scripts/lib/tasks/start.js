@@ -189,7 +189,7 @@ const start = () => ({
                     const instanceMetadata = getInstanceMetadata(ctx);
                     const locationOnTheWeb = instanceMetadata.frontend.find(({ title }) => title === WEB_LOCATION_TITLE);
 
-                    openBrowser(locationOnTheWeb.text);
+                    openBrowser(locationOnTheWeb.link);
                 },
                 options: {
                     showTimer: false
