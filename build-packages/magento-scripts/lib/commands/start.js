@@ -182,15 +182,17 @@ module.exports = (yargs) => {
             } catch (e) {
                 if (e instanceof UnknownError || e instanceof KnownError) {
                     logger.error(e.message);
-                    if (e.reportToAnalytics) {
-                        await googleAnalytics.trackError(e.stack);
+                    if (e instanceof UnknownError) {
+                        await googleAnalytics.trackError(`Unknown Error: ${e.stack}`);
+                    } else {
+                        await googleAnalytics.trackError(`Known Error: ${e.stack}`);
                     }
                 } else if (e instanceof Error) {
-                    logger.error(e.stack);
-                    await googleAnalytics.trackError(e.stack);
+                    logger.error(e.message);
+                    await googleAnalytics.trackError(`Regular Error: ${e.message}`);
                 } else {
                     logger.error(e);
-                    await googleAnalytics.trackError(e); // track non-errors throws
+                    await googleAnalytics.trackError(`Non Error: ${e}`); // track non-errors throws
                 }
                 process.exit(1);
             }

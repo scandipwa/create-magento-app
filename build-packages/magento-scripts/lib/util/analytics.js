@@ -248,8 +248,8 @@ class Analytics {
                 }
             );
 
-            logger.log(analyticsParameters, jsonResponse);
-            logger.log(jsonResponse.hitParsingResult[0].parserMessage);
+            logger.log(analyticsParameters);
+            logger.log(JSON.stringify(jsonResponse, null, 2));
 
         // eslint-disable-next-line no-empty
         } catch (e) {
