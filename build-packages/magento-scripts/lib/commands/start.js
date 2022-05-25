@@ -65,6 +65,12 @@ module.exports = (yargs) => {
                 describe: 'Enable verbose logging',
                 type: 'boolean',
                 default: false
+            })
+            .option('skip-phpstorm-config', {
+                alias: 'c',
+                describe: 'Skip setting PHPStorm config',
+                type: 'boolean',
+                default: false
             }),
         async (args = {}) => {
             /**
