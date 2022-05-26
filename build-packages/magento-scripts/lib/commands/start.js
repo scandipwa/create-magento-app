@@ -185,7 +185,7 @@ module.exports = (yargs) => {
                     if (e instanceof UnknownError) {
                         await googleAnalytics.trackError(`Unknown Error: ${e.stack}`);
                     } else {
-                        await googleAnalytics.trackError(`Known Error: ${e.stack}`);
+                        await googleAnalytics.trackError(`Known Error: ${e.message}`);
                     }
                 } else if (e instanceof Error) {
                     logger.error(e.message);
