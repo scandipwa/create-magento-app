@@ -51,7 +51,11 @@ const dependenciesForPlatforms = {
             'libsodium',
             'libsodium-devel',
             'libtool-ltdl-devel',
-            'oniguruma-devel'
+            'oniguruma-devel',
+            'libxml2-devel',
+            'bzip2-devel',
+            'curl-devel',
+            'libxslt-devel'
         ],
         installCommand: (deps) => `sudo yum install ${deps} -y`,
         packageManager: 'yum'
@@ -68,7 +72,11 @@ const dependenciesForPlatforms = {
             'libsodium',
             'libsodium-devel',
             'libtool-ltdl-devel',
-            'oniguruma-devel'
+            'oniguruma-devel',
+            'libxml2-devel',
+            'bzip2-devel',
+            'curl-devel',
+            'libxslt-devel'
         ],
         installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`,
         packageManager: 'yum'
