@@ -1135,6 +1135,17 @@
     eslint-traverse "^1.0.0"
     requireindex "~1.1.0"
 
+"@scandipwa/scandipwa-dev-utils@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.12.tgz#c3e833a7fac6ec8e45f54af2eafe5c417aab639c"
+  integrity sha512-asGj333cLL6LkCLG9ubRL521WWSdET0FFi2bOwnGOID7r7N0SH0gWFEJviWyGXH8ldBlCzt17l36ce4gQ+bcUA==
+  dependencies:
+    "@tilework/mosaic-dev-utils" "0.1.6"
+    cross-spawn "^7.0.3"
+    react-dev-utils "^11.0.4"
+    semver "^7.3.2"
+    validate-npm-package-name "^3.0.0"
+
 "@scandipwa/scandipwa-dev-utils@0.1.13":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.13.tgz#885c6e173c661262d322e515b96841d28ac1cab2"
@@ -8219,7 +8230,7 @@ smart-buffer@^4.1.0, smart-buffer@^4.2.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-smol-request@^2.1.1:
+smol-request@2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/smol-request/-/smol-request-2.1.1.tgz#0b66d844d903440c8a66a55e78f8bf2f4ef1481b"
   integrity sha512-c8/jordlG2vF0ul5hQ5Lcpy8fZxKumLWH8z2n7RW9w9GgddrqU+qgabx3MmjaZIkHk8EO7niyI7i6P7pPzevFQ==

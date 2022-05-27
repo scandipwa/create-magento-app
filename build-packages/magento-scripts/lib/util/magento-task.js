@@ -1,17 +1,28 @@
 const runMagentoCommand = require('./run-magento');
 
 /**
- * @type {(command: string) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @param {String} command
+ * @param {Object} [options]
+ * @param {(e: Error) => void} [options.onError]
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
-const magentoTask = (command) => ({
+const magentoTask = (command, options = {}) => ({
     title: `Running command 'magento ${command}'`,
-    task: ({ magentoVersion, verbose }, task) => runMagentoCommand(command, {
-        callback: !verbose ? undefined : (t) => {
-            task.output = t;
-        },
-        magentoVersion,
-        throwNonZeroCode: true
-    }),
+    task: async ({ magentoVersion, verbose }, task) => {
+        try {
+            await runMagentoCommand(command, {
+                callback: !verbose ? undefined : (t) => {
+                    task.output = t;
+                },
+                magentoVersion,
+                throwNonZeroCode: true
+            });
+        } catch (e) {
+            if (options.onError) {
+                options.onError(e);
+            }
+        }
+    },
     options: {
         bottomBar: 10
     }

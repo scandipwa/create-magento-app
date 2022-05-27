@@ -11,9 +11,10 @@ const fedoraDependenciesCheck = () => ({
         const installedDependencies = (await execAsyncSpawn('yum list installed')).split('\n')
             .filter((pkg) => !pkg.toLowerCase().includes('installed packages'))
             .map((pkg) => pkg.match(/^(\S+)/i))
-            .filter((pkg) => pkg)
+            .filter(Boolean)
             .map((pkg) => pkg[1])
             .map((pkg) => pkg.match(/^(\S+)\.\S+/i))
+            .filter(Boolean)
             .map((pkg) => pkg[1]);
 
         const dependenciesToInstall = dependenciesForPlatforms

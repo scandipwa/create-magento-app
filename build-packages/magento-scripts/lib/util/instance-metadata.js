@@ -7,7 +7,8 @@ const WEB_ADMIN_CREDENTIALS_TITLE = 'Panel credentials';
 
 const mapDataStyle = ({ title, text }) => ({
     title,
-    text: logger.style.link(text)
+    text: logger.style.link(text),
+    link: text
 });
 
 /**
