@@ -55,7 +55,8 @@ const dependenciesForPlatforms = {
             'libxml2-devel',
             'bzip2-devel',
             'curl-devel',
-            'libxslt-devel'
+            'libxslt-devel',
+            'autoconf'
         ],
         installCommand: (deps) => `sudo yum install ${deps} -y`,
         packageManager: 'yum'
@@ -76,7 +77,8 @@ const dependenciesForPlatforms = {
             'libxml2-devel',
             'bzip2-devel',
             'curl-devel',
-            'libxslt-devel'
+            'libxslt-devel',
+            'autoconf'
         ],
         installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`,
         packageManager: 'yum'
