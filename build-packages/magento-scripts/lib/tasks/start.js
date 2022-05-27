@@ -30,6 +30,7 @@ const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-
 const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
+const validatePHPInstallation = require('./php/validate-php');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -113,6 +114,7 @@ const configureProject = () => ({
             })
         },
         configurePhp(),
+        validatePHPInstallation(),
         installPrestissimo(),
         installMagento(),
         enableMagentoComposerPlugins(),
