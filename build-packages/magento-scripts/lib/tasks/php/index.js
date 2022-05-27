@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const pathExists = require('../../util/path-exists');
-const compile = require('./compile');
-const configure = require('./configure');
+const compilePhp = require('./compile');
+const configurePhp = require('./configure');
 const updatePhpBrew = require('./update-phpbrew');
 const phpbrewConfig = require('../../config/phpbrew');
 
@@ -63,7 +63,7 @@ const installPhp = () => ({
         // eslint-disable-next-line consistent-return
         return task.newListr([
             updatePhpBrew(),
-            compile()
+            compilePhp()
         ], {
             concurrent: false,
             exitOnError: true
@@ -73,6 +73,6 @@ const installPhp = () => ({
 
 module.exports = {
     installPhp,
-    compilePhp: compile,
-    configurePhp: configure
+    compilePhp,
+    configurePhp
 };

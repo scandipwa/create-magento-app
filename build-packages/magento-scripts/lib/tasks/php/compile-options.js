@@ -1,30 +1,16 @@
+const { bundledExtensions } = require('./bundled-extensions');
+
+const darwinVariants = [
+    'openssl=$(brew --prefix openssl@1.1)', // ="$(brew --prefix openssl@1.1)"
+    'curl=$(brew --prefix curl)',
+    'intl=$(brew --prefix icu4c)',
+    'bz2="$(brew --prefix bzip2)"'
+];
+
 const compileOptions = {
     linux: {
         cpuCount: '$(nproc)',
-        variants: [
-            '+bz2',
-            '+bcmath',
-            '+ctype',
-            '+curl',
-            '+intl',
-            '+dom',
-            '+filter',
-            '+hash',
-            '+sockets',
-            '+iconv',
-            '+json',
-            '+mbstring',
-            '+openssl',
-            '+xml',
-            '+mysql',
-            '+pdo',
-            '+soap',
-            '+xmlrpc',
-            '+xml',
-            '+zip',
-            '+fpm',
-            '+gd'
-        ],
+        variants: bundledExtensions.map((ext) => `+${ext}`),
         extraOptions: [
             '--with-freetype-dir=/usr/include/freetype2',
             '--with-openssl=/usr/',
@@ -39,30 +25,14 @@ const compileOptions = {
     },
     darwin: {
         cpuCount: '$(sysctl -n hw.ncpu)',
-        variants: [
-            '+neutral',
-            '+bz2="$(brew --prefix bzip2)"',
-            '+bcmath',
-            '+ctype',
-            '+curl=$(brew --prefix curl)',
-            '+intl=$(brew --prefix icu4c)',
-            '+dom',
-            '+filter',
-            '+hash',
-            '+iconv',
-            '+json',
-            '+mbstring',
-            '+openssl=$(brew --prefix openssl@1.1)', // ="$(brew --prefix openssl@1.1)"
-            '+xml',
-            '+mysql',
-            '+pdo',
-            '+soap',
-            '+xmlrpc',
-            '+xml',
-            '+zip',
-            '+fpm',
-            '+gd'
-        ],
+        variants: bundledExtensions.map((ext) => {
+            const darwinVariant = darwinVariants.find((dv) => dv.startsWith(ext));
+            if (darwinVariant) {
+                return `+${darwinVariant}`;
+            }
+
+            return `+${ext}`;
+        }),
         extraOptions: [
             '--with-zlib-dir=$(brew --prefix zlib)',
             '--with-iconv=$(brew --prefix libiconv)',

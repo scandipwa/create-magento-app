@@ -6,7 +6,7 @@ const compileOptions = require('./compile-options');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const compile = () => ({
+const compilePHP = () => ({
     title: 'Compiling PHP',
     task: async ({ config: { php } }, task) => {
         const platformCompileOptions = compileOptions[process.platform];
@@ -44,4 +44,4 @@ const compile = () => ({
     }
 });
 
-module.exports = compile;
+module.exports = compilePHP;
