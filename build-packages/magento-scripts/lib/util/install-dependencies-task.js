@@ -63,9 +63,8 @@ To install missing ${ dependenciesWordFormatter } manually, run the following co
         }
 
         if (installAnswer === 'not-install') {
-            throw new Error(`Okay, skipping ${ dependenciesWordFormatter } installation for now.
-
-To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
+            task.skip(`User chose to skip installation of ${ dependenciesWordFormatter }`);
+            return;
         }
 
         if (installAnswer === 'install') {
