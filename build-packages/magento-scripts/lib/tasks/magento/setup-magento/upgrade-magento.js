@@ -1,5 +1,6 @@
 const magentoTask = require('../../../util/magento-task');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const KnownError = require('../../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -15,7 +16,7 @@ const upgradeMagento = () => ({
     task: (_ctx, task) => task.newListr([
         magentoTask('setup:upgrade --no-interaction', {
             onError: (e) => {
-                throw new Error(`Magento setup:upgrade command failed!
+                throw new KnownError(`Magento setup:upgrade command failed!
 You can try disabling failed module and try again.
 To disable module, open ${logger.style.misc('cli')} and type the following command: ${logger.style.command('m module:disable <module-name>')}
 
