@@ -1216,17 +1216,6 @@
     mem-fs-editor "^7.0.1"
     memoizee "^0.4.15"
 
-"@tilework/mosaic-dev-utils@0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@tilework/mosaic-dev-utils/-/mosaic-dev-utils-0.1.6.tgz#5ff5202ee523c7cc7ba43ac1c84a8e7e65aaaf4e"
-  integrity sha512-ew18d5faCIOkNm3UzeZ5/gEdYNFZtUdKv0XJSbHzyTX6/0uqltb/JJetmhMluYIEASjm/0ILeufE0luQP93jqA==
-  dependencies:
-    chalk "^4.1.0"
-    mem-fs "^1.2.0"
-    mem-fs-editor "^7.0.1"
-    memoizee "^0.4.15"
-    node-fetch "^2.6.1"
-
 "@tilework/mosaic-dev-utils@0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@tilework/mosaic-dev-utils/-/mosaic-dev-utils-0.2.1.tgz#d020eab97b19be7c5c0a127d381c94d29e80d8a1"

@@ -5,6 +5,7 @@ const os = require('os');
 const hjson = require('hjson');
 const pathExists = require('../../util/path-exists');
 const setConfigFile = require('../../util/set-config');
+const UnknownError = require('../../errors/unknown-error');
 
 const phpXDebug2port = 9111;
 const phpXDebug3port = 9003;
@@ -87,7 +88,7 @@ const createPhpFpmConfig = () => ({
             try {
                 await fs.promises.mkdir(path.join(process.cwd(), '.vscode'));
             } catch (e) {
-                throw new Error(`Unable to creade .vscode directory in your project!\n\n${e}`);
+                throw new UnknownError(`Unable to creade .vscode directory in your project!\n\n${e}`);
             }
         }
 
@@ -103,7 +104,7 @@ const createPhpFpmConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during launch.json config creation!\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during launch.json config creation!\n\n${e}`);
         }
     }
 });

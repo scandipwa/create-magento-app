@@ -6,6 +6,7 @@ const { platforms, darwinMinimalVersion } = require('../../config');
 const dependencyCheck = require('./dependency');
 const { getArch } = require('../../util/arch');
 const getIsWsl = require('../../util/is-wsl');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -16,14 +17,14 @@ const checkPlatform = () => ({
         const currentPlatform = os.platform();
 
         if (!platforms.includes(currentPlatform)) {
-            throw new Error(
+            throw new KnownError(
                 `Your current OS platform is ${ logger.style.misc(currentPlatform) }.
                 Unfortunately, currently we only support ${ platforms.map((platform) => logger.style.misc(platform)).join(',') }.`
             );
         }
 
         if (macosVersion.isMacOS && !macosVersion.isGreaterThanOrEqualTo(darwinMinimalVersion)) {
-            throw new Error(
+            throw new KnownError(
                 'Please update your system!',
                 `MacOS bellow version ${ logger.style.misc(darwinMinimalVersion) } is not supported.`
             );

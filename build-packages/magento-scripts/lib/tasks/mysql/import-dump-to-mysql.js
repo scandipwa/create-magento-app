@@ -1,4 +1,6 @@
 /* eslint-disable max-len */
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
@@ -9,7 +11,7 @@ const importDumpToMySQL = () => ({
     title: 'Importing Database Dump To MySQL',
     task: async (ctx, task) => {
         if (!await pathExists(ctx.importDb)) {
-            throw new Error(`Dump file at ${ctx.importDb} does not exist. Please provide correct relative path to the file`);
+            throw new KnownError(`Dump file at ${ctx.importDb} does not exist. Please provide correct relative path to the file`);
         }
 
         const { config: { docker }, ports } = ctx;
@@ -42,7 +44,7 @@ const importDumpToMySQL = () => ({
                 }
             );
         } catch (e) {
-            throw new Error(`Unexpected error during dump import.\n\n${e}`);
+            throw new UnknownError(`Unexpected error during dump import.\n\n${e}`);
         }
 
         clearInterval(tickInterval);

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const KnownError = require('../errors/known-error');
 const pathExists = require('./path-exists');
 
 const getComposerData = async (composerPath) => {
@@ -16,7 +17,7 @@ const getInstalledMagentoVersion = async (projectPath = process.cwd()) => {
     const composerData = await getComposerData(path.join(projectPath, 'composer.json'));
 
     if (!composerData) {
-        throw new Error('composer.json not found');
+        throw new KnownError('composer.json not found');
     }
     const magentoDependency = [
         'magento/product-community-edition',
@@ -24,7 +25,7 @@ const getInstalledMagentoVersion = async (projectPath = process.cwd()) => {
     ].find((magentoEdition) => composerData.require[magentoEdition]);
 
     if (!magentoDependency) {
-        throw new Error('No Magento dependency found in composer.json');
+        throw new KnownError('No Magento dependency found in composer.json');
     }
 
     return composerData.require[magentoDependency].replace(/\^/i, '');

@@ -4,12 +4,14 @@ const { Listr } = require('listr2');
 const { start } = require('../tasks/start');
 const pathExists = require('../util/path-exists');
 const { baseConfig } = require('../config');
-const googleAnalytics = require('@scandipwa/scandipwa-dev-utils/analytics');
+const googleAnalytics = require('../util/analytics');
 const systeminformation = require('systeminformation');
 const { getCSAThemes } = require('../util/CSA-theme');
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn');
 const ConsoleBlock = require('../util/console-block');
 const { getInstanceMetadata } = require('../util/instance-metadata');
+const UnknownError = require('../errors/unknown-error');
+const KnownError = require('../errors/known-error');
 
 const cmaGaTrackingId = 'UA-127741417-7';
 
@@ -156,8 +158,8 @@ module.exports = (yargs) => {
                 }
 
                 try {
+                    await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                     if (!process.isFirstStart) {
-                        await googleAnalytics.trackTiming('CMA start time', Date.now() - timeStamp);
                         googleAnalytics.printAboutAnalytics();
                         process.exit(0);
                     }
@@ -171,7 +173,6 @@ module.exports = (yargs) => {
                     const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`;
 
                     await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS');
-                    await googleAnalytics.trackTiming('CMA first start time', Date.now() - timeStamp);
                     googleAnalytics.printAboutAnalytics();
                 } catch (e) {
                     await googleAnalytics.trackError(e.message || e);
@@ -179,8 +180,20 @@ module.exports = (yargs) => {
 
                 process.exit(0);
             } catch (e) {
-                logger.error(e.message || e);
-                await googleAnalytics.trackError(e.message || e);
+                if (e instanceof UnknownError || e instanceof KnownError) {
+                    logger.error(e.message);
+                    if (e instanceof UnknownError) {
+                        await googleAnalytics.trackError(`Unknown Error: ${e.stack}`);
+                    } else {
+                        await googleAnalytics.trackError(`Known Error: ${e.message}`);
+                    }
+                } else if (e instanceof Error) {
+                    logger.error(e.message);
+                    await googleAnalytics.trackError(`Regular Error: ${e.message}`);
+                } else {
+                    logger.error(e);
+                    await googleAnalytics.trackError(`Non Error: ${e}`); // track non-errors throws
+                }
                 process.exit(1);
             }
         }

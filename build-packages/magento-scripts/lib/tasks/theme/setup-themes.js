@@ -7,6 +7,7 @@ const setupPersistedQuery = require('./setup-persisted-query');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
 const disableFullPageCache = require('../magento/setup-magento/disable-full-page-cache');
 const buildTheme = require('./build-theme');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -61,7 +62,7 @@ const setupThemes = () => ({
             const composerData = await getJsonfileData(path.join(absoluteThemePath, 'composer.json'));
 
             if (!composerData) {
-                throw new Error(`composer.json file not found in "${themePath}"`);
+                throw new KnownError(`composer.json file not found in "${themePath}"`);
             }
 
             return {

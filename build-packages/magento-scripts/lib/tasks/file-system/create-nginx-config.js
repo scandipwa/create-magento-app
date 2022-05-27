@@ -1,6 +1,7 @@
 const os = require('os');
 const path = require('path');
 const setConfigFile = require('../../util/set-config');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -47,7 +48,7 @@ const createNginxConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during nginx config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during nginx config creation\n\n${e}`);
         }
     }
 });

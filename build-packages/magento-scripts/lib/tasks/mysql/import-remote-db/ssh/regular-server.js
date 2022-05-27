@@ -2,6 +2,7 @@ const mergeFiles = require('merge-files');
 const { orderTables, customerTables } = require('../../magento-tables');
 const { execAsyncSpawn } = require('../../../../util/exec-async-command');
 const mysqlDumpCommandWithOptions = require('./mysqldump-command');
+const KnownError = require('../../../../errors/known-error');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
  */
@@ -30,7 +31,7 @@ Do not enter "--result-file" option, we need to control that part.
             });
 
             if (dumpCommand.includes('--result-file')) {
-                throw new Error('--result-file option is not allowed in user input command');
+                throw new KnownError('--result-file option is not allowed in user input command');
             }
 
             if (!withCustomersData) {

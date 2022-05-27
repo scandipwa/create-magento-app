@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../errors/unknown-error');
 const { configFileSchema } = require('./config-file-validator');
 const { deepmerge } = require('./deepmerge');
 const pathExists = require('./path-exists');
@@ -11,7 +12,7 @@ const resolveConfigurationWithOverrides = async (configuration, baseConfig, proj
         try {
             await configFileSchema.validateAsync(userConfiguration);
         } catch (e) {
-            throw new Error(`Configuration file validation error!\n\n${e.message}`);
+            throw new UnknownError(`Configuration file validation error!\n\n${e.message}`);
         }
 
         const overridenConfiguration = deepmerge(configuration, userConfiguration);

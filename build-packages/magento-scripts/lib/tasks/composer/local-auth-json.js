@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const pathExists = require('../../util/path-exists');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const UnknownError = require('../../errors/unknown-error');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -16,11 +18,11 @@ const localAuthJson = () => ({
             try {
                 localAuthJsonContent = JSON.parse(localAuthJson);
             } catch (e) {
-                throw new Error(`Could not parse ./auth.json file as JSON!\n\n${e}`);
+                throw new UnknownError(`Could not parse ./auth.json file as JSON!\n\n${e}`);
             }
 
             if (!localAuthJsonContent || !localAuthJsonContent['http-basic'] || !localAuthJsonContent['http-basic']['repo.magento.com']) {
-                throw new Error(`Your ./auth.json file does not contain the ${ logger.style.misc("{ 'http-basic': { 'repo.magento.com': <> } }") } field.`);
+                throw new KnownError(`Your ./auth.json file does not contain the ${ logger.style.misc("{ 'http-basic': { 'repo.magento.com': <> } }") } field.`);
             }
 
             process.env.COMPOSER_AUTH = localAuthJson;

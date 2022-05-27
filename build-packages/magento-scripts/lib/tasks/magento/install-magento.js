@@ -6,6 +6,8 @@ const moveFile = require('../../util/move-file');
 const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
 const rmdirSafe = require('../../util/rmdir-safe');
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -58,7 +60,7 @@ const adjustComposerJson = async ({
         composerData.require[magentoProductCommunityEdition]
         && composerData.require[magentoProductEnterpriseEdition]
     ) {
-        throw new Error('Somehow, both Magento editions are installed!\nPlease choose only one edition an modify your composer.json manually!');
+        throw new KnownError('Somehow, both Magento editions are installed!\nPlease choose only one edition an modify your composer.json manually!');
     }
 
     const oppositeEdition = [magentoProductCommunityEdition, magentoProductEnterpriseEdition]
@@ -66,7 +68,7 @@ const adjustComposerJson = async ({
 
     // if opposite edition is installed than selected in config file, throw an error
     if (composerData.require[oppositeEdition]) {
-        throw new Error(`You have installed ${oppositeEdition} but selected magento.edition as ${magentoEdition} in config file!
+        throw new KnownError(`You have installed ${oppositeEdition} but selected magento.edition as ${magentoEdition} in config file!
 
 Change magento edition in config file or manually reinstall correct magento edition!`);
     }
@@ -187,11 +189,11 @@ const installMagento = () => ({
                 });
         } catch (e) {
             if (e.message.includes('man-in-the-middle attack')) {
-                throw new Error(`Probably you haven't setup pubkeys in composer.
-                Please run composer diagnose in cli to get mode.\n\n${e}`);
+                throw new KnownError(`Probably you haven't setup pubkeys in composer.
+Please run composer diagnose in cli to get mode.\n\n${e}`);
             }
 
-            throw new Error(`Unexpected error during composer install.\n\n${e}`);
+            throw new UnknownError(`Unexpected error during composer install.\n\n${e}`);
         }
         ctx.magentoFirstInstall = true;
     },

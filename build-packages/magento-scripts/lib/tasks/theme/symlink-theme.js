@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const runComposerCommand = require('../../util/run-composer');
 
@@ -27,7 +28,7 @@ const symlinkTheme = (theme) => ({
                 }
             });
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Unexpected error while configuring theme symbolic link.
                 See ERROR log above.\n\n${e}`
             );

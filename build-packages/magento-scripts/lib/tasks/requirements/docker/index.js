@@ -1,5 +1,6 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const os = require('os');
+const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
 const installDocker = require('./install');
@@ -35,7 +36,7 @@ NOTE: After installation it's recommended to log out and log back in so your gro
                             task: (ctx) => {
                                 task.title = `Using docker version ${ctx.dockerVersion}`;
 
-                                throw new Error(
+                                throw new KnownError(
                                     `Docker is installed successfully!
 Please log out and log back to so your group membership is re-evaluated!
 Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`
@@ -45,15 +46,15 @@ Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/li
                     ]);
                 }
 
-                throw new Error('Docker is not installed!');
+                throw new KnownError('Docker is not installed!');
             } else if (isWsl) {
-                throw new Error(
+                throw new KnownError(
                     `You don't have Docker installed!
 Follow this instructions to install Docker on Windows:
 ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements#2-install-docker-desktop-for-windows') }`
                 );
             } else {
-                throw new Error(
+                throw new KnownError(
                     `You don't have Docker installed!
 Follow this instructions to install Docker on Mac:
 ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos#3-install-docker-for-mac') }`

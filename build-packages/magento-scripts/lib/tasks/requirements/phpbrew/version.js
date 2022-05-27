@@ -1,3 +1,4 @@
+const UnknownError = require('../../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const safeRegexExtract = require('../../../util/safe-regex-extract');
 
@@ -15,7 +16,7 @@ const getPHPBrewVersion = () => ({
                 string: result,
                 regex: /phpbrew - ([\d.]+)/i,
                 onNoMatch: () => {
-                    throw new Error(`No phpbrew version found in phpbrew version output!\n\n${result}`);
+                    throw new UnknownError(`No phpbrew version found in phpbrew version output!\n\n${result}`);
                 }
             });
 

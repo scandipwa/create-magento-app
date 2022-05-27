@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
 
 /**
@@ -20,7 +21,7 @@ const createBashrcConfigFile = () => ({
                 }
             });
         } catch (e) {
-            throw new Error(`Unexpected error accrued during php.ini config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during php.ini config creation\n\n${e}`);
         }
     }
 });

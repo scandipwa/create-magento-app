@@ -1,4 +1,5 @@
 const os = require('os');
+const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const getIsWsl = require('../../../util/is-wsl');
 const pathExists = require('../../../util/path-exists');
@@ -31,7 +32,7 @@ const checkDockerStatusMacOS = () => ({
                 let attempts = 0;
                 while (!ready) {
                     if (attempts > 24 && !ready) {
-                        throw new Error('Docker haven\'t started in 2 mins, exiting...');
+                        throw new KnownError('Docker haven\'t started in 2 mins, exiting...');
                     }
                     try {
                         const { code: startupCode } = await getDockerVersion();
@@ -67,7 +68,7 @@ const checkDockerStatusWSL = () => ({
         const { result, code } = await getDockerVersion();
 
         if (code !== 0 && result.includes('Is the docker daemon running?')) {
-            throw new Error(`Docker is not running!
+            throw new KnownError(`Docker is not running!
 
 Please open Docker Desktop application for Windows and make sure that Docker is running. Then you can try again!`);
         }

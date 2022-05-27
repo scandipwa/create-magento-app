@@ -1,4 +1,5 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const installPHPBrew = require('./install');
 const getPHPBrewVersion = require('./version');
@@ -32,7 +33,7 @@ Do you want to install it automatically?`
                 ]);
             }
 
-            throw new Error(
+            throw new KnownError(
                 `To install PHPBrew, you must first make sure the requirements are met.
 The requirements are available here: ${ logger.style.link('https://github.com/phpbrew/phpbrew/wiki/Requirement') }.
 Then, you can follow the installation instruction, here: ${ logger.style.link('https://phpbrew.github.io/phpbrew/#installation') }.
