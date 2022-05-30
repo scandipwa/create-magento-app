@@ -1,7 +1,5 @@
-const os = require('os');
 const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
-const getIsWsl = require('../../../util/is-wsl');
 const pathExists = require('../../../util/path-exists');
 const sleep = require('../../../util/sleep');
 const { systemctlControl } = require('../../../util/systemctl');
@@ -20,38 +18,40 @@ const checkDockerStatusMacOS = () => ({
     task: async (ctx, task) => {
         const { result, code } = await getDockerVersion();
 
-        if (code !== 0 && result.includes('Is the docker daemon running?')) {
-            const dockerOpenAppConfirmation = await task.prompt({
-                type: 'Confirm',
-                message: 'Looks like Docker is not running, would you like us to open a Docker for Mac application and wait for it to start up?'
-            });
+        if (code !== 0) {
+            if (result.includes('Is the docker daemon running?') || result.includes('docker: command not found')) {
+                const dockerOpenAppConfirmation = await task.prompt({
+                    type: 'Confirm',
+                    message: 'Looks like Docker is not running, would you like us to open a Docker for Mac application and wait for it to start up?'
+                });
 
-            if (dockerOpenAppConfirmation && await pathExists(pathToDockerApplication)) {
-                await execAsyncSpawn(`open ${pathToDockerApplication}`);
-                let ready = false;
-                let attempts = 0;
-                while (!ready) {
-                    if (attempts > 24 && !ready) {
-                        throw new KnownError('Docker haven\'t started in 2 mins, exiting...');
-                    }
-                    try {
-                        const { code: startupCode } = await getDockerVersion();
-                        if (startupCode !== 0) {
-                            task.output = `Waiting for Docker to startup for ${attempts * 5} seconds...`;
-                            attempts++;
-                            await sleep(5000);
-                        } else {
-                            ready = true;
+                if (dockerOpenAppConfirmation && await pathExists(pathToDockerApplication)) {
+                    await execAsyncSpawn(`open ${pathToDockerApplication}`);
+                    let ready = false;
+                    let attempts = 0;
+                    while (!ready) {
+                        if (attempts > 24 && !ready) {
+                            throw new KnownError('Docker haven\'t started in 2 mins, exiting...');
                         }
-                    } catch (e) {
+                        try {
+                            const { code: startupCode } = await getDockerVersion();
+                            if (startupCode !== 0) {
+                                task.output = `Waiting for Docker to startup for ${attempts * 5} seconds...`;
+                                attempts++;
+                                await sleep(5000);
+                            } else {
+                                ready = true;
+                            }
+                        } catch (e) {
                         //
+                        }
                     }
+
+                    return;
                 }
 
-                return;
+                task.skip('User skipped running Docker');
             }
-
-            task.skip('User skipped running Docker');
         }
     },
     options: {
@@ -124,10 +124,10 @@ This action requires root privileges.`
 const checkDockerStatus = () => ({
     title: 'Checking Docker status',
     task: async (ctx, task) => {
-        if (os.platform() === 'darwin') {
+        if (ctx.platform === 'darwin') {
             return task.newListr(checkDockerStatusMacOS());
         }
-        if (!await getIsWsl()) {
+        if (!ctx.isWsl) {
             return task.newListr(checkDockerStatusLinux());
         }
 
