@@ -8,7 +8,7 @@ const installDockerOnMac = () => ({
     title: 'Installing Docker on Mac OS',
     task: async (ctx, task) => {
         const interval = !ctx.verbose ? setInterval(() => {
-            task.output = `Installing Docker on Mac... Yep, still in progress ${Date.UTC()}`;
+            task.output = `Installing Docker on Mac... Yep, still in progress ${new Date().toUTCString()}`;
         }, 5000) : null;
 
         await execAsyncSpawn(`${await getBrewCommand({ native: true })} install --cask docker`, {
