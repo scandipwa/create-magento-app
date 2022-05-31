@@ -88,8 +88,8 @@ ${ logger.style.misc('Password') } (${ logger.style.misc('Private key') }):`,
         const authContent = {
             'http-basic': {
                 'repo.magento.com': {
-                    username: usernameCredentials,
-                    password: passwordCredentials
+                    username: usernameCredentials.trim(),
+                    password: passwordCredentials.trim()
                 }
             }
         };
