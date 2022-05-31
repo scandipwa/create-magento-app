@@ -26,7 +26,7 @@ const runPhpCode = async (command, options = {}) => {
         spawnCommand = `${env} ${spawnCommand}`;
     }
     if (options.useRosettaOnMac) {
-        spawnCommand = `arch -x86_64 ${spawnCommand}`;
+        spawnCommand = `arch -x86_64 bash -c '${spawnCommand}'`;
     }
     const { code, result } = await execAsyncSpawn(spawnCommand, {
         ...options,
