@@ -21,7 +21,8 @@ const runComposerCommand = async (command, options = {}) => {
     const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${composer.binPath} ${command}`, {
         ...options,
         cwd: magentoDir,
-        withCode: true
+        withCode: true,
+        useRosetta2: true
     });
 
     if (throwNonZeroCode && code !== 0) {
