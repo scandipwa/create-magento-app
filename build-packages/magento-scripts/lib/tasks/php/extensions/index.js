@@ -1,9 +1,11 @@
 /* eslint-disable max-len */
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const pathExists = require('../../../util/path-exists');
 const phpbrewConfig = require('../../../config/phpbrew');
+const { getArch } = require('../../../util/arch');
 
 /**
  * Get enabled extensions list with versions
@@ -11,8 +13,9 @@ const phpbrewConfig = require('../../../config/phpbrew');
  * @returns {Promise<{[key: string]: string}}>}
  */
 const getEnabledExtensions = async ({ php }) => {
+    const isArmMac = await getArch() === 'arm64' && os.platform() === 'darwin';
     const output = await execAsyncSpawn(
-        `${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
+        `${isArmMac ? 'arch -x86_64 ' : ''}${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
     );
 
     return output

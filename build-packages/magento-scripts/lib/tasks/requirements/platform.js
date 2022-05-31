@@ -37,6 +37,7 @@ const checkPlatform = () => ({
 
         ctx.platform = currentPlatform;
         ctx.platformVersion = currentPlatform !== 'darwin' ? os.release() : macosVersion();
+        ctx.isArmMac = ctx.isArm && ctx.platform === 'darwin';
 
         const { manufacturer, brand, cores } = await systeminformation.cpu();
 

@@ -27,7 +27,8 @@ const disableExtension = (extensionName) => ({
             {
                 callback: (t) => {
                     task.output = t;
-                }
+                },
+                useRosetta2: true
             });
             if (hooks && hooks.postDisable) {
                 await Promise.resolve(hooks.postDisable(config));

@@ -12,6 +12,7 @@ const UnknownError = require('../errors/unknown-error');
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
  * @param {Record<string, string>} options.env Environment variables
+ * @param {Boolean} options.useRosettaOnMac Use Rosetta 2 on MacOS
  */
 const runPhpCode = async (command, options = {}) => {
     const {
@@ -23,6 +24,9 @@ const runPhpCode = async (command, options = {}) => {
     if (options.env && Object.keys(options.env).length > 0) {
         const env = Object.entries(options.env).map(([key, value]) => `${key}=${value}`).join(' ');
         spawnCommand = `${env} ${spawnCommand}`;
+    }
+    if (options.useRosettaOnMac) {
+        spawnCommand = `arch -x86_64 ${spawnCommand}`;
     }
     const { code, result } = await execAsyncSpawn(spawnCommand, {
         ...options,

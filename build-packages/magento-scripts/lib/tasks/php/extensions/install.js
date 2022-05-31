@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-const macosVersion = require('macos-version');
 const phpbrewConfig = require('../../../config/phpbrew');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
@@ -20,7 +19,7 @@ const installExtension = (extensionName, extensionOptions) => ({
         if (extensionOptions.install) {
             await Promise.resolve(extensionOptions.install(ctx, task));
         } else {
-            const options = macosVersion.isMacOS ? extensionOptions.macosOptions : extensionOptions.linuxOptions;
+            const options = ctx.platform === 'darwin' ? extensionOptions.macosOptions : extensionOptions.linuxOptions;
 
             if (hooks && hooks.preInstall) {
                 await Promise.resolve(hooks.preInstall(config));
@@ -32,7 +31,8 @@ const installExtension = (extensionName, extensionOptions) => ({
             {
                 callback: (t) => {
                     task.output = t;
-                }
+                },
+                useRosetta2: true
             });
 
             if (hooks && hooks.postInstall) {

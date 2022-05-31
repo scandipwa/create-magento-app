@@ -1,6 +1,6 @@
 const macosVersion = require('macos-version');
 const { execSync } = require('child_process');
-const { execAsync } = require('./exec-async-command');
+const { execAsync } = require('./exec-async');
 
 /**
  * Get actual system arch

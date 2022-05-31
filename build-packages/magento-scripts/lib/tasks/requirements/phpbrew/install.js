@@ -15,7 +15,7 @@ const installPHPBrewDependencies = () => ({
     title: 'Installing PHPBrew dependencies',
     task: async (ctx, task) => {
         if (process.platform === 'darwin') {
-            const installedDependencies = (await execAsyncSpawn(`${await getBrewCommand({ native: false })} list`)).split('\n');
+            const installedDependencies = (await execAsyncSpawn(`${await getBrewCommand({ native: true })} list`)).split('\n');
 
             const dependenciesToInstall = ['php', 'autoconf', 'pkg-config'].filter((dep) => !installedDependencies.includes(dep));
 
@@ -28,7 +28,7 @@ const installPHPBrewDependencies = () => ({
                 installDependenciesTask({
                     platform: 'darwin',
                     dependenciesToInstall,
-                    useMacNativeEnvironment: false
+                    useMacNativeEnvironment: true
                 })
             );
         }

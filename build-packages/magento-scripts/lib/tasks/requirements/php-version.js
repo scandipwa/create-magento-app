@@ -31,7 +31,7 @@ const installPHPForPHPBrew = () => ({
                 ...compileOptions.darwin,
                 variants: [
                     '+default',
-                    `+openssl=$(${getBrewCommandSync()} --prefix openssl@1.1)`
+                    `+openssl=$(${getBrewCommandSync({ native: false })} --prefix openssl@1.1)`
                 ],
                 extraOptions: []
             }
@@ -40,12 +40,8 @@ const installPHPForPHPBrew = () => ({
 
         if (!await pathExists(path.join(phpbrewConfig.phpPath, `${phpbrewPHPName}`, 'bin'))) {
             const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' ');
-            let compileCommand = '';
-            if (ctx.platform === 'darwin' && ctx.arch === 'arm64') {
-                compileCommand += 'arch -x86_64';
-            }
             // eslint-disable-next-line max-len
-            compileCommand = ` ${commandEnv ? `${commandEnv} && ` : ''}${compileCommand || '' }phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
+            const compileCommand = ` ${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
 
             try {
                 await execAsyncSpawn(
@@ -53,7 +49,8 @@ const installPHPForPHPBrew = () => ({
                     {
                         callback: (t) => {
                             task.output = t;
-                        }
+                        },
+                        useRosetta2: true
                     }
                 );
             } catch (e) {

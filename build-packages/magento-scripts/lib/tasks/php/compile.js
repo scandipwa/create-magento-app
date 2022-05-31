@@ -28,7 +28,8 @@ const compilePHP = () => ({
                 {
                     callback: (t) => {
                         task.output = t;
-                    }
+                    },
+                    useRosetta2: true
                 }
             );
         } catch (e) {
