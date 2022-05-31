@@ -1135,17 +1135,6 @@
     eslint-traverse "^1.0.0"
     requireindex "~1.1.0"
 
-"@scandipwa/scandipwa-dev-utils@0.1.12":
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.12.tgz#c3e833a7fac6ec8e45f54af2eafe5c417aab639c"
-  integrity sha512-asGj333cLL6LkCLG9ubRL521WWSdET0FFi2bOwnGOID7r7N0SH0gWFEJviWyGXH8ldBlCzt17l36ce4gQ+bcUA==
-  dependencies:
-    "@tilework/mosaic-dev-utils" "0.1.6"
-    cross-spawn "^7.0.3"
-    react-dev-utils "^11.0.4"
-    semver "^7.3.2"
-    validate-npm-package-name "^3.0.0"
-
 "@scandipwa/scandipwa-dev-utils@0.1.13":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.13.tgz#885c6e173c661262d322e515b96841d28ac1cab2"
