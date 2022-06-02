@@ -1,7 +1,7 @@
 const { customerTables } = require('../../mysql/magento-tables');
 
 /**
- * @type {() => import(listr2).ListrTask<import(../../../../typings/context).ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const deleteCustomers = () => ({
     title: 'Deleting customers',
@@ -12,10 +12,13 @@ const deleteCustomers = () => ({
             task.skip();
             return;
         }
+
+        const [rows] = await mysqlConnection.query('select TABLE_NAME from information_schema.TABLES;');
+
         await Promise.all(
-            customerTables.map(
-                (tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`)
-            )
+            customerTables
+                .filter((tableName) => rows.some((row) => row.TABLE_NAME === tableName))
+                .map((tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`))
         );
     }
 });
