@@ -4,6 +4,7 @@ const checkComposer = require('./composer');
 const checkDocker = require('./docker');
 const checkNodeVersion = require('./node-version');
 const checkPHPVersion = require('./php-version');
+const checkRosetta = require('./rosetta');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -13,6 +14,8 @@ const checkRequirements = () => ({
     task: (ctx, task) => task.newListr([
         // checking if user is on supported platform
         checkPlatform(),
+        // check if rosetta 2 is installed or not on m1 macs
+        checkRosetta(),
         // check the Docker installation
         checkDocker(),
         // check for Node.js version
