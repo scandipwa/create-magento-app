@@ -1,6 +1,7 @@
 import mysql2 from 'mysql2';
 
 import { CMAConfiguration, PHPExtensions } from './index';
+import { PHPStormConfig } from './phpstorm';
 
 export interface ListrContext {
     magentoVersion: string
@@ -86,6 +87,7 @@ export interface ListrContext {
         overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        phpStorm: PHPStormConfig
     }
     systemConfiguration: {
         analytics: boolean
