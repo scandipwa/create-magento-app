@@ -1,5 +1,6 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
+const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const {
     BREW_BIN_PATH_ARM_NATIVE,
@@ -16,7 +17,7 @@ const macDependenciesCheck = () => ({
     task: async (ctx, task) => {
         if (ctx.arch === 'arm64') {
             if (!await pathExists(BREW_BIN_PATH_ARM_ROSETTA) && await pathExists(BREW_BIN_PATH_ARM_NATIVE)) {
-                throw new Error(`Incorrect brew architecture is used!
+                throw new KnownError(`Missing rosetta brew!
 Please make sure that you have installed brew in rosetta2 terminal!
 Follow the instructions: ${logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos/installation-on-macos-apple-silicon')}`);
             }

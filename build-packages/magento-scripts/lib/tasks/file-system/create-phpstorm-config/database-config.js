@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
+const UnknownError = require('../../../errors/unknown-error');
 const pathExists = require('../../../util/path-exists');
 const setConfigFile = require('../../../util/set-config');
 
@@ -135,7 +136,7 @@ const setupDataSourceLocalConfig = () => ({
                     }
                 });
             } catch (e) {
-                throw new Error(`Unexpected error accrued during dataSources.local.xml config creation\n\n${e}`);
+                throw new UnknownError(`Unexpected error accrued during dataSources.local.xml config creation\n\n${e}`);
             }
         }
     }
@@ -228,7 +229,7 @@ const setupDataSourceConfig = () => ({
                     }
                 });
             } catch (e) {
-                throw new Error(`Unexpected error accrued during dataSources.xml config creation\n\n${e}`);
+                throw new UnknownError(`Unexpected error accrued during dataSources.xml config creation\n\n${e}`);
             }
         }
     }

@@ -34,7 +34,7 @@ Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/li
         ]);
     }
 
-    throw new Error('Docker is not installed!');
+    throw new KnownError('Docker is not installed!');
 };
 
 // maybe in the future docker will be possible to install on wsl from terminal...
