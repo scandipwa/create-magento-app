@@ -31,6 +31,7 @@ const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 const validatePHPInstallation = require('./php/validate-php');
+const installSodiumExtension = require('./php/install-sodium');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -113,6 +114,7 @@ const configureProject = () => ({
                 exitOnError: true
             })
         },
+        installSodiumExtension(),
         configurePhp(),
         validatePHPInstallation(),
         installPrestissimo(),
