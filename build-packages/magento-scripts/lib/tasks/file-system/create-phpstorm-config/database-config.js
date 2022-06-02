@@ -59,12 +59,12 @@ const setupDataSourceLocalConfig = () => ({
                 }
             );
 
-            if (dataSource['@_name'] !== database.dataSourceManagerName) {
+            if (!dataSource['@_name']) {
                 hasChanges = true;
                 dataSource['@_name'] = database.dataSourceManagerName;
             }
 
-            if (dataSource['@_uuid'] === undefined) {
+            if (!dataSource['@_uuid']) {
                 hasChanges = true;
                 dataSource['@_uuid'] = 'a2eadb3c-6fc9-4d85-b5f4-d8114906ce2f';
             }

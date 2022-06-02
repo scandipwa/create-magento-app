@@ -44,17 +44,7 @@ const setupRunManager = async (workspaceConfigs, phpStormConfiguration) => {
             (configuration) => configuration['@_type'] === PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE && configuration[nameKey] === xdebug.runManagerName
         );
 
-        if (phpRemoteDebugRunConfiguration) {
-            if (phpRemoteDebugRunConfiguration[serverNameKey] !== xdebug.serverName) {
-                hasChanges = true;
-                phpRemoteDebugRunConfiguration[serverNameKey] = xdebug.serverName;
-            }
-
-            if (phpRemoteDebugRunConfiguration[sessionIdKey] !== xdebug.sessionId) {
-                hasChanges = true;
-                phpRemoteDebugRunConfiguration[sessionIdKey] = xdebug.sessionId;
-            }
-        } else {
+        if (!phpRemoteDebugRunConfiguration) {
             hasChanges = true;
             runManagerComponent.configuration.push(defaultRunManagerConfiguration);
         }

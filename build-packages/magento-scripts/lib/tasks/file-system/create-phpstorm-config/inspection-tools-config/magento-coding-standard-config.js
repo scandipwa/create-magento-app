@@ -18,9 +18,6 @@ const setupMagento2CodingStandardOption = async (config) => {
             [nameKey]: CODING_STANDARD_OPTION_NAME,
             [valueKey]: MAGENTO2_CODING_STANDARD_OPTION_VALUE
         });
-    } else if (codingStandardOption[valueKey] !== MAGENTO2_CODING_STANDARD_OPTION_VALUE) {
-        hasChanges = true;
-        codingStandardOption[valueKey] = MAGENTO2_CODING_STANDARD_OPTION_VALUE;
     }
 
     return hasChanges;

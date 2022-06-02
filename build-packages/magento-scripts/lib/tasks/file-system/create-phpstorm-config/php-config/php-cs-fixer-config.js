@@ -38,12 +38,7 @@ const setupPHPCSFixer = async (phpConfigs) => {
             (phpcsfixerSetting) => phpcsfixerSetting.PhpCSFixerConfiguration
         );
 
-        if (phpCSFixerConfiguration) {
-            if (phpCSFixerConfiguration[toolPathKey] !== phpCSFixerBinaryFormattedPath) {
-                hasChanges = true;
-                phpCSFixerConfiguration[toolPathKey] = phpCSFixerBinaryFormattedPath;
-            }
-        } else {
+        if (!phpCSFixerConfiguration) {
             hasChanges = true;
             phpCSFixerComponent.phpcsfixer_settings.push(defaultPHPCSFixerSettings);
         }

@@ -84,9 +84,6 @@ const setupMessDetectorValidationInspection = async (inspectionToolsData) => {
                         [nameKey]: optionName,
                         [valueKey]: 'true'
                     });
-                } else if (booleanOption[valueKey] !== 'true') {
-                    hasChanges = true;
-                    booleanOption[valueKey] = 'true';
                 }
             });
 

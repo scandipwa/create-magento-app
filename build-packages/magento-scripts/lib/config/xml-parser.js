@@ -10,7 +10,8 @@ const xmlParserConfig = {
     ignoreAttributes: false,
     parseAttributeValue: false,
     trimValues: true,
-    allowBooleanAttributes: true
+    allowBooleanAttributes: true,
+    cdataPropName: '_cdata'
 };
 
 /**
@@ -20,7 +21,8 @@ const xmlBuilderConfig = {
     ...xmlParserConfig,
     format: true,
     suppressEmptyNode: true,
-    suppressBooleanAttributes: false
+    suppressBooleanAttributes: false,
+    processEntities: true
 };
 
 const parser = new XMLParser(xmlParserConfig);
@@ -42,7 +44,7 @@ const loadXmlFile = async (filePath) => {
  * @param {String} fileData
  */
 const buildXmlFile = async (filePath, fileData) => {
-    const xmlFileData = builder.build(fileData);
+    const xmlFileData = builder.build(fileData).replace(/&quot;/ig, '"');
 
     const { dir } = path.parse(filePath);
 

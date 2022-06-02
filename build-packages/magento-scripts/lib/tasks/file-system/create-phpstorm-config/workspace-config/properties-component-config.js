@@ -24,9 +24,7 @@ const setupPropertiesComponent = async (workspaceConfigs) => {
         (workspaceConfig) => workspaceConfig[nameKey] === PROPERTIES_COMPONENT_NAME
     );
 
-    if (propertiesComponent) {
-        // check later
-    } else {
+    if (!propertiesComponent) {
         hasChanges = true;
         const themes = await getCSAThemes();
         if (themes.length > 0) {
@@ -41,7 +39,7 @@ const setupPropertiesComponent = async (workspaceConfigs) => {
         }
         workspaceConfigs.push({
             [nameKey]: PROPERTIES_COMPONENT_NAME,
-            '#text': JSON.stringify(defaultProperties)
+            _cdata: JSON.stringify(defaultProperties)
         });
     }
 

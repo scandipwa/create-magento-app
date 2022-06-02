@@ -18,9 +18,6 @@ const setupCodingStandardOption = async (config) => {
             [nameKey]: CODING_STANDARD_OPTION_NAME,
             [valueKey]: CUSTOM_CODING_STANDARD_OPTION_VALUE
         });
-    } else if (codingStandardOption[valueKey] !== CUSTOM_CODING_STANDARD_OPTION_VALUE) {
-        hasChanges = true;
-        codingStandardOption[valueKey] = CUSTOM_CODING_STANDARD_OPTION_VALUE;
     }
 
     return hasChanges;

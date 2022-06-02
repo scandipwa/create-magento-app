@@ -34,21 +34,11 @@ const setupPHPProjectSharedConfiguration = async (phpConfigs, currentPhpLanguage
             phpProjectSharedConfigurationComponent.option = [];
         }
 
-        if (phpProjectSharedConfigurationComponent[phpLanguageLevelKey] !== currentPhpLanguageLevel) {
-            hasChanges = true;
-            phpProjectSharedConfigurationComponent[phpLanguageLevelKey] = currentPhpLanguageLevel;
-        }
-
         const suggestedChangeDefaultLanguageLevelOption = phpProjectSharedConfigurationComponent.option.find(
             (phpProjectSharedConfigOption) => phpProjectSharedConfigOption[nameKey] === SUGGESTED_CHANGE_DEFAULT_LANGUAGE_LEVEL_OPTION_NAME
         );
 
-        if (suggestedChangeDefaultLanguageLevelOption) {
-            if (suggestedChangeDefaultLanguageLevelOption[valueKey] !== 'false') {
-                hasChanges = true;
-                suggestedChangeDefaultLanguageLevelOption[valueKey] = 'false';
-            }
-        } else {
+        if (!suggestedChangeDefaultLanguageLevelOption) {
             hasChanges = true;
             phpProjectSharedConfigurationComponent.option.push(defaultSuggestChangeDefaultLanguageLevelOption);
         }

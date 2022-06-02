@@ -16,7 +16,7 @@ const properties = {
  */
 const setupDefaultProperties = (inspectionTool, defaultProperties = properties) => {
     let hasChanges = false;
-    if (inspectionTool['@_enabled'] !== defaultProperties.enabled) {
+    if (!inspectionTool['@_enabled']) {
         hasChanges = true;
         inspectionTool['@_enabled'] = defaultProperties.enabled;
     }

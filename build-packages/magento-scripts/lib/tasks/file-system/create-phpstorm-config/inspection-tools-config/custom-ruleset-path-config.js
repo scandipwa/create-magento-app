@@ -20,9 +20,6 @@ const setupCustomRuleSetPathOption = async (config) => {
             [nameKey]: CUSTOM_RULE_SET_PATH_OPTION_NAME,
             [valueKey]: phpCSConfigFormattedPath
         });
-    } else if (customRuleSetPathOption && customRuleSetPathOption[valueKey] !== phpCSConfigFormattedPath) {
-        hasChanges = true;
-        customRuleSetPathOption[valueKey] = phpCSConfigFormattedPath;
     }
 
     return hasChanges;

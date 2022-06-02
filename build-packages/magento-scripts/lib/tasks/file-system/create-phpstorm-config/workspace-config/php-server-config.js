@@ -33,10 +33,7 @@ const setupPHPServers = async (workspaceConfigs, phpStormConfiguration) => {
 
         const serverConfiguration = phpServersComponent.servers.find((server) => server.server[nameKey] === xdebug.serverName);
 
-        if (serverConfiguration && serverConfiguration.server[hostKey] !== xdebug.debugServerAddress) {
-            hasChanges = true;
-            serverConfiguration.server[hostKey] = xdebug.debugServerAddress;
-        } else if (!serverConfiguration) {
+        if (!serverConfiguration) {
             hasChanges = true;
             phpServersComponent.servers.push({
                 server: defaultServerConfig

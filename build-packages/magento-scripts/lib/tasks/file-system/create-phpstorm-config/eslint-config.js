@@ -68,7 +68,7 @@ const setupESLintConfig = () => ({
                 styleLintConfigurationData.project.component['work-dir-pattern'] = {
                     [valueKey]: formatPathForPHPStormConfig(theme.themePath)
                 };
-                const packageJsonPath = path.join(theme.themePath, 'package.json');
+                const packageJsonPath = path.join(process.cwd(), theme.themePath, 'package.json');
                 if (await pathExists(packageJsonPath)) {
                     styleLintConfigurationData.project.component['custom-configuration-file'] = {
                         '@_used': 'true',

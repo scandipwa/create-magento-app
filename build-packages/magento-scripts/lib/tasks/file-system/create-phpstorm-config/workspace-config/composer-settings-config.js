@@ -48,9 +48,8 @@ const setupComposerSettings = async (workspaceConfigs) => {
 
     if (composerSettingsComponent) {
         if (
-            'pharConfigPath' in composerSettingsComponent
+            !('pharConfigPath' in composerSettingsComponent)
             && isComposerJsonExists
-            && composerSettingsComponent.pharConfigPath !== composerJsonFormattedPath
         ) {
             hasChanges = true;
             composerSettingsComponent.pharConfigPath = composerJsonFormattedPath;
@@ -58,7 +57,7 @@ const setupComposerSettings = async (workspaceConfigs) => {
 
         const pharConfig = composerSettingsComponent.execution && composerSettingsComponent.execution.phar;
 
-        if (pharConfig && isComposerPharExists && pharConfig[pharPathKey] !== composerPharFormattedPath) {
+        if (pharConfig && isComposerPharExists && !(pharPathKey in pharConfig)) {
             hasChanges = true;
             pharConfig[pharPathKey] = composerPharFormattedPath;
         } else if (!pharConfig && isComposerPharExists) {

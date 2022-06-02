@@ -46,17 +46,7 @@ const setupPHPCodeSniffer = async (phpConfigs) => {
             (phpcsSetting) => phpcsSetting.PhpCSConfiguration
         );
 
-        if (phpCodeSnifferConfiguration) {
-            if (phpCodeSnifferConfiguration[toolPathKey] !== phpCodeSnifferBinaryFormattedPath) {
-                hasChanges = true;
-                phpCodeSnifferConfiguration[toolPathKey] = phpCodeSnifferBinaryFormattedPath;
-            }
-
-            if (phpCodeSnifferConfiguration[beautifierPathKey] !== phpCodeSnifferBeautifierBinaryFormattedPath) {
-                hasChanges = true;
-                phpCodeSnifferConfiguration[beautifierPathKey] = phpCodeSnifferBeautifierBinaryFormattedPath;
-            }
-        } else {
+        if (!phpCodeSnifferConfiguration) {
             hasChanges = true;
             phpCodeSnifferComponent.phpcs_settings.push(defaultPHPCSSetting);
         }

@@ -34,10 +34,7 @@ const setupMessDetector = async (phpConfigs) => {
             (phpmdSetting) => phpmdSetting.MessDetectorConfiguration
         );
 
-        if (messDetectorConfiguration && messDetectorConfiguration[toolPathKey] !== phpMDBinaryFormattedPath) {
-            hasChanges = true;
-            messDetectorConfiguration[toolPathKey] = phpMDBinaryFormattedPath;
-        } else if (!messDetectorConfiguration) {
+        if (!messDetectorConfiguration) {
             hasChanges = true;
             messDetectorComponent.phpmd_settings.push(defaultMessDetectorSetting);
         }

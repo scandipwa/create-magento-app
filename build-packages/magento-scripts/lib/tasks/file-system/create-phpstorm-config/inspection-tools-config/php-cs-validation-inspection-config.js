@@ -86,10 +86,7 @@ const setupPhpCSValidationInspection = async (inspectionToolsData) => {
                 (option) => option[nameKey] === EXTENSIONS_OPTION_NAME
             );
 
-            if (extensionsOption && extensionsOption[valueKey] !== 'php') {
-                hasChanges = true;
-                extensionsOption[valueKey] = 'php';
-            } else if (!extensionsOption) {
+            if (!extensionsOption) {
                 hasChanges = true;
                 phpCSConfig.option.push({
                     [nameKey]: EXTENSIONS_OPTION_NAME,
