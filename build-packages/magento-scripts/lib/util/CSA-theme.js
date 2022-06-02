@@ -6,6 +6,10 @@ const getCSAThemes = async ({ cwd = process.cwd() } = {}) => {
         path.join(cwd, 'composer.json')
     );
 
+    if (!composerData.repositories) {
+        return [];
+    }
+
     const pathRepositories = Object.entries(composerData.repositories)
         .filter(([_, repoOptions]) => repoOptions.type === 'path');
 

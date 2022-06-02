@@ -17,6 +17,12 @@ const setupThemes = () => ({
     task: async (ctx, task) => {
         const { config: { baseConfig } } = ctx;
         const composerData = await getJsonfileData(path.join(baseConfig.magentoDir, 'composer.json'));
+
+        if (!composerData.repositories) {
+            task.skip();
+            return;
+        }
+
         const composerLocalPaths = Array.isArray(composerData.repositories)
             ? composerData.repositories.filter((repo) => repo.type === 'path')
             : Object.values(composerData.repositories).filter((repo) => repo.type === 'path');

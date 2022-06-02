@@ -11,6 +11,12 @@ const symlinkTheme = (theme) => ({
     task: async (ctx, task) => {
         const { magentoVersion, verbose = false } = ctx;
         const composerJsonData = await getJsonfileData(path.join(process.cwd(), 'composer.json'));
+
+        if (!composerJsonData.repositories) {
+            task.skip();
+            return;
+        }
+
         const repositories = Array.isArray(composerJsonData.repositories)
             ? composerJsonData.repositories.reduce((acc, repo, index) => ({ ...acc, [`${index}`]: repo }), {})
             : composerJsonData.repositories;
