@@ -755,16 +755,16 @@
         },
         {
             "name": "claviska/simpleimage",
-            "version": "3.6.3",
+            "version": "3.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/claviska/SimpleImage.git",
-                "reference": "21b6f4bf4ef1927158b3e29bd0c2d99c6681c750"
+                "reference": "00f90662686696b9b7157dbb176183aabe89700f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/claviska/SimpleImage/zipball/21b6f4bf4ef1927158b3e29bd0c2d99c6681c750",
-                "reference": "21b6f4bf4ef1927158b3e29bd0c2d99c6681c750",
+                "url": "https://api.github.com/repos/claviska/SimpleImage/zipball/00f90662686696b9b7157dbb176183aabe89700f",
+                "reference": "00f90662686696b9b7157dbb176183aabe89700f",
                 "shasum": ""
             },
             "require": {
@@ -792,7 +792,7 @@
             "description": "A PHP class that makes working with images as simple as possible.",
             "support": {
                 "issues": "https://github.com/claviska/SimpleImage/issues",
-                "source": "https://github.com/claviska/SimpleImage/tree/3.6.3"
+                "source": "https://github.com/claviska/SimpleImage/tree/3.6.5"
             },
             "funding": [
                 {
@@ -800,7 +800,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-04-20T12:18:18+00:00"
+            "time": "2021-12-01T12:42:55+00:00"
         },
         {
             "name": "colinmollenhour/cache-backend-file",
@@ -19699,16 +19699,16 @@
         },
         {
             "name": "scandipwa/cache",
-            "version": "1.1.4",
+            "version": "1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/cache.git",
-                "reference": "e46721fe2f257a99cfadf25e43d26df11121635b"
+                "reference": "06f22b239975e12f92ce523286856510f3259dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/cache/zipball/e46721fe2f257a99cfadf25e43d26df11121635b",
-                "reference": "e46721fe2f257a99cfadf25e43d26df11121635b",
+                "url": "https://api.github.com/repos/scandipwa/cache/zipball/06f22b239975e12f92ce523286856510f3259dca",
+                "reference": "06f22b239975e12f92ce523286856510f3259dca",
                 "shasum": ""
             },
             "require": {
@@ -19732,9 +19732,9 @@
             ],
             "description": "ScandiPWA bootstrap module",
             "support": {
-                "source": "https://github.com/scandipwa/cache/tree/1.1.4"
+                "source": "https://github.com/scandipwa/cache/tree/1.1.5"
             },
-            "time": "2021-07-27T10:48:49+00:00"
+            "time": "2022-02-08T22:33:04+00:00"
         },
         {
             "name": "scandipwa/catalog-customer-graphql",
@@ -19781,16 +19781,16 @@
         },
         {
             "name": "scandipwa/catalog-graphql",
-            "version": "3.2.1",
+            "version": "3.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/catalog-graphql.git",
-                "reference": "44a709a77da8fffbaa0e069d8e4cce1a52fa3ecd"
+                "reference": "a0521aadef7d5741ad977d559b69a81dc95864ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/catalog-graphql/zipball/44a709a77da8fffbaa0e069d8e4cce1a52fa3ecd",
-                "reference": "44a709a77da8fffbaa0e069d8e4cce1a52fa3ecd",
+                "url": "https://api.github.com/repos/scandipwa/catalog-graphql/zipball/a0521aadef7d5741ad977d559b69a81dc95864ee",
+                "reference": "a0521aadef7d5741ad977d559b69a81dc95864ee",
                 "shasum": ""
             },
             "require": {
@@ -19825,9 +19825,9 @@
             ],
             "description": "Catalog-specific modifications for ScandiPWA",
             "support": {
-                "source": "https://github.com/scandipwa/catalog-graphql/tree/3.2.1"
+                "source": "https://github.com/scandipwa/catalog-graphql/tree/3.2.12"
             },
-            "time": "2021-09-21T16:14:23+00:00"
+            "time": "2022-05-12T10:40:11+00:00"
         },
         {
             "name": "scandipwa/cms-graphql",
@@ -19872,16 +19872,16 @@
         },
         {
             "name": "scandipwa/compare-graphql",
-            "version": "1.0.8",
+            "version": "1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/compare-graphql.git",
-                "reference": "cf6f5485d95944f316c1bbde0ef3e06e87d96c21"
+                "reference": "ac794de18a1056d8709f7c5ed4b7d60019dd18aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/compare-graphql/zipball/cf6f5485d95944f316c1bbde0ef3e06e87d96c21",
-                "reference": "cf6f5485d95944f316c1bbde0ef3e06e87d96c21",
+                "url": "https://api.github.com/repos/scandipwa/compare-graphql/zipball/ac794de18a1056d8709f7c5ed4b7d60019dd18aa",
+                "reference": "ac794de18a1056d8709f7c5ed4b7d60019dd18aa",
                 "shasum": ""
             },
             "require": {
@@ -19912,7 +19912,7 @@
                 "email": "info@scandiweb.com",
                 "source": "https://github.com/scandipwa/compare-graphql"
             },
-            "time": "2021-07-05T09:17:35+00:00"
+            "time": "2021-10-22T16:25:28+00:00"
         },
         {
             "name": "scandipwa/contact-graphql",
@@ -19954,16 +19954,16 @@
         },
         {
             "name": "scandipwa/customer-downloadable-graphql",
-            "version": "1.0.2",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/customer-downloadable-graphql.git",
-                "reference": "8d7b8b5f277b1c32972612309147cc7781e47a24"
+                "reference": "f6c98d993c62dece1f538ddea3d58f23452a12de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/customer-downloadable-graphql/zipball/8d7b8b5f277b1c32972612309147cc7781e47a24",
-                "reference": "8d7b8b5f277b1c32972612309147cc7781e47a24",
+                "url": "https://api.github.com/repos/scandipwa/customer-downloadable-graphql/zipball/f6c98d993c62dece1f538ddea3d58f23452a12de",
+                "reference": "f6c98d993c62dece1f538ddea3d58f23452a12de",
                 "shasum": ""
             },
             "require": {
@@ -19986,22 +19986,22 @@
             "description": "Downloadable product support for ScandiPWA",
             "support": {
                 "issues": "https://github.com/scandipwa/customer-downloadable-graphql/issues",
-                "source": "https://github.com/scandipwa/customer-downloadable-graphql/tree/1.0.2"
+                "source": "https://github.com/scandipwa/customer-downloadable-graphql/tree/1.0.5"
             },
-            "time": "2021-03-26T06:37:51+00:00"
+            "time": "2022-01-25T20:39:38+00:00"
         },
         {
             "name": "scandipwa/customer-graph-ql",
-            "version": "3.1.3",
+            "version": "3.1.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/customer-graph-ql.git",
-                "reference": "0a0ba8c095d5fdaf2603b721f78cb88ef845ec5a"
+                "reference": "cec571cd20426b31a5da81d6ede459c367a606e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/customer-graph-ql/zipball/0a0ba8c095d5fdaf2603b721f78cb88ef845ec5a",
-                "reference": "0a0ba8c095d5fdaf2603b721f78cb88ef845ec5a",
+                "url": "https://api.github.com/repos/scandipwa/customer-graph-ql/zipball/cec571cd20426b31a5da81d6ede459c367a606e7",
+                "reference": "cec571cd20426b31a5da81d6ede459c367a606e7",
                 "shasum": ""
             },
             "require": {
@@ -20029,22 +20029,22 @@
             ],
             "description": "N/A",
             "support": {
-                "source": "https://github.com/scandipwa/customer-graph-ql/tree/3.1.3"
+                "source": "https://github.com/scandipwa/customer-graph-ql/tree/3.1.12"
             },
-            "time": "2021-07-14T14:18:35+00:00"
+            "time": "2022-03-30T14:08:26+00:00"
         },
         {
             "name": "scandipwa/customization",
-            "version": "1.5.6",
+            "version": "1.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/customization.git",
-                "reference": "0d2f965fdf5c0892531ba03779b86ef77eca340c"
+                "reference": "ca86496941d7bd38619916c646342990176593dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/customization/zipball/0d2f965fdf5c0892531ba03779b86ef77eca340c",
-                "reference": "0d2f965fdf5c0892531ba03779b86ef77eca340c",
+                "url": "https://api.github.com/repos/scandipwa/customization/zipball/ca86496941d7bd38619916c646342990176593dd",
+                "reference": "ca86496941d7bd38619916c646342990176593dd",
                 "shasum": ""
             },
             "require": {
@@ -20071,9 +20071,9 @@
             ],
             "description": "Customization configuration for ScandiPWA",
             "support": {
-                "source": "https://github.com/scandipwa/customization/tree/1.5.6"
+                "source": "https://github.com/scandipwa/customization/tree/1.5.12"
             },
-            "time": "2021-07-23T16:06:02+00:00"
+            "time": "2022-03-28T15:01:29+00:00"
         },
         {
             "name": "scandipwa/directory-graphql",
@@ -20247,16 +20247,16 @@
         },
         {
             "name": "scandipwa/menu-organizer",
-            "version": "2.1.4",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/menu-organizer.git",
-                "reference": "d69e640bc22215a389fe1e00eab51f12fa115ea1"
+                "reference": "daaf2655b1b73425be1b8b11ad17ad138ed4a6f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/menu-organizer/zipball/d69e640bc22215a389fe1e00eab51f12fa115ea1",
-                "reference": "d69e640bc22215a389fe1e00eab51f12fa115ea1",
+                "url": "https://api.github.com/repos/scandipwa/menu-organizer/zipball/daaf2655b1b73425be1b8b11ad17ad138ed4a6f9",
+                "reference": "daaf2655b1b73425be1b8b11ad17ad138ed4a6f9",
                 "shasum": ""
             },
             "require": {
@@ -20285,22 +20285,22 @@
             ],
             "description": "Scandiweb Menu Organizer for ScandiPWA",
             "support": {
-                "source": "https://github.com/scandipwa/menu-organizer/tree/2.1.4"
+                "source": "https://github.com/scandipwa/menu-organizer/tree/2.1.5"
             },
-            "time": "2021-07-28T12:18:44+00:00"
+            "time": "2021-10-06T22:25:42+00:00"
         },
         {
             "name": "scandipwa/performance",
-            "version": "1.5.0",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/performance.git",
-                "reference": "bea28fee3f557843d20c6979d27441fd7f6e2dbc"
+                "reference": "ddb7921696c73d8fd59b83aaa6bf2755ed98c9b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/performance/zipball/bea28fee3f557843d20c6979d27441fd7f6e2dbc",
-                "reference": "bea28fee3f557843d20c6979d27441fd7f6e2dbc",
+                "url": "https://api.github.com/repos/scandipwa/performance/zipball/ddb7921696c73d8fd59b83aaa6bf2755ed98c9b3",
+                "reference": "ddb7921696c73d8fd59b83aaa6bf2755ed98c9b3",
                 "shasum": ""
             },
             "require": {
@@ -20329,22 +20329,22 @@
             ],
             "description": "N/A",
             "support": {
-                "source": "https://github.com/scandipwa/performance/tree/1.5.0"
+                "source": "https://github.com/scandipwa/performance/tree/1.5.5"
             },
-            "time": "2021-09-21T10:32:18+00:00"
+            "time": "2021-12-30T14:37:36+00:00"
         },
         {
             "name": "scandipwa/persisted-query",
-            "version": "3.0.1",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/persisted-query.git",
-                "reference": "32ba9516f2757085e9f487adfc1fde6e695d7e5a"
+                "reference": "53ec6268276f19de22049198f27e51ce9c2ceb73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/persisted-query/zipball/32ba9516f2757085e9f487adfc1fde6e695d7e5a",
-                "reference": "32ba9516f2757085e9f487adfc1fde6e695d7e5a",
+                "url": "https://api.github.com/repos/scandipwa/persisted-query/zipball/53ec6268276f19de22049198f27e51ce9c2ceb73",
+                "reference": "53ec6268276f19de22049198f27e51ce9c2ceb73",
                 "shasum": ""
             },
             "require": {
@@ -20373,10 +20373,9 @@
             ],
             "description": "ScandiPWA persisted query module",
             "support": {
-                "issues": "https://github.com/scandipwa/persisted-query/issues",
-                "source": "https://github.com/scandipwa/persisted-query/tree/3.0.1"
+                "source": "https://github.com/scandipwa/persisted-query/tree/3.0.3"
             },
-            "time": "2020-11-05T10:31:31+00:00"
+            "time": "2022-01-25T20:39:45+00:00"
         },
         {
             "name": "scandipwa/product-alerts-graphql",
@@ -20420,16 +20419,16 @@
         },
         {
             "name": "scandipwa/quote-graphql",
-            "version": "2.19.12",
+            "version": "2.19.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/quote-graphql.git",
-                "reference": "e30964c816c4cade9fc27482725964469945b122"
+                "reference": "c86e960a95f517674e2219d99346ceba2f12287a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/quote-graphql/zipball/e30964c816c4cade9fc27482725964469945b122",
-                "reference": "e30964c816c4cade9fc27482725964469945b122",
+                "url": "https://api.github.com/repos/scandipwa/quote-graphql/zipball/c86e960a95f517674e2219d99346ceba2f12287a",
+                "reference": "c86e960a95f517674e2219d99346ceba2f12287a",
                 "shasum": ""
             },
             "require": {
@@ -20465,22 +20464,22 @@
             ],
             "description": "N/A",
             "support": {
-                "source": "https://github.com/scandipwa/quote-graphql/tree/2.19.12"
+                "source": "https://github.com/scandipwa/quote-graphql/tree/2.19.22"
             },
-            "time": "2021-09-03T20:34:30+00:00"
+            "time": "2022-04-13T23:03:53+00:00"
         },
         {
             "name": "scandipwa/route717",
-            "version": "2.0.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/route717.git",
-                "reference": "8e9c3c94b9811f38ac49321b64a28183b85a9dc2"
+                "reference": "562c1f364e094d8bcce32bff2a8cf0e09a218d9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/route717/zipball/8e9c3c94b9811f38ac49321b64a28183b85a9dc2",
-                "reference": "8e9c3c94b9811f38ac49321b64a28183b85a9dc2",
+                "url": "https://api.github.com/repos/scandipwa/route717/zipball/562c1f364e094d8bcce32bff2a8cf0e09a218d9b",
+                "reference": "562c1f364e094d8bcce32bff2a8cf0e09a218d9b",
                 "shasum": ""
             },
             "require": {
@@ -20505,10 +20504,47 @@
             ],
             "description": "ScandiPWA dedicated router",
             "support": {
-                "issues": "https://github.com/scandipwa/route717/issues",
-                "source": "https://github.com/scandipwa/route717/tree/2.0.0"
+                "source": "https://github.com/scandipwa/route717/tree/2.0.2"
             },
-            "time": "2020-11-19T14:00:34+00:00"
+            "time": "2021-12-09T21:15:32+00:00"
+        },
+        {
+            "name": "scandipwa/sales-graphql",
+            "version": "1.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/scandipwa/sales-graphql.git",
+                "reference": "655f1555967da42d9d2ddeac29b3281abc59267a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/scandipwa/sales-graphql/zipball/655f1555967da42d9d2ddeac29b3281abc59267a",
+                "reference": "655f1555967da42d9d2ddeac29b3281abc59267a",
+                "shasum": ""
+            },
+            "require": {
+                "magento/framework": "*",
+                "magento/module-sales-graph-ql": "^100.3"
+            },
+            "type": "magento2-module",
+            "autoload": {
+                "files": [
+                    "registration.php"
+                ],
+                "psr-4": {
+                    "ScandiPWA\\SalesGraphQl\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0"
+            ],
+            "description": "Magneto 2 Sales related functionality extension",
+            "support": {
+                "issues": "https://github.com/scandipwa/sales-graphql/issues",
+                "source": "https://github.com/scandipwa/sales-graphql/tree/1.0.10"
+            },
+            "time": "2022-02-22T13:37:07+00:00"
         },
         {
             "name": "scandipwa/sample-data",
@@ -20550,34 +20586,35 @@
             "dist": {
                 "type": "path",
                 "url": "./scandipwa",
-                "reference": "b92998d1843256235dad7048b1590ddc59d99c19"
+                "reference": "f2b7e81e59dfbdf9ff646770127854dbf3aa2623"
             },
             "require": {
                 "magento/framework": "*",
-                "scandipwa/cache": "1.1.4",
+                "scandipwa/cache": "1.1.5",
                 "scandipwa/catalog-customer-graphql": "1.0.0",
-                "scandipwa/catalog-graphql": "3.2.1",
+                "scandipwa/catalog-graphql": "3.2.12",
                 "scandipwa/cms-graphql": "1.4.4",
-                "scandipwa/compare-graphql": "1.0.8",
+                "scandipwa/compare-graphql": "1.0.9",
                 "scandipwa/contact-graphql": "1.0.0",
-                "scandipwa/customer-downloadable-graphql": "1.0.2",
-                "scandipwa/customer-graph-ql": "3.1.3",
-                "scandipwa/customization": "1.5.6",
+                "scandipwa/customer-downloadable-graphql": "1.0.5",
+                "scandipwa/customer-graph-ql": "3.1.12",
+                "scandipwa/customization": "1.5.12",
                 "scandipwa/directory-graphql": "1.0.1",
                 "scandipwa/installer": "4.0",
                 "scandipwa/klarna-graphql": "1.1.2",
                 "scandipwa/locale": "2",
-                "scandipwa/menu-organizer": "2.1.4",
-                "scandipwa/performance": "1.5.0",
-                "scandipwa/persisted-query": "3.0.1",
+                "scandipwa/menu-organizer": "2.1.5",
+                "scandipwa/performance": "1.5.5",
+                "scandipwa/persisted-query": "3.0.3",
                 "scandipwa/product-alerts-graphql": "1.0.0",
-                "scandipwa/quote-graphql": "2.19.12",
-                "scandipwa/route717": "2",
+                "scandipwa/quote-graphql": "2.19.22",
+                "scandipwa/route717": "2.0.2",
+                "scandipwa/sales-graphql": "1.0.10",
                 "scandipwa/service-worker": "1.0.2",
                 "scandipwa/slider-graphql": "2.1.0",
-                "scandipwa/store-graphql": "1.2.5",
+                "scandipwa/store-graphql": "1.2.11",
                 "scandipwa/urlrewrite-graphql": "1.3.7",
-                "scandipwa/wishlist-graphql": "2.0.11"
+                "scandipwa/wishlist-graphql": "2.0.15"
             },
             "type": "magento2-theme",
             "autoload": {
@@ -20711,16 +20748,16 @@
         },
         {
             "name": "scandipwa/store-graphql",
-            "version": "1.2.5",
+            "version": "1.2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/store-graphql.git",
-                "reference": "43225803757beb48fc63a7e2d7844fcedc0a008b"
+                "reference": "a66fbc8b133123ed93697931f1d0ec12afac1651"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/store-graphql/zipball/43225803757beb48fc63a7e2d7844fcedc0a008b",
-                "reference": "43225803757beb48fc63a7e2d7844fcedc0a008b",
+                "url": "https://api.github.com/repos/scandipwa/store-graphql/zipball/a66fbc8b133123ed93697931f1d0ec12afac1651",
+                "reference": "a66fbc8b133123ed93697931f1d0ec12afac1651",
                 "shasum": ""
             },
             "require": {
@@ -20742,9 +20779,9 @@
             ],
             "description": "Magneto 2 Store related functionality extension",
             "support": {
-                "source": "https://github.com/scandipwa/store-graphql/tree/1.2.5"
+                "source": "https://github.com/scandipwa/store-graphql/tree/1.2.11"
             },
-            "time": "2021-08-16T21:28:02+00:00"
+            "time": "2022-02-04T19:01:50+00:00"
         },
         {
             "name": "scandipwa/urlrewrite-graphql",
@@ -20788,16 +20825,16 @@
         },
         {
             "name": "scandipwa/wishlist-graphql",
-            "version": "2.0.11",
+            "version": "2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/scandipwa/wishlist-graphql.git",
-                "reference": "53cc81e74eae4d45ae09895f568bec5e785e30c6"
+                "reference": "d3da123b44fee2c6adc8230eb931864d5b3e9e34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/scandipwa/wishlist-graphql/zipball/53cc81e74eae4d45ae09895f568bec5e785e30c6",
-                "reference": "53cc81e74eae4d45ae09895f568bec5e785e30c6",
+                "url": "https://api.github.com/repos/scandipwa/wishlist-graphql/zipball/d3da123b44fee2c6adc8230eb931864d5b3e9e34",
+                "reference": "d3da123b44fee2c6adc8230eb931864d5b3e9e34",
                 "shasum": ""
             },
             "require": {
@@ -20827,9 +20864,9 @@
             ],
             "description": "N/A",
             "support": {
-                "source": "https://github.com/scandipwa/wishlist-graphql/tree/2.0.11"
+                "source": "https://github.com/scandipwa/wishlist-graphql/tree/2.0.15"
             },
-            "time": "2021-08-17T12:20:59+00:00"
+            "time": "2021-10-21T19:43:49+00:00"
         },
         {
             "name": "scandiweb/module-core",
