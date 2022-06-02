@@ -81,6 +81,11 @@ sub vcl_recv {
         return (pass);
     }
 
+    # Bypass frontend static file caching
+    if (req.url ~ "^/static/frontend") {
+        return (pass);
+    }
+
     # Set initial grace period usage status
     set req.http.grace = "none";
 
