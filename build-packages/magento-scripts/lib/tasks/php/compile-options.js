@@ -1,30 +1,18 @@
+/* eslint-disable max-len */
+const { getBrewCommandSync, getBrewBinPathSync } = require('../../util/get-brew-bin-path');
+const { bundledExtensions } = require('./bundled-extensions');
+
+const darwinVariants = [
+    `openssl=$(${getBrewCommandSync()} --prefix openssl@1.1)`, // ="$(brew --prefix openssl@1.1)"
+    `curl=$(${getBrewCommandSync()} --prefix curl)`,
+    `intl=$(${getBrewCommandSync()} --prefix icu4c)`,
+    `bz2="$(${getBrewCommandSync()} --prefix bzip2)"`
+];
+
 const compileOptions = {
     linux: {
         cpuCount: '$(nproc)',
-        variants: [
-            '+bz2',
-            '+bcmath',
-            '+ctype',
-            '+curl',
-            '+intl',
-            '+dom',
-            '+filter',
-            '+hash',
-            '+sockets',
-            '+iconv',
-            '+json',
-            '+mbstring',
-            '+openssl',
-            '+xml',
-            '+mysql',
-            '+pdo',
-            '+soap',
-            '+xmlrpc',
-            '+xml',
-            '+zip',
-            '+fpm',
-            '+gd'
-        ],
+        variants: bundledExtensions.map((ext) => `+${ext}`),
         extraOptions: [
             '--with-freetype-dir=/usr/include/freetype2',
             '--with-openssl=/usr/',
@@ -39,43 +27,28 @@ const compileOptions = {
     },
     darwin: {
         cpuCount: '$(sysctl -n hw.ncpu)',
-        variants: [
-            '+neutral',
-            '+bz2="$(brew --prefix bzip2)"',
-            '+bcmath',
-            '+ctype',
-            '+curl=$(brew --prefix curl)',
-            '+intl=$(brew --prefix icu4c)',
-            '+dom',
-            '+filter',
-            '+hash',
-            '+iconv',
-            '+json',
-            '+mbstring',
-            '+openssl=$(brew --prefix openssl@1.1)', // ="$(brew --prefix openssl@1.1)"
-            '+xml',
-            '+mysql',
-            '+pdo',
-            '+soap',
-            '+xmlrpc',
-            '+xml',
-            '+zip',
-            '+fpm',
-            '+gd'
-        ],
+        variants: bundledExtensions.map((ext) => {
+            const darwinVariant = darwinVariants.find((dv) => dv.startsWith(ext));
+            if (darwinVariant) {
+                return `+${darwinVariant}`;
+            }
+
+            return `+${ext}`;
+        }),
         extraOptions: [
-            '--with-zlib-dir=$(brew --prefix zlib)',
-            '--with-iconv=$(brew --prefix libiconv)',
+            `--with-zlib-dir=$(${getBrewCommandSync()} --prefix zlib)`,
+            `--with-iconv=$(${getBrewCommandSync()} --prefix libiconv)`,
             '--with-gd=shared'
         ],
         env: {
             // eslint-disable-next-line max-len
-            PKG_CONFIG_PATH: '$PKG_CONFIG_PATH:$(brew --prefix libxml2)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix openssl@1.1)/lib/pkgconfig:$(brew --prefix curl)/lib/pkgconfig:$(brew --prefix zlib)/lib/pkgconfig',
-            CPATH: '$CPATH:$(brew --prefix openssl@1.1)/include',
+            PKG_CONFIG_PATH: `$PKG_CONFIG_PATH:$(${getBrewCommandSync()} --prefix libxml2)/lib/pkgconfig:$(${getBrewCommandSync()} --prefix icu4c)/lib/pkgconfig:$(${getBrewCommandSync()} --prefix openssl@1.1)/lib/pkgconfig:$(${getBrewCommandSync()} --prefix curl)/lib/pkgconfig:$(${getBrewCommandSync()} --prefix zlib)/lib/pkgconfig`,
+            CPATH: `$CPATH:$(${getBrewCommandSync()} --prefix openssl@1.1)/include`,
             CXX: 'g++ -DTRUE=1 -DFALSE=0',
             CC: 'gcc -DTRUE=1 -DFALSE=0',
-            LDFLAGS: '$(brew --prefix openssl@1.1)/lib/libssl.dylib $(brew --prefix openssl@1.1)/lib/libcrypto.dylib',
-            CFLAGS: '-Wno-implicit-function-declaration' // https://github.com/phpbrew/phpbrew/issues/1222
+            LDFLAGS: `$(${getBrewCommandSync()} --prefix openssl@1.1)/lib/libssl.dylib $(${getBrewCommandSync()} --prefix openssl@1.1)/lib/libcrypto.dylib`,
+            CFLAGS: '-Wno-implicit-function-declaration', // https://github.com/phpbrew/phpbrew/issues/1222
+            PATH: `${getBrewBinPathSync().replace('/brew', '')}:${process.env.PATH}`
         }
     }
 };

@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const sleep = require('../../util/sleep');
 
@@ -44,7 +45,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
         }
 
         if (tries === maxTries) {
-            throw new Error(`Unable to connect to MySQL server. Check your server configuration!\n\n${ errors.join(' ') }`);
+            throw new UnknownError(`Unable to connect to MySQL server. Check your server configuration!\n\n${ errors.join(' ') }`);
         }
 
         task.title = 'MySQL server connected!';

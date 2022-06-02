@@ -1,7 +1,7 @@
 const { orderTables } = require('../../mysql/magento-tables');
 
 /**
- * @type {import(listr2).ListrTask<import(../../../../typings/context).ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const deleteOrders = () => ({
     title: 'Deleting orders',
@@ -13,10 +13,12 @@ const deleteOrders = () => ({
             return;
         }
 
+        const [rows] = await mysqlConnection.query('select TABLE_NAME from information_schema.TABLES;');
+
         await Promise.all(
-            orderTables.map(
-                (tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`)
-            )
+            orderTables
+                .filter((tableName) => rows.some((row) => row.TABLE_NAME === tableName))
+                .map((tableName) => mysqlConnection.query(`TRUNCATE TABLE \`${ tableName }\`;`))
         );
     }
 });

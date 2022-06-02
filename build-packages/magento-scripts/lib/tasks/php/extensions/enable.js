@@ -29,7 +29,8 @@ const enableExtension = (extensionName, extensionOptions) => ({
             {
                 callback: (t) => {
                     task.output = t;
-                }
+                },
+                useRosetta2: true
             });
 
             if (hooks && hooks.postEnable) {

@@ -7,6 +7,8 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const safeRegexExtract = require('../../util/safe-regex-extract');
 const installPrestissimo = require('./install-prestissimo');
+const UnknownError = require('../../errors/unknown-error');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @param {import('../../../typings/context').ListrContext['config']} param0
@@ -19,7 +21,7 @@ const getComposerVersion = async ({ composer, php }) => {
         string: composerVersionOutput,
         regex: /composer.+(\d+\.\d+\.\d+)/i,
         onNoMatch: () => {
-            throw new Error(`
+            throw new UnknownError(`
 No composer version found in composer version output!\n\n${composerVersionOutput}
 
 Follow steps below to resolve this issue:
@@ -56,7 +58,7 @@ const downloadComposerBinary = async ({ composer }) => {
             destination: composer.binPath
         });
     } catch (e) {
-        throw new Error(
+        throw new UnknownError(
             `Unexpected issue, while installing composer.
             Please see the error log below.\n\n${e}`
         );
@@ -108,7 +110,7 @@ const installComposer = () => ({
                     break;
                 }
                 case 'exit': {
-                    throw new Error(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(expectedComposerVersion)}!`);
+                    throw new KnownError(`Current composer version ${logger.style.misc(`v${currentComposerVersion}`)} is not compatible with version ${logger.style.misc(expectedComposerVersion)}!`);
                 }
                 case 'continue':
                 default: {

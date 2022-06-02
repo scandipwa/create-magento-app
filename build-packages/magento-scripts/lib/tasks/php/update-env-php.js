@@ -14,8 +14,23 @@ const updateEnvPHP = () => ({
             return;
         }
 
+        const useVarnish = ctx.config.overridenConfiguration.configuration.varnish.enabled ? '1' : '';
+        const varnishHost = '127.0.0.1';
+        const varnishPort = ctx.ports.varnish;
+        const previousVarnishPort = ctx.cachedPorts
+            ? ctx.cachedPorts.varnish
+            : ctx.cachedPorts;
+
         return task.newListr(
-            phpTask(`-f ${ path.join(__dirname, 'update-env.php') }`, { noTitle: true })
+            phpTask(`-f ${ path.join(__dirname, 'update-env.php') }`, {
+                noTitle: true,
+                env: {
+                    USE_VARNISH: useVarnish,
+                    VARNISH_PORT: `${ varnishPort }`,
+                    VARNISH_HOST: varnishHost,
+                    PREVIOUS_VARNISH_PORT: `${ previousVarnishPort }`
+                }
+            })
         );
     }
 });

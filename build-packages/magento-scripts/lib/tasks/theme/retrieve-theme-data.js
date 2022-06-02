@@ -1,4 +1,5 @@
 const path = require('path');
+const KnownError = require('../../errors/known-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
 
@@ -26,7 +27,7 @@ const retrieveThemeData = (themePath) => ({
         const composerData = await getJsonfileData(path.join(absoluteThemePath, 'composer.json'));
 
         if (!composerData) {
-            throw new Error(`composer.json file not found in "${themePath}"`);
+            throw new KnownError(`composer.json file not found in "${themePath}"`);
         }
 
         ctx.themePath = themePath;

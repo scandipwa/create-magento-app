@@ -1,4 +1,7 @@
 /* eslint-disable max-len */
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 
@@ -9,7 +12,7 @@ const importDumpToMySQL = () => ({
     title: 'Importing Database Dump To MySQL',
     task: async (ctx, task) => {
         if (!await pathExists(ctx.importDb)) {
-            throw new Error(`Dump file at ${ctx.importDb} does not exist. Please provide correct relative path to the file`);
+            throw new KnownError(`Dump file at ${ctx.importDb} does not exist. Please provide correct relative path to the file`);
         }
 
         const { config: { docker }, ports } = ctx;
@@ -42,7 +45,15 @@ const importDumpToMySQL = () => ({
                 }
             );
         } catch (e) {
-            throw new Error(`Unexpected error during dump import.\n\n${e}`);
+            if (e.includes('Unknown collation: \'utf8mb4_0900_ai_ci\'')) {
+                throw new KnownError(`Error happened during database dump import!
+
+${e}
+
+You can try replacing all occurrences of ${logger.style.misc('utf8mb4_0900_ai_ci')} with ${logger.style.misc('utf8mb4_general_ci')} in your ${logger.style.file(ctx.importDb)} file!`);
+            }
+
+            throw new UnknownError(`Unexpected error during dump import.\n\n${e}`);
         }
 
         clearInterval(tickInterval);

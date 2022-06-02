@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../errors/unknown-error');
 const runPhpCode = require('./run-php');
 
 const envPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => {
@@ -7,12 +8,12 @@ const envPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => 
     });
 
     if (code !== 0) {
-        throw new Error(result);
+        throw new UnknownError(`Received non-zero code during converting app/etc/env.php to json:\n\n${result}`);
     }
     try {
         return JSON.parse(result);
     } catch (e) {
-        throw new Error(`Ooops! Something went wrong when trying to parse app/etc/env.php file!\n\n${e}\n\nFile result: ${result}`);
+        throw new UnknownError(`Ooops! Something went wrong when trying to parse app/etc/env.php file!\n\n${e}\n\nFile result: ${result}`);
     }
 };
 

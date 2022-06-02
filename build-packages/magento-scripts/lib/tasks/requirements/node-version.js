@@ -1,4 +1,5 @@
 const semver = require('semver');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -9,7 +10,7 @@ const checkNodeVersion = () => ({
         const { node } = process.versions;
 
         if (!semver.gte(node, '12.0.0')) {
-            throw new Error(
+            throw new KnownError(
                 `Your Node.js version is out of date!
 You need to upgrade Node.js to at lease version 12 to work with this software!`
             );

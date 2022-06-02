@@ -1,6 +1,6 @@
 const symlinkTheme = require('./symlink-theme');
 const installTheme = require('./install-theme');
-const disablePageCache = require('../magento/setup-magento/disable-page-cache');
+const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-cache');
 const disablePageBuilder = require('../magento/setup-magento/disable-page-builder');
 const buildTheme = require('./build-theme');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
@@ -53,7 +53,7 @@ const linkTheme = () => ({
             updateEnvPHP(),
             setupPersistedQuery(),
             upgradeMagento(),
-            disablePageCache(),
+            adjustFullPageCache(),
             ...(isPageBuilderInstalled && Number(isPagebuilderEnabled) ? [disablePageBuilder()] : []),
             buildTheme(theme)
         ]);

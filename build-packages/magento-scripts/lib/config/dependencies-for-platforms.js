@@ -1,3 +1,5 @@
+const { getBrewCommandSync } = require('../util/get-brew-bin-path');
+
 const dependenciesForPlatforms = {
     darwin: {
         dependencies: [
@@ -15,7 +17,7 @@ const dependenciesForPlatforms = {
             'libxml2',
             'openssl@1.1'
         ],
-        installCommand: (deps) => `brew install ${deps}`,
+        installCommand: (deps, { native } = { native: false }) => `${getBrewCommandSync({ native })} install ${deps}`,
         packageManager: 'brew'
     },
     'Arch Linux': {
@@ -51,7 +53,12 @@ const dependenciesForPlatforms = {
             'libsodium',
             'libsodium-devel',
             'libtool-ltdl-devel',
-            'oniguruma-devel'
+            'oniguruma-devel',
+            'libxml2-devel',
+            'bzip2-devel',
+            'curl-devel',
+            'libxslt-devel',
+            'autoconf'
         ],
         installCommand: (deps) => `sudo yum install ${deps} -y`,
         packageManager: 'yum'
@@ -68,7 +75,12 @@ const dependenciesForPlatforms = {
             'libsodium',
             'libsodium-devel',
             'libtool-ltdl-devel',
-            'oniguruma-devel'
+            'oniguruma-devel',
+            'libxml2-devel',
+            'bzip2-devel',
+            'curl-devel',
+            'libxslt-devel',
+            'autoconf'
         ],
         installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`,
         packageManager: 'yum'

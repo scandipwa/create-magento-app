@@ -1,4 +1,5 @@
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
+const UnknownError = require('../../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 
@@ -15,7 +16,7 @@ const archDependenciesCheck = () => ({
                 const result = pkg.match(pkgRegex);
 
                 if (!result) {
-                    throw new Error(`Package without a version!\n\n${pkg}\n\nHOW?`);
+                    throw new UnknownError(`Package without a version!\n\n${pkg}\n\nHOW?`);
                 }
 
                 return result[1];

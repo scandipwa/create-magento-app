@@ -1,0 +1,20 @@
+const path = require('path');
+const UnknownError = require('../errors/unknown-error');
+const runPhpCode = require('./run-php');
+
+const configPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => {
+    const { code, result } = await runPhpCode(`-r "echo json_encode(require '${path.join(projectPath, 'app', 'etc', 'config.php')}');"`, {
+        magentoVersion
+    });
+
+    if (code !== 0) {
+        throw new UnknownError(`Received non-zero code during converting app/etc/config.php to json:\n\n${result}`);
+    }
+    try {
+        return JSON.parse(result);
+    } catch (e) {
+        throw new UnknownError(`Ooops! Something went wrong when trying to parse app/etc/config.php file!\n\n${e}\n\nFile result: ${result}`);
+    }
+};
+
+module.exports = configPhpToJson;

@@ -5,13 +5,15 @@ const symlinkTheme = require('./symlink-theme');
 const installTheme = require('./install-theme');
 const setupPersistedQuery = require('./setup-persisted-query');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
-const disablePageCache = require('../magento/setup-magento/disable-page-cache');
+const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-cache');
 const buildTheme = require('./build-theme');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const setupThemes = () => ({
+    title: 'Setting up themes',
     task: async (ctx, task) => {
         const { config: { baseConfig } } = ctx;
         const composerData = await getJsonfileData(path.join(baseConfig.magentoDir, 'composer.json'));
@@ -60,7 +62,7 @@ const setupThemes = () => ({
             const composerData = await getJsonfileData(path.join(absoluteThemePath, 'composer.json'));
 
             if (!composerData) {
-                throw new Error(`composer.json file not found in "${themePath}"`);
+                throw new KnownError(`composer.json file not found in "${themePath}"`);
             }
 
             return {
@@ -80,7 +82,7 @@ const setupThemes = () => ({
                 ])
             })).concat([
                 upgradeMagento(),
-                disablePageCache(),
+                adjustFullPageCache(),
                 setupPersistedQuery()
             ])
         );

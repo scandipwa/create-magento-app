@@ -1,12 +1,13 @@
 const Joi = require('joi');
 const semver = require('semver');
+const KnownError = require('../errors/known-error');
 const pathExistsSync = require('./path-exists-sync');
 
 const fileExistsValidator = (value) => {
     const fileExists = pathExistsSync(value);
 
     if (!fileExists) {
-        throw new Error(`File "${value}" does not exists!`);
+        throw new KnownError(`File "${value}" does not exists!`);
     }
 
     return undefined;
@@ -73,6 +74,15 @@ const nginxConfigurationSchema = Joi.object({
 });
 
 /**
+ * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
+ */
+const varnishConfigurationSchema = Joi.object({
+    enabled: Joi.boolean().optional(),
+    version: Joi.string().optional(),
+    configTemplate: Joi.string().optional().custom(fileExistsValidator)
+});
+
+/**
  * @type {Joi.ObjectSchema<import('../../typings').ServiceWithVersion>}
  */
 const serviceConfigurationSchema = Joi.object({
@@ -101,7 +111,9 @@ const configurationSchema = Joi.object({
     mysql: serviceConfigurationSchema.optional(),
     elasticsearch: serviceConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
-    composer: composerConfigurationSchema.optional()
+    composer: composerConfigurationSchema.optional(),
+    varnish: varnishConfigurationSchema.optional(),
+    sslTerminator: nginxConfigurationSchema.optional()
 });
 
 /**

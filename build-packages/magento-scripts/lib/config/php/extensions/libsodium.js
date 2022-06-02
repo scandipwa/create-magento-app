@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const pathExists = require('../../../util/path-exists');
+const UnknownError = require('../../../errors/unknown-error');
 
 /**
  * @type {import('../../../../typings/index').PHPExtension}
@@ -21,7 +22,7 @@ module.exports = {
             );
 
             if (!await pathExists(sodiumDynamicLibraryPath)) {
-                throw new Error(`libsodium dynamic library file configuration not found: ${sodiumDynamicLibraryPath}`);
+                throw new UnknownError(`libsodium dynamic library file configuration not found: ${sodiumDynamicLibraryPath}`);
             }
             const fileContent = await fs.promises.readFile(sodiumDynamicLibraryPath, 'utf-8');
 

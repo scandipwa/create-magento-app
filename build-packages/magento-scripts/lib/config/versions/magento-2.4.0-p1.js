@@ -1,5 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { sslTerminator } = require('../ssl-terminator');
+const { varnish60 } = require('../varnish/varnish-6-0');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.0-p1',
@@ -16,6 +18,10 @@ module.exports = ({ templateDir } = {}) => ({
                 SimpleXML: {},
                 xdebug: {
                     version: '3.1.2'
+                },
+                apcu: {},
+                opcache: {
+                    extensionName: 'Zend OPcache'
                 }
             }
         },
@@ -37,7 +43,9 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: {
             version: '1'
-        }
+        },
+        varnish: varnish60({ templateDir }),
+        sslTerminator: sslTerminator({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

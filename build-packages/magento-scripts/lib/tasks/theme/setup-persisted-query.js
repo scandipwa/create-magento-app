@@ -1,4 +1,5 @@
 const path = require('path');
+const UnknownError = require('../../errors/unknown-error');
 const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const runMagentoCommand = require('../../util/run-magento');
@@ -8,7 +9,7 @@ const runMagentoCommand = require('../../util/run-magento');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const persistedQuerySetup = () => ({
-    title: 'Setting up redis configuration for persisted queries',
+    title: 'Setting up Redis configuration for persisted queries',
     task: async (ctx, task) => {
         const { ports, magentoVersion, verbose = false } = ctx;
         const composerLockData = await getJsonfileData(path.join(process.cwd(), 'composer.lock'));
@@ -29,8 +30,8 @@ const persistedQuerySetup = () => ({
         if (
             persistedQueryConfig
             && persistedQueryConfig.redis
-            && persistedQueryConfig.redis.port === ports.redis
-            && persistedQueryConfig.redis.localhost === 'localhost'
+            && persistedQueryConfig.redis.port === `${ ports.redis }`
+            && persistedQueryConfig.redis.host === 'localhost'
         ) {
             task.skip();
             return;
@@ -51,7 +52,7 @@ const persistedQuerySetup = () => ({
                 magentoVersion
             });
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Unexpected error while setting redis for pq!.
                 See ERROR log below.\n\n${e}`
             );

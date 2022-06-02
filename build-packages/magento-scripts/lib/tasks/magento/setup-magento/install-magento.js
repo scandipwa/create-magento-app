@@ -1,4 +1,5 @@
 const semver = require('semver');
+const UnknownError = require('../../../errors/unknown-error');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
@@ -86,7 +87,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
 
         if (!installed) {
             const errorMessages = errors.map((e) => e.message).join('\n\n');
-            throw new Error(`Unable to install Magento!\n${errorMessages}`);
+            throw new UnknownError(`Unable to install Magento!\n${errorMessages}`);
         }
     },
     options: {

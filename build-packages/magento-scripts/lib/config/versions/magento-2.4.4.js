@@ -1,6 +1,8 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { libsodium } = require('../php/extensions');
+const { sslTerminator } = require('../ssl-terminator');
+const { varnish70 } = require('../varnish/varnish-7-0');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.4',
@@ -20,6 +22,10 @@ module.exports = ({ templateDir } = {}) => ({
                 fileinfo: {},
                 xdebug: {
                     version: '3.1.4'
+                },
+                apcu: {},
+                opcache: {
+                    extensionName: 'Zend OPcache'
                 }
             }
         },
@@ -41,7 +47,9 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: {
             version: '2'
-        }
+        },
+        varnish: varnish70({ templateDir }),
+        sslTerminator: sslTerminator({ templateDir })
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

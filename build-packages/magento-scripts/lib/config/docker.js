@@ -12,7 +12,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         redis,
         mysql,
         elasticsearch,
-        mariadb
+        mariadb,
+        varnish
     } = configuration;
 
     const {
@@ -42,7 +43,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     const isLinux = os.platform() === 'linux';
     const isWsl = await getIsWsl();
     const isArm = (await getArch()) === 'arm64';
-    const isArmMac = (os.platform() === 'darwin') && isArm;
+    const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
         /**
@@ -53,7 +54,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_nginx-data`,
             opts: {
                 type: 'nfs',
-                device: `${cacheDir}/nginx/conf.d`,
+                device: path.join(cacheDir, 'nginx', 'conf.d'),
                 o: 'bind'
             }
         };
@@ -61,7 +62,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_pub-data`,
             opts: {
                 type: 'nfs',
-                device: `${ path.join(magentoDir, 'pub') }`,
+                device: path.join(magentoDir, 'pub'),
                 o: 'bind'
             }
         };
@@ -69,18 +70,62 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_setup-data`,
             opts: {
                 type: 'nfs',
-                device: `${path.join(magentoDir, 'setup')}`,
+                device: path.join(magentoDir, 'setup'),
                 o: 'bind'
             }
         };
+        volumes.sslTerminator = {
+            name: `${ prefix }_ssl-terminator-data`,
+            opts: {
+                type: 'nfs',
+                device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
+                o: 'bind'
+            }
+        };
+
+        if (varnish.enabled) {
+            volumes.varnish = {
+                name: `${ prefix }_varnish-data`,
+                opts: {
+                    type: 'nfs',
+                    device: path.join(cacheDir, 'varnish'),
+                    o: 'bind'
+                }
+            };
+        }
     }
 
     const getContainers = (ports = {}) => {
         const dockerConfig = {
+            sslTerminator: {
+                _: 'SSL Terminator (Nginx)',
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.sslTerminator }:80`
+                ] : [],
+                healthCheck: {
+                    cmd: 'service nginx status'
+                },
+                /**
+                 * Mount volumes directly on linux
+                 */
+                mountVolumes: [
+                    `${ isLinux ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
+                ],
+                restart: 'on-failure:5',
+                // TODO: use connect instead
+                network: isNotNativeLinux ? network.name : 'host',
+                image: `nginx:${ nginx.version }`,
+                imageDetails: {
+                    name: 'nginx',
+                    tag: nginx.version
+                },
+                name: `${ prefix }_ssl-terminator`,
+                command: "nginx -g 'daemon off;'"
+            },
             nginx: {
                 _: 'Nginx',
-                ports: (!isLinux || isWsl) ? [
-                    `${isIpAddress(host) ? host : '127.0.0.1'}:${ ports.app }:80`
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.app }:80`
                 ] : [],
                 healthCheck: {
                     cmd: 'service nginx status'
@@ -99,7 +144,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: (!isLinux || isWsl) ? network.name : 'host',
+                network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 imageDetails: {
                     name: 'nginx',
@@ -126,7 +171,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 connectCommand: ['redis-cli']
             },
             mysql: {
-                _: !isArmMac ? 'MySQL' : 'MariaDB',
+                _: !isArm ? 'MySQL' : 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
@@ -148,21 +193,22 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 command: [
                     '--log_bin_trust_function_creators=1',
                     '--default-authentication-plugin=mysql_native_password',
-                    '--max_allowed_packet=1GB'
+                    '--max_allowed_packet=1GB',
+                    '--bind-address=0.0.0.0'
                 ].join(' '),
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: !isArmMac ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
-                imageDetails: !isArmMac ? {
+                image: !isArm ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
+                imageDetails: !isArm ? {
                     name: 'mysql',
                     tag: mysql.version
                 } : {
                     name: 'mariadb',
                     tag: mariadb.version
                 },
-                name: !isArmMac ? `${ prefix }_mysql` : `${ prefix }_mariadb`
+                name: !isArm ? `${ prefix }_mysql` : `${ prefix }_mariadb`
             },
             elasticsearch: {
                 _: 'ElasticSearch',
@@ -180,9 +226,9 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
                 network: network.name,
-                image: `docker.elastic.co/elasticsearch/elasticsearch:${ elasticsearch.version }`,
+                image: `elasticsearch:${ elasticsearch.version }`,
                 imageDetails: {
-                    name: 'docker.elastic.co/elasticsearch/elasticsearch',
+                    name: 'elasticsearch',
                     tag: elasticsearch.version
                 },
                 name: `${ prefix }_elasticsearch`
@@ -193,6 +239,34 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             dockerConfig.nginx.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             );
+        }
+
+        if (varnish.enabled) {
+            dockerConfig.varnish = {
+                _: 'Varnish',
+                image: `varnish:${ varnish.version }`,
+                imageDetails: {
+                    name: 'varnish',
+                    tag: varnish.version
+                },
+                name: `${ prefix }_varnish`,
+                mountVolumes: [
+                    `${ isLinux ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`
+                ],
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
+                ] : [],
+                env: {
+                    VARNISH_SIZE: '2G'
+                },
+                restart: 'on-failure:30',
+                network: isNotNativeLinux ? network.name : 'host',
+                // eslint-disable-next-line max-len
+                command: `/bin/bash -c "varnishd -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s malloc,512m && varnishlog"`,
+                tmpfs: [
+                    '/var/lib/varnish:exec'
+                ]
+            };
         }
 
         return dockerConfig;

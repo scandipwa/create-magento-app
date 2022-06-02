@@ -2,11 +2,12 @@ const systeminformation = require('systeminformation');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const compileOptions = require('./compile-options');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const compile = () => ({
+const compilePHP = () => ({
     title: 'Compiling PHP',
     task: async ({ config: { php } }, task) => {
         const platformCompileOptions = compileOptions[process.platform];
@@ -27,11 +28,12 @@ const compile = () => ({
                 {
                     callback: (t) => {
                         task.output = t;
-                    }
+                    },
+                    useRosetta2: true
                 }
             );
         } catch (e) {
-            throw new Error(
+            throw new UnknownError(
                 `Failed to compile the required PHP version.
                 Tried compiling the PHP version ${ logger.style.misc(php.version) }.
                 Use your favorite search engine to resolve the issue.
@@ -44,4 +46,4 @@ const compile = () => ({
     }
 });
 
-module.exports = compile;
+module.exports = compilePHP;

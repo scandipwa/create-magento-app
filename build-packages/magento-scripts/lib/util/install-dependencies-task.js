@@ -3,19 +3,30 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const sleep = require('./sleep');
 const { execCommandTask } = require('./exec-async-command');
 const dependenciesForPlatforms = require('../config/dependencies-for-platforms');
+const KnownError = require('../errors/known-error');
 
 /**
  * Install dependencies
  * @param {object} options
  * @param {keyof dependenciesForPlatforms} options.platform Platform
  * @param {string[]} options.dependenciesToInstall List of dependencies to install
+ * @param {boolean} options.useMacNativeEnvironment Use Mac native environment
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const installDependenciesTask = (options) => ({
     title: 'Installing missing dependencies',
     task: async (ctx, task) => {
         const { dependenciesToInstall, platform } = options;
-        const cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
+        let cmd;
+        if (os.platform() === 'darwin') {
+            if (options.useMacNativeEnvironment) {
+                cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '), { native: true });
+            } else {
+                cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
+            }
+        } else {
+            cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
+        }
         const installCommand = logger.style.code(cmd);
         const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
         task.title = `Installing missing dependencies: ${ logger.style.code(dependenciesToInstall.join(', ')) }`;
@@ -56,15 +67,14 @@ const installDependenciesTask = (options) => ({
         promptSkipper = true;
 
         if (installAnswer === 'timeout') {
-            throw new Error(`Timeout!
+            throw new KnownError(`Timeout!
 
 To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
         }
 
         if (installAnswer === 'not-install') {
-            throw new Error(`Okay, skipping ${ dependenciesWordFormatter } installation for now.
-
-To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
+            task.skip(`User chose to skip installation of ${ dependenciesWordFormatter }`);
+            return;
         }
 
         if (installAnswer === 'install') {

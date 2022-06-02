@@ -1,5 +1,6 @@
 const { execAsyncSpawn } = require('./exec-async-command');
 const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config');
+const UnknownError = require('../errors/unknown-error');
 /**
  * Execute PHP code
  * @param {String} command magento command
@@ -10,6 +11,8 @@ const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config
  * @param {() => {}} options.callback
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
+ * @param {Record<string, string>} options.env Environment variables
+ * @param {Boolean} options.useRosettaOnMac Use Rosetta 2 on MacOS
  */
 const runPhpCode = async (command, options = {}) => {
     const {
@@ -17,14 +20,22 @@ const runPhpCode = async (command, options = {}) => {
         magentoVersion = defaultConfiguration.magentoVersion
     } = options;
     const { php } = await getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${command}`, {
+    let spawnCommand = `${php.binPath} -c ${php.iniPath} ${command}`;
+    if (options.env && Object.keys(options.env).length > 0) {
+        const env = Object.entries(options.env).map(([key, value]) => `${key}=${value}`).join(' ');
+        spawnCommand = `${env} ${spawnCommand}`;
+    }
+    if (options.useRosettaOnMac) {
+        spawnCommand = `arch -x86_64 bash -c '${spawnCommand}'`;
+    }
+    const { code, result } = await execAsyncSpawn(spawnCommand, {
         ...options,
         withCode: true
     });
 
     if (throwNonZeroCode && code !== 0) {
-        throw new Error(`Code: ${code}
-        Response: ${result}`);
+        throw new UnknownError(`Code: ${code}
+Response: ${result}`);
     }
 
     return { code, result };

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { baseConfig } = require('.');
+const KnownError = require('../errors/known-error');
 const pathExists = require('../util/path-exists');
 const {
     getPort,
@@ -26,6 +27,10 @@ const getAvailablePorts = () => ({
                     'utf-8'
                 )
             );
+            if (!ports.sslTerminator) {
+                ports.sslTerminator = ports.app;
+                ports.app = defaultPorts.app;
+            }
         }
         const {
             systemConfiguration: {
@@ -39,9 +44,9 @@ const getAvailablePorts = () => ({
         if (ctx.port) {
             const isPortAvailable = (await getPort(ctx.port)) === ctx.port;
             if (!isPortAvailable) {
-                throw new Error(`Port ${ctx.port} is not available`);
+                throw new KnownError(`Port ${ctx.port} is not available`);
             } else {
-                availablePorts.app = ctx.port;
+                availablePorts.sslTerminator = ctx.port;
             }
         }
 
@@ -51,7 +56,7 @@ const getAvailablePorts = () => ({
 });
 
 /**
- * @type {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getCachedPorts = () => ({
     title: 'Getting cached ports',
@@ -65,6 +70,7 @@ const getCachedPorts = () => ({
                     'utf-8'
                 )
             );
+            ctx.cachedPorts = { ...ports };
         } else {
             ports = { ...defaultPorts };
         }

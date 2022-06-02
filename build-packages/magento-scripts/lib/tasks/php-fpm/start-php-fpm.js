@@ -2,6 +2,7 @@ const { execAsyncSpawn } = require('../../util/exec-async-command');
 const getPhpConfig = require('../../config/php-config');
 const { getBaseConfig } = require('../../config/index');
 const getProcessId = require('./get-process-id');
+const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -31,11 +32,12 @@ const startPhpFpm = () => ({
                 {
                     callback: (t) => {
                         task.output = t;
-                    }
+                    },
+                    useRosetta2: true
                 }
             );
         } catch (e) {
-            throw new Error(`Error during PHP-FPM start\n\n${e}`);
+            throw new UnknownError(`Error during PHP-FPM start\n\n${e}`);
         }
     },
     options: {

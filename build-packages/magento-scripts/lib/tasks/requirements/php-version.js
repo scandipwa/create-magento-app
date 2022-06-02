@@ -3,30 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const semver = require('semver');
 const phpbrewConfig = require('../../config/phpbrew');
+const KnownError = require('../../errors/known-error');
+const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const { getBrewCommandSync } = require('../../util/get-brew-bin-path');
 const pathExists = require('../../util/path-exists');
 const compileOptions = require('../php/compile-options');
 
 const latestStablePHP74 = '7.4.27';
 const phpbrewPHPName = `php-${latestStablePHP74}-phpbrew`;
-
-const compileOptionsForPhp = {
-    linux: {
-        ...compileOptions.linux,
-        variants: [
-            '+default'
-        ],
-        extraOptions: []
-    },
-    darwin: {
-        ...compileOptions.darwin,
-        variants: [
-            '+default',
-            '+openssl=$(brew --prefix openssl@1.1)'
-        ],
-        extraOptions: []
-    }
-};
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -34,13 +19,29 @@ const compileOptionsForPhp = {
 const installPHPForPHPBrew = () => ({
     title: `Installing PHP ${latestStablePHP74} for PHPBrew...`,
     task: async (ctx, task) => {
+        const compileOptionsForPhp = {
+            linux: {
+                ...compileOptions.linux,
+                variants: [
+                    '+default'
+                ],
+                extraOptions: []
+            },
+            darwin: {
+                ...compileOptions.darwin,
+                variants: [
+                    '+default',
+                    `+openssl=$(${getBrewCommandSync({ native: false })} --prefix openssl@1.1)`
+                ],
+                extraOptions: []
+            }
+        };
         const platformCompileOptions = compileOptionsForPhp[process.platform];
 
         if (!await pathExists(path.join(phpbrewConfig.phpPath, `${phpbrewPHPName}`, 'bin'))) {
             const commandEnv = Object.entries(platformCompileOptions.env || {}).map(([key, value]) => `${key}="${value}"`).join(' ');
-
             // eslint-disable-next-line max-len
-            const compileCommand = `${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
+            const compileCommand = ` ${commandEnv ? `${commandEnv} && ` : ''}phpbrew install -j ${platformCompileOptions.cpuCount} ${latestStablePHP74} as ${phpbrewPHPName} ${platformCompileOptions.variants.join(' ')}`;
 
             try {
                 await execAsyncSpawn(
@@ -48,11 +49,12 @@ const installPHPForPHPBrew = () => ({
                     {
                         callback: (t) => {
                             task.output = t;
-                        }
+                        },
+                        useRosetta2: true
                     }
                 );
             } catch (e) {
-                throw new Error(
+                throw new KnownError(
                     `Failed to compile the required by PHPBrew PHP version.
 Tried compiling the PHP version ${ latestStablePHP74 }.
 Use your favorite search engine to resolve the issue.
@@ -79,10 +81,10 @@ export PHPBREW_PATH=${phpbrewConfig.homePath}/php/${phpbrewPHPName}/bin
                 }
             );
         } catch (e) {
-            throw new Error(`Something went wrong when trying to switch PHP to ${phpbrewPHPName}!\n\n${e}`);
+            throw new UnknownError(`Something went wrong when trying to switch PHP to ${phpbrewPHPName}!\n\n${e}`);
         }
 
-        throw new Error(`You will need to restart your terminal and run ${logger.style.command('start')} again.
+        throw new KnownError(`You will need to restart your terminal and run ${logger.style.command('start')} again.
 
 You can use keyboard shortcut ${logger.style.command('CTRL+D')} to close terminal.`);
     },
@@ -99,7 +101,7 @@ const checkPHPVersion = () => ({
     task: async (ctx, task) => {
         const phpVersionResponse = await execAsyncSpawn('php --version');
 
-        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d\.\d\.\d)/i);
+        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d+\.\d+\.\d+)/i);
 
         if (phpVersionResponseResult && phpVersionResponseResult.length > 0) {
             const phpVersion = phpVersionResponseResult[1];
@@ -123,6 +125,8 @@ To fix that we will build special PHP version that will be used by PHPBrew, plea
                     );
                 }
             }
+
+            task.title = `Using PHP version ${phpVersion} in system`;
         }
     }
 });

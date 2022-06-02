@@ -8,12 +8,17 @@ module.exports = () => ({
     task: async (ctx, task) => {
         const {
             ports,
-            config: { overridenConfiguration: { host, ssl } },
+            config: {
+                overridenConfiguration: {
+                    host,
+                    ssl
+                }
+            },
             mysqlConnection
         } = ctx;
         const isNgrok = host.endsWith('ngrok.io');
         const enableSecureFrontend = ssl.enabled ? '1' : '0';
-        const location = `${host}${ !isNgrok && ports.app !== 80 ? `:${ports.app}` : '' }/`;
+        const location = `${host}${ !isNgrok && ports.sslTerminator !== 80 ? `:${ports.sslTerminator }` : '' }/`;
         const secureLocation = `${host}/`; // SSL will work only on port 443, so you cannot run multiple projects with SSL at the same time.
         const httpUrl = `http://${location}`;
         const httpsUrl = `https://${secureLocation}`;

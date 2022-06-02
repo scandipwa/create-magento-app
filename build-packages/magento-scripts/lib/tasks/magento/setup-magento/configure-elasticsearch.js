@@ -4,7 +4,7 @@ const { updateTableValues, isTableExists } = require('../../../util/database');
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
-    title: 'Configuring elasticsearch',
+    title: 'Configuring Elasticsearch',
     skip: async (ctx) => !(await isTableExists('magento', 'core_config_data', ctx)),
     task: async ({ ports, mysqlConnection }, task) => {
         await updateTableValues('core_config_data', [

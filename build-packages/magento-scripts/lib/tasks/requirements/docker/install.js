@@ -2,6 +2,11 @@ const osPlatform = require('../../../util/os-platform');
 const { execCommandTask } = require('../../../util/exec-async-command');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const executeSudoCommand = require('../../../util/execute-sudo-command');
+const KnownError = require('../../../errors/known-error');
+
+const downloadDockerInstallScriptCommand = () => execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh');
+const runDockerInstallScriptCommand = () => executeSudoCommand('sudo sh get-docker.sh');
+const enableAndStartDockerCommand = () => executeSudoCommand('sudo systemctl enable docker --now');
 
 const postInstallSteps = [
     executeSudoCommand('[ $(getent group docker) ] && sudo groupadd docker', {
@@ -9,7 +14,6 @@ const postInstallSteps = [
     }),
     executeSudoCommand(`sudo usermod -aG docker ${process.env.USER}`)
 ];
-
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
@@ -24,31 +28,28 @@ const installDocker = () => ({
                     platform: 'Arch Linux',
                     dependenciesToInstall: ['docker']
                 }),
-                executeSudoCommand('sudo systemctl start docker.service'),
-                executeSudoCommand('sudo systemctl enable docker.service'),
+                enableAndStartDockerCommand(),
                 ...postInstallSteps
             ]);
         }
         case 'Fedora':
         case 'CentOS': {
             return task.newListr([
-                execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
-                executeSudoCommand('sudo sh get-docker.sh'),
-                executeSudoCommand('sudo systemctl start docker'),
-                executeSudoCommand('sudo systemctl enable docker')
+                downloadDockerInstallScriptCommand(),
+                runDockerInstallScriptCommand(),
+                enableAndStartDockerCommand()
             ]);
         }
         case 'Ubuntu': {
             return task.newListr([
-                execCommandTask('curl -fsSL https://get.docker.com -o get-docker.sh'),
-                executeSudoCommand('sudo sh get-docker.sh'),
-                executeSudoCommand('sudo service docker start'),
-                executeSudoCommand('sudo systemctl enable docker.service'),
+                downloadDockerInstallScriptCommand(),
+                runDockerInstallScriptCommand(),
+                enableAndStartDockerCommand(),
                 ...postInstallSteps
             ]);
         }
         default: {
-            throw new Error(`Docker is not installed!
+            throw new KnownError(`Docker is not installed!
 Your distro ${distro} is not supported by automatic installation.`);
         }
         }

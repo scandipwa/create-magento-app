@@ -9,6 +9,8 @@ interface ExecAsyncSpawnOptions<T extends boolean> {
     logOutput?: boolean
     cwd?: string
     withCode?: T
+    // only for mac
+    useRosetta2?: boolean
 }
 
 /**

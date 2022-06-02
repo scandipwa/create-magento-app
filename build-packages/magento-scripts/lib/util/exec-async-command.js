@@ -1,25 +1,42 @@
+const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { exec, spawn } = require('child_process');
-
-const execAsync = (command, options) => new Promise((resolve, reject) => {
-    exec(command, options, (err, stdout) => (err ? reject(err) : resolve(stdout)));
-});
+const { spawn } = require('child_process');
+const { getArchSync } = require('./arch');
+const compileOptions = require('../tasks/php/compile-options');
 
 const execAsyncSpawn = (command, {
     callback = () => {},
     pipeInput,
     logOutput = false,
     cwd,
-    withCode = false
+    withCode = false,
+    useRosetta2 = false
 } = {}) => {
-    const childProcess = spawn(
-        'bash',
-        ['-c', command],
-        {
-            stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
-            cwd
-        }
-    );
+    const spawnOptions = {
+        stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
+        cwd
+    };
+    let childProcess;
+    if (useRosetta2 && os.platform() === 'darwin' && getArchSync() === 'arm64') {
+        childProcess = spawn(
+            'arch',
+            // eslint-disable-next-line max-len
+            ['-x86_64', 'bash', '-c', command],
+            {
+                ...spawnOptions,
+                env: {
+                    ...process.env,
+                    PATH: compileOptions.darwin.env.PATH
+                }
+            }
+        );
+    } else {
+        childProcess = spawn(
+            'bash',
+            ['-c', command],
+            spawnOptions
+        );
+    }
 
     return new Promise((resolve, reject) => {
         let stdout = '';
@@ -71,7 +88,6 @@ const execCommandTask = (command, options = {}) => ({
 });
 
 module.exports = {
-    execAsync,
     execAsyncSpawn,
     execCommandTask
 };

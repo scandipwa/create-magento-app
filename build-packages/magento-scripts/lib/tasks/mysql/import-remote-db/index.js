@@ -1,3 +1,4 @@
+const UnknownError = require('../../../errors/unknown-error');
 const sshDb = require('./ssh');
 
 /**
@@ -30,7 +31,7 @@ It can be a SSH (ssh://<url>) connection or mysql (mysql://<url>) connection.
             );
         }
         default: {
-            throw new Error(`Unsupported protocol ${protocol}`);
+            throw new UnknownError(`Unsupported protocol ${protocol}`);
         }
         }
     }

@@ -11,6 +11,7 @@ const updateEnvPHP = require('../../php/update-env-php');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
+const waitingForVarnish = require('./waiting-for-varnish');
 
 /**
  * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -48,7 +49,8 @@ const setupMagento = (options = {}) => ({
             disableMaintenanceMode(),
             disable2fa(),
             urnHighlighter(),
-            magentoTask('cache:flush')
+            magentoTask('cache:flush'),
+            waitingForVarnish()
         ], {
             concurrent: false,
             exitOnError: true,

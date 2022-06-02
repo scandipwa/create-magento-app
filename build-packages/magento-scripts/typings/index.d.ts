@@ -10,13 +10,34 @@ export interface ServiceWithVersion {
     version: string
 }
 
-// export inter/
+export interface SSLTerminatorConfiguration extends ServiceWithVersion {
+    /**
+     * Configuration file location
+     *
+     * @example ./my-ssl-terminator-config.conf
+     */
+    configTemplate: string
+}
 
 export interface NginxConfiguration extends ServiceWithVersion {
     /**
      * Configuration file location
      *
      * @example ./my-nginx-config.conf
+     */
+    configTemplate: string
+}
+
+export interface VarnishConfiguration extends ServiceWithVersion {
+    /**
+     * Enable or disable Varnish in the project
+     */
+    enabled: boolean
+
+    /**
+     * Configuration file location
+     *
+     * @example ./my-varnish-config.vcl
      */
     configTemplate: string
 }
@@ -175,6 +196,16 @@ export interface CMAConfiguration {
          * Composer configuration
          */
         composer: ServiceWithVersion
+
+        /**
+         * Varnish configuration
+         */
+        varnish: VarnishConfiguration
+
+        /**
+         * SSL Terminator configuration
+         */
+        sslTerminator: SSLTerminatorConfiguration
     }
     /**
      * Magento configuration

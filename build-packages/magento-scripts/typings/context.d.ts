@@ -13,9 +13,13 @@ export interface ListrContext {
         mysql: number
         redis: number
         elasticsearch: number
+        varnish: number
+        sslTerminator: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
+    isWsl: boolean
+    isArmMac: boolean
     platform?: NodeJS.Platform
     platformVersion?: string
     /**
@@ -52,7 +56,7 @@ export interface ListrContext {
                     o: string
                 }
             }>
-            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch', {
+            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch' | 'varnish', {
                 _: string
                 ports: string[]
                 healthCheck: {
@@ -90,4 +94,5 @@ export interface ListrContext {
         useNonOverlappingPorts: boolean
     }
     mysqlConnection: mysql2.Connection
+    isSetupUpgradeNeeded?: boolean
 }

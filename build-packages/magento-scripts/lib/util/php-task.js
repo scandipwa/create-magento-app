@@ -1,16 +1,20 @@
 const runPhpCode = require('./run-php');
 
 /**
- * @type {(command: string, options: { noTitle: boolean }) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @param {String} command
+ * @param {{ noTitle: boolean, env: Record<string, string> }} options
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const phpTask = (command, options = {}) => ({
     title: !options.noTitle ? `Running command 'php ${command}` : undefined,
-    task: ({ magentoVersion }, task) => runPhpCode(command, {
+    task: (ctx, task) => runPhpCode(command, {
         callback: (t) => {
             task.output = t;
         },
         throwNonZeroCode: true,
-        magentoVersion
+        magentoVersion: ctx.magentoVersion,
+        env: options.env,
+        useRosettaOnMac: ctx.arch === 'arm64' && ctx.platform === 'darwin'
     })
 });
 
