@@ -10,9 +10,8 @@ const executeInContainer = ({ containerName, commands }) => {
     spawn('docker', [
         'exec',
         '-it',
-        containerName,
-        ...commands
-    ], {
+        containerName
+    ].concat(...commands.map((command) => command.split(' '))), {
         stdio: [0, 1, 2]
     });
 
