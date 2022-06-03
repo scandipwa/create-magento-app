@@ -31,8 +31,10 @@ const getExternalIpAddress = async () => {
                 responseType: 'text'
             });
 
-            ip = response.data;
-            break;
+            if (response.status === 200) {
+                ip = response.data;
+                break;
+            }
         } catch (e) {
             //
         }

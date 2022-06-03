@@ -201,7 +201,6 @@ class Analytics {
                 ipOverride: await getExternalIpAddress()
             };
         } catch (e) {
-            console.log(e);
             // Do nothing
         }
 
@@ -268,11 +267,6 @@ class Analytics {
                 fatal: isFatal
             }
         });
-        // return this._collect({
-        //     t: 'exception',
-        //     exd: anonymizeError(typeof error === 'string' ? error : error.message),
-        //     exf: isFatal
-        // });
     }
 
     trackTiming(label, time, category = UNKNOWN) {
@@ -287,13 +281,6 @@ class Analytics {
                 userTimingTime: Math.round(time)
             }
         });
-        // return this._collect({
-        //     t: 'timing',
-        //     utc: category,
-        //     utv: label,
-        //     utl: this.currentUrl,
-        //     utt: Math.round(time)
-        // });
     }
 
     trackPageView() {
@@ -316,13 +303,6 @@ class Analytics {
                 value
             }
         });
-        // return this._collect({
-        //     t: 'event',
-        //     ec: category,
-        //     ea: action,
-        //     el: label,
-        //     ev: value
-        // });
     }
 
     printAboutAnalytics() {
