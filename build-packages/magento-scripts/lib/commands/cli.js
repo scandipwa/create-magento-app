@@ -4,10 +4,10 @@ const createBashrcConfigFile = require('../tasks/cli/create-bashrc-config');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getProjectConfiguration = require('../config/get-project-configuration');
-const localAuthJson = require('../tasks/composer/local-auth-json');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const { installComposer, installPrestissimo } = require('../tasks/composer');
 const ConsoleBlock = require('../util/console-block');
+const checkComposerCredentials = require('../tasks/requirements/composer');
 
 /**
  * @param {import('yargs')} yargs
@@ -21,7 +21,7 @@ module.exports = (yargs) => {
             installComposer(),
             installPrestissimo(),
             createBashrcConfigFile(),
-            localAuthJson()
+            checkComposerCredentials()
         ], {
             concurrent: false,
             exitOnError: true,
@@ -55,11 +55,16 @@ module.exports = (yargs) => {
         block
             .addLine(`Clear Magento cache: ${logger.style.command('m c:c')}`)
             .addLine(`Magento setup upgrade: ${logger.style.command('m se:up')}`)
-            .addLine(`Magento DI compile: ${logger.style.command('m s:d:c')}`);
+            .addLine(`Magento DI compile: ${logger.style.command('m s:d:c')}`)
+            .addEmptyLine();
 
         block
-            .addEmptyLine()
             .addLine(`Clear Composer cache: ${logger.style.command('c cc')}`)
+            .addEmptyLine();
+
+        block
+            .addLine(`Connect to MySQL server: ${logger.style.command('mysql')}`)
+            .addLine(`Connect to MySQL server as root: ${logger.style.command('mysqlroot')}`)
             .addEmptyLine();
 
         block.log();

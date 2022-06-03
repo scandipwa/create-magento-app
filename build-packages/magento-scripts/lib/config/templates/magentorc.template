@@ -6,5 +6,7 @@ alias c="composer"
 <% if (it.varnishEnabled) { %>
 alias cvc="npm run exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache cleared!'"
 <% } %>
+alias mysql="npm run exec mysql 'mysql -umagento -pmagento'"
+alias mysqlroot="npm run exec mysql 'mysql -uroot -pscandipwa'"
 
 export BASH_SILENCE_DEPRECATION_WARNING=1
