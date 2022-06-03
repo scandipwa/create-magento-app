@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -194,6 +195,57 @@ Would you like to load them now?`
                 const composerAuthFileContent = await fs.promises.readFile(authJsonPath, 'utf-8');
 
                 composerAuthContent = JSON.parse(composerAuthFileContent);
+
+                // eslint-disable-next-line max-len
+                const repoMagentoCredentials = composerAuthContent && composerAuthContent['http-basic'] && composerAuthContent['http-basic']['repo.magento.com'];
+
+                const hasEmptyCharacterInUsername = repoMagentoCredentials && /\s/i.test(repoMagentoCredentials.username);
+                const hasEmptyCharacterInPassword = repoMagentoCredentials && /\s/i.test(repoMagentoCredentials.password);
+
+                // TODO refactor to check all fields, not only for magento
+                const message = (hasEmptyCharacterInUsername && hasEmptyCharacterInPassword)
+                    ? `Both ${logger.style.misc('username')} and ${logger.style.misc('password')} fields in ${logger.style.misc('http-basic -> repo.magento.com')} in ${logger.style.file('./auth.json')} contains empty characters (spaces).
+Do you want to remove them now? File will be overwritten.`
+                    : hasEmptyCharacterInUsername
+                        ? `Your ${logger.style.misc('http-basic -> repo.magento.com -> username')} field in ${logger.style.file('./auth.json')} contains empty characters (spaces).
+Do you want to remove them now? File will be overwritten.`
+                        : hasEmptyCharacterInPassword
+                            ? `Your ${logger.style.misc('http-basic -> repo.magento.com -> password')} field in ${logger.style.file('./auth.json')} contains empty characters (spaces).
+Do you want to remove them now? File will be overwritten.`
+                            : null;
+
+                if (message) {
+                    const response = await task.prompt({
+                        message,
+                        type: 'Select',
+                        choices: [
+                            {
+                                name: 'overwrite',
+                                message: 'Yes, please!'
+                            },
+                            {
+                                name: 'skip',
+                                message: 'No, I know what I\'m doing'
+                            }
+                        ]
+                    });
+
+                    if (response === 'overwrite') {
+                        if (repoMagentoCredentials.username) {
+                            repoMagentoCredentials.username = repoMagentoCredentials.username.replace(/\s/i, '');
+                        }
+
+                        if (repoMagentoCredentials.password) {
+                            repoMagentoCredentials.password = repoMagentoCredentials.password.replace(/\s/i, '');
+                        }
+
+                        await fs.promises.writeFile(
+                            authJsonPath,
+                            JSON.stringify(composerAuthContent, null, 4),
+                            'utf-8'
+                        );
+                    }
+                }
 
                 process.env.COMPOSER_AUTH = composerAuthFileContent;
             } catch (e) {
