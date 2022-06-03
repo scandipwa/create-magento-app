@@ -27,13 +27,13 @@ const adjustComposerJson = async ({
     const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
 
     // fix composer magento repository
-    if (!composerData.repositories
+    if (composerData && (!composerData.repositories
         || (Array.isArray(composerData.repositories)
             && !composerData.repositories.some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com'))
         )
         || (typeof composerData.repositories === 'object'
             && !Object.values(composerData.repositories).some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com')))
-    ) {
+    )) {
         task.output = 'No Magento repository is set in composer.json! Setting up...';
         await runComposerCommand('config repo.0 composer https://repo.magento.com', {
             magentoVersion,
@@ -44,7 +44,7 @@ const adjustComposerJson = async ({
     }
 
     // if composer-root-update-plugin is not installed in composer, install it.
-    if (!composerData.require['magento/composer-root-update-plugin']) {
+    if (composerData && !composerData.require['magento/composer-root-update-plugin']) {
         task.output = 'Installing magento/composer-root-update-plugin!';
         await runComposerCommand('require magento/composer-root-update-plugin:^1',
             {
@@ -56,8 +56,8 @@ const adjustComposerJson = async ({
     }
 
     // if for some reason both editions are installed, throw an error
-    if (
-        composerData.require[magentoProductCommunityEdition]
+    if (composerData
+        && composerData.require[magentoProductCommunityEdition]
         && composerData.require[magentoProductEnterpriseEdition]
     ) {
         throw new KnownError('Somehow, both Magento editions are installed!\nPlease choose only one edition an modify your composer.json manually!');
@@ -67,7 +67,7 @@ const adjustComposerJson = async ({
         .find((edition) => edition !== magentoProductSelectedEdition);
 
     // if opposite edition is installed than selected in config file, throw an error
-    if (composerData.require[oppositeEdition]) {
+    if (composerData && composerData.require[oppositeEdition]) {
         throw new KnownError(`You have installed ${oppositeEdition} but selected magento.edition as ${magentoEdition} in config file!
 
 Change magento edition in config file or manually reinstall correct magento edition!`);
@@ -75,7 +75,7 @@ Change magento edition in config file or manually reinstall correct magento edit
 
     // if magento package is not installed in composer, require it.
 
-    if (!composerData.require[magentoProductSelectedEdition]) {
+    if (composerData && !composerData.require[magentoProductSelectedEdition]) {
         task.output = `Installing ${magentoProductSelectedEdition}=${magentoPackageVersion}!`;
         await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
             {
@@ -170,7 +170,7 @@ const installMagento = () => ({
         task.title = `Installing Magento ${magentoPackageVersion}`;
         task.output = 'Creating Magento project';
 
-        if (!await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
+        if (!await pathExists(path.join(process.cwd(), 'composer.json'))) {
             await createMagentoProject({
                 magentoProject,
                 magentoPackageVersion,
