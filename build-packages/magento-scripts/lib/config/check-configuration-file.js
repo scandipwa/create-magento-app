@@ -5,6 +5,7 @@ const pathExists = require('../util/path-exists');
 const { deepmerge } = require('../util/deepmerge');
 const { defaultMagentoConfig } = require('./magento-config');
 const setConfigFile = require('../util/set-config');
+const getJsonfileData = require('../util/get-jsonfile-data');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -16,6 +17,8 @@ const checkConfigurationFile = () => ({
         const { cacheDir, templateDir } = getBaseConfig(projectPath);
         const configJSFilePath = path.join(projectPath, 'cma.js');
         const magentoConfigFilePath = path.join(cacheDir, 'app-config.json');
+        const composerJsonPath = path.join(process.cwd(), 'composer.json');
+        const composerData = await getJsonfileData(composerJsonPath);
 
         if (!await pathExists(configJSFilePath)) {
             const legacyMagentoConfigExists = await pathExists(magentoConfigFilePath);
@@ -28,7 +31,19 @@ const checkConfigurationFile = () => ({
                 );
 
                 magentoConfiguration = legacyMagentoConfig.magento || legacyMagentoConfig;
-            } else {
+            } else if (composerData) {
+                if (composerData.require['magento/product-community-edition']) {
+                    magentoConfiguration = deepmerge(defaultMagentoConfig, {
+                        edition: 'community'
+                    });
+                } else if (composerData.require['magento/product-enterprise-edition']) {
+                    magentoConfiguration = deepmerge(defaultMagentoConfig, {
+                        edition: 'enterprise'
+                    });
+                }
+            }
+
+            if (!magentoConfiguration) {
                 const magentoEdition = await task.prompt({
                     type: 'Select',
                     message: `Please select Magento edition you want to install.
