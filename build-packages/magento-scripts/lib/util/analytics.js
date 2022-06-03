@@ -253,6 +253,9 @@ class Analytics {
         // eslint-disable-next-line no-empty
         } catch (e) {
             console.log('Failed to report telemetry data');
+            if (process.env.GA_DEBUG) {
+                logger.error(e);
+            }
         }
     }
 
