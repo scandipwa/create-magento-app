@@ -67,16 +67,6 @@ const setupComposerSettings = async (workspaceConfigs) => {
                 [pharPathKey]: composerPharFormattedPath
             };
         }
-
-        const composerSettingsMissingProperties = Object.entries(defaultComposerSettingsProperties)
-            .filter(([key]) => !(key in composerSettingsComponent));
-
-        if (composerSettingsMissingProperties.length > 0) {
-            hasChanges = true;
-            composerSettingsMissingProperties.forEach(([key, value]) => {
-                composerSettingsComponent[key] = value;
-            });
-        }
     } else {
         hasChanges = true;
         workspaceConfigs.push({
