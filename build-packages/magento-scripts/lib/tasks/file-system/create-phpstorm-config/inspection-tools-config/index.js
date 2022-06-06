@@ -11,6 +11,27 @@ const setupPhpCSFixerValidationInspection = require('./php-cs-fixer-validation-i
 const setupPhpCSValidationInspection = require('./php-cs-validation-inspection-config');
 const setupStyleLintInspection = require('./stylelint-inspection-config');
 
+const inspectionProfileDefaults = {
+    component: {
+        [nameKey]: 'InspectionProjectProfileManager',
+        profile: {
+            '@_version': '1.0',
+            option: {
+                [nameKey]: 'myName',
+                [valueKey]: 'Project Default'
+            },
+            inspection_tool: [
+                {
+                    [classKey]: 'PhpStanGlobal',
+                    '@_enabled': 'true',
+                    '@_level': 'ERROR',
+                    '@_enabled_by_default': 'true'
+                }
+            ]
+        }
+    }
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
@@ -25,6 +46,26 @@ const setupInspectionToolsConfig = () => ({
 
         if (await pathExists(phpStorm.inspectionTools.path)) {
             const inspectionToolsData = await loadXmlFile(phpStorm.inspectionTools.path);
+
+            if (!inspectionToolsData.component) {
+                inspectionToolsData.component = inspectionProfileDefaults.component;
+            }
+
+            if (!inspectionToolsData.component.profile) {
+                inspectionToolsData.component.profile = inspectionProfileDefaults.component.profile;
+            }
+
+            if (!inspectionToolsData.component.profile.inspection_tool) {
+                inspectionToolsData.component.profile.inspection_tool = [];
+            }
+
+            // eslint-disable-next-line max-len
+            if (!Array.isArray(inspectionToolsData.component.profile.inspection_tool) && Boolean(inspectionToolsData.component.profile.inspection_tool)) {
+                inspectionToolsData.component.profile.inspection_tool = [
+                    inspectionToolsData.component.profile.inspection_tool
+                ];
+            }
+
             const inspectionTools = inspectionToolsData.component.profile.inspection_tool;
             const hasChanges = await Promise.all([
                 setupPhpCSFixerValidationInspection(inspectionTools),

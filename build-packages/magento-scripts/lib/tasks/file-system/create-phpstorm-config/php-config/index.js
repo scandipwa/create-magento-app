@@ -1,5 +1,6 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
+const { setupXMLStructure } = require('../setup-xml-structure');
 const setupMessDetector = require('./mess-detector-config');
 const setupPHPCodeSniffer = require('./php-code-sniffer-config');
 const setupPHPCSFixer = require('./php-cs-fixer-config');
@@ -23,7 +24,7 @@ const setupPhpConfig = () => ({
         } = ctx;
 
         if (await pathExists(phpStorm.php.path)) {
-            const phpConfigContent = await loadXmlFile(phpStorm.php.path);
+            const phpConfigContent = setupXMLStructure(await loadXmlFile(phpStorm.php.path));
             const phpConfigs = phpConfigContent.project.component;
             const hasChanges = await Promise.all([
                 setupMessDetector(phpConfigs),
@@ -41,16 +42,7 @@ const setupPhpConfig = () => ({
             return;
         }
 
-        const phpConfigContent = {
-            '?xml': {
-                '@_version': '1.0',
-                '@_encoding': 'UTF-8'
-            },
-            project: {
-                '@_version': '4',
-                component: []
-            }
-        };
+        const phpConfigContent = setupXMLStructure();
         const phpConfigs = phpConfigContent.project.component;
 
         await Promise.all([

@@ -1,5 +1,6 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
+const { setupXMLStructure } = require('../setup-xml-structure');
 const setupComposerSettings = require('./composer-settings-config');
 const setupFormatOnSave = require('./format-setting-config');
 const setupPHPDebugGeneral = require('./php-debug-general-config');
@@ -20,7 +21,7 @@ const setupWorkspaceConfig = () => ({
         } = ctx;
 
         if (await pathExists(phpStorm.xdebug.path)) {
-            const workspaceConfiguration = await loadXmlFile(phpStorm.xdebug.path);
+            const workspaceConfiguration = setupXMLStructure(await loadXmlFile(phpStorm.xdebug.path));
             const workspaceConfigs = workspaceConfiguration.project.component;
             const hasChanges = await Promise.all([
                 setupPHPDebugGeneral(workspaceConfigs, phpStorm),
@@ -38,16 +39,7 @@ const setupWorkspaceConfig = () => ({
             return;
         }
 
-        const workspaceConfiguration = {
-            '?xml': {
-                '@_version': '1.0',
-                '@_encoding': 'UTF-8'
-            },
-            project: {
-                '@_version': '4',
-                component: []
-            }
-        };
+        const workspaceConfiguration = setupXMLStructure();
         const workspaceConfigs = workspaceConfiguration.project.component;
 
         await Promise.all([
