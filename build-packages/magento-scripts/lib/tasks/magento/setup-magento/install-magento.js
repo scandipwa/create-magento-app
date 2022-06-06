@@ -1,6 +1,10 @@
+const fs = require('fs');
+const path = require('path');
 const semver = require('semver');
 const UnknownError = require('../../../errors/unknown-error');
 const runMagentoCommand = require('../../../util/run-magento');
+const envPhpToJson = require('../../../util/env-php-json');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
  * @type {({ isDbEmpty }: { isDbEmpty: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -20,6 +24,21 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
             ports
         } = ctx;
         const { mysql: { env } } = docker.getContainers(ports);
+        const envPhpData = await envPhpToJson(process.cwd(), {
+            magentoVersion: ctx.magentoVersion
+        });
+
+        const envPhpHaveEncryptionKey = envPhpData && envPhpData.crypt && envPhpData.crypt.key && envPhpData.crypt.key;
+
+        let encryptionKeyOption = null;
+
+        if (ctx.encryptionKey) {
+            encryptionKeyOption = `--key='${ctx.encryptionKey}'`;
+        }
+
+        if (envPhpHaveEncryptionKey && !encryptionKeyOption) {
+            encryptionKeyOption = `--key='${envPhpData.crypt.key}'`;
+        }
 
         let installed = false;
 
@@ -46,6 +65,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --admin-user='${ magentoConfiguration.user }' \
                 --admin-password='${ magentoConfiguration.password }' \
                 ${ !isMagento23 ? elasticsearchConfiguration : '' } \
+                ${encryptionKeyOption || ''} \
                 --session-save=redis \
                 --session-save-redis-host='127.0.0.1' \
                 --session-save-redis-port='${ ports.redis }' \
@@ -82,6 +102,34 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
 
             if (installed) {
                 break;
+            }
+        }
+
+        if (errors.length > 0) {
+            if (envPhpHaveEncryptionKey && errors.some(
+                (e) => e.message.includes('The default website isn\'t defined. Set the website and try again.')
+            )
+            ) {
+                const confirmToWipeEnvPhp = await task.prompt({
+                    type: 'Confirm',
+                    message: `We detected that your encryption key in ${logger.style.file('app/etc/env.php')} file is not accepted by Magento installer.
+To fix this issue we will need to ${logger.style.misc('DELETE')} ${logger.style.file('app/etc/env.php')} file. It will be recreated but existing encryption key but if you any custom configuration in it will be lost.
+
+Without this you will not be able to install Magento at this moment.
+
+Do you want to continue?`
+                });
+
+                if (confirmToWipeEnvPhp) {
+                    try {
+                        await fs.promises.unlink(path.join(process.cwd(), 'app', 'etc', 'env.php'));
+                    } catch (e) {
+                        throw new UnknownError(`Unexpected error occurred during deleting of app/etc/env.php file!\n\n${e}`);
+                    }
+                    ctx.encryptionKey = envPhpData.crypt.key;
+
+                    return task.run(ctx);
+                }
             }
         }
 
