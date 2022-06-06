@@ -1,5 +1,10 @@
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 alias php="$HOME/.phpbrew/php/php-<%= it.php.version %>/bin/php -c $PWD/node_modules/.create-magento-app-cache/php.ini"
 alias magento="php $PWD/bin/magento"
+alias magneto="echo -e 'Not ${RED}magneto${NC} but ${GREEN}magento${NC} please! or at least ${GREEN}m${NC}!' && magento"
 alias m="magento"
 alias composer="php $PWD/node_modules/.create-magento-app-cache/composer/composer.phar"
 alias c="composer"
