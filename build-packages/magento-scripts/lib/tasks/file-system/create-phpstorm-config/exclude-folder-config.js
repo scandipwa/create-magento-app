@@ -86,33 +86,35 @@ const setupExcludedFolders = (excludedFoldersConfig) => {
     return hasChanges;
 };
 
-const createModulesXML = async () => {
+const getIMLFilePath = async () => {
     const filePath = path.join(process.cwd(), '.idea', `${path.parse(process.cwd()).base}.iml`);
-    const fileFormattedPath = formatPathForPHPStormConfig(filePath);
-    const fileFormattedUrl = `file://${fileFormattedPath}`;
+    if (!await pathExists(pathToModulesConfig)) {
+        const fileFormattedPath = formatPathForPHPStormConfig(filePath);
+        const fileFormattedUrl = `file://${fileFormattedPath}`;
 
-    const modulesConfig = {
-        '?xml': {
-            '@_version': '1.0',
-            '@_encoding': 'UTF-8'
-        },
-        project: {
-            '@_version': '4',
-            component: {
-                '@_name': 'ProjectModuleManager',
-                modules: [
-                    {
-                        module: {
-                            '@_fileurl': fileFormattedUrl,
-                            '@_filepath': fileFormattedPath
+        const modulesConfig = {
+            '?xml': {
+                '@_version': '1.0',
+                '@_encoding': 'UTF-8'
+            },
+            project: {
+                '@_version': '4',
+                component: {
+                    '@_name': 'ProjectModuleManager',
+                    modules: [
+                        {
+                            module: {
+                                '@_fileurl': fileFormattedUrl,
+                                '@_filepath': fileFormattedPath
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
             }
-        }
-    };
+        };
 
-    await buildXmlFile(pathToModulesConfig, modulesConfig);
+        await buildXmlFile(pathToModulesConfig, modulesConfig);
+    }
 
     return filePath;
 };
@@ -125,19 +127,21 @@ const setupExcludedFoldersConfig = () => ({
     task: async (ctx, task) => {
         if (await pathExists(pathToModulesConfig)) {
             const projectFilePath = await getProjectConfigFilePath();
-            const projectConfigData = await loadXmlFile(projectFilePath);
-            const excludedFoldersConfig = getExcludedFoldersConfig(projectConfigData);
-            const hasChanges = setupExcludedFolders(excludedFoldersConfig);
-            if (hasChanges) {
-                await buildXmlFile(projectFilePath, projectConfigData);
-            } else {
-                task.skip();
-            }
+            if (await pathExists(projectFilePath)) {
+                const projectConfigData = await loadXmlFile(projectFilePath);
+                const excludedFoldersConfig = getExcludedFoldersConfig(projectConfigData);
+                const hasChanges = setupExcludedFolders(excludedFoldersConfig);
+                if (hasChanges) {
+                    await buildXmlFile(projectFilePath, projectConfigData);
+                } else {
+                    task.skip();
+                }
 
-            return;
+                return;
+            }
         }
 
-        const projectFilePath = await createModulesXML();
+        const projectFilePath = await getIMLFilePath();
         const projectConfigData = {
             '?xml': {
                 '@_version': '1.0',
