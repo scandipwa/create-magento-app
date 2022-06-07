@@ -115,7 +115,7 @@ const setupDataSourceLocalConfig = () => ({
                 });
             }
 
-            if (!('schema-mapping' in dataSource)) {
+            if (dataSource && dataSource['schema-mapping'] === undefined) {
                 hasChanges = true;
                 dataSource['schema-mapping'] = '';
             }

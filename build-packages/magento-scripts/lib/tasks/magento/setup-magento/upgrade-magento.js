@@ -7,7 +7,7 @@ const KnownError = require('../../../errors/known-error');
  */
 const upgradeMagento = () => ({
     skip: (ctx) => {
-        if ('isSetupUpgradeNeeded' in ctx) {
+        if (ctx.isSetupUpgradeNeeded !== undefined) {
             return !ctx.isSetupUpgradeNeeded;
         }
 

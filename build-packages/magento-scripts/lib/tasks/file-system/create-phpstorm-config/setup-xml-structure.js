@@ -9,19 +9,20 @@ const xmlConfiguration = {
     }
 };
 
-const setupXMLStructure = (data = {}) => {
+const setupXMLStructure = (data) => {
     if (!data) {
         data = xmlConfiguration;
     }
-    if (!('?xml' in data['?xml'])) {
+
+    if (data['?xml'] === undefined) {
         data['?xml'] = xmlConfiguration['?xml'];
     }
 
-    if (!('project' in data)) {
+    if (data.project === undefined) {
         data.project = xmlConfiguration.project;
     }
 
-    if (!('component' in data.project)) {
+    if (data.project.component === undefined) {
         data.project.component = xmlConfiguration.project.component;
     }
 

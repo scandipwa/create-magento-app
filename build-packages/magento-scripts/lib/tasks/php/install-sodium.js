@@ -33,7 +33,7 @@ const installSodiumExtension = () => ({
         const extractedArchivePath = path.join(tempDir, 'libsodium-stable');
         const enabledExtensions = await getEnabledExtensions(ctx.config);
 
-        if ('sodium' in enabledExtensions) {
+        if (enabledExtensions.sodium !== undefined) {
             cmaGlobalConfig.set(HAS_LIBSODIUM_BEEN_INSTALLED, true);
             task.skip();
             return;

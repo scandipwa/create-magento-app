@@ -48,7 +48,7 @@ const setupComposerSettings = async (workspaceConfigs) => {
 
     if (composerSettingsComponent) {
         if (
-            !('pharConfigPath' in composerSettingsComponent)
+            composerSettingsComponent.pharConfigPath === undefined
             && isComposerJsonExists
         ) {
             hasChanges = true;
