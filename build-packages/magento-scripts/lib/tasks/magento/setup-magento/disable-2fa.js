@@ -9,7 +9,7 @@ module.exports = () => ({
     task: async ({ magentoVersion }, task) => {
         const { modules } = await configPhpToJson(process.cwd(), { magentoVersion });
 
-        if (modules.Magento_TwoFactorAuth !== 0) {
+        if (modules.Magento_TwoFactorAuth !== undefined && modules.Magento_TwoFactorAuth !== 0) {
             await runMagentoCommand('module:disable Magento_TwoFactorAuth', {
                 magentoVersion
             });
