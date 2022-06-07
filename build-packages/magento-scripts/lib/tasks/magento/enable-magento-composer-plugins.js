@@ -104,26 +104,17 @@ Do you want to enable them all or disable some of them?`,
 
             switch (answerForEnablingPlugins.toLowerCase()) {
             case 'enable all': {
-                const userConfirmation = await task.prompt({
-                    type: 'Confirm',
-                    message: `Please confirm enabling of the following plugins:\n\n${missingPlugins.map((p) => logger.style.code(p)).join('\n')}\n`
+                composerJsonData.config = {
+                    ...(composerJsonData.config || {}),
+                    'allow-plugins': {
+                        ...allowPlugins,
+                        ...missingPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                    }
+                };
+
+                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
+                    encoding: 'utf-8'
                 });
-
-                if (userConfirmation) {
-                    composerJsonData.config = {
-                        ...(composerJsonData.config || {}),
-                        'allow-plugins': {
-                            ...allowPlugins,
-                            ...missingPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
-                        }
-                    };
-
-                    await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
-                        encoding: 'utf-8'
-                    });
-                } else {
-                    throw new KnownError('Please confirm your choice or choose other option.');
-                }
                 break;
             }
             case 'configure manually': {
