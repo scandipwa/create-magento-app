@@ -24,7 +24,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
                 let mysqlFinishedInitialization = false;
                 while (!mysqlFinishedInitialization) {
                     const mysqlOutput = await execAsyncSpawn(`docker logs ${name}`);
-                    if (mysqlOutput.includes('MySQL init process done.') && !mysqlFinishedInitialization) {
+                    if (mysqlOutput.includes('init process done.') && !mysqlFinishedInitialization) {
                         mysqlFinishedInitialization = true;
                         break;
                     }
