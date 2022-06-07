@@ -3,6 +3,7 @@ const pathExists = require('../../../../util/path-exists');
 const { setupXMLStructure } = require('../setup-xml-structure');
 const setupMessDetector = require('./mess-detector-config');
 const setupPHPCodeSniffer = require('./php-code-sniffer-config');
+const { getPhpConfig } = require('./php-config');
 const setupPHPCSFixer = require('./php-cs-fixer-config');
 const setupPHPProjectSharedConfiguration = require('./php-project-shared-configuration-config');
 
@@ -12,29 +13,20 @@ const setupPHPProjectSharedConfiguration = require('./php-project-shared-configu
 const setupPhpConfig = () => ({
     title: 'Set up PHP configuration',
     task: async (ctx, task) => {
-        const {
-            config: {
-                phpStorm,
-                phpStorm: {
-                    php: {
-                        phpLanguageLevel
-                    }
-                }
-            }
-        } = ctx;
+        const phpConfig = getPhpConfig(ctx.config.overridenConfiguration);
 
-        if (await pathExists(phpStorm.php.path)) {
-            const phpConfigContent = setupXMLStructure(await loadXmlFile(phpStorm.php.path));
+        if (await pathExists(phpConfig.path)) {
+            const phpConfigContent = setupXMLStructure(await loadXmlFile(phpConfig.path));
             const phpConfigs = phpConfigContent.project.component;
             const hasChanges = await Promise.all([
                 setupMessDetector(phpConfigs),
                 setupPHPCodeSniffer(phpConfigs),
                 setupPHPCSFixer(phpConfigs),
-                setupPHPProjectSharedConfiguration(phpConfigs, phpLanguageLevel)
+                setupPHPProjectSharedConfiguration(phpConfigs, phpConfig.phpLanguageLevel)
             ]);
 
             if (hasChanges.includes(true)) {
-                await buildXmlFile(phpStorm.php.path, phpConfigContent);
+                await buildXmlFile(phpConfig.path, phpConfigContent);
             } else {
                 task.skip();
             }
@@ -49,10 +41,10 @@ const setupPhpConfig = () => ({
             setupMessDetector(phpConfigs),
             setupPHPCodeSniffer(phpConfigs),
             setupPHPCSFixer(phpConfigs),
-            setupPHPProjectSharedConfiguration(phpConfigs, phpLanguageLevel)
+            setupPHPProjectSharedConfiguration(phpConfigs, phpConfig.phpLanguageLevel)
         ]);
 
-        await buildXmlFile(phpStorm.php.path, phpConfigContent);
+        await buildXmlFile(phpConfig.path, phpConfigContent);
     }
 });
 

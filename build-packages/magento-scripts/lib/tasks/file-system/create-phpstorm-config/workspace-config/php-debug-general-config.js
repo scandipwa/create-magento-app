@@ -10,11 +10,10 @@ const ignoreConnectionsThroughUnregisteredServersKey = '@_ignore_connections_thr
 
 /**
  * @param {Array} workspaceConfigs
- * @param {import('../../../../../typings/phpstorm').PHPStormConfig} phpStormConfiguration
+ * @param {ReturnType<typeof import('./workspace-config').getWorkspaceConfig>} workspaceConfig
  * @returns {Promise<Boolean>}
  */
-const setupPHPDebugGeneral = async (workspaceConfigs, phpStormConfiguration) => {
-    const { xdebug } = phpStormConfiguration;
+const setupPHPDebugGeneral = async (workspaceConfigs, workspaceConfig) => {
     let hasChanges = false;
     const phpDebugGeneralComponent = workspaceConfigs.find(
         (workspaceConfig) => workspaceConfig[nameKey] === PHP_DEBUG_GENERAL_COMPONENT_NAME
@@ -31,10 +30,10 @@ const setupPHPDebugGeneral = async (workspaceConfigs, phpStormConfiguration) => 
 
         if (!(xdebugDebugPortKey in phpDebugGeneralComponent)) {
             hasChanges = true;
-            phpDebugGeneralComponent[xdebugDebugPortKey] = xdebug.v3Port;
+            phpDebugGeneralComponent[xdebugDebugPortKey] = workspaceConfig.v3Port;
         }
 
-        const missingXDebugPorts = [xdebug.v3Port, xdebug.v2Port].filter(
+        const missingXDebugPorts = [workspaceConfig.v3Port, workspaceConfig.v2Port].filter(
             (port) => !phpDebugGeneralComponent.xdebug_debug_ports.some((xPort) => xPort[portKey] === port)
         );
 
@@ -50,9 +49,9 @@ const setupPHPDebugGeneral = async (workspaceConfigs, phpStormConfiguration) => 
         hasChanges = true;
         workspaceConfigs.push({
             [nameKey]: PHP_DEBUG_GENERAL_COMPONENT_NAME,
-            [xdebugDebugPortKey]: xdebug.v3Port,
+            [xdebugDebugPortKey]: workspaceConfig.v3Port,
             [ignoreConnectionsThroughUnregisteredServersKey]: 'true',
-            xdebug_debug_ports: [xdebug.v3Port, xdebug.v2Port].map((port) => ({
+            xdebug_debug_ports: [workspaceConfig.v3Port, workspaceConfig.v2Port].map((port) => ({
                 [portKey]: port
             }))
         });

@@ -16,17 +16,17 @@ const properties = {
  */
 const setupDefaultProperties = (inspectionTool, defaultProperties = properties) => {
     let hasChanges = false;
-    if (!inspectionTool['@_enabled']) {
+    if (inspectionTool['@_enabled'] === undefined) {
         hasChanges = true;
         inspectionTool['@_enabled'] = defaultProperties.enabled;
     }
 
-    if (!inspectionTool['@_enabled_by_default']) {
+    if (inspectionTool['@_enabled_by_default'] === undefined) {
         hasChanges = true;
         inspectionTool['@_enabled_by_default'] = defaultProperties.enabled_by_default;
     }
 
-    if (!inspectionTool['@_level']) {
+    if (inspectionTool['@_level'] === undefined) {
         hasChanges = true;
         inspectionTool['@_level'] = defaultProperties.level;
     }

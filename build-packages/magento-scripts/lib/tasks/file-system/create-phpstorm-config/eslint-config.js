@@ -17,10 +17,39 @@ const defaultESLintComponentConfiguration = {
     }
 };
 
+const setupESlintConfig = async (esLintConfigurationData) => {
+    let hasChanges = false;
+    const themes = await getCSAThemes();
+
+    if (themes.length > 0) {
+        const theme = themes[0];
+        if (await pathExists(theme.themePath)) {
+            if (esLintConfigurationData['work-dir-pattern'] === undefined) {
+                hasChanges = true;
+                esLintConfigurationData['work-dir-pattern'] = {
+                    [valueKey]: formatPathForPHPStormConfig(theme.themePath)
+                };
+            }
+            const packageJsonPath = path.join(process.cwd(), theme.themePath, 'package.json');
+            if (await pathExists(packageJsonPath)) {
+                if (esLintConfigurationData['custom-configuration-file'] === undefined) {
+                    hasChanges = true;
+                    esLintConfigurationData['custom-configuration-file'] = {
+                        '@_used': 'true',
+                        '@_path': formatPathForPHPStormConfig(packageJsonPath)
+                    };
+                }
+            }
+        }
+    }
+
+    return hasChanges;
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const setupESLintConfig = () => ({
+const setupESLintConfigTask = () => ({
     title: 'Set up ESLint configuration',
     task: async (ctx, task) => {
         if (await pathExists(pathToESLintConfig)) {
@@ -41,6 +70,11 @@ const setupESLintConfig = () => ({
                 esLintConfigurationData.project.component.push(defaultESLintComponentConfiguration);
             }
 
+            const hasThemeEslintChanges = await setupESlintConfig(esLintConfigurationComponent);
+            if (hasThemeEslintChanges) {
+                hasChanges = hasThemeEslintChanges;
+            }
+
             if (hasChanges) {
                 await buildXmlFile(pathToESLintConfig, esLintConfigurationData);
             } else {
@@ -50,7 +84,7 @@ const setupESLintConfig = () => ({
             return;
         }
 
-        const styleLintConfigurationData = {
+        const esLintConfigurationData = {
             '?xml': {
                 '@_version': '1.0',
                 '@_encoding': 'UTF-8'
@@ -60,26 +94,11 @@ const setupESLintConfig = () => ({
                 component: defaultESLintComponentConfiguration
             }
         };
-        const themes = await getCSAThemes();
 
-        if (themes.length > 0) {
-            const theme = themes[0];
-            if (await pathExists(theme.themePath)) {
-                styleLintConfigurationData.project.component['work-dir-pattern'] = {
-                    [valueKey]: formatPathForPHPStormConfig(theme.themePath)
-                };
-                const packageJsonPath = path.join(process.cwd(), theme.themePath, 'package.json');
-                if (await pathExists(packageJsonPath)) {
-                    styleLintConfigurationData.project.component['custom-configuration-file'] = {
-                        '@_used': 'true',
-                        '@_path': formatPathForPHPStormConfig(packageJsonPath)
-                    };
-                }
-            }
-        }
+        await setupESlintConfig(esLintConfigurationData);
 
-        await buildXmlFile(pathToESLintConfig, styleLintConfigurationData);
+        await buildXmlFile(pathToESLintConfig, esLintConfigurationData);
     }
 });
 
-module.exports = setupESLintConfig;
+module.exports = setupESLintConfigTask;

@@ -9,23 +9,22 @@ const sessionIdKey = '@_session_id';
 
 /**
  * @param {Array} workspaceConfigs
- * @param {import('../../../../../typings/phpstorm').PHPStormConfig} phpStormConfiguration
+ * @param {ReturnType<typeof import('./workspace-config').getWorkspaceConfig>} workspaceConfig
  * @returns {Promise<Boolean>}
  */
-const setupRunManager = async (workspaceConfigs, phpStormConfiguration) => {
-    const { xdebug } = phpStormConfiguration;
+const setupRunManager = async (workspaceConfigs, workspaceConfig) => {
     let hasChanges = false;
     const runManagerComponent = workspaceConfigs.find(
         (workspaceConfig) => workspaceConfig[nameKey] === RUN_MANAGER_COMPONENT_NAME
     );
 
     const defaultRunManagerConfiguration = {
-        [nameKey]: xdebug.runManagerName,
+        [nameKey]: workspaceConfig.runManagerName,
         '@_type': PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE,
         '@_factoryName': 'PHP Remote Debug',
         '@_filter_connections': 'FILTER',
-        [serverNameKey]: xdebug.serverName,
-        [sessionIdKey]: xdebug.sessionId,
+        [serverNameKey]: workspaceConfig.serverName,
+        [sessionIdKey]: workspaceConfig.sessionId,
         method: {
             '@_v': '2'
         }
@@ -41,7 +40,8 @@ const setupRunManager = async (workspaceConfigs, phpStormConfiguration) => {
         }
 
         const phpRemoteDebugRunConfiguration = runManagerComponent.configuration.find(
-            (configuration) => configuration['@_type'] === PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE && configuration[nameKey] === xdebug.runManagerName
+            // eslint-disable-next-line max-len
+            (configuration) => configuration['@_type'] === PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE && configuration[nameKey] === workspaceConfig.runManagerName
         );
 
         if (!phpRemoteDebugRunConfiguration) {

@@ -6,6 +6,7 @@ const {
     classKey
 } = require('../keys');
 const setupESLintInspection = require('./eslint-inspection-config');
+const { getInspectionToolsConfig } = require('./inspection-tools-config');
 const setupMessDetectorValidationInspection = require('./mess-detector-validation-inspection-config');
 const setupPhpCSFixerValidationInspection = require('./php-cs-fixer-validation-inspection-config');
 const setupPhpCSValidationInspection = require('./php-cs-validation-inspection-config');
@@ -35,17 +36,12 @@ const inspectionProfileDefaults = {
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
-const setupInspectionToolsConfig = () => ({
+const setupInspectionToolsConfigTask = () => ({
     title: 'Set up inspection tools configuration',
     task: async (ctx, task) => {
-        const {
-            config: {
-                phpStorm
-            }
-        } = ctx;
-
-        if (await pathExists(phpStorm.inspectionTools.path)) {
-            const inspectionToolsData = await loadXmlFile(phpStorm.inspectionTools.path);
+        const inspectionToolsConfig = getInspectionToolsConfig();
+        if (await pathExists(inspectionToolsConfig.path)) {
+            const inspectionToolsData = await loadXmlFile(inspectionToolsConfig.path);
 
             if (!inspectionToolsData.component) {
                 inspectionToolsData.component = inspectionProfileDefaults.component;
@@ -75,7 +71,7 @@ const setupInspectionToolsConfig = () => ({
             ]);
 
             if (hasChanges.includes(true)) {
-                await buildXmlFile(phpStorm.inspectionTools.path, inspectionToolsData);
+                await buildXmlFile(inspectionToolsConfig.path, inspectionToolsData);
             } else {
                 task.skip();
             }
@@ -114,8 +110,8 @@ const setupInspectionToolsConfig = () => ({
             setupESLintInspection(inspectionTools)
         ]);
 
-        await buildXmlFile(phpStorm.inspectionTools.path, inspectionToolsData);
+        await buildXmlFile(inspectionToolsConfig.path, inspectionToolsData);
     }
 });
 
-module.exports = setupInspectionToolsConfig;
+module.exports = setupInspectionToolsConfigTask;

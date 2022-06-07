@@ -6,20 +6,19 @@ const hostKey = '@_host';
 
 /**
  * @param {Array} workspaceConfigs
- * @param {import('../../../../../typings/phpstorm').PHPStormConfig} phpStormConfiguration
+ * @param {ReturnType<typeof import('./workspace-config').getWorkspaceConfig>} workspaceConfig
  * @returns {Promise<Boolean>}
  */
-const setupPHPServers = async (workspaceConfigs, phpStormConfiguration) => {
-    const { xdebug } = phpStormConfiguration;
+const setupPHPServers = async (workspaceConfigs, workspaceConfig) => {
     let hasChanges = false;
     const phpServersComponent = workspaceConfigs.find(
         (workspaceConfig) => workspaceConfig[nameKey] === PHP_SERVERS_COMPONENT_NAME
     );
 
     const defaultServerConfig = {
-        [hostKey]: xdebug.debugServerAddress,
+        [hostKey]: workspaceConfig.debugServerAddress,
         id: '7e16e907-9ce3-4559-9d26-a30a5650d11f',
-        [nameKey]: xdebug.serverName
+        [nameKey]: workspaceConfig.serverName
     };
 
     if (phpServersComponent) {
@@ -31,7 +30,7 @@ const setupPHPServers = async (workspaceConfigs, phpStormConfiguration) => {
             phpServersComponent.servers = [];
         }
 
-        const serverConfiguration = phpServersComponent.servers.find((server) => server.server[nameKey] === xdebug.serverName);
+        const serverConfiguration = phpServersComponent.servers.find((server) => server.server[nameKey] === workspaceConfig.serverName);
 
         if (!serverConfiguration) {
             hasChanges = true;

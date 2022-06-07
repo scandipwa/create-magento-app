@@ -1,8 +1,23 @@
 /* eslint-disable no-param-reassign */
+const path = require('path');
+const { baseConfig } = require('../../../config');
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const UnknownError = require('../../../errors/unknown-error');
 const pathExists = require('../../../util/path-exists');
 const setConfigFile = require('../../../util/set-config');
+
+const databaseConfiguration = {
+    driver: 'mysql',
+    dataSourceManagerName: 'mysql 8.0',
+    dataSourcesLocal: {
+        path: path.join(process.cwd(), '.idea', 'dataSources.local.xml'),
+        templatePath: path.join(baseConfig.templateDir, 'dataSources.local.template.xml')
+    },
+    dataSources: {
+        path: path.join(process.cwd(), '.idea', 'dataSources.xml'),
+        templatePath: path.join(baseConfig.templateDir, 'dataSources.template.xml')
+    }
+};
 
 /**
  * Get link to data-source field, create fields if necessary
@@ -32,18 +47,9 @@ const getToDataSource = (data, defaultData) => {
 const setupDataSourceLocalConfig = () => ({
     title: 'Set up datasource local configuration',
     task: async (ctx, task) => {
-        const {
-            config: {
-                phpStorm,
-                phpStorm: {
-                    database
-                }
-            }
-        } = ctx;
-
-        if (await pathExists(database.dataSourcesLocal.path)) {
+        if (await pathExists(databaseConfiguration.dataSourcesLocal.path)) {
             let hasChanges = false;
-            const dataSourcesLocalData = await loadXmlFile(database.dataSourcesLocal.path);
+            const dataSourcesLocalData = await loadXmlFile(databaseConfiguration.dataSourcesLocal.path);
             const dataSource = getToDataSource(
                 dataSourcesLocalData,
                 {
@@ -62,7 +68,7 @@ const setupDataSourceLocalConfig = () => ({
 
             if (!dataSource['@_name']) {
                 hasChanges = true;
-                dataSource['@_name'] = database.dataSourceManagerName;
+                dataSource['@_name'] = databaseConfiguration.dataSourceManagerName;
             }
 
             if (!dataSource['@_uuid']) {
@@ -121,18 +127,18 @@ const setupDataSourceLocalConfig = () => ({
             }
 
             if (hasChanges) {
-                await buildXmlFile(database.dataSourcesLocal.path, dataSourcesLocalData);
+                await buildXmlFile(databaseConfiguration.dataSourcesLocal.path, dataSourcesLocalData);
             } else {
                 task.skip();
             }
         } else {
             try {
                 await setConfigFile({
-                    configPathname: phpStorm.database.dataSourcesLocal.path,
-                    template: phpStorm.database.dataSourcesLocal.templatePath,
+                    configPathname: databaseConfiguration.dataSourcesLocal.path,
+                    template: databaseConfiguration.dataSourcesLocal.templatePath,
                     overwrite: true,
                     templateArgs: {
-                        phpStorm
+                        databaseConfiguration
                     }
                 });
             } catch (e) {
@@ -147,20 +153,11 @@ const setupDataSourceLocalConfig = () => ({
  */
 const setupDataSourceConfig = () => ({
     task: async (ctx, task) => {
-        const {
-            config: {
-                phpStorm,
-                phpStorm: {
-                    database
-                }
-            },
-            ports
-        } = ctx;
-        const jdbcUrl = `jdbc:mysql://localhost:${ports.mysql}/magento`;
+        const jdbcUrl = `jdbc:mysql://localhost:${ctx.ports.mysql}/magento`;
 
-        if (await pathExists(database.dataSources.path)) {
+        if (await pathExists(databaseConfiguration.dataSources.path)) {
             let hasChanges = false;
-            const dataSourcesData = await loadXmlFile(database.dataSources.path);
+            const dataSourcesData = await loadXmlFile(databaseConfiguration.dataSources.path);
             const dataSource = getToDataSource(
                 dataSourcesData,
                 {
@@ -185,7 +182,7 @@ const setupDataSourceConfig = () => ({
             }
 
             const expectedDataSourceData = {
-                '@_name': database.dataSourceManagerName,
+                '@_name': databaseConfiguration.dataSourceManagerName,
                 'driver-ref': 'mysql.8',
                 synchronize: true,
                 'jdbc-driver': 'com.mysql.cj.jdbc.Driver',
@@ -213,18 +210,18 @@ const setupDataSourceConfig = () => ({
             }
 
             if (hasChanges) {
-                await buildXmlFile(database.dataSources.path, dataSourcesData);
+                await buildXmlFile(databaseConfiguration.dataSources.path, dataSourcesData);
             } else {
                 task.skip();
             }
         } else {
             try {
                 await setConfigFile({
-                    configPathname: phpStorm.database.dataSources.path,
-                    template: phpStorm.database.dataSources.templatePath,
+                    configPathname: databaseConfiguration.dataSources.path,
+                    template: databaseConfiguration.dataSources.templatePath,
                     overwrite: true,
                     templateArgs: {
-                        phpStorm,
+                        databaseConfiguration,
                         jdbcUrl
                     }
                 });

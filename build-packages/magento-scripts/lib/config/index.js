@@ -7,7 +7,6 @@ const {
 const getPhpConfig = require('./php-config');
 const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
-const { getPhpStormConfig } = require('./phpstorm/debug-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
 const UnknownError = require('../errors/unknown-error');
@@ -59,8 +58,7 @@ module.exports = {
             baseConfig: newBaseConfig,
             overridenConfiguration,
             userConfiguration,
-            nonOverridenConfiguration: configurations[magentoVersion],
-            phpStorm: getPhpStormConfig(overridenConfiguration, newBaseConfig)
+            nonOverridenConfiguration: configurations[magentoVersion]
         };
     },
     baseConfig,
