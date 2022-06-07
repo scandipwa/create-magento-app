@@ -148,7 +148,7 @@ const addPHPBrewInitiatorLineToConfigFile = () => ({
 
         const addLineToShellConfigFIle = await task.prompt({
             type: 'Confirm',
-            message: `To finish finish configuring PHPBrew we need to add ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')} line to your ${ shellConfigFileName } file.
+            message: `To finish configuring PHPBrew we need to add ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')} line to your ${ shellConfigFileName } file.
 Do you want to do it now?`
         });
 
