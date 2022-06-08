@@ -48,7 +48,7 @@ const dependenciesForPlatforms = {
             'perl',
             'libsodium',
             'php',
-            'pkg-config'
+            'pkgconf'
         ],
         installCommand: (deps) => `sudo pacman -S ${deps} --noconfirm`,
         packageManager: 'pacman'
