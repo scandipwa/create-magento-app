@@ -3,7 +3,7 @@ const { updateTableValues } = require('../../../util/database');
 const getIsWsl = require('../../../util/is-wsl');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const varnishConfigSetup = () => ({
     title: 'Varnish setup',
@@ -24,7 +24,6 @@ const varnishConfigSetup = () => ({
 
         const isLinux = os.platform() === 'linux';
         const isWsl = await getIsWsl();
-        // const host = (isLinux && !isWsl) ? 'localhost' : 'host.docker.internal';
 
         if (varnishEnabled) {
             await updateTableValues('core_config_data', [

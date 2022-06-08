@@ -2,7 +2,7 @@ const configPhpToJson = require('../../../util/config-php-json');
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
     title: 'Disabling 2fa for admin',

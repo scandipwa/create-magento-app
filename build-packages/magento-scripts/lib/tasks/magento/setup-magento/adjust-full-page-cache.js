@@ -2,7 +2,7 @@ const envPhpToJson = require('../../../util/env-php-json');
 const magentoTask = require('../../../util/magento-task');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const disableFullPageCache = () => ({
     title: 'Adjusting full_page cache setting',

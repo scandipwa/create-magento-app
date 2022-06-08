@@ -1,7 +1,7 @@
 const runMagentoCommand = require('../../../util/run-magento');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
     title: 'Creating admin user',

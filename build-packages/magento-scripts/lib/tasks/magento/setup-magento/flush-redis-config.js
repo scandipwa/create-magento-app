@@ -5,7 +5,7 @@ const UnknownError = require('../../../errors/unknown-error');
 const isLinux = os.platform() === 'linux';
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
     title: 'Flushing Magento redis cache',

@@ -3,7 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const KnownError = require('../../../errors/known-error');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const upgradeMagento = () => ({
     skip: (ctx) => {

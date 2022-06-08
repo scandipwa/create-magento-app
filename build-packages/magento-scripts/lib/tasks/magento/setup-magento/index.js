@@ -14,7 +14,9 @@ const urnHighlighter = require('./urn-highlighter');
 const waitingForVarnish = require('./waiting-for-varnish');
 
 /**
- * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @param {Object} [options]
+ * @param {Boolean} options.onlyInstallMagento
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupMagento = (options = {}) => ({
     title: 'Setting up Magento',

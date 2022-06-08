@@ -1,7 +1,7 @@
 const magentoTask = require('../../../util/magento-task');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const indexProducts = () => ({
     task: (ctx, task) => task.newListr(

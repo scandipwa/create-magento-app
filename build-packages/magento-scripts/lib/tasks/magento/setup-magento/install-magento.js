@@ -7,7 +7,9 @@ const envPhpToJson = require('../../../util/env-php-json');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
- * @type {({ isDbEmpty }: { isDbEmpty: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @param {Object} [param0]
+ * @param {Boolean} param0.isDbEmpty
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installMagento = ({ isDbEmpty = false } = {}) => ({
     title: 'Installing magento',

@@ -3,7 +3,7 @@ const KnownError = require('../../../errors/known-error');
 const sleep = require('../../../util/sleep');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const waitingForVarnish = () => ({
     title: 'Waiting for Varnish to return code 200',

@@ -6,7 +6,9 @@ const upgradeMagento = require('./upgrade-magento');
 const varnishConfigSetup = require('./varnish-config');
 
 /**
- * @type {({ onlyInstallMagento: boolean }) => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @param {Object} [options]
+ * @param {Boolean} options.onlyInstallMagento
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const migrateDatabase = (options = {}) => ({
     title: 'Migrating database',
