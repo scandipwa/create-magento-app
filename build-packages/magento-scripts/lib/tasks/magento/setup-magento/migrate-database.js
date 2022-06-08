@@ -1,3 +1,4 @@
+const installMagentoProject = require('../install-magento-project');
 const magentoTask = require('../../../util/magento-task');
 const runMagentoCommand = require('../../../util/run-magento');
 const configureElasticsearch = require('./configure-elasticsearch');
@@ -34,10 +35,10 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr([
                 installMagento({ isDbEmpty: true }),
-                upgradeMagento(),
-                magentoTask('cache:enable'),
                 varnishConfigSetup(),
-                configureElasticsearch()
+                configureElasticsearch(),
+                upgradeMagento(),
+                magentoTask('cache:enable')
             ], {
                 concurrent: false,
                 exitOnError: true,
@@ -72,16 +73,16 @@ const migrateDatabase = (options = {}) => ({
             if (options.onlyInstallMagento) {
                 ctx.isSetupUpgradeNeeded = false;
                 return task.newListr(
-                    installMagento()
+                    installMagentoProject()
                 );
             }
 
             return task.newListr([
-                installMagento(),
-                upgradeMagento(),
-                magentoTask('cache:enable'),
+                installMagentoProject(),
                 varnishConfigSetup(),
-                configureElasticsearch()
+                configureElasticsearch(),
+                upgradeMagento(),
+                magentoTask('cache:enable')
             ], {
                 concurrent: false,
                 exitOnError: true,
