@@ -3,78 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const installDependenciesTask = require('../../../util/install-dependencies-task');
-const osPlatform = require('../../../util/os-platform');
 const KnownError = require('../../../errors/known-error');
-const { getBrewCommand } = require('../../../util/get-brew-bin-path');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
- */
-const installPHPBrewDependencies = () => ({
-    title: 'Installing PHPBrew dependencies',
-    task: async (ctx, task) => {
-        if (process.platform === 'darwin') {
-            const installedDependencies = (await execAsyncSpawn(`${await getBrewCommand({ native: true })} list`)).split('\n');
-
-            const dependenciesToInstall = ['php', 'autoconf', 'pkg-config', 'gd'].filter((dep) => !installedDependencies.includes(dep));
-
-            if (dependenciesToInstall.length === 0) {
-                task.skip();
-                return;
-            }
-
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'darwin',
-                    dependenciesToInstall,
-                    useMacNativeEnvironment: true
-                })
-            );
-        }
-        const distro = await osPlatform();
-        switch (distro) {
-        case 'Arch Linux': {
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'Arch Linux',
-                    dependenciesToInstall: ['php', 'pkg-config']
-                })
-            );
-        }
-        case 'Fedora': {
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'Fedora',
-                    dependenciesToInstall: ['php']
-                })
-            );
-        }
-        case 'CentOS': {
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'CentOS',
-                    dependenciesToInstall: ['php']
-                })
-            );
-        }
-        case 'Ubuntu': {
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'Ubuntu',
-                    dependenciesToInstall: ['php']
-                })
-            );
-        }
-        default: {
-            task.skip();
-        }
-        }
-    }
-});
-
-/**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installXcode = () => ({
     title: 'Installing XCode',
@@ -105,7 +37,7 @@ const installXcode = () => ({
 });
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installPHPBrewBinary = () => ({
     title: 'Installing PHPBrew binary',
@@ -138,7 +70,7 @@ const installPHPBrewBinary = () => ({
 });
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const addPHPBrewInitiatorLineToConfigFile = () => ({
     task: async (ctx, task) => {
@@ -188,7 +120,7 @@ Then you can continue installation.`);
 });
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installPHPBrew = () => ({
     title: 'Installing PHPBrew',
@@ -196,14 +128,12 @@ const installPHPBrew = () => ({
         if (process.platform === 'darwin') {
             return task.newListr([
                 installXcode(),
-                installPHPBrewDependencies(),
                 installPHPBrewBinary(),
                 addPHPBrewInitiatorLineToConfigFile()
             ]);
         }
 
         return task.newListr([
-            installPHPBrewDependencies(),
             installPHPBrewBinary(),
             addPHPBrewInitiatorLineToConfigFile()
         ]);

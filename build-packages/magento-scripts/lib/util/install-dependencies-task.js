@@ -14,16 +14,14 @@ const KnownError = require('../errors/known-error');
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const installDependenciesTask = (options) => ({
-    title: 'Installing missing dependencies',
     task: async (ctx, task) => {
         const { dependenciesToInstall, platform } = options;
+        task.title = `Installing ${platform} dependencies`;
         let cmd;
         if (os.platform() === 'darwin') {
-            if (options.useMacNativeEnvironment) {
-                cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '), { native: true });
-            } else {
-                cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
-            }
+            cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '), {
+                native: options.useMacNativeEnvironment
+            });
         } else {
             cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
         }

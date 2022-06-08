@@ -1,43 +1,120 @@
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const dependenciesForPlatforms = require('../../../config/dependencies-for-platforms');
-const KnownError = require('../../../errors/known-error');
-const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { execAsyncSpawn, execCommandTask } = require('../../../util/exec-async-command');
 const {
     BREW_BIN_PATH_ARM_NATIVE,
     BREW_BIN_PATH_ARM_ROSETTA,
+    BREW_BIN_PATH_INTEL,
     getBrewCommand
 } = require('../../../util/get-brew-bin-path');
 const installDependenciesTask = require('../../../util/install-dependencies-task');
 const pathExists = require('../../../util/path-exists');
+
+const brewInstallCommand = '$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)';
+
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
+const installBrewRosettaTask = () => ({
+    title: 'Installing Brew using Rosetta 2',
+    task: async (ctx, task) => {
+        if (await pathExists(BREW_BIN_PATH_ARM_ROSETTA)) {
+            task.skip('Brew in Rosetta is already installed');
+            return;
+        }
+
+        return task.newListr(
+            execCommandTask(brewInstallCommand, {
+                useRosetta2: true
+            })
+        );
+    }
+});
+
+/**
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
+const installBrewNativeTask = () => ({
+    title: 'Installing Brew',
+    task: async (ctx, task) => {
+        if (
+            (ctx.arch === 'arm64' && await pathExists(BREW_BIN_PATH_ARM_NATIVE))
+            || (ctx.arch === 'x64' && await pathExists(BREW_BIN_PATH_INTEL))
+        ) {
+            task.skip('Brew in native path is already installed');
+            return;
+        }
+
+        return task.newListr(
+            execCommandTask(brewInstallCommand, {
+                useRosetta2: false
+            })
+        );
+    }
+});
+
+/**
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const macDependenciesCheck = () => ({
     title: 'Checking MacOS dependencies',
     task: async (ctx, task) => {
+        const tasks = [installBrewNativeTask()];
+
         if (ctx.arch === 'arm64') {
-            if (!await pathExists(BREW_BIN_PATH_ARM_ROSETTA) && await pathExists(BREW_BIN_PATH_ARM_NATIVE)) {
-                throw new KnownError(`Missing rosetta brew!
-Please make sure that you have installed brew in rosetta2 terminal!
-Follow the instructions: ${logger.style.link('https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos/installation-on-macos-apple-silicon')}`);
-            }
+            tasks.push(installBrewRosettaTask());
         }
-        const installedDependencies = (await execAsyncSpawn(`${await getBrewCommand()} list`)).split('\n');
 
-        const dependenciesToInstall = dependenciesForPlatforms
-            .darwin
-            .dependencies
-            .filter((dep) => !installedDependencies.includes(dep));
+        return task.newListr(
+            tasks.concat([
+                {
+                    task: async () => {
+                        const installDependenciesTasks = [];
+                        if (ctx.arch === 'arm64') {
+                            const installedNativeDependencies = (
+                                await execAsyncSpawn(`${await getBrewCommand({ native: true })} list`, { useRosetta2: false })
+                            ).split('\n');
+                            const dependenciesToInstallOnArm = dependenciesForPlatforms['darwin-arm']
+                                .dependencies
+                                .filter((dep) => !installedNativeDependencies.includes(dep));
 
-        if (dependenciesToInstall.length > 0) {
-            return task.newListr(
-                installDependenciesTask({
-                    platform: 'darwin',
-                    dependenciesToInstall,
-                    useMacNativeEnvironment: false
-                })
-            );
-        }
+                            if (dependenciesToInstallOnArm.length > 0) {
+                                installDependenciesTasks.push(
+                                    installDependenciesTask({
+                                        platform: 'darwin-arm',
+                                        dependenciesToInstall: dependenciesToInstallOnArm,
+                                        useMacNativeEnvironment: true
+                                    })
+                                );
+                            }
+                        }
+
+                        const installedDependencies = (
+                            await execAsyncSpawn(`${await getBrewCommand({ native: false })} list`, { useRosetta2: true })
+                        ).split('\n');
+                        const dependenciesToInstall = dependenciesForPlatforms
+                            .darwin
+                            .dependencies
+                            .filter((dep) => !installedDependencies.includes(dep));
+
+                        if (dependenciesToInstall.length > 0) {
+                            installDependenciesTasks.push(
+                                installDependenciesTask({
+                                    platform: 'darwin',
+                                    dependenciesToInstall,
+                                    useMacNativeEnvironment: false
+                                })
+                            );
+                        }
+
+                        if (installDependenciesTasks.length > 0) {
+                            return task.newListr(installDependenciesTasks);
+                        }
+
+                        task.skip();
+                    }
+                }
+            ])
+        );
     },
     options: {
         bottomBar: 10

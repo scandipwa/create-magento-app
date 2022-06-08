@@ -20,6 +20,16 @@ const dependenciesForPlatforms = {
         installCommand: (deps, { native } = { native: false }) => `${getBrewCommandSync({ native })} install ${deps}`,
         packageManager: 'brew'
     },
+    'darwin-arm': {
+        dependencies: [
+            'php',
+            'autoconf',
+            'pkg-config',
+            'gd'
+        ],
+        installCommand: (deps, { native } = { native: false }) => `${getBrewCommandSync({ native })} install ${deps}`,
+        packageManager: 'brew'
+    },
     'Arch Linux': {
         dependencies: [
             'freetype2',
@@ -36,7 +46,9 @@ const dependenciesForPlatforms = {
             'sqlite',
             'readline',
             'perl',
-            'libsodium'
+            'libsodium',
+            'php',
+            'pkg-config'
         ],
         installCommand: (deps) => `sudo pacman -S ${deps} --noconfirm`,
         packageManager: 'pacman'
@@ -58,7 +70,8 @@ const dependenciesForPlatforms = {
             'bzip2-devel',
             'curl-devel',
             'libxslt-devel',
-            'autoconf'
+            'autoconf',
+            'php'
         ],
         installCommand: (deps) => `sudo yum install ${deps} -y`,
         packageManager: 'yum'
@@ -80,7 +93,8 @@ const dependenciesForPlatforms = {
             'bzip2-devel',
             'curl-devel',
             'libxslt-devel',
-            'autoconf'
+            'autoconf',
+            'php'
         ],
         installCommand: (deps) => `sudo yum install --enablerepo=PowerTools ${deps} -y`,
         packageManager: 'yum'
@@ -109,7 +123,8 @@ const dependenciesForPlatforms = {
             'php-bz2',
             'pkg-config',
             'autoconf',
-            'cmake'
+            'cmake',
+            'php'
         ],
         installCommand: (deps) => `sudo apt install ${deps} -y`,
         packageManager: 'apt'
