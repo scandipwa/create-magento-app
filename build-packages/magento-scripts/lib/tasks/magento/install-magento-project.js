@@ -8,6 +8,7 @@ const getJsonFileData = require('../../util/get-jsonfile-data');
 const rmdirSafe = require('../../util/rmdir-safe');
 const KnownError = require('../../errors/known-error');
 const UnknownError = require('../../errors/unknown-error');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -124,9 +125,9 @@ const createMagentoProject = async ({
 };
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const installMagento = () => ({
+const installMagentoProject = () => ({
     title: 'Installing Magento',
     task: async (ctx, task) => {
         const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
@@ -190,7 +191,7 @@ const installMagento = () => ({
         } catch (e) {
             if (e.message.includes('man-in-the-middle attack')) {
                 throw new KnownError(`Probably you haven't setup pubkeys in composer.
-Please run composer diagnose in cli to get mode.\n\n${e}`);
+Please run ${logger.style.command('composer diagnose')} in cli to get mode.\n\n${e}`);
             }
 
             throw new UnknownError(`Unexpected error during composer install.\n\n${e}`);
@@ -202,4 +203,4 @@ Please run composer diagnose in cli to get mode.\n\n${e}`);
     }
 });
 
-module.exports = installMagento;
+module.exports = installMagentoProject;

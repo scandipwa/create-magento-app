@@ -10,7 +10,7 @@ const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
 const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
-const { installMagento, setupMagento } = require('./magento');
+const { installMagentoProject, setupMagento } = require('./magento');
 const { pullContainers, stopContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
 const {
@@ -118,7 +118,7 @@ const configureProject = () => ({
         configurePhp(),
         validatePHPInstallation(),
         installPrestissimo(),
-        installMagento(),
+        installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
         startPhpFpm(),
