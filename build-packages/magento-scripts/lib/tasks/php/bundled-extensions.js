@@ -16,7 +16,6 @@ const bundledExtensions = [
     'mysql',
     'pdo',
     'soap',
-    'xmlrpc',
     'xml',
     'zip',
     'fpm',
