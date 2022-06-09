@@ -27,7 +27,11 @@ const migrateDatabase = (options = {}) => ({
             WHERE TABLE_SCHEMA = 'magento';
         `);
 
-        if (tableCount === 0) {
+        if (
+            tableCount === 0
+            || !(await pathExists(path.join(process.cwd(), 'app', 'etc', 'env.php'))
+            || (!await pathExists(path.join(process.cwd(), 'app', 'etc', 'config.php'))))
+        ) {
             if (options.onlyInstallMagento) {
                 ctx.isSetupUpgradeNeeded = false;
                 return task.newListr(
@@ -50,15 +54,7 @@ const migrateDatabase = (options = {}) => ({
                 }
             });
         }
-        if (!await pathExists(path.join(process.cwd(), 'app', 'etc', 'config.php'))) {
-            return task.newListr([
-                installMagento(),
-                varnishConfigSetup(),
-                configureElasticsearch(),
-                upgradeMagento(),
-                magentoTask('cache:enable')
-            ]);
-        }
+
         const { code } = await runMagentoCommand('setup:db:status', {
             magentoVersion,
             throwNonZeroCode: false

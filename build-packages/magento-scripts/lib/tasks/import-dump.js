@@ -31,12 +31,20 @@ const importDump = () => ({
         configureProject(),
         {
             title: 'Installing Magento',
-            // skip setup if env.php and config.php are present in app/etc folder
-            skip: () => matchFilesystem(path.resolve('app/etc'), ['config.php', 'env.php']),
+            // skip setup if env.php and config.php are present in app/etc folder and db is not empty
+            skip: async (ctx) => {
+                const isFsMatching = await matchFilesystem(path.join(process.cwd(), 'app', 'etc'), ['config.php', 'env.php']);
+                const { mysqlConnection } = ctx;
+                const [[{ tableCount }]] = await mysqlConnection.query(`
+                    SELECT count(*) AS tableCount
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE TABLE_SCHEMA = 'magento';
+                `);
+
+                return tableCount !== 0 || !isFsMatching;
+            },
             task: (subCtx, subTask) => subTask.newListr(
-                setupMagento({
-                    onlyInstallMagento: true
-                })
+                setupMagento({ onlyInstallMagento: true })
             )
         },
         dumpThemeConfig(),
