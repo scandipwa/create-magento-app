@@ -8,7 +8,14 @@
     ],
     "config": {
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "laminas/laminas-dependency-plugin": true,
+            "magento/composer-root-update-plugin": true,
+            "magento/inventory-composer-installer": true,
+            "magento/magento-composer-installer": true
+        }
     },
     "version": "2.4.2-p2",
     "require": {
@@ -82,4 +89,3 @@
         }
     }
 }
-
