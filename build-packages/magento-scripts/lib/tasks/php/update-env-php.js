@@ -9,7 +9,7 @@ const updateEnvPHP = () => ({
     title: 'Updating env.php',
     task: async (ctx, task) => {
         // update env.php only if it's exist
-        if (!await pathExists(path.resolve('app', 'etc', 'env.php'))) {
+        if (!await pathExists(path.join(process.cwd(), 'app', 'etc', 'env.php'))) {
             task.skip();
             return;
         }

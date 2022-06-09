@@ -11,11 +11,11 @@ const pathExists = require('../../../util/path-exists');
 const urnHighlighter = () => ({
     title: 'Generating URN highlighter',
     task: async (ctx, task) => {
-        if (!await pathExists(path.resolve('./.idea'))) {
-            await fs.promises.mkdir(path.resolve('./.idea'));
+        if (!await pathExists(path.join(process.cwd(), './.idea'))) {
+            await fs.promises.mkdir(path.join(process.cwd(), './.idea'));
         }
 
-        if (await pathExists(path.resolve('./.idea/misc.xml'))) {
+        if (await pathExists(path.join(process.cwd(), './.idea/misc.xml'))) {
             task.skip();
             return;
         }
