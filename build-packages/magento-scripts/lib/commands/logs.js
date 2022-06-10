@@ -19,6 +19,7 @@ Available scopes:
 - nginx
 - elasticsearch
 - varnish (if enabled)
+- sslTerminator
 
 And you can use name matching:
 npm run logs ma (will match magento)
@@ -90,6 +91,8 @@ npm run logs re (will match redis)`);
                     argv.until && `--until ${argv.until}`
                 ].filter(Boolean).join(' ');
                 const command = `docker logs ${containers[containerName].name} ${commandArguments}`;
+
+                logger.logN(`Looking at the logs of ${logger.style.misc(containerName)}:`);
                 await execAsyncSpawn(command, {
                     callback: logger.log
                 });
