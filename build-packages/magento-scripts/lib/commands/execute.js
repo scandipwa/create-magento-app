@@ -17,7 +17,8 @@ Available containers:
 - nginx
 - redis
 - elasticsearch
-- varnish (if enabled)`);
+- varnish (if enabled)
+- sslTerminator`);
         },
         async (argv) => {
             const containers = (await docker).getContainers();
@@ -38,6 +39,8 @@ Available containers:
                         argv.commands.push('bash');
                     }
                 }
+
+                logger.logN(`Executing container ${logger.style.misc(container._)}`);
                 await executeInContainer({
                     containerName: container.name,
                     commands: argv.commands
