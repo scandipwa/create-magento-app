@@ -3,7 +3,6 @@ const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
 const symlinkTheme = require('./symlink-theme');
 const installTheme = require('./install-theme');
-const setupPersistedQuery = require('./setup-persisted-query');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
 const buildTheme = require('./build-theme');
 const KnownError = require('../../errors/known-error');
@@ -86,8 +85,7 @@ const setupThemes = () => ({
                     buildTheme(theme)
                 ])
             })).concat([
-                upgradeMagento(),
-                setupPersistedQuery()
+                upgradeMagento()
             ])
         );
     }
