@@ -12,6 +12,8 @@ const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime'
 const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
 const waitingForVarnish = require('./waiting-for-varnish');
+const setupPersistedQuery = require('../../theme/setup-persisted-query');
+const adjustFullPageCache = require('./adjust-full-page-cache');
 
 /**
  * @param {Object} [options]
@@ -27,6 +29,7 @@ const setupMagento = (options = {}) => ({
                 flushRedisConfig(),
                 waitingForRedis(),
                 updateEnvPHP(),
+                setupPersistedQuery(),
                 migrateDatabase({ onlyInstallMagento: true })
             ]);
         }
@@ -35,6 +38,7 @@ const setupMagento = (options = {}) => ({
             flushRedisConfig(),
             waitingForRedis(),
             updateEnvPHP(),
+            setupPersistedQuery(),
             migrateDatabase(),
             {
                 title: 'Configuring Magento settings',
@@ -51,6 +55,7 @@ const setupMagento = (options = {}) => ({
             disableMaintenanceMode(),
             disable2fa(),
             urnHighlighter(),
+            adjustFullPageCache(),
             magentoTask('cache:flush'),
             waitingForVarnish()
         ], {
