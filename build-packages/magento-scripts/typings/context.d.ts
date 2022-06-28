@@ -5,6 +5,7 @@ import { PHPStormConfig } from './phpstorm';
 
 export interface ListrContext {
     magentoVersion: string
+    composerVersion: string
     port?: number
     ports?: {
         app: number
