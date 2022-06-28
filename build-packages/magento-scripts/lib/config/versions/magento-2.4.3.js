@@ -1,7 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { libsodium } = require('../php/extensions');
-const { php7430 } = require('../php/releases');
+const { php74 } = require('../php/releases');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
@@ -9,7 +9,7 @@ module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.3',
     isDefault: true,
     configuration: {
-        php: php7430({
+        php: php74({
             templateDir,
             additionalExtensions: {
                 libsodium,

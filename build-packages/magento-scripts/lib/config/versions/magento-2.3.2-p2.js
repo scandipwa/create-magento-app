@@ -1,13 +1,13 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
-const { php7234 } = require('../php/releases');
+const { php72 } = require('../php/releases');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.3.2-p2',
     configuration: {
-        php: php7234({ templateDir }),
+        php: php72({ templateDir }),
         nginx: {
             version: '1.18.0',
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')
