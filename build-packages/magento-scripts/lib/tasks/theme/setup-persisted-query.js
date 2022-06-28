@@ -2,7 +2,10 @@ const path = require('path');
 const UnknownError = require('../../errors/unknown-error');
 const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
+const pathExists = require('../../util/path-exists');
 const runMagentoCommand = require('../../util/run-magento');
+
+const composerLockPath = path.join(process.cwd(), 'composer.lock');
 
 /**
  * TODO move this block inside theme folder as post installation command
@@ -12,7 +15,11 @@ const persistedQuerySetup = () => ({
     title: 'Setting up Redis configuration for persisted queries',
     task: async (ctx, task) => {
         const { ports, magentoVersion, verbose = false } = ctx;
-        const composerLockData = await getJsonfileData(path.join(process.cwd(), 'composer.lock'));
+        if (!await pathExists(composerLockPath)) {
+            task.skip('composer.lock does not exist');
+            return;
+        }
+        const composerLockData = await getJsonfileData(composerLockPath);
 
         if (!composerLockData.packages.some(({ name }) => name === 'scandipwa/persisted-query')) {
             /**
