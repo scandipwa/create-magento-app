@@ -1,32 +1,13 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { php7234 } = require('../php/releases');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.3.1',
     configuration: {
-        php: {
-            version: '7.2.33',
-            configTemplate: path.join(templateDir || '', 'php.template.ini'),
-            extensions: {
-                gd: {
-                    macosOptions: '--with-zlib-dir=$(brew --prefix zlib) --with-freetype-dir=$(brew --prefix freetype)'
-                },
-                intl: {},
-                zlib: {},
-                openssl: {},
-                sockets: {},
-                SimpleXML: {},
-                xdebug: {
-                    version: '3.1.2'
-                },
-                apcu: {},
-                opcache: {
-                    extensionName: 'Zend OPcache'
-                }
-            }
-        },
+        php: php7234({ templateDir }),
         nginx: {
             version: '1.18.0',
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')

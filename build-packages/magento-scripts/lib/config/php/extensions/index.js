@@ -1,3 +1,4 @@
 module.exports = {
-    libsodium: require('./libsodium')
+    libsodium: require('./libsodium'),
+    xdebug: require('./xdebug')
 };

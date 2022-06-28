@@ -1,30 +1,13 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
+const { php7430 } = require('../php/releases');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.3.7',
     configuration: {
-        php: {
-            version: '7.4.27',
-            configTemplate: path.join(templateDir || '', 'php.template.ini'),
-            extensions: {
-                gd: {},
-                intl: {},
-                zlib: {},
-                openssl: {},
-                sockets: {},
-                SimpleXML: {},
-                xdebug: {
-                    version: '3.1.2'
-                },
-                apcu: {},
-                opcache: {
-                    extensionName: 'Zend OPcache'
-                }
-            }
-        },
+        php: php7430({ templateDir }),
         nginx: {
             version: '1.18.0',
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')

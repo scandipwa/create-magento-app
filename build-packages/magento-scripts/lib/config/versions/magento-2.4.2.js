@@ -1,33 +1,20 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { libsodium } = require('../php/extensions');
+const { php7430 } = require('../php/releases');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.2',
     configuration: {
-        php: {
-            version: '7.4.27',
-            configTemplate: path.join(templateDir || '', 'php.template.ini'),
-            extensions: {
-                gd: {},
-                intl: {},
-                zlib: {},
-                openssl: {},
-                sockets: {},
-                SimpleXML: {},
+        php: php7430({
+            templateDir,
+            additionalExtensions: {
                 libsodium,
-                fileinfo: {},
-                xdebug: {
-                    version: '3.1.2'
-                },
-                apcu: {},
-                opcache: {
-                    extensionName: 'Zend OPcache'
-                }
+                fileinfo: {}
             }
-        },
+        }),
         nginx: {
             version: '1.18.0',
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')
