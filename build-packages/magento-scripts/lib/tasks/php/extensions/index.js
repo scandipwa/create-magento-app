@@ -47,7 +47,7 @@ const getDisabledExtensions = async ({ php }) => {
         }
     );
 
-    return extensionIniList.filter((f) => f.isFile() && f.name.endsWith('.disabled')).map((f) => f.name.replace('.disabled', ''));
+    return extensionIniList.filter((f) => f.isFile() && f.name.endsWith('.disabled')).map((f) => f.name.replace('.ini.disabled', ''));
 };
 
 /**
