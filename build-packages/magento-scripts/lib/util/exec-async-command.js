@@ -16,6 +16,10 @@ const execAsyncSpawn = (command, {
         stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
         cwd
     };
+
+    /**
+     * @type {import('child_process').ChildProcessWithoutNullStreams}
+     */
     let childProcess;
     if (useRosetta2 && os.platform() === 'darwin' && getArchSync() === 'arm64') {
         childProcess = spawn(
@@ -39,36 +43,40 @@ const execAsyncSpawn = (command, {
     }
 
     return new Promise((resolve, reject) => {
-        let stdout = '';
+        const chunks = [];
 
         /**
-         * @param {Buffer} data
+         * @param {Buffer} chunk
          */
-        function addLine(data) {
-            stdout += data.toString();
-            data.toString().split('\n').map((str) => str.trim()).forEach((str) => {
+        const addChunk = (chunk) => {
+            chunks.push(Buffer.from(chunk));
+            const newData = chunk.toString('utf-8');
+            newData.split('\n').map((str) => str.trim()).forEach((str) => {
                 callback(str);
             });
             if (logOutput) {
-                data.toString().split('\n').filter(Boolean).forEach((line) => {
+                newData.split('\n').filter(Boolean).forEach((line) => {
                     logger.log(line);
                 });
             }
-        }
-        childProcess.stdout.on('data', addLine);
-        childProcess.stderr.on('data', addLine);
+        };
+
+        childProcess.stdout.on('data', addChunk);
+        childProcess.stderr.on('data', addChunk);
+
         childProcess.on('error', (error) => {
             reject(error);
         });
         childProcess.on('close', (code) => {
+            const result = Buffer.concat(chunks).toString('utf8').trim();
             if (withCode) {
-                resolve({ code, result: stdout.trim() });
+                resolve({ code, result });
                 return;
             }
             if (code > 0) {
-                reject(stdout.trim());
+                reject(result);
             } else {
-                resolve(stdout.trim());
+                resolve(result);
             }
         });
     });
