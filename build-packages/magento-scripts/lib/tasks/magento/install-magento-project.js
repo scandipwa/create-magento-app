@@ -9,6 +9,7 @@ const rmdirSafe = require('../../util/rmdir-safe');
 const KnownError = require('../../errors/known-error');
 const UnknownError = require('../../errors/unknown-error');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { validateProjectDependencies } = require('./validate-project-dependencies');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -162,7 +163,9 @@ const installMagentoProject = () => ({
             'composer.lock': true
         });
 
-        if (isFsMatching) {
+        const dependenciesValid = await validateProjectDependencies();
+
+        if (isFsMatching && dependenciesValid) {
             ctx.magentoFirstInstall = false;
             task.skip();
             return;
