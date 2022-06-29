@@ -75,7 +75,7 @@ const enableMagentoComposerPlugins = () => ({
             return;
         }
 
-        task.title = 'Checking allowed composer plugins...';
+        task.title = 'Checking allowed Composer plugins...';
 
         const composerPlugins = await getInstalledComposerPlugins();
         const composerJsonData = await getJsonfileData(composerJsonPath);
