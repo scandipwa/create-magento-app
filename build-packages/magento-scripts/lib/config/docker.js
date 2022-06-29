@@ -206,7 +206,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     '--log_bin_trust_function_creators=1',
                     '--default-authentication-plugin=mysql_native_password',
                     '--max_allowed_packet=1GB',
-                    '--bind-address=0.0.0.0'
+                    '--bind-address=0.0.0.0',
+                    '--secure-file-priv=NULL'
                 ].join(' '),
                 securityOptions: [
                     'seccomp=unconfined'
