@@ -1,6 +1,5 @@
 const { loadXmlFile, buildXmlFile } = require('../../../../config/xml-parser');
 const pathExists = require('../../../../util/path-exists');
-const { getPhpConfig } = require('../php-config/php-config');
 const { setupXMLStructure } = require('../setup-xml-structure');
 const setupComposerSettings = require('./composer-settings-config');
 const setupFormatOnSave = require('./format-setting-config');
@@ -17,7 +16,6 @@ const setupWorkspaceConfig = () => ({
     title: 'Set up Workspace configuration',
     task: async (ctx, task) => {
         const workspaceConfig = getWorkspaceConfig(ctx.config.overridenConfiguration);
-        const phpConfig = getPhpConfig(ctx.config.overridenConfiguration);
         if (await pathExists(workspaceConfig.path)) {
             const workspaceConfiguration = setupXMLStructure(await loadXmlFile(workspaceConfig.path));
             const workspaceConfigs = workspaceConfiguration.project.component;
@@ -29,7 +27,7 @@ const setupWorkspaceConfig = () => ({
             ]);
 
             if (hasChanges.includes(true)) {
-                await buildXmlFile(phpConfig.path, workspaceConfiguration);
+                await buildXmlFile(workspaceConfig.path, workspaceConfiguration);
             } else {
                 task.skip();
             }
