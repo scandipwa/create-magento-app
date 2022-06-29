@@ -7,6 +7,7 @@ const installMagento = require('./install-magento');
 const upgradeMagento = require('./upgrade-magento');
 const varnishConfigSetup = require('./varnish-config');
 const pathExists = require('../../../util/path-exists');
+const updateEnvPHP = require('../../php/update-env-php');
 
 /**
  * @param {Object} [options]
@@ -41,6 +42,7 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr([
                 installMagento({ isDbEmpty: true }),
+                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch(),
                 upgradeMagento(),
@@ -65,6 +67,7 @@ const migrateDatabase = (options = {}) => ({
             ctx.isSetupUpgradeNeeded = false;
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
+                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch()
             ], {
@@ -86,6 +89,7 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr([
                 installMagentoProject(),
+                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch(),
                 upgradeMagento(),
@@ -101,6 +105,7 @@ const migrateDatabase = (options = {}) => ({
         }
         case 2: {
             return task.newListr([
+                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch(),
                 upgradeMagento()

@@ -7,12 +7,10 @@ const setBaseUrl = require('./set-base-url');
 const disableMaintenanceMode = require('./disable-maintenance-mode');
 const disable2fa = require('./disable-2fa');
 const setUrlRewrite = require('./set-url-rewrite');
-const updateEnvPHP = require('../../php/update-env-php');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
 const waitingForVarnish = require('./waiting-for-varnish');
-const setupPersistedQuery = require('../../theme/setup-persisted-query');
 const adjustFullPageCache = require('./adjust-full-page-cache');
 
 /**
@@ -28,8 +26,6 @@ const setupMagento = (options = {}) => ({
             return task.newListr([
                 flushRedisConfig(),
                 waitingForRedis(),
-                updateEnvPHP(),
-                setupPersistedQuery(),
                 migrateDatabase({ onlyInstallMagento: true })
             ]);
         }
@@ -37,8 +33,6 @@ const setupMagento = (options = {}) => ({
         return task.newListr([
             flushRedisConfig(),
             waitingForRedis(),
-            updateEnvPHP(),
-            setupPersistedQuery(),
             migrateDatabase(),
             {
                 title: 'Configuring Magento settings',

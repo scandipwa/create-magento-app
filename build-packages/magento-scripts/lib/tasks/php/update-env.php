@@ -78,6 +78,9 @@ class EnvUpdater
 
     public function modifyConfig()
     {
+        // set admin uri
+        $this->config['backend']['frontName'] = getenv('ADMIN_URI');
+
         // update mysql config
         if (isset($this->config['db']['connection']['default'])) {
             $conn = &$this->config['db']['connection']['default'];
@@ -120,19 +123,30 @@ class EnvUpdater
         }
 
         // update persisted query redis config
-        if (isset($this->config['cache']['persisted-query'])) {
-            $persistedQuery = &$this->config['cache']['persisted-query'];
+        if (getenv('SETUP_PQ') == '1') {
+            $cacheConfig = &$this->config['cache'];
+            $redisPort = getenv('REDIS_PORT');
 
-            if (isset($persistedQuery['redis'])) {
-                if ($persistedQuery['redis']['port'] !== strval($this->portConfig['redis'])) {
-                    $persistedQuery['redis']['port'] = strval($this->portConfig['redis']);
+            if (isset($cacheConfig) && isset($cacheConfig['persisted-query']) && isset($cacheConfig['persisted-query']['redis']) && $cacheConfig['persisted-query']['redis']['port'] != $redisPort) {
+                $cacheConfig['persisted-query']['redis']['port'] = $redisPort;
+            } else {
+                if (!isset($cacheConfig)) {
+                    $this->config['cache'] = [];
                 }
-                if ($persistedQuery['redis']['host'] !== 'localhost') {
-                    $persistedQuery['redis']['host'] = 'localhost';
-                }
+                $this->config['cache']['persisted-query'] = [
+                    'redis' => [
+                        'host' => 'localhost',
+                        'port' => $redisPort,
+                        'database' => '5',
+                        'scheme' => 'tcp'
+                    ]
+                ];
             }
+        } else {
+            unset($this->config['cache']['persisted-query']);
         }
 
+        // set varnish config
         $httpCacheHosts = &$this->config['http_cache_hosts'];
         $httpCacheHosts = [];
 

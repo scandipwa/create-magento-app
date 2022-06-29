@@ -4,7 +4,6 @@ const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-c
 const disablePageBuilder = require('../magento/setup-magento/disable-page-builder');
 const buildTheme = require('./build-theme');
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
-const setupPersistedQuery = require('./setup-persisted-query');
 const updateEnvPHP = require('../php/update-env-php');
 const semver = require('semver');
 
@@ -51,7 +50,6 @@ const linkTheme = () => ({
             symlinkTheme(theme),
             installTheme(theme),
             updateEnvPHP(),
-            setupPersistedQuery(),
             upgradeMagento(),
             adjustFullPageCache(),
             ...(isPageBuilderInstalled && Number(isPagebuilderEnabled) ? [disablePageBuilder()] : []),
