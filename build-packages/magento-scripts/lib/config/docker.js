@@ -102,6 +102,11 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.sslTerminator }:80`
                 ] : [],
+                forwardedPorts: [
+                    isNotNativeLinux
+                        ? `127.0.0.1:${ ports.sslTerminator }:80`
+                        : `127.0.0.1:${ ports.sslTerminator }`
+                ],
                 healthCheck: {
                     cmd: 'service nginx status'
                 },
@@ -127,6 +132,11 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.app }:80`
                 ] : [],
+                forwardedPorts: [
+                    isNotNativeLinux
+                        ? `127.0.0.1:${ ports.app }:80`
+                        : `127.0.0.1:${ ports.app }`
+                ],
                 healthCheck: {
                     cmd: 'service nginx status'
                 },
@@ -159,6 +169,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     cmd: 'redis-cli ping'
                 },
                 ports: [`127.0.0.1:${ ports.redis }:6379`],
+                forwardedPorts: [`127.0.0.1:${ ports.redis }:6379`],
                 mounts: [`source=${ volumes.redis.name },target=/data`],
                 // TODO: use connect instead
                 network: network.name,
@@ -176,6 +187,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     cmd: 'mysqladmin ping --silent'
                 },
                 ports: [`127.0.0.1:${ ports.mysql }:3306`],
+                forwardedPorts: [`127.0.0.1:${ ports.mysql }:3306`],
                 mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
                 env: {
                     MYSQL_PORT: 3306,
@@ -216,6 +228,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     cmd: 'curl --silent --fail localhost:9200/_cluster/health || exit 1'
                 },
                 ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
+                forwardedPorts: [`127.0.0.1:${ ports.elasticsearch }:9200`],
                 mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
                 env: {
                     'bootstrap.memory_lock': true,
@@ -256,6 +269,11 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ports: isNotNativeLinux ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
                 ] : [],
+                forwardedPorts: [
+                    isNotNativeLinux
+                        ? `127.0.0.1:${ ports.varnish }:80`
+                        : `127.0.0.1:${ ports.varnish }`
+                ],
                 env: {
                     VARNISH_SIZE: '2G'
                 },

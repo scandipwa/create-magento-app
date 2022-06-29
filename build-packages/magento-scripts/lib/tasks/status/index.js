@@ -89,11 +89,15 @@ const prettyStatus = async (ctx) => {
             .addLine(`Image: ${logger.style.file(container.image)}`)
             .addLine(`Network: ${logger.style.link(container.network)}`);
 
-        if (container.ports && container.ports.length > 0) {
+        if (container.forwardedPorts && container.forwardedPorts.length > 0) {
             block.addLine('Port forwarding:');
-            container.ports.forEach((port) => {
+            container.forwardedPorts.forEach((port) => {
                 const { host, hostPort, containerPort } = parsePort(port);
-                block.addLine(`${' '.repeat(3)} ${logger.style.link(`${host}:${hostPort}`)} -> ${logger.style.file(containerPort)}`);
+                if (container.network !== 'host') {
+                    block.addLine(`${' '.repeat(3)} ${logger.style.link(`${host}:${hostPort}`)} -> ${logger.style.file(containerPort)} (${logger.style.link('host')} -> ${logger.style.file('container')})`);
+                } else {
+                    block.addLine(`${' '.repeat(3)} ${logger.style.link(`Running on host network - ${host}:${hostPort}`)}`);
+                }
             });
         }
 
