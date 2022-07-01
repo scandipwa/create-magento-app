@@ -281,7 +281,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 restart: 'on-failure:30',
                 network: isNotNativeLinux ? network.name : 'host',
                 // eslint-disable-next-line max-len
-                command: `/bin/bash -c "varnishd -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s malloc,512m && varnishlog"`,
+                command: `/bin/bash -c "varnishd -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s malloc,512m -p http_resp_hdr_len=70000 -p http_resp_size=100000 && varnishlog"`,
                 tmpfs: [
                     '/var/lib/varnish:exec'
                 ]
