@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
  * @param {Object} options
@@ -89,7 +90,8 @@ const pullContainers = () => ({
             .join(' ');
         const existingImages = await execAsyncSpawn(`docker images ${containerFilters}`);
         const missingContainerImages = containers.filter((container) => !existingImages.split('\n')
-            .some((line) => line.includes(container.imageDetails.name) && line.includes(container.imageDetails.tag)));
+            .some((line) => line.includes(container.imageDetails.name) && line.includes(container.imageDetails.tag)))
+            .reduce((acc, val) => acc.concat(acc.some((c) => c.imageDetails.name === val.imageDetails.name && c.imageDetails.tag === val.imageDetails.tag) ? [] : val), []);
 
         if (missingContainerImages.length === 0) {
             task.skip();
@@ -98,7 +100,7 @@ const pullContainers = () => ({
 
         return task.newListr(
             missingContainerImages.map((container) => ({
-                title: `Pulling ${container._} image`,
+                title: `Pulling ${ logger.style.file(`${container.imageDetails.name}:${container.imageDetails.tag}`) } image`,
                 task: () => pull(`${container.imageDetails.name}:${container.imageDetails.tag}`)
             })), {
                 concurrent: true,
