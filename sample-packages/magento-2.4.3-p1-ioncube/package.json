@@ -17,7 +17,7 @@
         "type": "magento"
     },
     "dependencies": {
-        "@scandipwa/magento-scripts": "1.16.0-alpha.2",
+        "@scandipwa/magento-scripts": "1.16.0-alpha.3",
         "@scandipwa/magento-scripts-php-ioncube-extension": "0.0.3"
     }
 }
