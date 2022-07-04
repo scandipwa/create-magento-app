@@ -68,7 +68,6 @@ const installPHPBrewBinary = () => ({
         bottomBar: 10
     }
 });
-
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
@@ -79,12 +78,19 @@ const addPHPBrewInitiatorLineToConfigFile = () => ({
         const shellConfigFileName = `.${shellName}rc`;
 
         const addLineToShellConfigFIle = await task.prompt({
-            type: 'Confirm',
+            type: 'Select',
             message: `To finish configuring PHPBrew we need to add ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')} line to your ${ shellConfigFileName } file.
-Do you want to do it now?`
+Do you want to do it now?`,
+            choices: [{
+                name: 'yes',
+                message: 'Yeah, thanks'
+            }, {
+                name: 'no',
+                message: 'No, I will deal with this myself'
+            }]
         });
 
-        if (!addLineToShellConfigFIle) {
+        if (addLineToShellConfigFIle === 'no') {
             task.skip();
             return;
         }
@@ -101,16 +107,26 @@ Do you want to do it now?`
             );
         } else {
             const continueInstall = await task.prompt({
-                type: 'Confirm',
+                type: 'Select',
                 message: `Unfortunately we cannot automatically add necessary configuration for your shell ${process.env.SHELL}!
 You will need to that manually!
 
 Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
 
-When you ready, press select Yes and installation will continue.`
+When you ready, press Enter and installation will continue.`,
+                choices: [
+                    {
+                        name: 'yes',
+                        message: 'YES'
+                    },
+                    {
+                        name: 'no',
+                        message: 'Exit installation'
+                    }
+                ]
             });
 
-            if (!continueInstall) {
+            if (continueInstall === 'no') {
                 throw new KnownError(`Add following string to your shells configuration file: ${logger.style.code('[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc')}
 
 Then you can continue installation.`);
