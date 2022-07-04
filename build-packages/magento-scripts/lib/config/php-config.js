@@ -1,5 +1,5 @@
 const path = require('path');
-const os = require('os');
+const phpbrewConfig = require('./phpbrew');
 
 module.exports = (app, config) => {
     const { php } = app;
@@ -7,9 +7,7 @@ module.exports = (app, config) => {
     const { cacheDir } = config;
 
     const phpVersionDir = path.join(
-        os.homedir(),
-        '.phpbrew',
-        'php',
+        phpbrewConfig.phpPath,
         `php-${ php.version }`
     );
 

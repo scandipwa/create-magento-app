@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
-const os = require('os');
 const pathExists = require('../../../util/path-exists');
 const UnknownError = require('../../../errors/unknown-error');
+const phpbrewConfig = require('../../phpbrew');
 
 /**
  * @type {import('../../../../typings/index').PHPExtension}
@@ -12,9 +12,7 @@ module.exports = {
     hooks: {
         postInstall: async ({ php }) => {
             const sodiumDynamicLibraryPath = path.join(
-                os.homedir(),
-                '.phpbrew',
-                'php',
+                phpbrewConfig.phpPath,
                 `php-${php.version}`,
                 'var',
                 'db',
