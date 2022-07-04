@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 const { execAsyncSpawn } = require('../../util/exec-async-command');
+const sleep = require('../../util/sleep');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const KnownError = require('../../errors/known-error');
 
 /**
  * @param {Object} options
@@ -167,6 +169,41 @@ const getContainerStatus = async (containerName) => {
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
+const checkContainersAreRunning = () => ({
+    title: 'Checking container statuses',
+    task: async (ctx, task) => {
+        const { config: { docker }, ports } = ctx;
+        const containers = Object.values(docker.getContainers(ports));
+        let tries = 0;
+        while (tries < 3) {
+            const containersWithStatus = await Promise.all(
+                containers.map(async (container) => ({
+                    ...container,
+                    status: await getContainerStatus(container.name)
+                }))
+            );
+
+            if (containersWithStatus.some((c) => c.status.Status !== 'running')) {
+                if (tries === 2) {
+                    throw new KnownError(`${containersWithStatus.filter((c) => c.status.Status !== 'running').map((c) => c._).join(', ')} containers are not running! Please check container logs for more details!`);
+                } else {
+                    task.output = `${containersWithStatus.filter((c) => c.status.Status !== 'running').map((c) => c._).join(', ')} are not running, waiting if something will change...`;
+                    await sleep(2000);
+                    tries++;
+                }
+            } else {
+                break;
+            }
+        }
+    },
+    options: {
+        bottomBar: 10
+    }
+});
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const statusContainers = () => ({
     task: async (ctx) => {
         const { config: { docker }, ports } = ctx;
@@ -188,5 +225,7 @@ module.exports = {
     startContainers,
     stopContainers,
     pullContainers,
-    statusContainers
+    statusContainers,
+    checkContainersAreRunning,
+    getContainerStatus
 };

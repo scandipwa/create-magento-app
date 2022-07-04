@@ -19,7 +19,8 @@ const startServices = () => ({
                 ctx
             })
         },
-        containers.startContainers()
+        containers.startContainers(),
+        containers.checkContainersAreRunning()
     ], {
         concurrent: false,
         exitOnError: true
