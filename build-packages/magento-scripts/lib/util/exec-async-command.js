@@ -10,11 +10,16 @@ const execAsyncSpawn = (command, {
     logOutput = false,
     cwd,
     withCode = false,
-    useRosetta2 = false
+    useRosetta2 = false,
+    env = process.env
 } = {}) => {
+    /**
+     * @type {import('child_process').SpawnOptionsWithoutStdio}
+     */
     const spawnOptions = {
         stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
-        cwd
+        cwd,
+        env
     };
 
     /**

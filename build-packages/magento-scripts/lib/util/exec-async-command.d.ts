@@ -11,6 +11,7 @@ interface ExecAsyncSpawnOptions<T extends boolean> {
     withCode?: T
     // only for mac
     useRosetta2?: boolean
+    env: NodeJS.ProcessEnv
 }
 
 /**
