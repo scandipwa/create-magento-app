@@ -4,6 +4,7 @@ const fs = require('fs');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const pathExists = require('../../../util/path-exists');
 const phpbrewConfig = require('../../../config/phpbrew');
+const { getPHPForPHPBrewBin } = require('../../../util/get-php-for-phpbrew');
 
 /**
  * Get enabled extensions list with versions
@@ -11,9 +12,16 @@ const phpbrewConfig = require('../../../config/phpbrew');
  * @returns {Promise<{[key: string]: string}}>}
  */
 const getEnabledExtensions = async ({ php }) => {
+    const phpBinForPHPBrew = await getPHPForPHPBrewBin();
     const output = await execAsyncSpawn(
         `${ php.binPath } -c ${php.iniPath} -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`,
-        { useRosetta2: true }
+        {
+            useRosetta2: true,
+            env: phpBinForPHPBrew ? {
+                ...process.env,
+                PATH: `${phpBinForPHPBrew}:${process.env.PATH}`
+            } : process.env
+        }
     );
 
     return output

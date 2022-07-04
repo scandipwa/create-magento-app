@@ -1,6 +1,7 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { getPHPForPHPBrewBin } = require('../../../util/get-php-for-phpbrew');
 const installPHPBrew = require('./install');
 const getPHPBrewVersion = require('./version');
 
@@ -10,8 +11,13 @@ const getPHPBrewVersion = require('./version');
 const checkPHPBrew = () => ({
     title: 'Checking phpbrew',
     task: async (ctx, task) => {
+        const phpBinForPHPBrew = await getPHPForPHPBrewBin();
         const { code } = await execAsyncSpawn('phpbrew --version', {
-            withCode: true
+            withCode: true,
+            env: phpBinForPHPBrew ? {
+                ...process.env,
+                PATH: `${phpBinForPHPBrew}:${process.env.PATH}`
+            } : process.env
         });
 
         if (code !== 0) {

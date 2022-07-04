@@ -3,6 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const compileOptions = require('./compile-options');
 const UnknownError = require('../../errors/unknown-error');
+const { getPHPForPHPBrewBin } = require('../../util/get-php-for-phpbrew');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -10,6 +11,7 @@ const UnknownError = require('../../errors/unknown-error');
 const compilePHP = () => ({
     title: 'Compiling PHP',
     task: async ({ config: { php } }, task) => {
+        const phpBinForPHPBrew = await getPHPForPHPBrewBin();
         const platformCompileOptions = compileOptions[process.platform];
         if (process.platform === 'linux') {
             const { distro } = await systeminformation.osInfo();
@@ -29,7 +31,11 @@ const compilePHP = () => ({
                     callback: (t) => {
                         task.output = t;
                     },
-                    useRosetta2: true
+                    useRosetta2: true,
+                    env: phpBinForPHPBrew ? {
+                        ...process.env,
+                        PATH: `${phpBinForPHPBrew}:${process.env.PATH}`
+                    } : process.env
                 }
             );
         } catch (e) {

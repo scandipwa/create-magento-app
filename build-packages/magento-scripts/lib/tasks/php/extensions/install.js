@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 const phpbrewConfig = require('../../../config/phpbrew');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { getPHPForPHPBrewBin } = require('../../../util/get-php-for-phpbrew');
 
 /**
  * @param {String} extensionName
@@ -10,6 +11,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const installExtension = (extensionName, extensionOptions) => ({
     title: `Installing ${extensionName} extension`,
     task: async (ctx, task) => {
+        const phpBinForPHPBrew = await getPHPForPHPBrewBin();
         const {
             config,
             config: { php }
@@ -32,7 +34,11 @@ const installExtension = (extensionName, extensionOptions) => ({
                 callback: (t) => {
                     task.output = t;
                 },
-                useRosetta2: true
+                useRosetta2: true,
+                env: phpBinForPHPBrew ? {
+                    ...process.env,
+                    PATH: `${phpBinForPHPBrew}:${process.env.PATH}`
+                } : process.env
             });
 
             if (hooks && hooks.postInstall) {
