@@ -120,8 +120,8 @@ const configureProject = () => ({
         installPrestissimo(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
-        startServices(),
         startPhpFpm(),
+        startServices(),
         connectToMySQL()
     ])
 });
