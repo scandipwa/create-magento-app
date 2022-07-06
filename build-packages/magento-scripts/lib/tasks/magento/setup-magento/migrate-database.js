@@ -82,13 +82,15 @@ const migrateDatabase = (options = {}) => ({
         case 1: {
             if (options.onlyInstallMagento) {
                 ctx.isSetupUpgradeNeeded = false;
-                return task.newListr(
-                    installMagentoProject()
-                );
+                return task.newListr([
+                    installMagentoProject(),
+                    installMagento()
+                ]);
             }
 
             return task.newListr([
                 installMagentoProject(),
+                installMagento(),
                 updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch(),
