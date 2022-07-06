@@ -47,6 +47,10 @@ Would you like to disable it in your project?`,
                                     message: 'Disable it, thanks'
                                 },
                                 {
+                                    name: 'remove',
+                                    message: `Remove ${prestissimoPluginName} from your system`
+                                },
+                                {
                                     name: 'skip',
                                     message: 'Skip this step'
                                 }
@@ -56,6 +60,17 @@ Would you like to disable it in your project?`,
                         if (disableConfirmation === 'disable') {
                             localComposerJsonData.config['allow-plugins'][prestissimoPluginName] = false;
                             await fs.promises.writeFile(localComposerJsonPath, JSON.stringify(localComposerJsonData, null, 4), 'utf-8');
+
+                            return;
+                        }
+
+                        if (disableConfirmation === 'remove') {
+                            await runComposerCommand(`global remove ${prestissimoPluginName}`, {
+                                throwNonZeroCode: false,
+                                magentoVersion
+                            });
+
+                            return;
                         }
                     }
                 }
