@@ -128,7 +128,7 @@ const createMagentoProject = async ({
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installMagentoProject = () => ({
-    title: 'Installing Magento',
+    title: 'Installing Magento Project',
     task: async (ctx, task) => {
         const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
         const {
