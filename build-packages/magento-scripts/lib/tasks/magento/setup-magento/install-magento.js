@@ -12,7 +12,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installMagento = ({ isDbEmpty = false } = {}) => ({
-    title: 'Installing magento',
+    title: 'Installing Magento in Database',
     task: async (ctx, task) => {
         if (isDbEmpty) {
             task.output = 'No Magento is installed in DB!\nInstalling...';
@@ -23,8 +23,47 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 docker,
                 magentoConfiguration
             },
-            ports
+            ports,
+            mysqlConnection
         } = ctx;
+
+        const response = await mysqlConnection.query(
+            'select * from admin_user where username=\'admin\';'
+        );
+
+        const usersWithUsernameAdmin = response && response.length > 0 && response[0];
+
+        if (usersWithUsernameAdmin && usersWithUsernameAdmin.length > 0) {
+            const confirmDeleteAdminUsers = await task.prompt({
+                type: 'Select',
+                message: `In order to install Magento in database you will need to delete admin user with username ${logger.style.command('admin')}`,
+                choices: [
+                    {
+                        name: 'delete-all',
+                        message: `Delete all admin users (${logger.style.code('Recommended')})`
+                    },
+                    {
+                        name: 'delete-only-admin',
+                        message: `Delete only admin user with ${logger.style.command('admin')} username`
+                    }
+                ]
+            });
+
+            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+
+            if (confirmDeleteAdminUsers === 'delete-all') {
+                await mysqlConnection.query(`
+                    TRUNCATE TABLE admin_user;
+                `);
+            } else {
+                await mysqlConnection.query(`
+                    DELETE FROM admin_user WHERE username='admin';
+                `);
+            }
+
+            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+        }
+
         const { mysql: { env } } = docker.getContainers(ports);
         const envPhpData = await envPhpToJson(process.cwd(), {
             magentoVersion: ctx.magentoVersion
