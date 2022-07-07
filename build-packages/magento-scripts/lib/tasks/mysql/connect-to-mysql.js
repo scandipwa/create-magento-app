@@ -81,12 +81,24 @@ const gettingMySQLConnection = () => ({
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
+const terminatingExistingConnection = () => ({
+    title: 'Terminating existing MySQL connection',
+    skip: (ctx) => !ctx.mysqlConnection,
+    task: (ctx) => {
+        ctx.mysqlConnection.destroy();
+    }
+});
+
+/**
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
 const connectToMySQL = () => ({
     title: 'Connecting to MySQL server',
     skip: (ctx) => ctx.skipSetup,
     task: (ctx, task) => task.newListr([
         waitForMySQLInitialization(),
         createMagentoDatabase(),
+        terminatingExistingConnection(),
         gettingMySQLConnection()
     ], {
         concurrent: false,
