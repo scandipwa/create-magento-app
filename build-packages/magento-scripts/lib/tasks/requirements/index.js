@@ -12,10 +12,10 @@ const checkRosetta = require('./rosetta');
 const checkRequirements = () => ({
     title: 'Checking requirements',
     task: (ctx, task) => task.newListr([
-        // checking if user is on supported platform
-        checkPlatform(),
         // check if rosetta 2 is installed or not on m1 macs
         checkRosetta(),
+        // checking if user is on supported platform
+        checkPlatform(),
         // check the Docker installation
         checkDocker(),
         // check for Node.js version
