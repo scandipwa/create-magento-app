@@ -4,6 +4,7 @@ const KnownError = require('../../errors/known-error');
 const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn, execCommandTask } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
+const connectToMySQL = require('./connect-to-mysql');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -33,6 +34,40 @@ const runSetGlobalLogBinTrustFunctionCreatorsCommand = () => ({
         return task.newListr(
             execCommandTask(`docker exec ${mysql.name} bash -c 'mysql -uroot -p${mysql.env.MYSQL_ROOT_PASSWORD} -e "SET GLOBAL log_bin_trust_function_creators = 1;"'`)
         );
+    }
+});
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
+const deleteDatabaseBeforeImportingDumpPrompt = () => ({
+    title: 'Deleting magento database before importing dump',
+    task: async (ctx, task) => {
+        const deleteDatabaseMagentoChoice = await task.prompt({
+            type: 'Select',
+            message: `Before importing database dump, would you like to delete existing database?
+
+It is possible that dump might interfere with existing data in database.
+
+Note that you will lose your existing database!`,
+            choices: [
+                {
+                    name: 'delete',
+                    message: 'YES I AM SURE I WANT TO DELETE magento DATABASE!'
+                },
+                {
+                    name: 'skip',
+                    message: 'Skip this step'
+                }
+            ]
+        });
+
+        if (deleteDatabaseMagentoChoice === 'delete') {
+            await ctx.mysqlConnection.query('DROP DATABASE IF EXISTS magento;');
+            await ctx.mysqlConnection.query('CREATE DATABASE magento;');
+            return;
+        }
+        task.skip();
     }
 });
 
@@ -106,8 +141,10 @@ const importDumpToMySQL = () => ({
 
         return task.newListr([
             copyDatabaseDumpIntoContainer(),
+            deleteDatabaseBeforeImportingDumpPrompt(),
             runSetGlobalLogBinTrustFunctionCreatorsCommand(),
             executeImportDumpSQL(),
+            connectToMySQL(),
             {
                 task: () => {
                     task.title = 'Database imported!';
