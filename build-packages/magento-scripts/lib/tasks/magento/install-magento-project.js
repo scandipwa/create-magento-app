@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const os = require('os');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
@@ -178,6 +179,12 @@ const installMagentoProject = () => ({
                 magentoVersion,
                 task,
                 verbose
+            });
+        }
+
+        if (!await pathExists(path.join(process.cwd(), 'app', 'etc'))) {
+            await fs.promises.mkdir(path.join(process.cwd(), 'app', 'etc'), {
+                recursive: true
             });
         }
         try {
