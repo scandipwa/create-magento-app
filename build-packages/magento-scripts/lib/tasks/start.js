@@ -32,6 +32,7 @@ const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 const validatePHPInstallation = require('./php/validate-php');
 const installSodiumExtension = require('./php/install-sodium');
+const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -149,7 +150,8 @@ const finishProjectConfiguration = () => ({
                 });
             }
         },
-        setupThemes()
+        setupThemes(),
+        waitingForVarnish()
     ], {
         rendererOptions: {
             collapse: false

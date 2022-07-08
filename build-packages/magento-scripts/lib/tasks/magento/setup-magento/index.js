@@ -10,7 +10,6 @@ const setUrlRewrite = require('./set-url-rewrite');
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime');
 const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
-const waitingForVarnish = require('./waiting-for-varnish');
 const adjustFullPageCache = require('./adjust-full-page-cache');
 
 /**
@@ -50,8 +49,7 @@ const setupMagento = (options = {}) => ({
             disable2fa(),
             urnHighlighter(),
             adjustFullPageCache(),
-            magentoTask('cache:flush'),
-            waitingForVarnish()
+            magentoTask('cache:flush')
         ], {
             concurrent: false,
             exitOnError: true,
