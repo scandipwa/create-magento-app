@@ -27,41 +27,47 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
             mysqlConnection
         } = ctx;
 
-        const response = await mysqlConnection.query(
-            'select * from admin_user where username=\'admin\';'
+        const [tableResponse] = await mysqlConnection.query(
+            'SELECT * FROM information_schema.tables WHERE table_schema = \'magento\' AND table_name = \'admin_user\' LIMIT 1;'
         );
 
-        const usersWithUsernameAdmin = response && response.length > 0 && response[0];
+        if (tableResponse.length > 0) {
+            const response = await mysqlConnection.query(
+                'select * from admin_user where username=\'admin\';'
+            );
 
-        if (usersWithUsernameAdmin && usersWithUsernameAdmin.length > 0) {
-            const confirmDeleteAdminUsers = await task.prompt({
-                type: 'Select',
-                message: `In order to install Magento in database you will need to delete admin user with username ${logger.style.command('admin')}`,
-                choices: [
-                    {
-                        name: 'delete-all',
-                        message: `Delete all admin users (${logger.style.code('Recommended')})`
-                    },
-                    {
-                        name: 'delete-only-admin',
-                        message: `Delete only admin user with ${logger.style.command('admin')} username`
-                    }
-                ]
-            });
+            const usersWithUsernameAdmin = response && response.length > 0 && response[0];
 
-            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+            if (usersWithUsernameAdmin && usersWithUsernameAdmin.length > 0) {
+                const confirmDeleteAdminUsers = await task.prompt({
+                    type: 'Select',
+                    message: `In order to install Magento in database you will need to delete admin user with username ${logger.style.command('admin')}`,
+                    choices: [
+                        {
+                            name: 'delete-all',
+                            message: `Delete all admin users (${logger.style.code('Recommended')})`
+                        },
+                        {
+                            name: 'delete-only-admin',
+                            message: `Delete only admin user with ${logger.style.command('admin')} username`
+                        }
+                    ]
+                });
 
-            if (confirmDeleteAdminUsers === 'delete-all') {
-                await mysqlConnection.query(`
+                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+
+                if (confirmDeleteAdminUsers === 'delete-all') {
+                    await mysqlConnection.query(`
                     TRUNCATE TABLE admin_user;
                 `);
-            } else {
-                await mysqlConnection.query(`
+                } else {
+                    await mysqlConnection.query(`
                     DELETE FROM admin_user WHERE username='admin';
                 `);
-            }
+                }
 
-            await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+            }
         }
 
         const { mysql: { env } } = docker.getContainers(ports);
