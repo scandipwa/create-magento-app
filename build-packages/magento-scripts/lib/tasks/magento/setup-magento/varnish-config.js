@@ -6,7 +6,7 @@ const getIsWsl = require('../../../util/is-wsl');
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const varnishConfigSetup = () => ({
-    title: 'Varnish setup',
+    title: 'Varnish Database setup',
     task: async (ctx, task) => {
         const {
             config: {
