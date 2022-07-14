@@ -1,0 +1,7 @@
+{
+    "name": "@scandipwa/dockerfile",
+    "version": "0.0.0",
+    "private":true,
+    "main": "./index.js",
+    "license": "OSL-3.0"
+}
