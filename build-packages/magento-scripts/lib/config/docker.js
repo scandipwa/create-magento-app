@@ -46,6 +46,14 @@ module.exports = async ({ configuration, ssl, host }, config) => {
     const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
+        volumes.php = {
+            name: `${ prefix }_project-data`,
+            opts: {
+                type: 'nfs',
+                device: magentoDir,
+                o: 'bind'
+            }
+        };
         /**
          * When CMA is running in non-native linux environment,
          * we need also create named volumes for nginx to avoid performance penalty
@@ -97,6 +105,22 @@ module.exports = async ({ configuration, ssl, host }, config) => {
 
     const getContainers = (ports = {}) => {
         const dockerConfig = {
+            php: {
+                _: 'PHP',
+                ports: [`127.0.0.1:${ ports.fpm }:9000`],
+                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
+                network: network.name,
+                mountVolumes: [
+                    `${ isLinux ? magentoDir : volumes.php }:/var/www/html`
+                ],
+                restart: 'on-failure:5',
+                image: `cma-local-project:${ prefix }`,
+                imageDetails: {
+                    name: 'cma-local-project',
+                    tag: prefix
+                },
+                name: `${ prefix }_php`
+            },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
                 ports: isNotNativeLinux ? [

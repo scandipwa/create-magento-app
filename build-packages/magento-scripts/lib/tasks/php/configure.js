@@ -23,7 +23,7 @@ const configurePHP = () => ({
             disabledExtensions.push('xdebug');
         }
 
-        /** @type {[string, import('../../../typings/index').PHPExtension][]} */
+        /** @type {[string, import('../../../typings/index').PHPExtensionInstallationInstruction][]} */
         const missingExtensions = Object.entries(php.extensions)
             .filter(([name, options]) => {
                 const extensionName = options.extensionName || name;

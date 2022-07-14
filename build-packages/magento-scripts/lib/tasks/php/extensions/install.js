@@ -5,7 +5,7 @@ const { getPHPForPHPBrewBin } = require('../../../util/get-php-for-phpbrew');
 
 /**
  * @param {String} extensionName
- * @param {import('../../../../typings/index').PHPExtension} extensionOptions
+ * @param {import('../../../../typings/index').PHPExtensionInstallationInstruction} extensionOptions
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installExtension = (extensionName, extensionOptions) => ({

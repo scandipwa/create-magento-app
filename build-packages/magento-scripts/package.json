@@ -22,6 +22,7 @@
         "arm64"
     ],
     "dependencies": {
+        "@scandipwa/dockerfile": "0.0.0",
         "@scandipwa/scandipwa-dev-utils": "0.1.13",
         "conf": "10.1.1",
         "enquirer": "2.3.6",

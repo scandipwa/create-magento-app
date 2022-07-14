@@ -1,7 +1,3 @@
-import { ListrTaskWrapper } from 'listr2';
-
-import { ListrContext } from './context';
-
 /* eslint-disable no-use-before-define */
 export interface ServiceWithVersion {
     /**
@@ -42,73 +38,39 @@ export interface VarnishConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface PHPExtension extends Record<string, unknown> {
-    version?: string
+export interface PHPExtensionInstallationInstruction {
     /**
-     * Name of the extension loaded to PHP.
+     * Alternative name for extension
      *
-     * @example `libsodium` extension is using `sodium` extensionName because it is loaded into PHP as `sodium` extension
-     * and dynamic library that it requires called `sodium`
-     *
-     * ```
-     * {
-     *  php: {
-     *      extensions: {
-     *          libsodium: {
-     *              extensionName: 'sodium'
-     *          }
-     *      }
-     *  }
-     * }
+     * @example ```js
+     * alternativeName: ['Zend OPcache']
      * ```
      */
-    linuxOptions?: string
-    macosOptions?: string
-    extensionName?: string
-    hooks?: {
-        preEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        preDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        preInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-    }
+    alternativeName?: string[]
     /**
-     * Allow to define custom logic to install extension
+     * Command to install extension
+     *
+     * @example ```bash
+     * docker-php-ext-install bcmath
+     * ```
+     * @example ```bash
+     * pecl install xdebug && docker-php-ext-enable xdebug
+     * ```
      */
-    install?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
+    command: string
 
     /**
-     * Allow to define custom logic to enable an extension
+     * System dependencies required by the extension
+     *
+     * @example ```js
+     * dependencies: ['icu-dev']
+     * ```
      */
-    enable?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
-
-    /**
-     * Allow to define custom logic to disable an extension
-     */
-    disable?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
+    dependencies?: string[]
 }
 
 export interface PHPExtensions {
-    gd: PHPExtension
-    intl: PHPExtension
-    zlib: PHPExtension
-    openssl: PHPExtension
-    sockets: PHPExtension
-    simpleXML: PHPExtension
-    xdebug: PHPExtension
-    fileinfo: PHPExtension
-    libsodium: PHPExtension
-    [key: string]: PHPExtension
+    [key: string]: PHPExtensionInstallationInstruction
 }
 
 export interface PHPConfiguration {
@@ -125,9 +87,16 @@ export interface PHPConfiguration {
     configTemplate: string
 
     /**
+     * PHP-FPM configuration file template location
+     *
+     * @example ./my-php-fpm-template.conf
+     */
+    fpmConfigTemplate: string
+
+    /**
      * Extensions for PHP
      */
-    extensions: PHPExtensions & Record<string, PHPExtension>
+    extensions: PHPExtensions
 
     /**
      * Disabled extension list
