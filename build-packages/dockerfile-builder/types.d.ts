@@ -3,6 +3,7 @@ export interface FromInstruction {
     image: string
     tag?: string
     platform?: string
+    name?: string
 }
 
 export interface RunInstruction {
@@ -44,6 +45,7 @@ export interface CopyInstruction {
     src: string[]
     dest: string
     chown?: string
+    from?: string
 }
 
 export interface EntrypointInstruction {

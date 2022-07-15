@@ -13,13 +13,15 @@ class DockerFileBuilder {
     from({
         image,
         tag = 'latest',
-        platform
+        platform,
+        name
     }) {
         this.instructions.push({
             type: 'FROM',
             image,
             tag,
-            platform
+            platform,
+            name
         });
 
         return this;
@@ -116,13 +118,15 @@ class DockerFileBuilder {
     copy({
         src,
         dest,
-        chown
+        chown,
+        from
     }) {
         this.instructions.push({
             type: 'COPY',
             src,
             dest,
-            chown
+            chown,
+            from
         });
 
         return this;

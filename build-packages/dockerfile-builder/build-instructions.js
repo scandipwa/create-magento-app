@@ -14,6 +14,10 @@ const buildInstructions = (instructions) => {
         case 'ADD': {
             let addInstruction = instruction.type;
 
+            if (instruction.type === 'COPY' && instruction.from) {
+                addInstruction += ` --from=${instruction.from}`;
+            }
+
             if (instruction.chown) {
                 addInstruction += ` --chown=${instruction.chown}`;
             }
@@ -87,6 +91,10 @@ const buildInstructions = (instructions) => {
             }
 
             fromInstruction += ` ${instruction.image}:${instruction.tag || 'latest'}`;
+
+            if (instruction.name) {
+                fromInstruction += ` AS ${instruction.name}`;
+            }
 
             dockerFileInstructions.push(fromInstruction);
             break;
