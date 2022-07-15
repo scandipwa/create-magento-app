@@ -22,7 +22,7 @@ const getPrefix = (fName = folderName) => {
     }
 
     if (projectInGlobalConfig && projectInGlobalConfig.prefix) {
-        return `${fName}-${projectInGlobalConfig.prefix}`;
+        return `${fName}.${projectInGlobalConfig.prefix}`;
     }
 
     return fName;

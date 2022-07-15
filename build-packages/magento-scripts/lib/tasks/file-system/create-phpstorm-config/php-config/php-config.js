@@ -2,10 +2,10 @@ const path = require('path');
 const { baseConfig } = require('../../../../config');
 
 /**
- * @param {import('../../../../../typings/index').CMAConfiguration} app
+ * @param {import('../../../../../typings/context').ListrContext} ctx
  */
-const getPhpConfig = (app) => {
-    const [majorPHPVersion, minorPHPVersion] = app.configuration.php.version.split('.');
+const getPhpConfig = (ctx) => {
+    const [majorPHPVersion, minorPHPVersion] = ctx.phpVersion.split('.');
     const phpLanguageLevel = `${ majorPHPVersion }.${ minorPHPVersion }`;
 
     return {

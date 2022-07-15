@@ -3,23 +3,24 @@ const openBrowser = require('../util/open-browser');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { saveConfiguration } = require('../config/save-config');
 const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
-const { installComposer, installPrestissimo } = require('./composer');
+// const { installComposer, installPrestissimo } = require('./composer');
 const { startServices } = require('./docker');
-const { installPhp, configurePhp } = require('./php');
+// const { installPhp, configurePhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
-const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
+// const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagentoProject, setupMagento } = require('./magento');
 const { pullContainers, stopContainers } = require('./docker/containers');
 const { setPrefix } = require('./prefix');
 const {
-    connectToMySQL,
-    importDumpToMySQL,
-    fixDB,
-    restoreThemeConfig,
-    dumpThemeConfig
+    connectToMySQL
+    // importDumpToMySQL,
+    // fixDB,
+    // restoreThemeConfig,
+    // dumpThemeConfig
 } = require('./mysql');
+const { buildProjectImage, buildXDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
@@ -30,9 +31,10 @@ const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-
 const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
-const validatePHPInstallation = require('./php/validate-php');
-const installSodiumExtension = require('./php/install-sodium');
+// const validatePHPInstallation = require('./php/validate-php');
+// const installSodiumExtension = require('./php/install-sodium');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
+const checkPHPVersion = require('./requirements/php-version');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -63,8 +65,8 @@ const retrieveProjectConfiguration = () => ({
 const stopProject = () => ({
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
-        stopContainers(),
-        stopPhpFpm()
+        stopContainers()
+        // stopPhpFpm()
     ], {
         concurrent: true,
         rendererOptions: {
@@ -104,24 +106,19 @@ const retrieveFreshProjectConfiguration = () => ({
 const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
-        installPhp(),
-        installComposer(),
-        {
-            task: (ctx, task) => task.newListr([
-                prepareFileSystem(),
-                pullContainers()
-            ], {
-                concurrent: true,
-                exitOnError: true
-            })
-        },
-        installSodiumExtension(),
-        configurePhp(),
-        validatePHPInstallation(),
-        installPrestissimo(),
-        installMagentoProject(),
-        enableMagentoComposerPlugins(),
-        startPhpFpm(),
+        buildProjectImage(),
+        buildXDebugProjectImage(),
+        pullContainers(),
+        checkPHPVersion(),
+        // installComposer(),
+        prepareFileSystem(),
+        // installSodiumExtension(),
+        // configurePhp(),
+        // validatePHPInstallation(),
+        // installPrestissimo(),
+        // installMagentoProject(),
+        // enableMagentoComposerPlugins(),
+        // startPhpFpm(),
         startServices(),
         connectToMySQL()
     ])
@@ -134,22 +131,22 @@ const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
-        {
-            skip: (ctx) => !ctx.importDb,
-            task: (ctx, task) => {
-                task.title = 'Importing database dump';
-                return task.newListr([
-                    dumpThemeConfig(),
-                    importDumpToMySQL(),
-                    fixDB(),
-                    restoreThemeConfig(),
-                    setupMagento()
-                ], {
-                    concurrent: false,
-                    exitOnError: true
-                });
-            }
-        },
+        // {
+        //     skip: (ctx) => !ctx.importDb,
+        //     task: (ctx, task) => {
+        //         task.title = 'Importing database dump';
+        //         return task.newListr([
+        //             dumpThemeConfig(),
+        //             importDumpToMySQL(),
+        //             fixDB(),
+        //             restoreThemeConfig(),
+        //             setupMagento()
+        //         ], {
+        //             concurrent: false,
+        //             exitOnError: true
+        //         });
+        //     }
+        // },
         setupThemes(),
         waitingForVarnish()
     ], {

@@ -50,7 +50,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             name: `${ prefix }_project-data`,
             opts: {
                 type: 'nfs',
-                device: magentoDir,
+                device: path.join(magentoDir),
                 o: 'bind'
             }
         };
@@ -111,13 +111,13 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
                 network: network.name,
                 mountVolumes: [
-                    `${ isLinux ? magentoDir : volumes.php }:/var/www/html`
+                    `${ isLinux ? magentoDir : volumes.php.name }:/var/www/html`
                 ],
                 restart: 'on-failure:5',
-                image: `cma-local-project:${ prefix }`,
+                image: `cmalocal:${ prefix.replace(/-/ig, '.') }`,
                 imageDetails: {
-                    name: 'cma-local-project',
-                    tag: prefix
+                    name: 'cmalocal',
+                    tag: prefix.replace(/-/ig, '.')
                 },
                 name: `${ prefix }_php`
             },

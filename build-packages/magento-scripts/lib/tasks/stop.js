@@ -1,6 +1,6 @@
 const { stopServices } = require('./docker');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
-const { stopPhpFpm } = require('./php-fpm');
+// const { stopPhpFpm } = require('./php-fpm');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 
@@ -13,7 +13,7 @@ const stop = () => ({
         getMagentoVersionConfig(),
         checkConfigurationFile(),
         getProjectConfiguration(),
-        stopPhpFpm(),
+        // stopPhpFpm(),
         stopServices()
     ], {
         concurrent: false,

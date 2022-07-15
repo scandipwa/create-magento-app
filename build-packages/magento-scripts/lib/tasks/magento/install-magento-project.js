@@ -1,32 +1,27 @@
 const path = require('path');
 const fs = require('fs');
-const os = require('os');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const runComposerCommand = require('../../util/run-composer');
 const matchFilesystem = require('../../util/match-filesystem');
-const moveFile = require('../../util/move-file');
 const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
-const rmdirSafe = require('../../util/rmdir-safe');
 const KnownError = require('../../errors/known-error');
 const UnknownError = require('../../errors/unknown-error');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { runPHPContainerCommand } = require('../php/run-php-container');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
 
 /**
- * Adjust composer.json file configuration for magento
+ * @param {import('../../../typings/context').ListrContext} ctx
+ * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext>} task
  */
-const adjustComposerJson = async ({
-    baseConfig,
+const adjustComposerJson = async (ctx, task, {
     magentoEdition,
     magentoProductSelectedEdition,
-    magentoVersion,
-    magentoPackageVersion,
-    task,
-    verbose
+    magentoPackageVersion
 }) => {
-    const composerData = await getJsonFileData(path.join(baseConfig.magentoDir, 'composer.json'));
+    const composerData = await getJsonFileData(path.join(ctx.config.baseConfig.magentoDir, 'composer.json'));
 
     // fix composer magento repository
     if (composerData && (!composerData.repositories
@@ -37,8 +32,7 @@ const adjustComposerJson = async ({
             && !Object.values(composerData.repositories).some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com')))
     )) {
         task.output = 'No Magento repository is set in composer.json! Setting up...';
-        await runComposerCommand('config repo.0 composer https://repo.magento.com', {
-            magentoVersion,
+        await runPHPContainerCommand(ctx, 'composer config repo.0 composer https://repo.magento.com', {
             callback: !verbose ? undefined : (t) => {
                 task.output = t;
             }
@@ -48,9 +42,8 @@ const adjustComposerJson = async ({
     // if composer-root-update-plugin is not installed in composer, install it.
     if (composerData && !composerData.require['magento/composer-root-update-plugin']) {
         task.output = 'Installing magento/composer-root-update-plugin!';
-        await runComposerCommand('require magento/composer-root-update-plugin:^1',
+        await runPHPContainerCommand(ctx, 'composer require magento/composer-root-update-plugin:^1',
             {
-                magentoVersion,
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
@@ -62,7 +55,8 @@ const adjustComposerJson = async ({
         && composerData.require[magentoProductCommunityEdition]
         && composerData.require[magentoProductEnterpriseEdition]
     ) {
-        throw new KnownError('Somehow, both Magento editions are installed!\nPlease choose only one edition an modify your composer.json manually!');
+        throw new KnownError(`Somehow, both Magento editions are installed!
+Please choose only one edition an modify your composer.json manually!`);
     }
 
     const oppositeEdition = [magentoProductCommunityEdition, magentoProductEnterpriseEdition]
@@ -76,12 +70,10 @@ Change magento edition in config file or manually reinstall correct magento edit
     }
 
     // if magento package is not installed in composer, require it.
-
     if (composerData && !composerData.require[magentoProductSelectedEdition]) {
         task.output = `Installing ${magentoProductSelectedEdition}=${magentoPackageVersion}!`;
-        await runComposerCommand(`require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
+        await runPHPContainerCommand(ctx, `composer require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
             {
-                magentoVersion,
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }
@@ -90,16 +82,14 @@ Change magento edition in config file or manually reinstall correct magento edit
 };
 
 /**
- * Create Magento Project
+ * @param {import('../../../typings/context').ListrContext} ctx
+ * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext>} task
  */
-const createMagentoProject = async ({
+const createMagentoProject = async (ctx, task, {
     magentoProject,
-    magentoPackageVersion,
-    magentoVersion,
-    task,
-    verbose
+    magentoPackageVersion
 }) => {
-    const tempDir = path.join(os.tmpdir(), `magento-tmpdir-${Date.now()}`);
+    const tempDir = `/tmp/magento-tmpdir-${Date.now()}`;
     const installCommand = [
         'create-project',
         `--repository=https://repo.magento.com/ ${magentoProject}=${magentoPackageVersion}`,
@@ -107,22 +97,8 @@ const createMagentoProject = async ({
         `"${tempDir}"`
     ];
 
-    await runComposerCommand(
-        installCommand.join(' '),
-        {
-            magentoVersion,
-            callback: !verbose ? undefined : (t) => {
-                task.output = t;
-            }
-        }
-    );
-
-    await moveFile({
-        from: path.join(tempDir, 'composer.json'),
-        to: path.join(process.cwd(), 'composer.json')
-    });
-
-    await rmdirSafe(tempDir);
+    await runPHPContainerCommand(ctx, `composer ${installCommand.join(' ')}`);
+    await runComposerCommand(ctx, `mv ${tempDir}/composer.json /var/www/html/composer.json`);
 };
 
 /**
@@ -131,7 +107,7 @@ const createMagentoProject = async ({
 const installMagentoProject = () => ({
     title: 'Installing Magento Project',
     task: async (ctx, task) => {
-        const { magentoVersion, config: { baseConfig, overridenConfiguration }, verbose } = ctx;
+        const { config: { baseConfig, overridenConfiguration } } = ctx;
         const {
             magento: { edition: magentoEdition },
             magentoVersion: magentoPackageVersion
@@ -141,15 +117,10 @@ const installMagentoProject = () => ({
         const magentoProject = `magento/project-${magentoEdition}-edition`;
 
         if (await pathExists(path.join(baseConfig.magentoDir, 'composer.json'))) {
-            await adjustComposerJson({
-                baseConfig,
-                isEnterprise,
+            await adjustComposerJson(ctx, task, {
                 magentoEdition,
                 magentoPackageVersion,
-                magentoProductSelectedEdition,
-                magentoVersion,
-                task,
-                verbose
+                magentoProductSelectedEdition
             });
         }
 
@@ -173,12 +144,9 @@ const installMagentoProject = () => ({
         task.output = 'Creating Magento project';
 
         if (!await pathExists(path.join(process.cwd(), 'composer.json'))) {
-            await createMagentoProject({
+            await createMagentoProject(ctx, task, {
                 magentoProject,
-                magentoPackageVersion,
-                magentoVersion,
-                task,
-                verbose
+                magentoPackageVersion
             });
         }
 
@@ -187,10 +155,10 @@ const installMagentoProject = () => ({
                 recursive: true
             });
         }
+
         try {
-            await runComposerCommand('install',
+            await runPHPContainerCommand(ctx, 'composer install',
                 {
-                    magentoVersion,
                     callback: !verbose ? undefined : (t) => {
                         task.output = t;
                     }
@@ -198,7 +166,7 @@ const installMagentoProject = () => ({
         } catch (e) {
             if (e.message.includes('man-in-the-middle attack')) {
                 throw new KnownError(`Probably you haven't setup pubkeys in composer.
-Please run ${logger.style.command('composer diagnose')} in cli to get mode.\n\n${e}`);
+        Please run ${logger.style.command('composer diagnose')} in cli to get mode.\n\n${e}`);
             }
 
             throw new UnknownError(`Unexpected error during composer install.\n\n${e}`);

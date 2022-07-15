@@ -5,9 +5,9 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
-const { installComposer, installPrestissimo } = require('../tasks/composer');
+// const { installComposer, installPrestissimo } = require('../tasks/composer');
 const ConsoleBlock = require('../util/console-block');
-const checkComposerCredentials = require('../tasks/requirements/composer');
+const { checkComposerCredentials } = require('../tasks/requirements/composer-credentials');
 
 /**
  * @param {import('yargs')} yargs
@@ -18,8 +18,8 @@ module.exports = (yargs) => {
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
-            installComposer(),
-            installPrestissimo(),
+            // installComposer(),
+            // installPrestissimo(),
             createBashrcConfigFile(),
             checkComposerCredentials()
         ], {

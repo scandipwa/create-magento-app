@@ -1,9 +1,13 @@
+/**
+ * @type {import('../../../../typings/index').PHPExtensionInstallationInstruction}
+ */
 module.exports = {
     name: 'gd',
-    command: 'docker-php-ext-configure gd --with-freetype --with-jpeg && docker-php-ext-install -j$(nproc) gd',
+    command: 'docker-php-ext-install gd',
     dependencies: [
         'freetype-dev',
         'libjpeg-turbo-dev',
-        'libpng-dev'
+        'libpng-dev',
+        'zlib-dev'
     ]
 };

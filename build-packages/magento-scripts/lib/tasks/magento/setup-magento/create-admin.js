@@ -5,8 +5,9 @@ const runMagentoCommand = require('../../../util/run-magento');
  */
 module.exports = () => ({
     title: 'Creating admin user',
-    task: async ({ magentoVersion, mysqlConnection, config: { magentoConfiguration } }, task) => {
-        const [[{ userCount }]] = await mysqlConnection.query(`
+    task: async (ctx, task) => {
+        const { config: { magentoConfiguration } } = ctx;
+        const [[{ userCount }]] = await ctx.mysqlConnection.query(`
             SELECT count(*) AS userCount
             FROM admin_user
             WHERE username = ?;
@@ -17,13 +18,11 @@ module.exports = () => ({
             return;
         }
 
-        await runMagentoCommand(`admin:user:create \
+        await runMagentoCommand(ctx, `admin:user:create \
         --admin-firstname='${ magentoConfiguration.first_name }' \
         --admin-lastname='${ magentoConfiguration.last_name }' \
         --admin-email='${ magentoConfiguration.email }' \
         --admin-user='${ magentoConfiguration.user }' \
-        --admin-password='${ magentoConfiguration.password }'`, {
-            magentoVersion
-        });
+        --admin-password='${ magentoConfiguration.password }'`);
     }
 });

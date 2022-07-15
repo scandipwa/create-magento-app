@@ -5,26 +5,27 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const KnownError = require('../../errors/known-error');
 
 /**
- * @param {Object} options
- * @param {number[]} [options.ports] Publish or expose port [docs](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose)
- * @param {number[]} [options.mounts] Add bind mounts or volumes using the --mount flag [docs](https://docs.docker.com/engine/reference/commandline/run/#add-bind-mounts-or-volumes-using-the---mount-flag)
- * @param {number[]} [options.mountVolumes] Mount volume [docs](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)
- * @param {Record<string, string>} [options.env] Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
- * @param {string} [options.image]
- * @param {string} [options.restart] Restart policies [docs](https://docs.docker.com/engine/reference/commandline/run/#restart-policies---restart)
- * @param {string} [options.name] Container name
- * @param {string} [options.entrypoint] Container entrypoint
- * @param {string} [options.command] Container command
- * @param {Record<"cmd" | "interval" | "retries" | "start-period" | "timeout", string>} [options.healthCheck] Container heathcheck properties
- * @param {string[]} [options.securityOptions] Security options [docs](https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt)
- * @param {string[]} [options.tmpfs]
+ * @param {Object} containerOptions
+ * @param {number[]} [containerOptions.ports] Publish or expose port [docs](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose)
+ * @param {number[]} [containerOptions.mounts] Add bind mounts or volumes using the --mount flag [docs](https://docs.docker.com/engine/reference/commandline/run/#add-bind-mounts-or-volumes-using-the---mount-flag)
+ * @param {number[]} [containerOptions.mountVolumes] Mount volume [docs](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)
+ * @param {Record<string, string>} [containerOptions.env] Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
+ * @param {string} [containerOptions.image]
+ * @param {string} [containerOptions.restart] Restart policies [docs](https://docs.docker.com/engine/reference/commandline/run/#restart-policies---restart)
+ * @param {string} [containerOptions.name] Container name
+ * @param {string} [containerOptions.entrypoint] Container entrypoint
+ * @param {string} [containerOptions.command] Container command
+ * @param {Record<"cmd" | "interval" | "retries" | "start-period" | "timeout", string>} [containerOptions.healthCheck] Container heathcheck properties
+ * @param {string[]} [containerOptions.securityOptions] Security options [docs](https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt)
+ * @param {string[]} [containerOptions.tmpfs]
+ * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
  */
-const run = (options) => {
+const run = (containerOptions, execOptions = {}) => {
     const {
         ports = [],
         mounts = [],
         mountVolumes = [],
-        env = {},
+        env,
         image,
         restart,
         network,
@@ -35,7 +36,7 @@ const run = (options) => {
         securityOptions = [],
         tmpfs = [],
         expose = []
-    } = options;
+    } = containerOptions;
 
     const exposeArg = expose && expose.map((e) => `--expose=${ e }`);
     const restartArg = restart && `--restart ${ restart }`;
@@ -43,7 +44,7 @@ const run = (options) => {
     const portsArgs = ports.map((port) => `-p ${ port }`).join(' ');
     const mountsArgs = mounts.map((mount) => `--mount ${ mount }`).join(' ');
     const mountVolumesArgs = mountVolumes.map((mount) => `-v ${mount}`).join(' ');
-    const envArgs = Object.entries(env).map(([key, value]) => `--env ${ key }=${ value }`).join(' ');
+    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env ${ key }=${ `${value}`.startsWith('{') && `${value}`.endsWith('}') ? `"${ value }"` : value }`).join(' ');
     const nameArg = name && `--name ${name}`;
     const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
     const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
@@ -70,7 +71,7 @@ const run = (options) => {
         command
     ].filter(Boolean).join(' ');
 
-    return execAsyncSpawn(dockerCommand);
+    return execAsyncSpawn(dockerCommand, execOptions);
 };
 
 const stop = async (containers) => {
@@ -221,11 +222,49 @@ const statusContainers = () => ({
     }
 });
 
+/**
+ * @param {string} command
+ * @param {string} container container id or name
+ * @param {Object} options
+ * @param {Record<string, string>} [options.env] Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
+ * @param {string} [options.workdir] Working directory inside the container
+ * @param {string} [options.user] Username or UID (format: <name|uid>[:<group|gid>])
+ * @param {string} [options.tty] Allocate a pseudo-TTY
+ */
+const exec = (command, container, options = {}) => {
+    const {
+        env,
+        tty,
+        user,
+        workdir
+    } = options;
+    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env ${ key }=${ `${value}`.startsWith('{') && `${value}`.endsWith('}') ? `"${ value }"` : value }`).join(' ');
+    const ttyArg = tty ? '--tty' : '';
+    const userArg = user ? `--user=${user}` : '';
+    const workdirArg = workdir ? `--workdir=${workdir}` : '';
+
+    const execCommand = [
+        'docker',
+        'container',
+        'exec',
+        envArgs,
+        ttyArg,
+        userArg,
+        workdirArg,
+        container,
+        command
+    ].filter(Boolean).join(' ');
+
+    return execAsyncSpawn(execCommand);
+};
+
 module.exports = {
     startContainers,
     stopContainers,
     pullContainers,
     statusContainers,
     checkContainersAreRunning,
-    getContainerStatus
+    getContainerStatus,
+    runContainer: run,
+    execContainer: exec
 };

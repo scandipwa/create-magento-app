@@ -1,8 +1,10 @@
-const { execAsyncSpawn } = require('./exec-async-command');
-const { getConfigFromMagentoVersion, defaultConfiguration, magento } = require('../config');
+const { magento } = require('../config');
 const UnknownError = require('../errors/unknown-error');
+const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
 /**
  * Execute magento command
+ *
+ * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command magento command
  * @param {Object} options
  * @param {Boolean} options.logOutput Log output to console using logger
@@ -12,18 +14,13 @@ const UnknownError = require('../errors/unknown-error');
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
  */
-const runMagentoCommand = async (command, options = {}) => {
+const runMagentoCommand = async (ctx, command, options = {}) => {
     const {
-        throwNonZeroCode = true,
-        magentoVersion = defaultConfiguration.name
+        throwNonZeroCode = true
     } = options;
-    const {
-        php,
-        baseConfig: { magentoDir }
-    } = await getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${magento.binPath} ${command}`, {
+    const { code, result } = await runPHPContainerCommand(ctx, `php ${magento.binPath} ${command}`, {
         ...options,
-        cwd: magentoDir,
+        cwd: ctx.config.baseConfig.magentoDir,
         withCode: true
     });
 

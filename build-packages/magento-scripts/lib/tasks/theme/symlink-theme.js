@@ -1,7 +1,7 @@
 const path = require('path');
 const UnknownError = require('../../errors/unknown-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
-const runComposerCommand = require('../../util/run-composer');
+const { runPHPContainerCommand } = require('../php/run-php-container');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -9,7 +9,7 @@ const runComposerCommand = require('../../util/run-composer');
 const symlinkTheme = (theme) => ({
     title: 'Setting symbolic link for theme in composer.json',
     task: async (ctx, task) => {
-        const { magentoVersion, verbose = false } = ctx;
+        const { verbose = false } = ctx;
         const composerJsonData = await getJsonfileData(path.join(process.cwd(), 'composer.json'));
 
         if (!composerJsonData.repositories) {
@@ -27,8 +27,7 @@ const symlinkTheme = (theme) => ({
         }
 
         try {
-            await runComposerCommand(`config repo.scandipwa path ${theme.absoluteThemePath}`, {
-                magentoVersion,
+            await runPHPContainerCommand(ctx, `composer config repo.scandipwa path ${theme.absoluteThemePath}`, {
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }

@@ -5,9 +5,8 @@ const runMagentoCommand = require('../../../util/run-magento');
  */
 const disableMaintenanceMode = () => ({
     title: 'Disabling maintenance mode',
-    task: async ({ magentoVersion }, task) => {
-        const { result } = await runMagentoCommand('maintenance:status', {
-            magentoVersion,
+    task: async (ctx, task) => {
+        const { result } = await runMagentoCommand(ctx, 'maintenance:status', {
             throwNonZeroCode: false
         });
 
@@ -16,7 +15,7 @@ const disableMaintenanceMode = () => ({
             return;
         }
 
-        await runMagentoCommand('maintenance:disable', { magentoVersion });
+        await runMagentoCommand(ctx, 'maintenance:disable');
     }
 });
 

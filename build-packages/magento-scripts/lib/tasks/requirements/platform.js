@@ -3,7 +3,7 @@ const macosVersion = require('macos-version');
 const systeminformation = require('systeminformation');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { platforms, darwinMinimalVersion } = require('../../config');
-const dependencyCheck = require('./dependency');
+// const dependencyCheck = require('./dependency');
 const { getArch } = require('../../util/arch');
 const getIsWsl = require('../../util/is-wsl');
 const KnownError = require('../../errors/known-error');
@@ -42,19 +42,6 @@ const checkPlatform = () => ({
         const { manufacturer, brand, cores } = await systeminformation.cpu();
 
         task.title = `Running on ${currentPlatform} ${ctx.platformVersion} (${manufacturer} ${brand} ${cores} threads)`;
-
-        const installDependenciesTask = await dependencyCheck();
-
-        if (installDependenciesTask) {
-            return task.newListr(
-                installDependenciesTask,
-                {
-                    rendererOptions: {
-                        showTimer: false
-                    }
-                }
-            );
-        }
     }
 });
 

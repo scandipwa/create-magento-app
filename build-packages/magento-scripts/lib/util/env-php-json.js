@@ -1,15 +1,15 @@
 const path = require('path');
 const UnknownError = require('../errors/unknown-error');
+const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
 const pathExists = require('./path-exists');
-const runPhpCode = require('./run-php');
 
-const envPhpToJson = async (projectPath = process.cwd(), { magentoVersion }) => {
+const envPhpToJson = async (ctx, projectPath = '/var/www/html') => {
     const envPhpPath = path.join(projectPath, 'app', 'etc', 'env.php');
     if (!await pathExists(envPhpPath)) {
         return null;
     }
-    const { code, result } = await runPhpCode(`-r "echo json_encode(require '${envPhpPath}');"`, {
-        magentoVersion
+    const { code, result } = await runPHPContainerCommand(ctx, `php -r "echo json_encode(require '${envPhpPath}');"`, {
+        withCode: true
     });
 
     if (code !== 0) {

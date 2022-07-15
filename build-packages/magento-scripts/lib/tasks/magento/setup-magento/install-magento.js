@@ -71,9 +71,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
         }
 
         const { mysql: { env } } = docker.getContainers(ports);
-        const envPhpData = await envPhpToJson(process.cwd(), {
-            magentoVersion: ctx.magentoVersion
-        });
+        const envPhpData = await envPhpToJson(ctx);
 
         const envPhpHaveEncryptionKey = envPhpData && envPhpData.crypt && envPhpData.crypt.key && envPhpData.crypt.key;
 
@@ -131,8 +129,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --backend-frontname='${ magentoConfiguration.adminuri }' \
                 --no-interaction`;
 
-                await runMagentoCommand(command, {
-                    magentoVersion,
+                await runMagentoCommand(ctx, command, {
                     throwNonZeroCode: true,
                     callback: !ctx.verbose ? undefined : (t) => {
                         task.output = t;

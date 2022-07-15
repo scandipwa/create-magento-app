@@ -13,7 +13,7 @@ const setupPHPProjectSharedConfiguration = require('./php-project-shared-configu
 const setupPhpConfig = () => ({
     title: 'Set up PHP configuration',
     task: async (ctx, task) => {
-        const phpConfig = getPhpConfig(ctx.config.overridenConfiguration);
+        const phpConfig = getPhpConfig(ctx);
 
         if (await pathExists(phpConfig.path)) {
             const phpConfigContent = setupXMLStructure(await loadXmlFile(phpConfig.path));

@@ -1,14 +1,23 @@
 const semver = require('semver');
 const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
+const { getEnabledExtensions } = require('../docker/project-image-builder');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createPhpConfig = () => ({
     title: 'Setting PHP config',
-    task: async ({ config: { php, baseConfig, overridenConfiguration: { configuration } }, debug, ports }) => {
-        const isXDebug2 = semver.satisfies(configuration.php.extensions.xdebug.version, '2');
+    task: async (ctx) => {
+        const {
+            config: {
+                php, baseConfig, debug, ports
+            }
+        } = ctx;
+        const containers = ctx.config.docker.getContainers(ctx.ports);
+        const phpExtensions = await getEnabledExtensions(`${containers.php.image}.xdebug`);
+        const isXDebug2 = semver.satisfies(phpExtensions.xdebug, '2');
+
         try {
             await setConfigFile({
                 configPathname: php.iniPath,

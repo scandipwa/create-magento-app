@@ -57,7 +57,7 @@ export interface PHPExtensionInstallationInstruction {
      * pecl install xdebug && docker-php-ext-enable xdebug
      * ```
      */
-    command: string
+    command: (arg0: Omit<PHPExtensionInstallationInstruction, 'command'>) => string | string
 
     /**
      * System dependencies required by the extension
@@ -67,6 +67,11 @@ export interface PHPExtensionInstallationInstruction {
      * ```
      */
     dependencies?: string[]
+
+    /**
+     * Extension version (if supported)
+     */
+    version?: string
 }
 
 export interface PHPExtensions {
@@ -75,9 +80,14 @@ export interface PHPExtensions {
 
 export interface PHPConfiguration {
     /**
-     * PHP version
+     * Base image
      */
-    version: string
+    baseImage?: string
+
+    /**
+     * Image tag
+     */
+    tag: string
 
     /**
      * Configuration file template location

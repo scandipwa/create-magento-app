@@ -66,6 +66,8 @@ const addPHPDebugConfig = (vscodeLaunchConfig, php) => {
 const createPhpFpmConfig = () => ({
     title: 'Setting VSCode config',
     task: async ({ config: { php, baseConfig } }, task) => {
+        task.skip();
+        return;
         if (await pathExists(vscodeLaunchConfigPath)) {
             const vscodeLaunchConfig = hjson.parse(await fs.promises.readFile(vscodeLaunchConfigPath, 'utf-8'), {
                 keepWsc: true

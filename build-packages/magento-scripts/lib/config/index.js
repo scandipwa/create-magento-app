@@ -5,7 +5,7 @@ const {
     defaultConfiguration
 } = require('./versions');
 const getPhpConfig = require('./php-config');
-const getComposerConfig = require('./composer');
+// const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
@@ -53,7 +53,7 @@ module.exports = {
         return {
             php: getPhpConfig(overridenConfiguration.configuration, newBaseConfig),
             docker: await getDockerConfig(overridenConfiguration, newBaseConfig),
-            composer: getComposerConfig(overridenConfiguration.configuration, newBaseConfig),
+            // composer: getComposerConfig(overridenConfiguration.configuration, newBaseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
             baseConfig: newBaseConfig,
             overridenConfiguration,

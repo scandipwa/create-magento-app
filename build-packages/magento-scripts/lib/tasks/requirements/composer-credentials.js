@@ -279,4 +279,6 @@ Error message that we got: ${e}`
     }
 });
 
-module.exports = checkComposerCredentials;
+module.exports = {
+    checkComposerCredentials
+};

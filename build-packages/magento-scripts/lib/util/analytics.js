@@ -226,6 +226,7 @@ class Analytics {
 
         const params = new URLSearchParams(collectAnalyticsParameters(analyticsParameters)).toString();
 
+        return;
         try {
             if (!process.env.GA_DEBUG) {
                 await request(

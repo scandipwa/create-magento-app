@@ -3,6 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { spawn } = require('child_process');
 const { getArchSync } = require('./arch');
 const compileOptions = require('../tasks/php/compile-options');
+const UnknownError = require('../errors/unknown-error');
 
 const execAsyncSpawn = (command, {
     callback = () => {},
@@ -79,7 +80,7 @@ const execAsyncSpawn = (command, {
                 return;
             }
             if (code > 0) {
-                reject(result);
+                reject(new UnknownError(result));
             } else {
                 resolve(result);
             }

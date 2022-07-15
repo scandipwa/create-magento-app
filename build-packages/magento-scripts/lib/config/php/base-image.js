@@ -1,3 +1,3 @@
 module.exports = {
-    baseImage: 'create-magento-app'
+    baseImage: 'cma'
 };

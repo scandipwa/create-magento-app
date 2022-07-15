@@ -17,10 +17,7 @@ const updateEnvPHP = require('../../php/update-env-php');
 const migrateDatabase = (options = {}) => ({
     title: 'Migrating database',
     task: async (ctx, task) => {
-        const {
-            magentoVersion,
-            mysqlConnection
-        } = ctx;
+        const { mysqlConnection } = ctx;
 
         const [[{ tableCount }]] = await mysqlConnection.query(`
             SELECT count(*) AS tableCount
@@ -57,8 +54,7 @@ const migrateDatabase = (options = {}) => ({
             });
         }
 
-        const { code } = await runMagentoCommand('setup:db:status', {
-            magentoVersion,
+        const { code } = await runMagentoCommand(ctx, 'setup:db:status', {
             throwNonZeroCode: false
         });
 

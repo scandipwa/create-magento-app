@@ -1,3 +1,6 @@
+/**
+ * @type {import('../../../../typings/index').PHPExtensionInstallationInstruction}
+ */
 module.exports = {
     name: 'opcache',
     alternativeName: [

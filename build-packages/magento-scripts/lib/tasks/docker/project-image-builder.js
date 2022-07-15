@@ -1,19 +1,19 @@
-const path = require('path');
 const { DockerFileBuilder } = require('@scandipwa/dockerfile');
+const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
-const { runContainerImage } = require('../../util/run-container-image');
+const xdebugExtension = require('../../config/magento/instructions-for-php-extensions/xdebug');
+const { execContainer } = require('./containers');
 
 /**
  * Get enabled extensions list with versions
- * @param {import('../../../typings/context').ListrContext['config']} config
+ * @param {string} imageWithTag
  * @returns {Promise<{[key: string]: string}}>}
  */
-const getEnabledExtensions = async (config) => {
-    const output = await runContainerImage(
-        `create-magento-app:php-${config.php.version}`,
-        'php -r \'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";\''
-    );
+const getEnabledExtensions = async (containerName) => {
+    // eslint-disable-next-line quotes
+    const output = await execContainer(`php -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`,
+        containerName);
 
     return output
         .split('\n')
@@ -26,39 +26,132 @@ const getEnabledExtensions = async (config) => {
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {});
 };
 
+const addExtensionToBuilder = (builder) => ([extensionName, extensionInstructions]) => {
+    const { command, ...extensionInstructionsWithoutCommand } = extensionInstructions;
+    let runCommand = '';
+    // if (extensionInstructionsWithoutCommand.dependencies && extensionInstructionsWithoutCommand.dependencies.length > 0) {
+    //     runCommand += `apk add --no-cache ${extensionInstructionsWithoutCommand.dependencies.join(' ')} &&`;
+    // }
+    if (typeof command === 'string') {
+        runCommand += ` ${command}`;
+    } else if (typeof command === 'function') {
+        runCommand += ` ${command(extensionInstructionsWithoutCommand)}`;
+    } else {
+        runCommand += ` docker-php-ext-install ${extensionInstructionsWithoutCommand.name}`;
+    }
+    builder
+        .comment(`extension ${extensionName} installation command`)
+        .run(runCommand.trim());
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const projectImageBuilder = () => ({
-    title: 'Project Image builder',
+const buildProjectImage = () => ({
+    title: 'Building Project Image',
     task: async (ctx, task) => {
-        const existingPHPExtensions = await getEnabledExtensions(ctx.config);
-        const dockerFile = new DockerFileBuilder()
-            .from({
-                image: 'create-magento-app',
-                tag: 'php-8.1'
+        const {
+            php: {
+                baseImage: image,
+                tag
+            },
+            composer
+        } = ctx.config.overridenConfiguration.configuration;
+        const containers = ctx.config.docker.getContainers(ctx.ports);
+        const existingPHPExtensions = await getEnabledExtensions(`${image}:${tag}`);
+
+        const missingExtensions = Object.entries(
+            ctx.config.overridenConfiguration.configuration.php.extensions
+        ).filter(
+            ([extensionName, extensionInstructions]) => !Object.entries(existingPHPExtensions)
+                .map(([n, i]) => [n.toLowerCase(), i])
+                .some(
+                    ([n]) => extensionName === n || (
+                        extensionInstructions.alternativeName && extensionInstructions.alternativeName.map(
+                            (s) => s.toLowerCase()
+                        ).includes(n)
+                    )
+                )
+        ).filter(([extensionName]) => extensionName.toLowerCase() !== 'xdebug');
+
+        const dockerFileInstructions = new DockerFileBuilder()
+            .comment('project image')
+            .from({ image, tag });
+
+        if (missingExtensions.length > 0) {
+            const allDependencies = missingExtensions.map(
+                ([_extensionName, extensionInstructions]) => (extensionInstructions.dependencies || [])
+            )
+                .reduce((acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))), []);
+
+            dockerFileInstructions.run(`apk add --no-cache ${allDependencies.join(' ')}`);
+            missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions));
+        }
+
+        const composerVersion = /^\d$/.test(composer.version)
+            ? `latest-${composer.version}.x`
+            : composer.version;
+
+        dockerFileInstructions
+            .comment('download composer')
+            .run(`curl https://getcomposer.org/download/${composerVersion}/composer.phar --output composer`)
+            .comment('move composer to bin directory')
+            .run('mv composer /usr/local/bin/composer');
+
+        if (semver.satisfies(composer.version, '^1')) {
+            dockerFileInstructions
+                .comment('install prestissimo composer plugin')
+                .run('composer global require hirak/prestissimo');
+        }
+
+        dockerFileInstructions
+            .workDir('/var/www/html');
+
+        try {
+            await execAsyncSpawn(`docker build -t ${containers.php.imageDetails.name}:${containers.php.imageDetails.tag} -<<EOF
+${dockerFileInstructions.build()}
+EOF`, {
+                callback: (r) => {
+                    task.output = r;
+                }
             });
-            // .run('apk add --no-cache bash')
-            // .shell(['/bin/bash', '-c']);
+        } catch (e) {
+            throw new KnownError(`Unexpected error during project image building!\n\n${e}`);
+        }
+    },
+    options: {
+        bottomBar: 10
+    }
+});
 
-        // eslint-disable-next-line max-len
-        const missingExtensions = Object.entries(ctx.config.overridenConfiguration.configuration.php.extensions).filter(([name, options]) => {
-            const extensionName = options.extensionName || name;
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
+const buildXDebugProjectImage = () => ({
+    title: 'Building Project Image with XDebug',
+    task: async (ctx, task) => {
+        const containers = ctx.config.docker.getContainers(ctx.ports);
+        const dockerFileInstructionsWithXDebug = new DockerFileBuilder()
+            .from({
+                image: containers.php.imageDetails.name,
+                tag: containers.php.imageDetails.tag
+            });
 
-            return !disabledExtensions.includes(extensionName);
-        });
+        dockerFileInstructionsWithXDebug.run('echo \\$PHPIZE_DEPS');
 
-        //         try {
-        //             await execAsyncSpawn(`docker build -t cma-local-project:${ctx.config.baseConfig.prefix} -<<EOF
-        // ${dockerFile}
-        // EOF`, {
-        //                 callback: (r) => {
-        //                     task.output = r;
-        //                 }
-        //             });
-        //         } catch (e) {
-        //             throw new KnownError(`Unexpected error during project image building!\n\n${e}`);
-        //         }
+        addExtensionToBuilder(dockerFileInstructionsWithXDebug)(['xdebug', xdebugExtension]);
+
+        try {
+            await execAsyncSpawn(`docker build -t ${containers.php.imageDetails.name}:${containers.php.imageDetails.tag}.xdebug -<<EOF
+${dockerFileInstructionsWithXDebug.build()}
+EOF`, {
+                callback: (r) => {
+                    task.output = r;
+                }
+            });
+        } catch (e) {
+            throw new KnownError(`Unexpected error during project image with xdebug building!\n\n${e}`);
+        }
     },
     options: {
         bottomBar: 10
@@ -66,5 +159,7 @@ const projectImageBuilder = () => ({
 });
 
 module.exports = {
-    projectImageBuilder
+    buildProjectImage,
+    buildXDebugProjectImage,
+    getEnabledExtensions
 };
