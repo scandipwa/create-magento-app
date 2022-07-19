@@ -1,7 +1,7 @@
 const magento23RequiredPHPExtensions = require('./magento-2.3');
 const magento24RequiredPHPExtensions = require('./magento-2.4');
 
-const { phpExtensionInstallationInstructions } = require('../instructions-for-php-extensions');
+const { phpExtensionInstallationInstructions } = require('../../php/extensions');
 
 /**
  * @param {string[]} requiredPHPExtensions

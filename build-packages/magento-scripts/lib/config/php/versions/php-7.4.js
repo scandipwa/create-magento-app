@@ -1,10 +1,15 @@
 const path = require('path');
-const { baseImage } = require('../base-image');
-const xdebug = require('../../magento/instructions-for-php-extensions/xdebug');
+const { image } = require('../base-image');
+const xdebug = require('../extensions/xdebug');
 
-const php74 = ({ templateDir, extensions = {} } = {}) => ({
+const php74 = ({
+    templateDir,
+    extensions = {},
+    baseImage = image,
+    tag = 'php74'
+} = {}) => ({
     baseImage,
-    tag: 'php74',
+    tag,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     extensions: {
         xdebug,
