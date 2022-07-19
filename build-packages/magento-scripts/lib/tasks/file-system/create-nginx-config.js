@@ -1,4 +1,3 @@
-const os = require('os');
 const path = require('path');
 const setConfigFile = require('../../util/set-config');
 const UnknownError = require('../../errors/unknown-error');
@@ -24,7 +23,7 @@ const createNginxConfig = () => ({
             }
         } = overridenConfiguration;
 
-        const isLinux = os.platform() === 'linux';
+        const isLinux = ctx.platform === 'linux';
         const isNativeLinux = isLinux && !isWsl;
         const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
         const hostPort = isNativeLinux ? ports.app : 80;
@@ -41,7 +40,7 @@ const createNginxConfig = () => ({
                 overwrite: true,
                 templateArgs: {
                     ports,
-                    mageRoot: baseConfig.magentoDir,
+                    mageRoot: baseConfig.containerMagentoDir,
                     hostMachine,
                     hostPort,
                     config: overridenConfiguration
