@@ -15,11 +15,12 @@ const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
 
 /**
- * @returns {{prefix: string,magentoDir: string,templateDir: string,cacheDir: string}}
+ * @returns {import('../../typings/context').ListrContext['config']['baseConfig']}
  */
 const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
     prefix: getPrefix(prefix),
     magentoDir: projectPath,
+    containerMagentoDir: '/var/www/html',
     templateDir: path.join(__dirname, 'templates'),
     cacheDir: path.join(projectPath, 'node_modules', '.create-magento-app-cache')
 });
@@ -27,7 +28,8 @@ const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
 const baseConfig = getBaseConfig();
 
 const magento = {
-    binPath: path.join(baseConfig.magentoDir, 'bin', 'magento')
+    binPath: path.join(baseConfig.magentoDir, 'bin', 'magento'),
+    containerBinPath: path.join(baseConfig.containerMagentoDir, 'bin', 'magento')
 };
 
 module.exports = {

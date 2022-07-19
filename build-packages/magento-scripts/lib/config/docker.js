@@ -1,11 +1,18 @@
 const os = require('os');
 const path = require('path');
+const getPhpConfig = require('./php-config');
 const { getArch } = require('../util/arch');
 const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
 
+/**
+ *
+ * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} param0
+ * @param {import('../../typings/context').ListrContext['config']['baseConfig']} config
+ * @returns
+ */
 module.exports = async ({ configuration, ssl, host }, config) => {
     const {
         nginx,
@@ -16,9 +23,11 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         varnish
     } = configuration;
 
+    const php = getPhpConfig(configuration, config);
     const {
         prefix,
         magentoDir,
+        containerMagentoDir,
         cacheDir
     } = config;
 
@@ -111,15 +120,22 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
                 network: network.name,
                 mountVolumes: [
-                    `${ isLinux ? magentoDir : volumes.php.name }:/var/www/html`
+                    `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
+                    `${ php.iniPath }:/usr/local/etc/php/php.ini`,
+                    `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ],
+                env: {
+                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || ''
+                },
                 restart: 'on-failure:5',
                 image: `cmalocal:${ prefix.replace(/-/ig, '.') }`,
                 imageDetails: {
                     name: 'cmalocal',
                     tag: prefix.replace(/-/ig, '.')
                 },
-                name: `${ prefix }_php`
+                remoteImage: false,
+                name: `${ prefix }_php`,
+                connectCommand: ['/bin/sh']
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -169,12 +185,12 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                  */
                 mountVolumes: isLinux ? [
                     `${ cacheDir }/nginx/conf.d:/etc/nginx/conf.d`,
-                    `${ path.join(magentoDir, 'pub') }:${path.join(magentoDir, 'pub')}`,
-                    `${ path.join(magentoDir, 'setup') }:${path.join(magentoDir, 'setup')}`
+                    `${ path.join(magentoDir, 'pub') }:${path.join(containerMagentoDir, 'pub')}`,
+                    `${ path.join(magentoDir, 'setup') }:${path.join(containerMagentoDir, 'setup')}`
                 ] : [
                     `${ volumes.nginx.name }:/etc/nginx/conf.d`,
-                    `${ volumes.appPub.name }:${path.join(magentoDir, 'pub')}`,
-                    `${ volumes.appSetup.name }:${path.join(magentoDir, 'setup')}`
+                    `${ volumes.appPub.name }:${path.join(containerMagentoDir, 'pub')}`,
+                    `${ volumes.appSetup.name }:${path.join(containerMagentoDir, 'setup')}`
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
@@ -260,7 +276,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                     'bootstrap.memory_lock': true,
                     'xpack.security.enabled': false,
                     'discovery.type': 'single-node',
-                    ES_JAVA_OPTS: '"-Xms512m -Xmx512m"',
+                    ES_JAVA_OPTS: '-Xms512m -Xmx512m',
                     // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
                     'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
