@@ -1,0 +1,3 @@
+build=docker build . -t cma:magento242p2
+run=docker run -it cma:magento242p2
+buildandrun=build --no-cache && run

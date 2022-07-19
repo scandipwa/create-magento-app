@@ -1,6 +1,6 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
-const sodium = require('../magento/instructions-for-php-extensions/sodium');
+const sodium = require('../php/extensions/sodium');
 const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
 const { php74 } = require('../php/versions');
 const { sslTerminator } = require('../ssl-terminator');
@@ -9,7 +9,11 @@ const { varnish66 } = require('../varnish/varnish-6-6');
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.1',
     configuration: {
-        php: php74({ templateDir, extensions: { ...magento24PHPExtensionList, sodium } }),
+        php: php74({
+            templateDir,
+            extensions: { ...magento24PHPExtensionList, sodium },
+            tag: 'magento241'
+        }),
         nginx: {
             version: '1.18.0',
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')
