@@ -1,14 +1,13 @@
 const safeRegexExtract = require('../../util/safe-regex-extract');
-// const installPrestissimo = require('./install-prestissimo');
 const UnknownError = require('../../errors/unknown-error');
-const { runPHPContainerCommand } = require('../php/run-php-container');
+const runComposerCommand = require('../../util/run-composer');
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
  * @returns {Promise<string>}
  */
 const getComposerVersion = async (ctx) => {
-    const composerVersionOutput = await runPHPContainerCommand(ctx, 'composer --version --no-ansi');
+    const { result: composerVersionOutput } = await runComposerCommand(ctx, '--version --no-ansi');
 
     const composerVersion = safeRegexExtract({
         string: composerVersionOutput,
