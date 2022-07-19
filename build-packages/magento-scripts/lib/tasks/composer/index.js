@@ -1,13 +1,14 @@
 const safeRegexExtract = require('../../util/safe-regex-extract');
 const UnknownError = require('../../errors/unknown-error');
-const runComposerCommand = require('../../util/run-composer');
+const { runContainerImage } = require('../../util/run-container-image');
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
  * @returns {Promise<string>}
  */
 const getComposerVersion = async (ctx) => {
-    const { result: composerVersionOutput } = await runComposerCommand(ctx, '--version --no-ansi');
+    const { php } = ctx.config.docker.getContainers(ctx.ports);
+    const composerVersionOutput = await runContainerImage(php.image, 'composer --version --no-ansi');
 
     const composerVersion = safeRegexExtract({
         string: composerVersionOutput,
