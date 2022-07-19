@@ -25,19 +25,16 @@ const parsePort = (port) => {
 const prettyStatus = async (ctx) => {
     const {
         config: {
-            baseConfig,
-            php,
-            composer
+            baseConfig
         },
         magentoVersion,
         dockerVersion,
-        PHPBrewVersion,
         platform,
         platformVersion,
         containers
     } = ctx;
     const projectCreatedAt = getProjectCreatedAt();
-    const composerVersion = await getComposerVersion({ composer, php });
+    const composerVersion = await getComposerVersion(ctx);
 
     const prefix = getPrefix();
 
@@ -48,7 +45,7 @@ const prettyStatus = async (ctx) => {
     block
         .addHeader(`magento-scripts version: ${ logger.style.link(packageVersion) }`)
         .addEmptyLine()
-        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'}`)
+        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'} (with php container)`)
         .addLine(`Project location: ${logger.style.link(process.cwd())}`);
 
     if (projectCreatedAt) {
@@ -57,12 +54,9 @@ const prettyStatus = async (ctx) => {
 
     block
         .addLine(`Magento 2 version: ${logger.style.file(magentoVersion)}`)
-        .addLine(`PHP version: ${logger.style.file(php.version)}`)
-        .addLine(`PHP location: ${logger.style.link(php.binPath)}`)
+        .addLine(`PHP version: ${logger.style.file(ctx.phpVersion)}`)
         .addLine(`Composer version: ${logger.style.file(composerVersion)}`)
-        .addLine(`Composer location: ${logger.style.link(path.relative(process.cwd(), composer.binPath))}`)
         .addLine(`Docker version: ${logger.style.file(dockerVersion)}`)
-        .addLine(`PHPBrew version: ${logger.style.file(PHPBrewVersion)}`)
         .addLine(`Platform: ${logger.style.code(platform)}`)
         .addLine(`Platform version: ${logger.style.file(platformVersion)}`)
         .addLine(`Platform architecture: ${logger.style.file(getArchSync())}`)

@@ -1,7 +1,7 @@
 const path = require('path');
 const UnknownError = require('../../errors/unknown-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
-const { runPHPContainerCommand } = require('../php/run-php-container');
+const runComposerCommand = require('../../util/run-composer');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -18,7 +18,7 @@ const installTheme = (theme) => ({
         }
 
         try {
-            await runPHPContainerCommand(ctx, `composer require ${theme.composerData.name}`, {
+            await runComposerCommand(ctx, `require ${theme.composerData.name}`, {
                 magentoVersion,
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;

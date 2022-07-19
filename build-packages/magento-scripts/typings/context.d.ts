@@ -84,6 +84,7 @@ export interface ListrContext {
             magentoDir: string
             templateDir: string
             cacheDir: string
+            containerMagentoDir: string
         }
         overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>

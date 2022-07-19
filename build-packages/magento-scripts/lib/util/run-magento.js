@@ -1,6 +1,5 @@
-const { magento } = require('../config');
 const UnknownError = require('../errors/unknown-error');
-const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 /**
  * Execute magento command
  *
@@ -12,15 +11,11 @@ const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
  * @param {String} options.cwd
  * @param {() => {}} options.callback
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
- * @param {String} options.magentoVersion Magento version for config
  */
 const runMagentoCommand = async (ctx, command, options = {}) => {
-    const {
-        throwNonZeroCode = true
-    } = options;
-    const { code, result } = await runPHPContainerCommand(ctx, `php ${magento.binPath} ${command}`, {
+    const { throwNonZeroCode = true } = options;
+    const { code, result } = await runPHPContainerCommand(ctx, `bin/magento ${command}`, {
         ...options,
-        cwd: ctx.config.baseConfig.magentoDir,
         withCode: true
     });
 

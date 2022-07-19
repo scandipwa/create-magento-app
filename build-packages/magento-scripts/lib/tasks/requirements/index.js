@@ -1,8 +1,8 @@
 const checkPlatform = require('./platform');
 const { checkComposerCredentials } = require('./composer-credentials');
+const localAuthJson = require('../composer/local-auth-json');
 const checkDocker = require('./docker');
 const checkNodeVersion = require('./node-version');
-// const checkPHPVersion = require('./php-version');
 const checkRosetta = require('./rosetta');
 
 /**
@@ -22,7 +22,7 @@ const checkRequirements = () => ({
         // check installed PHP version
         // checkPHPVersion(),
         // check for COMPOSER_AUTH or auth.json
-        // localAuthJson(),
+        localAuthJson(),
         checkComposerCredentials()
     ], {
         concurrent: false,

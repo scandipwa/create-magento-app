@@ -1,14 +1,18 @@
 const path = require('path');
 const UnknownError = require('../errors/unknown-error');
-const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 const pathExists = require('./path-exists');
 
-const configPhpToJson = async (ctx, projectPath = '/var/www/html') => {
-    const configPhpPath = path.join(projectPath, 'app', 'etc', 'config.php');
-    if (!await pathExists(configPhpPath)) {
+/**
+ * @param {import('../../typings/context').ListrContext} ctx
+ */
+const configPhpToJson = async (ctx) => {
+    const configPhpOnSystemPath = path.join(ctx.config.baseConfig.magentoDir, 'app', 'etc', 'config.php');
+    const configPhpInContainerPath = path.join(ctx.config.baseConfig.containerMagentoDir, 'app', 'etc', 'config.php');
+    if (!await pathExists(configPhpOnSystemPath)) {
         return null;
     }
-    const { code, result } = await runPHPContainerCommand(ctx, `php -r "echo json_encode(require '${configPhpPath}');"`, {
+    const { code, result } = await runPHPContainerCommand(ctx, `php -r "echo json_encode(require '${configPhpInContainerPath}');"`, {
         withCode: true
     });
 

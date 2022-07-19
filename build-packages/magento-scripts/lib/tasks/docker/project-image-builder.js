@@ -2,18 +2,20 @@ const { DockerFileBuilder } = require('@scandipwa/dockerfile');
 const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
-const xdebugExtension = require('../../config/magento/instructions-for-php-extensions/xdebug');
-const { execContainer } = require('./containers');
+const xdebugExtension = require('../../config/php/extensions/xdebug');
+const { runContainerImage } = require('../../util/run-container-image');
 
 /**
  * Get enabled extensions list with versions
  * @param {string} imageWithTag
  * @returns {Promise<{[key: string]: string}}>}
  */
-const getEnabledExtensions = async (containerName) => {
-    // eslint-disable-next-line quotes
-    const output = await execContainer(`php -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`,
-        containerName);
+const getEnabledExtensionsFromImage = async (imageWithTag) => {
+    const output = await runContainerImage(
+        imageWithTag,
+        // eslint-disable-next-line quotes
+        `php -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
+    );
 
     return output
         .split('\n')
@@ -26,7 +28,7 @@ const getEnabledExtensions = async (containerName) => {
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {});
 };
 
-const addExtensionToBuilder = (builder) => ([extensionName, extensionInstructions]) => {
+const addExtensionToBuilder = (builder, ctx) => ([extensionName, extensionInstructions]) => {
     const { command, ...extensionInstructionsWithoutCommand } = extensionInstructions;
     let runCommand = '';
     // if (extensionInstructionsWithoutCommand.dependencies && extensionInstructionsWithoutCommand.dependencies.length > 0) {
@@ -35,7 +37,7 @@ const addExtensionToBuilder = (builder) => ([extensionName, extensionInstruction
     if (typeof command === 'string') {
         runCommand += ` ${command}`;
     } else if (typeof command === 'function') {
-        runCommand += ` ${command(extensionInstructionsWithoutCommand)}`;
+        runCommand += ` ${command({ ...extensionInstructionsWithoutCommand, ctx })}`;
     } else {
         runCommand += ` docker-php-ext-install ${extensionInstructionsWithoutCommand.name}`;
     }
@@ -58,7 +60,7 @@ const buildProjectImage = () => ({
             composer
         } = ctx.config.overridenConfiguration.configuration;
         const containers = ctx.config.docker.getContainers(ctx.ports);
-        const existingPHPExtensions = await getEnabledExtensions(`${image}:${tag}`);
+        const existingPHPExtensions = await getEnabledExtensionsFromImage(`${image}:${tag}`);
 
         const missingExtensions = Object.entries(
             ctx.config.overridenConfiguration.configuration.php.extensions
@@ -78,6 +80,10 @@ const buildProjectImage = () => ({
             .comment('project image')
             .from({ image, tag });
 
+        // install bash in image
+        dockerFileInstructions
+            .run('apk add --no-cache bash');
+
         if (missingExtensions.length > 0) {
             const allDependencies = missingExtensions.map(
                 ([_extensionName, extensionInstructions]) => (extensionInstructions.dependencies || [])
@@ -85,7 +91,7 @@ const buildProjectImage = () => ({
                 .reduce((acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))), []);
 
             dockerFileInstructions.run(`apk add --no-cache ${allDependencies.join(' ')}`);
-            missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions));
+            missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions, ctx));
         }
 
         const composerVersion = /^\d$/.test(composer.version)
@@ -95,6 +101,8 @@ const buildProjectImage = () => ({
         dockerFileInstructions
             .comment('download composer')
             .run(`curl https://getcomposer.org/download/${composerVersion}/composer.phar --output composer`)
+            .comment('make composer executable')
+            .run('chmod +x ./composer')
             .comment('move composer to bin directory')
             .run('mv composer /usr/local/bin/composer');
 
@@ -139,7 +147,7 @@ const buildXDebugProjectImage = () => ({
 
         dockerFileInstructionsWithXDebug.run('echo \\$PHPIZE_DEPS');
 
-        addExtensionToBuilder(dockerFileInstructionsWithXDebug)(['xdebug', xdebugExtension]);
+        addExtensionToBuilder(dockerFileInstructionsWithXDebug, ctx)(['xdebug', xdebugExtension]);
 
         try {
             await execAsyncSpawn(`docker build -t ${containers.php.imageDetails.name}:${containers.php.imageDetails.tag}.xdebug -<<EOF
@@ -161,5 +169,5 @@ EOF`, {
 module.exports = {
     buildProjectImage,
     buildXDebugProjectImage,
-    getEnabledExtensions
+    getEnabledExtensions: getEnabledExtensionsFromImage
 };

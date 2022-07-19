@@ -1,6 +1,5 @@
 const UnknownError = require('../../errors/unknown-error');
 const { runContainerImage } = require('../../util/run-container-image');
-const { runPHPContainerCommand } = require('../php/run-php-container');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}

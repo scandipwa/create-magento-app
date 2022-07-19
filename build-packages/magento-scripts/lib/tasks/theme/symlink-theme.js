@@ -1,7 +1,7 @@
 const path = require('path');
 const UnknownError = require('../../errors/unknown-error');
 const getJsonfileData = require('../../util/get-jsonfile-data');
-const { runPHPContainerCommand } = require('../php/run-php-container');
+const runComposerCommand = require('../../util/run-composer');
 
 /**
  * @type {(theme: import('../../../typings/theme').Theme) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -27,7 +27,7 @@ const symlinkTheme = (theme) => ({
         }
 
         try {
-            await runPHPContainerCommand(ctx, `composer config repo.scandipwa path ${theme.absoluteThemePath}`, {
+            await runComposerCommand(ctx, `config repo.scandipwa path ${theme.absoluteThemePath}`, {
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;
                 }

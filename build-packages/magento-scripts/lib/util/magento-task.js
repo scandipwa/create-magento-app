@@ -11,7 +11,7 @@ const magentoTask = (command, options = {}) => ({
     task: async (ctx, task) => {
         try {
             await runMagentoCommand(ctx, command, {
-                callback: !verbose ? undefined : (t) => {
+                callback: !ctx.verbose ? undefined : (t) => {
                     task.output = t;
                 },
                 throwNonZeroCode: true

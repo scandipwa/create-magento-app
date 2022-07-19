@@ -3,12 +3,10 @@ const openBrowser = require('../util/open-browser');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { saveConfiguration } = require('../config/save-config');
 const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
-// const { installComposer, installPrestissimo } = require('./composer');
+const { getComposerVersionTask } = require('./composer');
 const { startServices } = require('./docker');
-// const { installPhp, configurePhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
-// const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagentoProject, setupMagento } = require('./magento');
 const { pullContainers, stopContainers } = require('./docker/containers');
@@ -31,8 +29,6 @@ const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-
 const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
-// const validatePHPInstallation = require('./php/validate-php');
-// const installSodiumExtension = require('./php/install-sodium');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 const checkPHPVersion = require('./requirements/php-version');
 
@@ -66,14 +62,7 @@ const stopProject = () => ({
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
         stopContainers()
-        // stopPhpFpm()
-    ], {
-        concurrent: true,
-        rendererOptions: {
-            collapse: true,
-            showTimer: false
-        }
-    }),
+    ]),
     options: {
         showTimer: false
     }
@@ -106,19 +95,14 @@ const retrieveFreshProjectConfiguration = () => ({
 const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
+        pullContainers(),
         buildProjectImage(),
         buildXDebugProjectImage(),
-        pullContainers(),
         checkPHPVersion(),
-        // installComposer(),
+        getComposerVersionTask(),
         prepareFileSystem(),
-        // installSodiumExtension(),
-        // configurePhp(),
-        // validatePHPInstallation(),
-        // installPrestissimo(),
-        // installMagentoProject(),
-        // enableMagentoComposerPlugins(),
-        // startPhpFpm(),
+        installMagentoProject(),
+        enableMagentoComposerPlugins(),
         startServices(),
         connectToMySQL()
     ])

@@ -1,3 +1,5 @@
+import { ListrContext } from './context';
+
 /* eslint-disable no-use-before-define */
 export interface ServiceWithVersion {
     /**
@@ -57,7 +59,7 @@ export interface PHPExtensionInstallationInstruction {
      * pecl install xdebug && docker-php-ext-enable xdebug
      * ```
      */
-    command: (arg0: Omit<PHPExtensionInstallationInstruction, 'command'>) => string | string
+    command: (arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string | string
 
     /**
      * System dependencies required by the extension

@@ -7,7 +7,7 @@ const pathExists = require('../../util/path-exists');
 const getJsonFileData = require('../../util/get-jsonfile-data');
 const KnownError = require('../../errors/known-error');
 const UnknownError = require('../../errors/unknown-error');
-const { runPHPContainerCommand } = require('../php/run-php-container');
+const { runPHPContainerCommand } = require('../php/php-container');
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition';
 const magentoProductCommunityEdition = 'magento/product-community-edition';
@@ -32,8 +32,8 @@ const adjustComposerJson = async (ctx, task, {
             && !Object.values(composerData.repositories).some((repo) => repo.type === 'composer' && repo.url.includes('repo.magento.com')))
     )) {
         task.output = 'No Magento repository is set in composer.json! Setting up...';
-        await runPHPContainerCommand(ctx, 'composer config repo.0 composer https://repo.magento.com', {
-            callback: !verbose ? undefined : (t) => {
+        await runComposerCommand(ctx, 'config repo.0 composer https://repo.magento.com', {
+            callback: !ctx.verbose ? undefined : (t) => {
                 task.output = t;
             }
         });
@@ -42,9 +42,9 @@ const adjustComposerJson = async (ctx, task, {
     // if composer-root-update-plugin is not installed in composer, install it.
     if (composerData && !composerData.require['magento/composer-root-update-plugin']) {
         task.output = 'Installing magento/composer-root-update-plugin!';
-        await runPHPContainerCommand(ctx, 'composer require magento/composer-root-update-plugin:^1',
+        await runComposerCommand(ctx, 'require magento/composer-root-update-plugin:^1',
             {
-                callback: !verbose ? undefined : (t) => {
+                callback: !ctx.verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -72,9 +72,9 @@ Change magento edition in config file or manually reinstall correct magento edit
     // if magento package is not installed in composer, require it.
     if (composerData && !composerData.require[magentoProductSelectedEdition]) {
         task.output = `Installing ${magentoProductSelectedEdition}=${magentoPackageVersion}!`;
-        await runPHPContainerCommand(ctx, `composer require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
+        await runComposerCommand(ctx, `require ${magentoProductSelectedEdition}:${magentoPackageVersion}`,
             {
-                callback: !verbose ? undefined : (t) => {
+                callback: !ctx.verbose ? undefined : (t) => {
                     task.output = t;
                 }
             });
@@ -97,8 +97,8 @@ const createMagentoProject = async (ctx, task, {
         `"${tempDir}"`
     ];
 
-    await runPHPContainerCommand(ctx, `composer ${installCommand.join(' ')}`);
-    await runComposerCommand(ctx, `mv ${tempDir}/composer.json /var/www/html/composer.json`);
+    await runComposerCommand(ctx, `${installCommand.join(' ')}`);
+    await runPHPContainerCommand(ctx, `mv ${tempDir}/composer.json /var/www/html/composer.json`);
 };
 
 /**
@@ -157,9 +157,9 @@ const installMagentoProject = () => ({
         }
 
         try {
-            await runPHPContainerCommand(ctx, 'composer install',
+            await runComposerCommand(ctx, 'install',
                 {
-                    callback: !verbose ? undefined : (t) => {
+                    callback: !ctx.verbose ? undefined : (t) => {
                         task.output = t;
                     }
                 });

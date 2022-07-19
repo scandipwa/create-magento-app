@@ -1,4 +1,4 @@
-const { runPHPContainerCommand } = require('../tasks/php/run-php-container');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 
 /**
  * @param {String} command
