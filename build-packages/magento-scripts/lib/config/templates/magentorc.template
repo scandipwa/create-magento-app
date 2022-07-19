@@ -2,11 +2,11 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-alias php="$HOME/.phpbrew/php/php-<%= it.php.version %>/bin/php -c $PWD/node_modules/.create-magento-app-cache/php.ini"
-alias magento="php $PWD/bin/magento"
+alias php="npm run exec php php"
+alias magento="php bin/magento"
 alias magneto="echo -e 'Not ${RED}magneto${NC} but ${GREEN}magento${NC} please! or at least ${GREEN}m${NC}!' && magento"
 alias m="magento"
-alias composer="php $PWD/node_modules/.create-magento-app-cache/composer/composer.phar"
+alias composer="npm run exec php composer"
 alias c="composer"
 <% if (it.varnishEnabled) { %>
 alias cvc="npm run exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache cleared!'"
