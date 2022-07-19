@@ -32,12 +32,14 @@ const migrateDatabase = (options = {}) => ({
         ) {
             if (options.onlyInstallMagento) {
                 ctx.isSetupUpgradeNeeded = false;
-                return task.newListr(
+                return task.newListr([
+                    updateEnvPHP(),
                     installMagento({ isDbEmpty: true })
-                );
+                ]);
             }
 
             return task.newListr([
+                updateEnvPHP(),
                 installMagento({ isDbEmpty: true }),
                 updateEnvPHP(),
                 varnishConfigSetup(),
@@ -86,6 +88,7 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr([
                 installMagentoProject(),
+                updateEnvPHP(),
                 installMagento(),
                 updateEnvPHP(),
                 varnishConfigSetup(),
