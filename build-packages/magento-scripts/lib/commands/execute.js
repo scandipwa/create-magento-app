@@ -40,7 +40,7 @@ Available containers:
                     }
                 }
 
-                logger.logN(`Executing container ${logger.style.misc(container._)}`);
+                logger.logN(`Executing container ${logger.style.misc(container._)} (command: ${logger.style.command(argv.commands[0])})`);
                 await executeInContainer({
                     containerName: container.name,
                     commands: argv.commands
