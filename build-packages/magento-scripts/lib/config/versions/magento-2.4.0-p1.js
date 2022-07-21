@@ -1,6 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
+const { image } = require('../php/base-image');
 const { php74 } = require('../php/versions');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish60 } = require('../varnish/varnish-6-0');
@@ -11,7 +12,7 @@ module.exports = ({ templateDir } = {}) => ({
         php: php74({
             templateDir,
             extensions: magento24PHPExtensionList,
-            tag: 'magento240p1'
+            baseImage: `${ image }:magento240p1`
         }),
         nginx: {
             version: '1.18.0',
@@ -27,7 +28,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.2'
         },
         elasticsearch: {
-            version: '7.6.2'
+            version: '7.12.1'
         },
         composer: {
             version: '1'

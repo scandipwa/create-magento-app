@@ -2,7 +2,6 @@ const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { spawn } = require('child_process');
 const { getArchSync } = require('./arch');
-const compileOptions = require('../tasks/php/compile-options');
 const UnknownError = require('../errors/unknown-error');
 
 const execAsyncSpawn = (command, {
@@ -32,13 +31,7 @@ const execAsyncSpawn = (command, {
             'arch',
             // eslint-disable-next-line max-len
             ['-x86_64', 'bash', '-c', command],
-            {
-                ...spawnOptions,
-                env: {
-                    ...process.env,
-                    PATH: compileOptions.darwin.env.PATH
-                }
-            }
+            spawnOptions
         );
     } else {
         childProcess = spawn(

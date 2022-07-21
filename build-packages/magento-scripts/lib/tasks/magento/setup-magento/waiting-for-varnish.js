@@ -7,7 +7,7 @@ const sleep = require('../../../util/sleep');
  */
 const waitingForVarnish = () => ({
     title: 'Waiting for Varnish to return code 200',
-    skip: (ctx) => !ctx.config.overridenConfiguration.configuration.varnish.enabled,
+    skip: (ctx) => ctx.debug || !ctx.config.overridenConfiguration.configuration.varnish.enabled,
     task: async (ctx) => {
         let tries = 0;
         while (tries < 10) {

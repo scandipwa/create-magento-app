@@ -5,7 +5,6 @@ const {
     defaultConfiguration
 } = require('./versions');
 const getPhpConfig = require('./php-config');
-// const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
@@ -36,7 +35,11 @@ module.exports = {
     /**
      * @param {string} magentoVersion
      */
-    async getConfigFromMagentoVersion(magentoVersion, projectPath = process.cwd(), prefix = folderName) {
+    async getConfigFromMagentoVersion(ctx, {
+        magentoVersion,
+        projectPath = process.cwd(),
+        prefix = folderName
+    }) {
         const newBaseConfig = getBaseConfig(projectPath, prefix);
         const configurations = getConfigurations(newBaseConfig);
         if (!configurations[magentoVersion]) {
@@ -54,8 +57,7 @@ module.exports = {
 
         return {
             php: getPhpConfig(overridenConfiguration.configuration, newBaseConfig),
-            docker: await getDockerConfig(overridenConfiguration, newBaseConfig),
-            // composer: getComposerConfig(overridenConfiguration.configuration, newBaseConfig),
+            docker: await getDockerConfig(ctx, overridenConfiguration, newBaseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
             baseConfig: newBaseConfig,
             overridenConfiguration,
@@ -67,7 +69,6 @@ module.exports = {
     getBaseConfig,
     magento,
     platforms,
-    docker: getDockerConfig(defaultConfiguration, baseConfig),
     darwinMinimalVersion,
     defaultConfiguration
 };

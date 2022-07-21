@@ -1,79 +1,85 @@
 const path = require('path');
-const semver = require('semver');
 const fs = require('fs');
-const os = require('os');
 const hjson = require('hjson');
 const pathExists = require('../../util/path-exists');
 const setConfigFile = require('../../util/set-config');
 const UnknownError = require('../../errors/unknown-error');
 
-const phpXDebug2port = 9111;
-const phpXDebug3port = 9003;
 const listenForXDebugConfigName = 'Listen for XDebug';
+
+const xdebugPort = 9003;
 
 const vscodeLaunchConfigPath = path.join(process.cwd(), '.vscode', 'launch.json');
 
 /**
- * @param {import('../../../typings/context').ListrContext['config']['php']} php
+ * @param {import('../../../typings/context').ListrContext} ctx
  */
-const getCurrentXDebugPort = (php) => (semver.satisfies(php.extensions.xdebug.version, '>=3')
-    ? phpXDebug3port
-    : phpXDebug2port);
-
-/**
- * @param {import('../../../typings/context').ListrContext['config']['php']} php
- */
-const getPHPBinPathWithHomeVariable = (php) => php.binPath.replace(os.homedir(), '$HOME');
-/**
- * @param {import('../../../typings/context').ListrContext['config']['php']} php
- */
-const addPHPDebugConfig = (vscodeLaunchConfig, php) => {
+const addPHPDebugConfig = (vscodeLaunchConfig, ctx) => {
     const phpXDebugConfig = vscodeLaunchConfig.configurations.find(
         ({ name }) => name === listenForXDebugConfigName
     );
 
-    const phpXDebugPort = getCurrentXDebugPort(php);
-    const phpBingPath = getPHPBinPathWithHomeVariable(php);
+    let hasChanges = false;
 
+    const newConfiguration = {
+        name: listenForXDebugConfigName,
+        type: 'php',
+        request: 'launch',
+        port: xdebugPort,
+        pathMappings: {
+            // eslint-disable-next-line no-template-curly-in-string
+            [ctx.config.baseConfig.containerMagentoDir]: '${workspaceFolder}'
+        }
+
+    };
+
+    if (phpXDebugConfig && phpXDebugConfig.runtimeExecutable) {
+        vscodeLaunchConfig.configurations = vscodeLaunchConfig.configurations.filter(
+            ({ name }) => name !== listenForXDebugConfigName
+        );
+
+        vscodeLaunchConfig.configurations.push(newConfiguration);
+
+        return true;
+    }
     if (!phpXDebugConfig) {
-        vscodeLaunchConfig.configurations.push({
-            name: listenForXDebugConfigName,
-            type: 'php',
-            request: 'launch',
-            port: phpXDebugPort,
-            runtimeExecutable: phpBingPath
-        });
+        vscodeLaunchConfig.configurations.push(newConfiguration);
 
         return true;
     }
 
     if (
-        phpXDebugConfig.port !== phpXDebugPort
-        && phpXDebugConfig.runtimeExecutable !== phpBingPath
-    ) {
-        phpXDebugConfig.port = phpXDebugPort;
-        phpXDebugConfig.runtimeExecutable = phpBingPath;
+        !phpXDebugConfig.port
+        || phpXDebugConfig.port !== xdebugPort) {
+        phpXDebugConfig.port = xdebugPort;
 
-        return true;
+        hasChanges = true;
     }
 
-    return false;
+    if (!phpXDebugConfig.pathMappings || !phpXDebugConfig.pathMappings[ctx.config.baseConfig.containerMagentoDir]) {
+        phpXDebugConfig.pathMappings = {
+            // eslint-disable-next-line no-template-curly-in-string
+            [ctx.config.baseConfig.containerMagentoDir]: '${workspaceFolder}'
+        };
+
+        hasChanges = true;
+    }
+
+    return hasChanges;
 };
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const createPhpFpmConfig = () => ({
+const createVSCodeConfig = () => ({
     title: 'Setting VSCode config',
-    task: async ({ config: { php, baseConfig } }, task) => {
-        task.skip();
-        return;
+    task: async (ctx, task) => {
         if (await pathExists(vscodeLaunchConfigPath)) {
             const vscodeLaunchConfig = hjson.parse(await fs.promises.readFile(vscodeLaunchConfigPath, 'utf-8'), {
                 keepWsc: true
             });
 
-            const vscodeConfigEdited = addPHPDebugConfig(vscodeLaunchConfig, php);
+            const vscodeConfigEdited = addPHPDebugConfig(vscodeLaunchConfig, ctx);
 
             // if vscode config is up-to-date, skip task
             if (!vscodeConfigEdited) {
@@ -81,7 +87,15 @@ const createPhpFpmConfig = () => ({
                 return;
             }
 
-            await fs.promises.writeFile(vscodeLaunchConfigPath, hjson.stringify(vscodeLaunchConfig));
+            const result = hjson.stringify(vscodeLaunchConfig, {
+                keepWsc: true,
+                bracesSameLine: true,
+                separator: true,
+                quotes: 'all'
+
+            });
+
+            await fs.promises.writeFile(vscodeLaunchConfigPath, result);
 
             return;
         }
@@ -95,14 +109,13 @@ const createPhpFpmConfig = () => ({
         }
 
         try {
-            const phpXDebugPort = getCurrentXDebugPort(php);
-            const vscodeLaunchConfigTemplatePath = path.join(baseConfig.templateDir, 'vscode-launch.template.json');
+            const vscodeLaunchConfigTemplatePath = path.join(ctx.config.baseConfig.templateDir, 'vscode-launch.template.json');
             await setConfigFile({
                 template: vscodeLaunchConfigTemplatePath,
                 configPathname: vscodeLaunchConfigPath,
                 templateArgs: {
-                    XDebugPort: phpXDebugPort,
-                    PHPBinPath: getPHPBinPathWithHomeVariable(php)
+                    XDebugPort: xdebugPort,
+                    baseConfig: ctx.config.baseConfig
                 }
             });
         } catch (e) {
@@ -111,4 +124,4 @@ const createPhpFpmConfig = () => ({
     }
 });
 
-module.exports = createPhpFpmConfig;
+module.exports = createVSCodeConfig;

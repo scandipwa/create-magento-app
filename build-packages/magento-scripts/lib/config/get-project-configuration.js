@@ -8,7 +8,9 @@ const getProjectConfiguration = () => ({
     task: async (ctx) => {
         const { magentoVersion } = ctx;
 
-        ctx.config = await getConfigFromMagentoVersion(magentoVersion, process.cwd());
+        ctx.config = await getConfigFromMagentoVersion(ctx, {
+            magentoVersion
+        });
     }
 });
 

@@ -20,7 +20,8 @@ const prepareFileSystem = () => ({
         createVSCodeConfig(),
         createVarnishConfig()
     ], {
-        concurrent: true
+        concurrent: true,
+        exitOnError: false
     })
 });
 

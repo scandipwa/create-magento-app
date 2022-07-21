@@ -17,6 +17,26 @@ const cmaGaTrackingId = 'UA-127741417-7';
 
 googleAnalytics.setGaTrackingId(cmaGaTrackingId);
 
+const reportErrors = async (errors) => {
+    for (const error of errors) {
+        const path = (error.path && ` Error path: ${error.path} `) || '';
+        if (error instanceof UnknownError || error instanceof KnownError) {
+            logger.error(error.message);
+            if (error instanceof UnknownError) {
+                await googleAnalytics.trackError(`Unknown Error:${path}${error.stack}`);
+            } else {
+                await googleAnalytics.trackError(`Known Error:${path}${error.message}`);
+            }
+        } else if (error instanceof Error) {
+            logger.error(error.message);
+            await googleAnalytics.trackError(`Regular Error:${path}${error.message}`);
+        } else {
+            logger.error(error);
+            await googleAnalytics.trackError(`Non Error:${path}${error}`); // track non-errors throws
+        }
+    }
+};
+
 /**
  * @param {import('yargs')} yargs
  */
@@ -80,7 +100,8 @@ module.exports = (yargs) => {
                     rendererOptions: {
                         showErrorMessage: false,
                         showTimer: true
-                    }
+                    },
+                    collectErrors: 'full'
                 }
             );
             const timeStamp = Date.now();
@@ -153,6 +174,13 @@ module.exports = (yargs) => {
                 );
                 logger.log('');
 
+                if (!analytics && tasks.err && tasks.err.length > 0) {
+                    logger.warn('You have disabled analytics, but we\'ve encountered errors during startup!');
+                    for (const err of tasks.err) {
+                        logger.error(`${err.path}\n${err.message}\n\n${err.stack}`);
+                    }
+                }
+
                 if (!analytics) {
                     process.exit(0);
                 }
@@ -178,22 +206,16 @@ module.exports = (yargs) => {
                     await googleAnalytics.trackError(e.message || e);
                 }
 
+                if (tasks.err && tasks.err.length > 0) {
+                    for (const err of tasks.err) {
+                        console.log(err);
+                    }
+                    await reportErrors(tasks.err);
+                }
+
                 process.exit(0);
             } catch (e) {
-                if (e instanceof UnknownError || e instanceof KnownError) {
-                    logger.error(e.message);
-                    if (e instanceof UnknownError) {
-                        await googleAnalytics.trackError(`Unknown Error: ${e.stack}`);
-                    } else {
-                        await googleAnalytics.trackError(`Known Error: ${e.message}`);
-                    }
-                } else if (e instanceof Error) {
-                    logger.error(e.message);
-                    await googleAnalytics.trackError(`Regular Error: ${e.message}`);
-                } else {
-                    logger.error(e);
-                    await googleAnalytics.trackError(`Non Error: ${e}`); // track non-errors throws
-                }
+                await reportErrors([e]);
                 process.exit(1);
             }
         }

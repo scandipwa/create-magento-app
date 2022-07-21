@@ -9,7 +9,8 @@ const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
 const { prepareFileSystem } = require('./file-system');
 const { installMagentoProject, setupMagento } = require('./magento');
-const { pullContainers, stopContainers } = require('./docker/containers');
+const { pullImages, stopContainers } = require('./docker/containers');
+const dockerNetwork = require('./docker/network');
 const { setPrefix } = require('./prefix');
 const {
     connectToMySQL
@@ -18,7 +19,7 @@ const {
     // restoreThemeConfig,
     // dumpThemeConfig
 } = require('./mysql');
-const { buildProjectImage, buildXDebugProjectImage } = require('./docker/project-image-builder');
+const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
@@ -95,9 +96,16 @@ const retrieveFreshProjectConfiguration = () => ({
 const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
-        pullContainers(),
-        buildProjectImage(),
-        buildXDebugProjectImage(),
+        pullImages(),
+        dockerNetwork.tasks.createNetwork(),
+        {
+            task: (ctx, task) => task.newListr([
+                buildProjectImage(),
+                buildDebugProjectImage()
+            ], {
+                concurrent: true
+            })
+        },
         checkPHPVersion(),
         getComposerVersionTask(),
         prepareFileSystem(),

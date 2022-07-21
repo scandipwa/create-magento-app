@@ -3,7 +3,6 @@ const { deepmerge } = require('../../util/deepmerge');
 const { containerApi } = require('../docker/containers');
 
 /**
- *
  * @param {import('../../../typings/context').ListrContext} ctx
  * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { useXDebugContainer?: boolean }} [options]
  * @param {string} command
@@ -26,9 +25,7 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
             },
             options.useXDebugContainer
                 ? {
-                    imageDetails: {
-                        tag: `${php.imageDetails.tag}.xdebug`
-                    }
+                    image: `${ php.image }.xdebug`
                 }
                 : {},
             {

@@ -2,7 +2,6 @@ const { DockerFileBuilder } = require('@scandipwa/dockerfile');
 const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
-const xdebugExtension = require('../../config/php/extensions/xdebug');
 const { runContainerImage } = require('../../util/run-container-image');
 
 /**
@@ -47,76 +46,84 @@ const addExtensionToBuilder = (builder, ctx) => ([extensionName, extensionInstru
 };
 
 /**
+ * @param {import('../../../typings/context').ListrContext} ctx
+ * @param {{ image: string, tag: string}} param1
+ */
+const buildDockerFileInstructions = async (ctx, { image, tag }) => {
+    const { composer } = ctx.config.overridenConfiguration.configuration;
+    const existingPHPExtensions = await getEnabledExtensionsFromImage(`${image}:${tag}`);
+
+    const missingExtensions = Object.entries(
+        ctx.config.overridenConfiguration.configuration.php.extensions
+    ).filter(
+        ([extensionName, extensionInstructions]) => !Object.entries(existingPHPExtensions)
+            .map(([n, i]) => [n.toLowerCase(), i])
+            .some(
+                ([n]) => extensionName === n || (
+                    extensionInstructions.alternativeName && extensionInstructions.alternativeName.map(
+                        (s) => s.toLowerCase()
+                    ).includes(n)
+                )
+            )
+    ).filter(([extensionName]) => extensionName.toLowerCase() !== 'xdebug');
+
+    const dockerFileInstructions = new DockerFileBuilder()
+        .comment('project image')
+        .from({ image, tag });
+
+    // install bash in image
+    dockerFileInstructions
+        .run('apk add --no-cache bash');
+
+    if (missingExtensions.length > 0) {
+        const allDependencies = missingExtensions.map(
+            ([_extensionName, extensionInstructions]) => (extensionInstructions.dependencies || [])
+        )
+            .reduce((acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))), []);
+
+        dockerFileInstructions.run(`apk add --no-cache ${allDependencies.join(' ')}`);
+        missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions, ctx));
+    }
+
+    const composerVersion = /^\d$/.test(composer.version)
+        ? `latest-${composer.version}.x`
+        : composer.version;
+
+    dockerFileInstructions
+        .comment('download composer')
+        .run(`curl https://getcomposer.org/download/${composerVersion}/composer.phar --output composer`)
+        .comment('make composer executable')
+        .run('chmod +x ./composer')
+        .comment('move composer to bin directory')
+        .run('mv composer /usr/local/bin/composer');
+
+    if (semver.satisfies(composer.version, '^1')) {
+        dockerFileInstructions
+            .comment('install prestissimo composer plugin')
+            .run('composer global require hirak/prestissimo');
+    }
+
+    dockerFileInstructions
+        .workDir('/var/www/html');
+
+    return dockerFileInstructions;
+};
+
+/**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const buildProjectImage = () => ({
     title: 'Building Project Image',
     task: async (ctx, task) => {
-        const {
-            php: {
-                baseImage: image,
-                tag
-            },
-            composer
-        } = ctx.config.overridenConfiguration.configuration;
         const containers = ctx.config.docker.getContainers(ctx.ports);
-        const existingPHPExtensions = await getEnabledExtensionsFromImage(`${image}:${tag}`);
-
-        const missingExtensions = Object.entries(
-            ctx.config.overridenConfiguration.configuration.php.extensions
-        ).filter(
-            ([extensionName, extensionInstructions]) => !Object.entries(existingPHPExtensions)
-                .map(([n, i]) => [n.toLowerCase(), i])
-                .some(
-                    ([n]) => extensionName === n || (
-                        extensionInstructions.alternativeName && extensionInstructions.alternativeName.map(
-                            (s) => s.toLowerCase()
-                        ).includes(n)
-                    )
-                )
-        ).filter(([extensionName]) => extensionName.toLowerCase() !== 'xdebug');
-
-        const dockerFileInstructions = new DockerFileBuilder()
-            .comment('project image')
-            .from({ image, tag });
-
-        // install bash in image
-        dockerFileInstructions
-            .run('apk add --no-cache bash');
-
-        if (missingExtensions.length > 0) {
-            const allDependencies = missingExtensions.map(
-                ([_extensionName, extensionInstructions]) => (extensionInstructions.dependencies || [])
-            )
-                .reduce((acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))), []);
-
-            dockerFileInstructions.run(`apk add --no-cache ${allDependencies.join(' ')}`);
-            missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions, ctx));
-        }
-
-        const composerVersion = /^\d$/.test(composer.version)
-            ? `latest-${composer.version}.x`
-            : composer.version;
-
-        dockerFileInstructions
-            .comment('download composer')
-            .run(`curl https://getcomposer.org/download/${composerVersion}/composer.phar --output composer`)
-            .comment('make composer executable')
-            .run('chmod +x ./composer')
-            .comment('move composer to bin directory')
-            .run('mv composer /usr/local/bin/composer');
-
-        if (semver.satisfies(composer.version, '^1')) {
-            dockerFileInstructions
-                .comment('install prestissimo composer plugin')
-                .run('composer global require hirak/prestissimo');
-        }
-
-        dockerFileInstructions
-            .workDir('/var/www/html');
+        const [image, tag = 'latest'] = ctx.config.overridenConfiguration.configuration.php.baseImage.split(':');
+        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
+            image,
+            tag
+        });
 
         try {
-            await execAsyncSpawn(`docker build -t ${containers.php.imageDetails.name}:${containers.php.imageDetails.tag} -<<EOF
+            await execAsyncSpawn(`docker build -t ${containers.php.image} -<<EOF
 ${dockerFileInstructions.build()}
 EOF`, {
                 callback: (r) => {
@@ -135,30 +142,26 @@ EOF`, {
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const buildXDebugProjectImage = () => ({
-    title: 'Building Project Image with XDebug',
+const buildDebugProjectImage = () => ({
+    title: 'Building Debug Project Image',
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports);
-        const dockerFileInstructionsWithXDebug = new DockerFileBuilder()
-            .from({
-                image: containers.php.imageDetails.name,
-                tag: containers.php.imageDetails.tag
-            });
-
-        dockerFileInstructionsWithXDebug.run('echo \\$PHPIZE_DEPS');
-
-        addExtensionToBuilder(dockerFileInstructionsWithXDebug, ctx)(['xdebug', xdebugExtension]);
+        const [image, tag = 'latest'] = ctx.config.overridenConfiguration.configuration.php.debugImage.split(':');
+        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
+            image,
+            tag
+        });
 
         try {
-            await execAsyncSpawn(`docker build -t ${containers.php.imageDetails.name}:${containers.php.imageDetails.tag}.xdebug -<<EOF
-${dockerFileInstructionsWithXDebug.build()}
+            await execAsyncSpawn(`docker build -t ${containers.php.debugImage} -<<EOF
+${dockerFileInstructions.build()}
 EOF`, {
                 callback: (r) => {
                     task.output = r;
                 }
             });
         } catch (e) {
-            throw new KnownError(`Unexpected error during project image with xdebug building!\n\n${e}`);
+            throw new KnownError(`Unexpected error during debug project image building!\n\n${e}`);
         }
     },
     options: {
@@ -168,6 +171,6 @@ EOF`, {
 
 module.exports = {
     buildProjectImage,
-    buildXDebugProjectImage,
-    getEnabledExtensions: getEnabledExtensionsFromImage
+    buildDebugProjectImage,
+    getEnabledExtensionsFromImage
 };

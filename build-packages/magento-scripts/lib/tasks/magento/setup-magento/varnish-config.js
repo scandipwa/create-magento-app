@@ -19,13 +19,14 @@ const varnishConfigSetup = () => ({
                 }
             },
             mysqlConnection,
-            ports
+            ports,
+            debug
         } = ctx;
 
         const isLinux = os.platform() === 'linux';
         const isWsl = await getIsWsl();
 
-        if (varnishEnabled) {
+        if (!debug && varnishEnabled) {
             await updateTableValues('core_config_data', [
                 {
                     path: 'system/full_page_cache/varnish/backend_host',

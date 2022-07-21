@@ -9,11 +9,13 @@ const systeminformation = require('systeminformation');
 
 /**
  *
- * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} param0
- * @param {import('../../typings/context').ListrContext['config']['baseConfig']} config
+ * @param {import('../../typings/context').ListrContext} ctx
+ * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} overridenConfiguration
+ * @param {import('../../typings/context').ListrContext['config']['baseConfig']} baseConfig
  * @returns
  */
-module.exports = async ({ configuration, ssl, host }, config) => {
+module.exports = async (ctx, overridenConfiguration, baseConfig) => {
+    const { configuration, ssl, host } = overridenConfiguration;
     const {
         nginx,
         redis,
@@ -23,13 +25,13 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         varnish
     } = configuration;
 
-    const php = getPhpConfig(configuration, config);
+    const php = getPhpConfig(configuration, baseConfig);
     const {
         prefix,
         magentoDir,
         containerMagentoDir,
         cacheDir
-    } = config;
+    } = baseConfig;
 
     const cpuSupportedFlags = await systeminformation.cpuFlags();
 
@@ -116,8 +118,8 @@ module.exports = async ({ configuration, ssl, host }, config) => {
         const dockerConfig = {
             php: {
                 _: 'PHP',
-                ports: [`127.0.0.1:${ ports.fpm }:9000`],
-                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
+                ports: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
+                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
                 network: network.name,
                 mountVolumes: [
                     `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
@@ -129,10 +131,7 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 restart: 'on-failure:5',
                 image: `cmalocal:${ prefix.replace(/-/ig, '.') }`,
-                imageDetails: {
-                    name: 'cmalocal',
-                    tag: prefix.replace(/-/ig, '.')
-                },
+                debugImage: `cmalocal:${ prefix.replace(/-/ig, '.') }.debug`,
                 remoteImage: false,
                 name: `${ prefix }_php`,
                 connectCommand: ['/bin/sh']
@@ -160,10 +159,6 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 // TODO: use connect instead
                 network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
-                imageDetails: {
-                    name: 'nginx',
-                    tag: nginx.version
-                },
                 name: `${ prefix }_ssl-terminator`,
                 command: "nginx -g 'daemon off;'"
             },
@@ -196,10 +191,6 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 // TODO: use connect instead
                 network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
-                imageDetails: {
-                    name: 'nginx',
-                    tag: nginx.version
-                },
                 name: `${ prefix }_nginx`,
                 command: "nginx -g 'daemon off;'"
             },
@@ -255,13 +246,6 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 ],
                 network: network.name,
                 image: !isArm ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
-                imageDetails: !isArm ? {
-                    name: 'mysql',
-                    tag: mysql.version
-                } : {
-                    name: 'mariadb',
-                    tag: mariadb.version
-                },
                 name: !isArm ? `${ prefix }_mysql` : `${ prefix }_mariadb`
             },
             elasticsearch: {
@@ -282,10 +266,6 @@ module.exports = async ({ configuration, ssl, host }, config) => {
                 },
                 network: network.name,
                 image: `elasticsearch:${ elasticsearch.version }`,
-                imageDetails: {
-                    name: 'elasticsearch',
-                    tag: elasticsearch.version
-                },
                 name: `${ prefix }_elasticsearch`
             }
         };
@@ -296,14 +276,10 @@ module.exports = async ({ configuration, ssl, host }, config) => {
             );
         }
 
-        if (varnish.enabled) {
+        if (!ctx.debug && varnish.enabled) {
             dockerConfig.varnish = {
                 _: 'Varnish',
                 image: `varnish:${ varnish.version }`,
-                imageDetails: {
-                    name: 'varnish',
-                    tag: varnish.version
-                },
                 name: `${ prefix }_varnish`,
                 mountVolumes: [
                     `${ isLinux ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`

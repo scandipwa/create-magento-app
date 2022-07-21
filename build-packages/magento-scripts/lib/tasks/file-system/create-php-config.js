@@ -1,7 +1,7 @@
 const semver = require('semver');
 const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
-const { getEnabledExtensions } = require('../docker/project-image-builder');
+const { getEnabledExtensionsFromImage } = require('../docker/project-image-builder');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -11,12 +11,18 @@ const createPhpConfig = () => ({
     task: async (ctx) => {
         const {
             config: {
-                php, baseConfig, debug, ports
-            }
+                php,
+                baseConfig
+            },
+            debug
         } = ctx;
         const containers = ctx.config.docker.getContainers(ctx.ports);
-        const phpExtensions = await getEnabledExtensions(`${containers.php.image}.xdebug`);
+        const phpExtensions = await getEnabledExtensionsFromImage(containers.php.debugImage);
         const isXDebug2 = semver.satisfies(phpExtensions.xdebug, '2');
+
+        const isLinux = ctx.platform === 'linux';
+        const isNativeLinux = isLinux && !ctx.isWsl;
+        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
 
         try {
             await setConfigFile({
@@ -24,10 +30,10 @@ const createPhpConfig = () => ({
                 template: php.iniTemplatePath,
                 overwrite: true,
                 templateArgs: {
-                    ports,
                     debug,
-                    mageRoot: baseConfig.magentoDir,
-                    isXDebug2
+                    mageRoot: baseConfig.containerMagentoDir,
+                    isXDebug2,
+                    hostMachine
                 }
             });
         } catch (e) {

@@ -58,7 +58,6 @@ const defaultPorts = {
     varnish: 8080,
     sslTerminator: 80,
     fpm: 9000,
-    xdebug: 9111,
     mysql: 3306,
     redis: 6379,
     elasticsearch: 9200
@@ -74,10 +73,7 @@ const defaultPorts = {
 const getPortsConfig = async (ports, options = {}) => {
     const { useNonOverlappingPorts } = options;
     const mergedPorts = deepmerge(defaultPorts, ports || {});
-    let p = [
-        9003,
-        9111
-    ];
+    let p = [];
 
     if (useNonOverlappingPorts) {
         p = p.concat(await getUsedByOtherCMAProjectsPorts());

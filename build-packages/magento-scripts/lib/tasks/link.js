@@ -4,7 +4,6 @@ const getProjectConfiguration = require('../config/get-project-configuration');
 const retrieveThemeData = require('./theme/retrieve-theme-data');
 const linkTheme = require('./theme/link-theme');
 const { startServices } = require('./docker');
-// const { startPhpFpm } = require('./php-fpm');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const { connectToMySQL } = require('./mysql');
 

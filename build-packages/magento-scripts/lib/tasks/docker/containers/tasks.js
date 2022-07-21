@@ -2,7 +2,8 @@
 const sleep = require('../../../util/sleep');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const KnownError = require('../../../errors/known-error');
-const { run } = require('./container-api');
+const containerApi = require('./container-api');
+const { imageApi } = require('../image');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 const stop = async (containers) => {
@@ -23,19 +24,31 @@ const remoteImageFilter = (container) => {
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const pullContainers = () => ({
+const pullImages = () => ({
     title: 'Pulling container images',
     task: async ({ config: { docker } }, task) => {
         const containers = Object.values(docker.getContainers());
-        const containerFilters = containers
+        const imagesFilter = containers
             .filter(remoteImageFilter)
-            .map((container) => `-f=reference='${container.imageDetails.name}:${container.imageDetails.tag}'`)
-            .join(' ');
-        const existingImages = await execAsyncSpawn(`docker images ${containerFilters}`);
+            .map((container) => `reference='${container.image}'`);
+        const existingImages = await imageApi.ls({
+            formatToJSON: true,
+            filter: imagesFilter
+        });
+
         const missingContainerImages = containers
             .filter(remoteImageFilter)
-            .filter((container) => !existingImages.split('\n')
-                .some((line) => line.includes(container.imageDetails.name) && line.includes(container.imageDetails.tag)))
+            .map((container) => {
+                const [image, tag = 'latest'] = container.image.split(':');
+
+                return {
+                    ...container,
+                    imageDetails: {
+                        image, tag
+                    }
+                };
+            })
+            .filter((container) => !existingImages.some((image) => image.Repository === container.imageDetails.image && image.Tag === container.imageDetails.tag))
             .reduce((acc, val) => acc.concat(acc.some((c) => c.imageDetails.name === val.imageDetails.name && c.imageDetails.tag === val.imageDetails.tag) ? [] : val), []);
 
         if (missingContainerImages.length === 0) {
@@ -45,8 +58,8 @@ const pullContainers = () => ({
 
         return task.newListr(
             missingContainerImages.map((container) => ({
-                title: `Pulling ${ logger.style.file(`${container.imageDetails.name}:${container.imageDetails.tag}`) } image`,
-                task: () => pull(`${container.imageDetails.name}:${container.imageDetails.tag}`)
+                title: `Pulling ${ logger.style.file(`${container.image}`) } image`,
+                task: () => pull(`${container.image}`)
             })), {
                 concurrent: true,
                 exitOnError: true
@@ -60,7 +73,7 @@ const pullContainers = () => ({
  */
 const startContainers = () => ({
     title: 'Starting containers',
-    task: async ({ ports, config: { docker } }, task) => {
+    task: async ({ ports, config: { docker }, debug }, task) => {
         const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
 
         const missingContainers = Object.values(docker.getContainers(ports)).filter(
@@ -72,8 +85,25 @@ const startContainers = () => ({
             return;
         }
 
+        if (debug) {
+            await Promise.all(
+                missingContainers
+                    .map((container) => {
+                        if (container.debugImage) {
+                            container.image = container.debugImage;
+                        }
+
+                        return container;
+                    }).map((container) => containerApi.run(container).then((out) => {
+                        task.output = `From ${container._}: ${out}`;
+                    }))
+            );
+
+            return;
+        }
+
         // TODO: we might stop containers here ?
-        await Promise.all(missingContainers.map((container) => run(container).then((out) => {
+        await Promise.all(missingContainers.map((container) => containerApi.run(container).then((out) => {
             task.output = `From ${container._}: ${out}`;
         })));
     },
@@ -167,7 +197,7 @@ const statusContainers = () => ({
 module.exports = {
     startContainers,
     stopContainers,
-    pullContainers,
+    pullImages,
     statusContainers,
     checkContainersAreRunning,
     getContainerStatus

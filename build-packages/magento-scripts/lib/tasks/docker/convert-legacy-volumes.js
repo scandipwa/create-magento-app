@@ -12,7 +12,7 @@ const { createVolume } = require('./volumes');
 const convertLegacyVolumes = () => ({
     task: async (ctx, task) => {
         const { config: { overridenConfiguration } } = ctx;
-        const newDockerConfig = await getDockerConfig(overridenConfiguration, getBaseConfig(process.cwd(), folderName));
+        const newDockerConfig = await getDockerConfig(ctx, overridenConfiguration, getBaseConfig(process.cwd(), folderName));
 
         const newVolumeNames = Object.values(newDockerConfig.volumes).filter((v) => !v.opts).map(({ name }) => name);
 
@@ -22,14 +22,18 @@ const convertLegacyVolumes = () => ({
             return;
         }
 
-        const legacyDockerConfig = await getDockerConfig(overridenConfiguration, getBaseConfig(process.cwd(), legacyFolderName));
+        const legacyDockerConfig = await getDockerConfig(ctx, overridenConfiguration, getBaseConfig(process.cwd(), legacyFolderName));
         const legacyVolumeNames = Object.values(legacyDockerConfig.volumes).filter((v) => !v.opts).map(({ name }) => name);
 
         if (
             newVolumeNames.every((name) => !existingVolumes.includes(name))
             && legacyVolumeNames.every((name) => existingVolumes.includes(name))
         ) {
-            ctx.config = await getConfigFromMagentoVersion(ctx.magentoVersion, process.cwd(), legacyFolderName);
+            ctx.config = await getConfigFromMagentoVersion(ctx, {
+                magentoVersion: ctx.magentoVersion,
+                projectPath: process.cwd(),
+                prefix: legacyFolderName
+            });
 
             return task.newListr([
                 stopServices(),

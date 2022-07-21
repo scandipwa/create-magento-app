@@ -5,6 +5,7 @@ const { magento24PHPExtensionList } = require('../magento/required-php-extension
 const { php81 } = require('../php/versions');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish70 } = require('../varnish/varnish-7-0');
+const { image } = require('../php/base-image');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.4',
@@ -13,7 +14,7 @@ module.exports = ({ templateDir } = {}) => ({
         php: php81({
             templateDir,
             extensions: { ...magento24PHPExtensionList, sodium },
-            tag: 'magento244'
+            baseImage: `${ image }:magento244`
         }),
         nginx: {
             version: '1.18.0',

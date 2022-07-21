@@ -5,6 +5,7 @@ const setupMessDetector = require('./mess-detector-config');
 const setupPHPCodeSniffer = require('./php-code-sniffer-config');
 const { getPhpConfig } = require('./php-config');
 const setupPHPCSFixer = require('./php-cs-fixer-config');
+const setupPHPInterpreters = require('./php-interpreters-config');
 const setupPHPProjectSharedConfiguration = require('./php-project-shared-configuration-config');
 
 /**
@@ -22,6 +23,7 @@ const setupPhpConfig = () => ({
                 setupMessDetector(phpConfigs),
                 setupPHPCodeSniffer(phpConfigs),
                 setupPHPCSFixer(phpConfigs),
+                setupPHPInterpreters(phpConfigs, ctx),
                 setupPHPProjectSharedConfiguration(phpConfigs, phpConfig.phpLanguageLevel)
             ]);
 
@@ -41,6 +43,7 @@ const setupPhpConfig = () => ({
             setupMessDetector(phpConfigs),
             setupPHPCodeSniffer(phpConfigs),
             setupPHPCSFixer(phpConfigs),
+            setupPHPInterpreters(phpConfigs, ctx),
             setupPHPProjectSharedConfiguration(phpConfigs, phpConfig.phpLanguageLevel)
         ]);
 

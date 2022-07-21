@@ -3,9 +3,15 @@ const pathExists = require('../../../../util/path-exists');
 const { setupXMLStructure } = require('../setup-xml-structure');
 const setupComposerSettings = require('./composer-settings-config');
 const setupFormatOnSave = require('./format-setting-config');
+const setupMessDetectorProjectConfiguration = require('./mess-detector-project-configuration-config');
+const setupPHPCodeSnifferProjectConfiguration = require('./php-code-sniffer-project-configuration-config');
+const setupPHPCSFixerProjectConfiguration = require('./php-cs-fixer-project-configuration-config');
 const setupPHPDebugGeneral = require('./php-debug-general-config');
 const setupPHPServers = require('./php-server-config');
+const setupPHPStanProjectConfiguration = require('./php-stan-project-configuration-config.js');
+const setupPHPWorkspaceProjectConfiguration = require('./php-workspace-project-configuration-config');
 const setupPropertiesComponent = require('./properties-component-config');
+const setupPSalmProjectConfiguration = require('./psalm-project-configuration-config.js');
 const setupRunManager = require('./run-manager-config');
 const { getWorkspaceConfig } = require('./workspace-config');
 
@@ -20,8 +26,15 @@ const setupWorkspaceConfig = () => ({
             const workspaceConfiguration = setupXMLStructure(await loadXmlFile(workspaceConfig.path));
             const workspaceConfigs = workspaceConfiguration.project.component;
             const hasChanges = await Promise.all([
-                setupPHPDebugGeneral(workspaceConfigs, workspaceConfig),
-                setupPHPServers(workspaceConfigs, workspaceConfig),
+                setupMessDetectorProjectConfiguration(workspaceConfigs),
+                setupPHPCSFixerProjectConfiguration(workspaceConfigs),
+                setupPHPCodeSnifferProjectConfiguration(workspaceConfigs),
+                setupPHPStanProjectConfiguration(workspaceConfigs),
+                setupPSalmProjectConfiguration(workspaceConfigs),
+                setupPHPWorkspaceProjectConfiguration(workspaceConfigs, ctx),
+                setupPHPDebugGeneral(workspaceConfigs),
+                setupPHPServers(workspaceConfigs, workspaceConfig, ctx),
+                setupComposerSettings(workspaceConfigs, ctx),
                 setupRunManager(workspaceConfigs, workspaceConfig),
                 setupPropertiesComponent(workspaceConfigs)
             ]);
@@ -39,11 +52,17 @@ const setupWorkspaceConfig = () => ({
         const workspaceConfigs = workspaceConfiguration.project.component;
 
         await Promise.all([
-            setupPHPDebugGeneral(workspaceConfigs, workspaceConfig),
-            setupPHPServers(workspaceConfigs, workspaceConfig),
+            setupMessDetectorProjectConfiguration(workspaceConfigs),
+            setupPHPCSFixerProjectConfiguration(workspaceConfigs),
+            setupPHPCodeSnifferProjectConfiguration(workspaceConfigs),
+            setupPHPStanProjectConfiguration(workspaceConfigs),
+            setupPSalmProjectConfiguration(workspaceConfigs),
+            setupPHPDebugGeneral(workspaceConfigs),
+            setupPHPServers(workspaceConfigs, workspaceConfig, ctx),
+            setupPHPWorkspaceProjectConfiguration(workspaceConfigs, ctx),
             setupRunManager(workspaceConfigs, workspaceConfig),
             setupPropertiesComponent(workspaceConfigs),
-            setupComposerSettings(workspaceConfigs),
+            setupComposerSettings(workspaceConfigs, ctx),
             setupFormatOnSave(workspaceConfigs)
         ]);
 

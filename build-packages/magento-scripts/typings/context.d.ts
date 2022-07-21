@@ -70,10 +70,7 @@ export interface ListrContext {
                 securityOptions: string[]
                 network: string
                 image: string
-                imageDetails: {
-                    name: string
-                    tag: string
-                }
+                debugImage?: string
                 name: string
                 command: string
                 connectCommand: string[]

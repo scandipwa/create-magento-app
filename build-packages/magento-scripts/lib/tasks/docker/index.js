@@ -8,17 +8,8 @@ const volumes = require('./volumes');
 const startServices = () => ({
     title: 'Starting Docker services',
     task: (ctx, task) => task.newListr([
-        {
-            title: 'Preparing services',
-            task: (ctx, task) => task.newListr([
-                network.createNetwork(),
-                volumes.createVolumes()
-            ], {
-                concurrent: true,
-                exitOnError: true,
-                ctx
-            })
-        },
+        network.tasks.createNetwork(),
+        volumes.createVolumes(),
         containers.startContainers(),
         containers.checkContainersAreRunning()
     ], {
@@ -33,7 +24,7 @@ const startServices = () => ({
 const stopServices = () => ({
     task: (ctx, task) => task.newListr([
         containers.stopContainers(),
-        network.removeNetwork()
+        network.tasks.removeNetwork()
     ])
 });
 

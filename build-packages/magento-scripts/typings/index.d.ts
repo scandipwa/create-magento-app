@@ -82,14 +82,14 @@ export interface PHPExtensions {
 
 export interface PHPConfiguration {
     /**
-     * Base image
+     * Base image with tag
      */
     baseImage?: string
 
     /**
-     * Image tag
+     * Image with XDebug enabled
      */
-    tag: string
+    debugImage?: string
 
     /**
      * Configuration file template location

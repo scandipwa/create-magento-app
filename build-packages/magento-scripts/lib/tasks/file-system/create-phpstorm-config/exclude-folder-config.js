@@ -1,17 +1,26 @@
 const path = require('path');
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const pathExists = require('../../../util/path-exists');
+const {
+    urlKey, typeKey, versionKey, nameKey
+} = require('./keys');
 const { formatPathForPHPStormConfig } = require('./xml-utils');
 
 const pathToModulesConfig = path.join(process.cwd(), '.idea', 'modules.xml');
 const excludeFoldersPaths = [
     'bin',
     'dev',
-    'pub',
-    'setup',
+    'pub/static',
     'var/cache',
     'var/page_cache',
-    'var/log'
+    'var/log',
+    'var/composer_home',
+    'var/view_preprocessed'
+].map((p) => `file://$MODULE_DIR$/${p}`);
+
+const mustBeIncludedPaths = [
+    'pub',
+    'setup'
 ].map((p) => `file://$MODULE_DIR$/${p}`);
 
 /**
@@ -24,26 +33,23 @@ const getProjectConfigFilePath = async () => {
     return modulesConfigData.project.component.modules.module['@_filepath'].replace('$PROJECT_DIR$', process.cwd());
 };
 
-/**
- * @returns {Array<{'@_url': string}>}
- */
-const getExcludedFoldersConfig = (projectConfigData) => {
+const setupDefaultsForExcludedFoldersConfig = (projectConfigData) => {
     if (!projectConfigData.module) {
         projectConfigData.module = {
-            '@_type': 'WEB_MODULE',
-            '@_version': '4'
+            [typeKey]: 'WEB_MODULE',
+            [versionKey]: '4'
         };
     }
 
     if (!projectConfigData.module.component) {
         projectConfigData.module.component = {
-            '@_name': 'NewModuleRootManager',
+            [nameKey]: 'NewModuleRootManager',
             orderEntry: [
                 {
-                    '@_type': 'inheritedJdk'
+                    [typeKey]: 'inheritedJdk'
                 },
                 {
-                    '@_type': 'sourceFolder',
+                    [typeKey]: 'sourceFolder',
                     '@_forTest': 'false'
                 }
             ]
@@ -52,35 +58,40 @@ const getExcludedFoldersConfig = (projectConfigData) => {
 
     if (!projectConfigData.module.component.content) {
         projectConfigData.module.component.content = {
-            '@_url': 'file://$MODULE_DIR$'
+            [urlKey]: 'file://$MODULE_DIR$'
         };
     }
 
     if (!projectConfigData.module.component.content.excludeFolder) {
         projectConfigData.module.component.content.excludeFolder = [];
     }
-
-    return projectConfigData
-        .module.component.content.excludeFolder;
 };
 
-const setupExcludedFolders = (excludedFoldersConfig) => {
+const setupExcludedFolders = (projectConfigData) => {
+    const { excludeFolder } = projectConfigData.module.component.content;
     let hasChanges = false;
     // filter excluded folders to get ones that needs to be added to excluded folders list
     const missingExcludedFolders = excludeFoldersPaths
         .filter(
-            (excludeFoldersPath) => !excludedFoldersConfig.some(
-                (config) => config['@_url'] === excludeFoldersPath
+            (excludeFoldersPath) => !excludeFolder.some(
+                (config) => config[urlKey] === excludeFoldersPath
             )
         );
 
     if (missingExcludedFolders.length > 0) {
         hasChanges = true;
         missingExcludedFolders.forEach((missingExcludedFolder) => {
-            excludedFoldersConfig.unshift({
-                '@_url': missingExcludedFolder
+            projectConfigData.module.component.content.excludeFolder.unshift({
+                [urlKey]: missingExcludedFolder
             });
         });
+    }
+
+    const hasSomePathsThatMustBeFiltered = excludeFolder.some((config) => mustBeIncludedPaths.includes(config[urlKey]));
+
+    if (hasSomePathsThatMustBeFiltered) {
+        projectConfigData.module.component.content.excludeFolder = excludeFolder.filter((config) => !mustBeIncludedPaths.includes(config[urlKey]));
+        hasChanges = true;
     }
 
     return hasChanges;
@@ -94,13 +105,13 @@ const getIMLFilePath = async () => {
 
         const modulesConfig = {
             '?xml': {
-                '@_version': '1.0',
+                [versionKey]: '1.0',
                 '@_encoding': 'UTF-8'
             },
             project: {
-                '@_version': '4',
+                [versionKey]: '4',
                 component: {
-                    '@_name': 'ProjectModuleManager',
+                    [nameKey]: 'ProjectModuleManager',
                     modules: [
                         {
                             module: {
@@ -129,8 +140,8 @@ const setupExcludedFoldersConfig = () => ({
             const projectFilePath = await getProjectConfigFilePath();
             if (await pathExists(projectFilePath)) {
                 const projectConfigData = await loadXmlFile(projectFilePath);
-                const excludedFoldersConfig = getExcludedFoldersConfig(projectConfigData);
-                const hasChanges = setupExcludedFolders(excludedFoldersConfig);
+                setupDefaultsForExcludedFoldersConfig(projectConfigData);
+                const hasChanges = setupExcludedFolders(projectConfigData);
                 if (hasChanges) {
                     await buildXmlFile(projectFilePath, projectConfigData);
                 } else {
@@ -144,12 +155,13 @@ const setupExcludedFoldersConfig = () => ({
         const projectFilePath = await getIMLFilePath();
         const projectConfigData = {
             '?xml': {
-                '@_version': '1.0',
+                [versionKey]: '1.0',
                 '@_encoding': 'UTF-8'
             }
         };
-        const excludedFoldersConfig = getExcludedFoldersConfig(projectConfigData);
-        setupExcludedFolders(excludedFoldersConfig);
+
+        setupDefaultsForExcludedFoldersConfig(projectConfigData);
+        setupExcludedFolders(projectConfigData);
 
         await buildXmlFile(projectFilePath, projectConfigData);
     }

@@ -1,7 +1,7 @@
 const {
     startContainers,
     stopContainers,
-    pullContainers,
+    pullImages,
     statusContainers,
     checkContainersAreRunning,
     getContainerStatus
@@ -11,7 +11,7 @@ const containerApi = require('./container-api');
 module.exports = {
     startContainers,
     stopContainers,
-    pullContainers,
+    pullImages,
     statusContainers,
     checkContainersAreRunning,
     getContainerStatus,

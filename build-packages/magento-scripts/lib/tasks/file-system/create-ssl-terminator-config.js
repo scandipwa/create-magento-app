@@ -19,7 +19,8 @@ const createSSLTerminatorConfig = () => ({
                 overridenConfiguration,
                 baseConfig
             },
-            isWsl
+            isWsl,
+            debug
         } = ctx;
 
         const {
@@ -84,7 +85,8 @@ const createSSLTerminatorConfig = () => ({
                     hostMachine,
                     hostPort,
                     config: overridenConfiguration,
-                    networkToBindTo
+                    networkToBindTo,
+                    debug
                 }
             });
         } catch (e) {
