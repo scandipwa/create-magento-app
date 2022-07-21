@@ -5,7 +5,7 @@ const create = ({
     opts = {},
     name
 }) => {
-    let command = `docker volume create ${ Object.entries(opts).map(([name, value]) => `--opt ${name}=${value}`).join(' ') } `;
+    let command = `docker volume create ${ Object.entries(opts).map(([name, value]) => `--opt ${name}='${value}'`).join(' ') } `;
 
     if (driver) {
         command += `--driver ${ driver }`;
