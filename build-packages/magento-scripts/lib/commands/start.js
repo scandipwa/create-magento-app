@@ -101,7 +101,7 @@ module.exports = (yargs) => {
                         showErrorMessage: false,
                         showTimer: true
                     },
-                    collectErrors: 'full'
+                    collectErrors: 'minimal'
                 }
             );
             const timeStamp = Date.now();
