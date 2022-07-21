@@ -1,6 +1,5 @@
 const containers = require('./containers');
 const network = require('./network');
-const volumes = require('./volumes');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -8,8 +7,6 @@ const volumes = require('./volumes');
 const startServices = () => ({
     title: 'Starting Docker services',
     task: (ctx, task) => task.newListr([
-        network.tasks.createNetwork(),
-        volumes.createVolumes(),
         containers.startContainers(),
         containers.checkContainersAreRunning()
     ], {

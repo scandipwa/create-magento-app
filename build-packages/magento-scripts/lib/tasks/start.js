@@ -32,6 +32,7 @@ const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 const checkPHPVersion = require('./requirements/php-version');
+const volumes = require('./docker/volumes');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -98,6 +99,7 @@ const configureProject = () => ({
     task: (ctx, task) => task.newListr([
         pullImages(),
         dockerNetwork.tasks.createNetwork(),
+        volumes.createVolumes(),
         {
             task: (ctx, task) => task.newListr([
                 buildProjectImage(),
