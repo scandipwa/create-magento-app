@@ -1,0 +1,3 @@
+build=docker build . -t cma:php73
+run=docker run -it cma:php73
+buildandrun=build --no-cache && run
