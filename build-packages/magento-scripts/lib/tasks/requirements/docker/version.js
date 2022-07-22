@@ -1,21 +1,21 @@
 const UnknownError = require('../../../errors/unknown-error');
-const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { version } = require('../../docker/api');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const getDockerVersion = () => ({
     task: async (ctx) => {
-        const { result, code } = await execAsyncSpawn('docker version --format {{.Server.Version}}', {
-            withCode: true
+        const dockerVersion = await version({
+            formatToJSON: true
         });
 
-        if (code === 0) {
-            const dockerVersion = result.split('').filter((c) => /[\d.]/i.test(c)).join('') || result;
-
-            ctx.dockerVersion = dockerVersion;
+        if (dockerVersion) {
+            ctx.dockerServerData = dockerVersion.Server;
+            ctx.dockerClientData = dockerVersion.Client;
+            ctx.dockerVersion = dockerVersion.Server.Version;
         } else {
-            throw new UnknownError(`Got unexpected result during Docker version retrieval!\n\n${ result }`);
+            throw new UnknownError(`Got unexpected result during Docker version retrieval!\n\n${ dockerVersion }`);
         }
     }
 });

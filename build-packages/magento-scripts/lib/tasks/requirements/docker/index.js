@@ -4,9 +4,20 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const openBrowser = require('../../../util/open-browser');
 const installDocker = require('./install');
 const installDockerOnMac = require('./install-on-mac');
+const { checkDockerPerformance } = require('./performance');
 const { checkDockerSocketPermissions } = require('./permissions');
 const checkDockerStatus = require('./running-status');
 const getDockerVersion = require('./version');
+
+const setVersionInContextTask = (task) => ({
+    task: (ctx) => {
+        if (ctx.platform === 'darwin' && ctx.dockerServerData && ctx.dockerServerData.Platform && ctx.dockerServerData.Platform.Name) {
+            task.title = `Using ${ctx.dockerServerData.Platform.Name} for Mac`;
+        } else {
+            task.title = `Using Docker version ${ctx.dockerVersion}`;
+        }
+    }
+});
 
 const dockerInstallPromptLinux = async (task) => {
     const automaticallyInstallDocker = await task.prompt({
@@ -47,7 +58,6 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
 };
 
 /**
- *
  * @param {import('listr2').ListrTaskWrapper} task
  */
 const dockerInstallPromptMacOS = async (task) => {
@@ -72,11 +82,7 @@ Would you like to install it automatically using brew cask or you prefer to inst
             installDockerOnMac(),
             checkDockerStatus(),
             getDockerVersion(),
-            {
-                task: (ctx) => {
-                    task.title = `Using Docker version ${ctx.dockerVersion}`;
-                }
-            }
+            setVersionInContextTask(task)
         ]);
     }
 
@@ -118,11 +124,7 @@ const checkDocker = () => ({
         return task.newListr([
             checkDockerStatus(),
             getDockerVersion(),
-            {
-                task: (ctx) => {
-                    task.title = `Using Docker version ${ctx.dockerVersion}`;
-                }
-            }
+            setVersionInContextTask(task)
         ]);
     }
 });
@@ -133,7 +135,8 @@ const checkDocker = () => ({
 module.exports = () => ({
     task: (ctx, task) => task.newListr([
         checkDockerSocketPermissions(),
-        checkDocker()
+        checkDocker(),
+        checkDockerPerformance()
     ], {
         concurrent: false
     })
