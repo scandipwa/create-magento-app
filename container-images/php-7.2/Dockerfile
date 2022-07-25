@@ -43,6 +43,9 @@ RUN set -eux; \
 
 ENV PHP_EXTRA_CONFIGURE_ARGS --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi
 
+ENV CXX 'g++ -DTRUE=1 -DFALSE=0'
+ENV CC 'gcc -DTRUE=1 -DFALSE=0'
+
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
 # Enable optimization (-O2)
