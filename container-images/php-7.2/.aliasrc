@@ -1,3 +1,4 @@
 build=docker build . -t cma:php72
+buildx=docker buildx build --platform linux/arm64,linux/amd64 --tag cma:php72 .
 run=docker run -it cma:php72
 buildandrun=build --no-cache && run
