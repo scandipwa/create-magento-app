@@ -1,4 +1,5 @@
-build=docker build . -t cma:php72
-buildx=docker buildx build --platform linux/arm64,linux/amd64 --tag cma:php72 .
-run=docker run -it cma:php72
+build=docker build --tag ghcr.io/scandipwa/create-magento-app:php-7.2 .
+buildx=docker buildx build --platform linux/arm64,linux/amd64 --tag ghcr.io/scandipwa/create-magento-app:php-7.2 .
+buildxpush=docker buildx build --platform linux/arm64,linux/amd64 --tag ghcr.io/scandipwa/create-magento-app:php-7.2 --push .
+run=docker run -it ghcr.io/scandipwa/create-magento-app:php-7.2
 buildandrun=build --no-cache && run
