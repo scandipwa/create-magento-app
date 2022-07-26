@@ -18,8 +18,6 @@ module.exports = (yargs) => {
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
-            // installComposer(),
-            // installPrestissimo(),
             createBashrcConfigFile(),
             checkComposerCredentials()
         ], {
