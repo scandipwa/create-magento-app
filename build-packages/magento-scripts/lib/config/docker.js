@@ -57,6 +57,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
+        /**
+         * When CMA is running in non-native linux environment,
+         * we need also create named volumes for nginx to avoid performance penalty
+         */
         volumes.php = {
             name: `${ prefix }_project-data`,
             opts: {
@@ -65,10 +69,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 o: 'bind'
             }
         };
-        /**
-         * When CMA is running in non-native linux environment,
-         * we need also create named volumes for nginx to avoid performance penalty
-         */
         volumes.nginx = {
             name: `${ prefix }_nginx-data`,
             opts: {
@@ -115,11 +115,14 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     }
 
     const getContainers = (ports = {}) => {
+        /**
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions>}
+         */
         const dockerConfig = {
             php: {
                 _: 'PHP',
-                ports: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
-                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
+                ports: [`127.0.0.1:${ ports.fpm }:9000`],
+                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
                 network: network.name,
                 mountVolumes: [
                     `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,

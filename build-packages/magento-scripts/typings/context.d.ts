@@ -31,12 +31,8 @@ export interface ListrContext {
     edition?: 'community' | 'enterprise'
     config: {
         php: {
-            binPath: string
-            iniPath: string
             iniTemplatePath: string
-            fpmBinPath: string
             fpmConfPath: string
-            fpmPidFilePath: string
             extensions: PHPExtensions
             version: string
         }
