@@ -7,7 +7,7 @@ const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
 module.exports = ({ templateDir } = {}) => ({
-    magentoVersion: '2.3.0',
+    magentoVersion: '2.3.2-p1',
     configuration: {
         php: php72({
             templateDir,
@@ -19,7 +19,7 @@ module.exports = ({ templateDir } = {}) => ({
             configTemplate: path.join(templateDir || '', 'nginx.template.conf')
         },
         redis: {
-            version: '5.0'
+            version: '5'
         },
         mysql: {
             version: '5.7'
@@ -28,7 +28,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.2'
         },
         elasticsearch: {
-            version: '5.6.16'
+            version: '6.8.16'
         },
         composer: {
             version: '1'

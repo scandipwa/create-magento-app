@@ -1,7 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
-const { image } = require('../php/base-image');
+const { repo } = require('../php/base-repo');
 const { php74 } = require('../php/versions');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish60 } = require('../varnish/varnish-6-0');
@@ -12,7 +12,7 @@ module.exports = ({ templateDir } = {}) => ({
         php: php74({
             templateDir,
             extensions: magento24PHPExtensionList,
-            baseImage: `${ image }:magento240p1`
+            baseImage: `${ repo }:php-7.4-magento-2.4`
         }),
         nginx: {
             version: '1.18.0',

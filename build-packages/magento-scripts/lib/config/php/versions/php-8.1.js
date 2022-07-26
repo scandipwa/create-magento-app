@@ -1,5 +1,5 @@
 const path = require('path');
-const { image } = require('../base-image');
+const { repo } = require('../base-repo');
 const xdebug = require('../extensions/xdebug');
 
 /**
@@ -8,10 +8,10 @@ const xdebug = require('../extensions/xdebug');
 const php81 = ({
     templateDir,
     extensions = {},
-    baseImage = `${ image }:php81`
+    baseImage = `${ repo }:php-8.1`
 } = {}) => ({
     baseImage,
-    debugImage: `${ baseImage }.debug`,
+    debugImage: `${ baseImage }-debug`,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     extensions: {
         xdebug,
