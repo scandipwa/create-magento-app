@@ -13,6 +13,7 @@ const php72 = ({
     baseImage,
     debugImage: `${ baseImage }-debug`,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
+    fpmConfigTemplate: path.join(templateDir || '', 'php-fpm.template.conf'),
     extensions: {
         xdebug,
         ...extensions

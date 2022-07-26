@@ -1,13 +1,18 @@
 const path = require('path');
 
-module.exports = (app, config) => {
-    const { php } = app;
+/**
+ * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} overridenConfiguration
+ * @param {import('../../typings/context').ListrContext['config']['baseConfig']} baseConfig
+ */
+module.exports = (overridenConfiguration, baseConfig) => {
+    const { php } = overridenConfiguration;
 
-    const { cacheDir } = config;
+    const { cacheDir } = baseConfig;
 
     const phpConfiguration = {
         iniPath: path.join(cacheDir, 'php.ini'),
         iniTemplatePath: php.configTemplate,
+        fpmTemplatePath: php.fpmConfigTemplate,
         fpmConfPath: path.join(cacheDir, 'php-fpm.conf'),
         extensions: php.extensions,
         version: php.version

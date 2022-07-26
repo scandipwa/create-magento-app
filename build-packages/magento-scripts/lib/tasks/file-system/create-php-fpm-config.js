@@ -1,4 +1,3 @@
-const path = require('path');
 const UnknownError = require('../../errors/unknown-error');
 const setConfigFile = require('../../util/set-config');
 
@@ -7,11 +6,11 @@ const setConfigFile = require('../../util/set-config');
  */
 const createPhpFpmConfig = () => ({
     title: 'Setting php-fpm config',
-    task: async ({ ports, config: { php, baseConfig } }) => {
+    task: async ({ ports, config: { php } }) => {
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,
-                template: path.join(baseConfig.templateDir, 'php-fpm.template.conf'),
+                template: php.fpmTemplatePath,
                 overwrite: true,
                 templateArgs: {
                     ports
