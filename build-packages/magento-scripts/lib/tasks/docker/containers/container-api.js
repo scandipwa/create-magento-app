@@ -22,7 +22,8 @@ const run = (options, execOptions = {}) => {
         tmpfs = [],
         expose = [],
         detach = true,
-        rm = false
+        rm = false,
+        user
     } = options;
 
     const detachArg = detach && '-d';
@@ -39,6 +40,7 @@ const run = (options, execOptions = {}) => {
     const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
     const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt ${opt}`).join(' ');
     const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs ${t}`).join(' ');
+    const userArg = user && `--user=${user}`;
 
     const dockerCommand = [
         'docker',
@@ -57,6 +59,7 @@ const run = (options, execOptions = {}) => {
         healthCheckArg,
         securityArg,
         tmpfsArg,
+        userArg,
         image,
         command
     ].filter(Boolean).join(' ');

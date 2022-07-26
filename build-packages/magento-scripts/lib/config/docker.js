@@ -137,7 +137,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 debugImage: `local-cma-project:${ prefix.replace(/-/ig, '.') }.debug`,
                 remoteImage: false,
                 name: `${ prefix }_php`,
-                connectCommand: ['/bin/sh']
+                connectCommand: ['/bin/sh'],
+                user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',

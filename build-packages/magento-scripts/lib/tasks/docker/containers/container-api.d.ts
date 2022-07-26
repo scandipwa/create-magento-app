@@ -115,6 +115,10 @@ export interface ContainerRunOptions {
      */
     securityOptions?: string[]
     tmpfs?: string[]
+    /**
+     * Username or UID (format: <name|uid>[:<group|gid>])
+     */
+    user?: string
 }
 
 export function run(containerOptions: ContainerRunOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<false>
