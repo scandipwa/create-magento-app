@@ -258,14 +258,6 @@ RUN set -eux; \
 		echo 'daemonize = no'; \
 		echo; \
 		echo '[www]'; \
-        echo 'catch_workers_output = yes'; \
-        echo 'pm.max_children = 32'; \
-        echo 'pm.start_servers = 3'; \
-        echo 'pm.max_requests = 5000'; \
-        echo 'pm.process_idle_timeout = 10s'; \
-        echo 'pm.status_path = /fpmstatus'; \
-        echo 'env[PATH] = $PATH'; \
-        echo; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 

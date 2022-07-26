@@ -246,7 +246,6 @@ RUN set -eux; \
 	{ \
 		echo '[global]'; \
 		echo 'error_log = /proc/self/fd/2'; \
-		echo; echo '; https://github.com/docker-library/php/pull/725#issuecomment-443540114'; echo 'log_limit = 8192'; \
 		echo; \
 		echo '[www]'; \
 		echo '; if we send this to /proc/self/fd/1, it never appears'; \
@@ -256,21 +255,12 @@ RUN set -eux; \
 		echo; \
 		echo '; Ensure worker stdout and stderr are sent to the main error log.'; \
 		echo 'catch_workers_output = yes'; \
-		echo 'decorate_workers_output = no'; \
 	} | tee php-fpm.d/docker.conf; \
 	{ \
 		echo '[global]'; \
 		echo 'daemonize = no'; \
 		echo; \
 		echo '[www]'; \
-        echo 'catch_workers_output = yes'; \
-        echo 'pm.max_children = 32'; \
-        echo 'pm.start_servers = 3'; \
-        echo 'pm.max_requests = 5000'; \
-        echo 'pm.process_idle_timeout = 10s'; \
-        echo 'pm.status_path = /fpmstatus'; \
-        echo 'env[PATH] = $PATH'; \
-        echo; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 
