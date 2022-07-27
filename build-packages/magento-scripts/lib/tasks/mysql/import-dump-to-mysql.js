@@ -111,12 +111,55 @@ const executeImportDumpSQL = () => ({
                 }
             );
         } catch (e) {
-            if (e.includes('Unknown collation: \'utf8mb4_0900_ai_ci\'')) {
-                throw new KnownError(`Error happened during database dump import!
+            if (e.message.includes('Unknown collation: \'utf8mb4_0900_ai_ci\'')) {
+                const confirmFixingCollation = await task.prompt({
+                    type: 'Select',
+                    message: `We got the following error while trying to import ${logger.style.file('dump.sql')}!
 
-${e}
+${e.message}
+
+To fix this error we suggest running the following commands:
+${logger.style.command('sed -i \'s/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g\' dump.sql')}
+`,
+                    choices: [
+                        {
+                            name: 'yes',
+                            message: 'Yes, run the following commands, I reaaaalllyy want dump to work! (this will not edit original dump.sql)'
+                        },
+                        {
+                            name: 'no',
+                            message: 'Okay, I got it. Will try to fix myself'
+                        }
+                    ]
+                });
+
+                if (confirmFixingCollation === 'yes') {
+                    task.output = 'Running fix command...';
+                    await execAsyncSpawn(`docker exec ${mysql.name} bash -c "sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g' dump.sql"`);
+
+                    task.output = 'Trying to import dump again...';
+                    try {
+                        await execAsyncSpawn(
+                            importCommand,
+                            {
+                                callback: (t) => {
+                                    task.output = t;
+                                }
+                            }
+                        );
+
+                        return;
+                    } catch (e) {
+                        throw new KnownError(`Fixing ${logger.style.file('dump.sql')} collations did not helped, we got the following error:
+${e.message}`);
+                    }
+                } else {
+                    throw new KnownError(`Database dump import unsuccessful!
+
+${e.message}
 
 You can try replacing all occurrences of ${logger.style.misc('utf8mb4_0900_ai_ci')} with ${logger.style.misc('utf8mb4_general_ci')} in your ${logger.style.file(ctx.importDb)} file!`);
+                }
             }
 
             throw new UnknownError(`Unexpected error during dump import.\n\n${e}`);
