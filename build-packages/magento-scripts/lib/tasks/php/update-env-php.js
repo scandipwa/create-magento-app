@@ -41,7 +41,7 @@ const updateEnvPHP = () => ({
                     ctx.CSAThemeInstalled = true;
                 }
 
-                const envPhp = await envPhpToJson(process.cwd(), { magentoVersion: ctx.magentoVersion });
+                const envPhp = await envPhpToJson(ctx);
 
                 const persistedQueryConfig = envPhp.cache && envPhp.cache['persisted-query'];
 
