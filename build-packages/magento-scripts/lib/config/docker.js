@@ -1,8 +1,6 @@
 const os = require('os');
 const path = require('path');
 const getPhpConfig = require('./php-config');
-const { getArch } = require('../util/arch');
-const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
@@ -51,9 +49,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         }
     };
 
-    const isLinux = os.platform() === 'linux';
-    const isWsl = await getIsWsl();
-    const isArm = (await getArch()) === 'arm64';
+    const isLinux = ctx.platform === 'linux';
+    const { isWsl, isArm } = ctx;
     const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
