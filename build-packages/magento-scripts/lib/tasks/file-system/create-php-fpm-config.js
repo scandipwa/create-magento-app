@@ -6,14 +6,19 @@ const setConfigFile = require('../../util/set-config');
  */
 const createPhpFpmConfig = () => ({
     title: 'Setting php-fpm config',
-    task: async ({ ports, config: { php } }) => {
+    task: async (ctx) => {
+        const { config: { php } } = ctx;
+        const isLinux = ctx.platform === 'linux';
+        const isNativeLinux = isLinux && !ctx.isWsl;
+        const port = isNativeLinux ? ctx.ports.fpm : 9000;
+
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,
                 template: php.fpmTemplatePath,
                 overwrite: true,
                 templateArgs: {
-                    ports
+                    port
                 }
             });
         } catch (e) {

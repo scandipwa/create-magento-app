@@ -121,9 +121,15 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         const dockerConfig = {
             php: {
                 _: 'PHP',
-                ports: [`127.0.0.1:${ ports.fpm }:9000`],
-                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`],
-                network: network.name,
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.fpm }:9000`
+                ] : [],
+                forwardedPorts: [
+                    isNotNativeLinux
+                        ? `127.0.0.1:${ ports.fpm }:9000`
+                        : `127.0.0.1:${ ports.fpm }`
+                ],
+                network: isNotNativeLinux ? network.name : 'host',
                 mountVolumes: [
                     `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
