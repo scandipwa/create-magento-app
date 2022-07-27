@@ -7,6 +7,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
  */
 const run = (options, execOptions = {}) => {
     const {
+        addHost,
         ports = [],
         mounts = [],
         mountVolumes = [],
@@ -41,6 +42,7 @@ const run = (options, execOptions = {}) => {
     const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt ${opt}`).join(' ');
     const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs ${t}`).join(' ');
     const userArg = user && `--user=${user}`;
+    const addHostArg = addHost && `--add-host=${addHost}`;
 
     const dockerCommand = [
         'docker',
@@ -60,6 +62,7 @@ const run = (options, execOptions = {}) => {
         securityArg,
         tmpfsArg,
         userArg,
+        addHostArg,
         image,
         command
     ].filter(Boolean).join(' ');
