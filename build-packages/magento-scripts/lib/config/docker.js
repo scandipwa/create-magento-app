@@ -139,8 +139,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     COMPOSER_AUTH: process.env.COMPOSER_AUTH || ''
                 },
                 restart: 'on-failure:5',
-                image: `local-cma-project:${ prefix.replace(/-/ig, '.') }`,
-                debugImage: `local-cma-project:${ prefix.replace(/-/ig, '.') }.debug`,
+                image: `local-cma-project:${ prefix }`,
+                debugImage: `local-cma-project:${ prefix }.debug`,
                 remoteImages: [
                     configuration.php.baseImage,
                     configuration.php.debugImage
