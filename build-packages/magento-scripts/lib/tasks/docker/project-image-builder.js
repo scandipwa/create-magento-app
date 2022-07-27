@@ -1,4 +1,4 @@
-const { DockerFileBuilder } = require('@scandipwa/dockerfile');
+const { DockerFileBuilder } = require('../../util/dockerfile-builder');
 const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
