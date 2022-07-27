@@ -17,7 +17,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const {
         nginx,
         redis,
-        mysql,
         elasticsearch,
         mariadb,
         varnish
@@ -50,7 +49,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     };
 
     const isLinux = ctx.platform === 'linux';
-    const { isWsl, isArm } = ctx;
+    const { isWsl } = ctx;
     const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
@@ -223,7 +222,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 connectCommand: ['redis-cli']
             },
             mysql: {
-                _: !isArm ? 'MySQL' : 'MariaDB',
+                _: 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
@@ -249,14 +248,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     '--max_allowed_packet=1GB',
                     '--bind-address=0.0.0.0'
                 ]
-                    .concat(!isArm ? ['--secure-file-priv=NULL'] : [])
                     .join(' '),
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: !isArm ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
-                name: !isArm ? `${ prefix }_mysql` : `${ prefix }_mariadb`
+                image: `mariadb:${ mariadb.version }`,
+                name: `${ prefix }_mariadb`
             },
             elasticsearch: {
                 _: 'ElasticSearch',
