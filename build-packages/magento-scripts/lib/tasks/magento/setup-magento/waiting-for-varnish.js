@@ -29,7 +29,7 @@ const getIsHealthCheckRequestBroken = async (ctx) => {
 
     const parsedRequests = healthCheckRequests.map((line) => parser.parseLine(line));
 
-    return parsedRequests.every((parsedRequest) => parsedRequest.status === '500');
+    return parsedRequests.every((parsedRequest) => parsedRequest.status !== '200');
 };
 
 /**
@@ -120,7 +120,7 @@ Do you want to try resolving this issue by replacing ${logger.style.file('./pub/
                     }
 
                     if (connectionFixed) {
-                        // eslint-disable-next-line no-unused-vars
+                        task.output = 'Connection looks good!';
                         const secondConfirm = await task.prompt({
                             type: 'Select',
                             message: `Okay, looks like it helped!
@@ -136,8 +136,17 @@ Do you want to keep backed up ${logger.style.file('health_check.php')} file?`,
                                 }
                             ]
                         });
+
+                        if (secondConfirm === 'no') {
+                            await fs.promises.rm(pathToHealthCheckBackupPhp);
+                        }
                     }
+
+                    return;
                 }
+
+                task.skip('User choose to fix issue himself');
+                return;
             }
         }
 
