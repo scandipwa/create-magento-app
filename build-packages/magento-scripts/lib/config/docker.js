@@ -165,7 +165,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ isLinux ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
                 ],
                 restart: 'on-failure:5',
-                // TODO: use connect instead
                 network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 name: `${ prefix }_ssl-terminator`,
