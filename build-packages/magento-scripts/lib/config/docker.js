@@ -135,7 +135,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 restart: 'on-failure:5',
                 image: `local-cma-project:${ prefix.replace(/-/ig, '.') }`,
                 debugImage: `local-cma-project:${ prefix.replace(/-/ig, '.') }.debug`,
-                remoteImage: false,
+                remoteImages: [
+                    configuration.php.baseImage,
+                    configuration.php.debugImage
+                ],
                 name: `${ prefix }_php`,
                 connectCommand: ['/bin/sh'],
                 user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
