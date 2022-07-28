@@ -16,9 +16,6 @@ const waitForDatabaseInitialization = () => ({
 
         while (!databaseReadyForConnections) {
             const databaseOutput = await execAsyncSpawn(`docker logs ${mariadb.name}`);
-            if (databaseOutput.includes('Shutdown complete')) {
-                throw new UnknownError(`${ mariadb._ } server shutdown during conversion!\n\n${databaseOutput}`);
-            }
             if (databaseOutput.includes('ready for connections')) {
                 databaseReadyForConnections = true;
                 break;

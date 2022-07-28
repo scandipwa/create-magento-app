@@ -21,7 +21,6 @@ const KnownError = require('../../errors/known-error');
 const { createCacheFolder } = require('../cache');
 const { getSystemConfigTask } = require('../../config/system-config');
 const sleep = require('../../util/sleep');
-const UnknownError = require('../../errors/unknown-error');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -140,9 +139,6 @@ To use MariaDB with data from MySQL we need to convert your database.
 
                 while (!mysqlReadyForConnections) {
                     const mysqlOutput = await execAsyncSpawn(`docker logs ${containerName}`);
-                    if (mysqlOutput.includes('Shutdown complete')) {
-                        throw new UnknownError(`MySQL server shutdown during conversion!\n\n${mysqlOutput}`);
-                    }
                     if (mysqlOutput.includes('ready for connections')) {
                         mysqlReadyForConnections = true;
                         task.output = 'MySQL is ready!';
