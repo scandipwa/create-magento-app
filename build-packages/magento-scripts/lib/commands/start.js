@@ -69,10 +69,6 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             })
-            .option('import-db', {
-                describe: 'Import database dump to MySQL',
-                type: 'string'
-            })
             .option('edition', {
                 alias: 'e',
                 describe: 'Magento Edition to install',

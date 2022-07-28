@@ -12,13 +12,7 @@ const { installMagentoProject, setupMagento } = require('./magento');
 const { pullImages, stopContainers } = require('./docker/containers');
 const dockerNetwork = require('./docker/network');
 const { setPrefix } = require('./prefix');
-const {
-    connectToDatabase
-    // importDumpToMySQL,
-    // fixDB,
-    // restoreThemeConfig,
-    // dumpThemeConfig
-} = require('./database');
+const { connectToDatabase } = require('./database');
 const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
@@ -127,22 +121,6 @@ const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
-        // {
-        //     skip: (ctx) => !ctx.importDb,
-        //     task: (ctx, task) => {
-        //         task.title = 'Importing database dump';
-        //         return task.newListr([
-        //             dumpThemeConfig(),
-        //             importDumpToMySQL(),
-        //             fixDB(),
-        //             restoreThemeConfig(),
-        //             setupMagento()
-        //         ], {
-        //             concurrent: false,
-        //             exitOnError: true
-        //         });
-        //     }
-        // },
         setupThemes(),
         waitingForVarnish()
     ], {
