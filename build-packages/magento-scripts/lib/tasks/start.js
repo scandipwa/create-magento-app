@@ -33,6 +33,7 @@ const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../u
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 const checkPHPVersion = require('./requirements/php-version');
 const volumes = require('./docker/volume/tasks');
+const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -44,6 +45,7 @@ const retrieveProjectConfiguration = () => ({
         checkConfigurationFile(),
         getProjectConfiguration(),
         convertLegacyVolumes(),
+        convertMySQLDatabaseToMariaDB(),
         createCacheFolder(),
         getSystemConfigTask(),
         getCachedPorts()
