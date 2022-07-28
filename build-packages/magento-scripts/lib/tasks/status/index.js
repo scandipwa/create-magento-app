@@ -73,8 +73,10 @@ const prettyStatus = async (ctx) => {
 
         if (container.status && container.status.Health) {
             containerStatus = `✓ ${ logger.style.file(container.status.Health.Status) } and ${ logger.style.file('running') }`;
-        } else {
+        } else if (container.status) {
             containerStatus = logger.style.file(container.status.Status);
+        } else {
+            containerStatus = '✖ Not running';
         }
 
         block
@@ -83,7 +85,7 @@ const prettyStatus = async (ctx) => {
             .addLine(`Image: ${logger.style.file(container.image)}`)
             .addLine(`Network: ${logger.style.link(container.network)}`);
 
-        if (container.forwardedPorts && container.forwardedPorts.length > 0) {
+        if (!containerStatus.includes('Not running') && container.forwardedPorts && container.forwardedPorts.length > 0) {
             block.addLine('Port forwarding:');
             container.forwardedPorts.forEach((port) => {
                 const { host, hostPort, containerPort } = parsePort(port);
