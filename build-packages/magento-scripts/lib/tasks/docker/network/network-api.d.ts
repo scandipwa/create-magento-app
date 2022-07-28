@@ -15,7 +15,7 @@ export interface NetworkLsResult {
     IPv6: string
     Internal: string
     Labels: string
-    Name: StreamPipeOptions
+    Name: string
     Scope: string
 }
 
