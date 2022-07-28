@@ -1,4 +1,4 @@
-// const path = require('path');
+const os = require('os');
 const { spawn } = require('child_process');
 
 const executeInContainer = ({ containerName, commands }) => {
@@ -7,11 +7,14 @@ const executeInContainer = ({ containerName, commands }) => {
         process.exit(1);
     }
 
+    const userArg = os.platform() === 'linux' && `--user=${os.userInfo().uid}:${os.userInfo().gid}`;
+
     spawn('docker', [
         'exec',
         '-it',
+        userArg,
         containerName
-    ].concat(...commands.map((command) => command.split(' '))), {
+    ].filter(Boolean).concat(...commands.map((command) => command.split(' '))), {
         stdio: [0, 1, 2]
     });
 
