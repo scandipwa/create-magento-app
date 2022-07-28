@@ -8,6 +8,7 @@ const upgradeMagento = require('./upgrade-magento');
 const varnishConfigSetup = require('./varnish-config');
 const pathExists = require('../../../util/path-exists');
 const updateEnvPHP = require('../../php/update-env-php');
+const UnknownError = require('../../../errors/unknown-error');
 
 /**
  * @param {Object} [options]
@@ -33,13 +34,11 @@ const migrateDatabase = (options = {}) => ({
             if (options.onlyInstallMagento) {
                 ctx.isSetupUpgradeNeeded = false;
                 return task.newListr([
-                    updateEnvPHP(),
                     installMagento({ isDbEmpty: true })
                 ]);
             }
 
             return task.newListr([
-                updateEnvPHP(),
                 installMagento({ isDbEmpty: true }),
                 updateEnvPHP(),
                 varnishConfigSetup(),
@@ -56,7 +55,7 @@ const migrateDatabase = (options = {}) => ({
             });
         }
 
-        const { code } = await runMagentoCommand(ctx, 'setup:db:status', {
+        const { code, result } = await runMagentoCommand(ctx, 'setup:db:status', {
             throwNonZeroCode: false
         });
 
@@ -65,7 +64,6 @@ const migrateDatabase = (options = {}) => ({
             ctx.isSetupUpgradeNeeded = false;
             // no setup is needed, but still to be sure configure ES
             return task.newListr([
-                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch()
             ], {
@@ -88,7 +86,6 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr([
                 installMagentoProject(),
-                updateEnvPHP(),
                 installMagento(),
                 updateEnvPHP(),
                 varnishConfigSetup(),
@@ -106,7 +103,6 @@ const migrateDatabase = (options = {}) => ({
         }
         case 2: {
             return task.newListr([
-                updateEnvPHP(),
                 varnishConfigSetup(),
                 configureElasticsearch(),
                 upgradeMagento()
@@ -120,9 +116,7 @@ const migrateDatabase = (options = {}) => ({
             });
         }
         default: {
-        // TODO: handle these statuses ?
-            task.title = 'Migrating database failed: manual action is required!';
-            break;
+            throw new UnknownError(`Migrating database failed: manual action is required!\n\n${result}`);
         }
         }
     },
