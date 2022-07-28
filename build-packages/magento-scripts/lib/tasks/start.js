@@ -32,7 +32,7 @@ const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 const checkPHPVersion = require('./requirements/php-version');
-const volumes = require('./docker/volumes');
+const volumes = require('./docker/volume/tasks');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}

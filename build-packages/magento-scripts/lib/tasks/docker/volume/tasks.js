@@ -1,21 +1,8 @@
-const { execAsyncSpawn } = require('../../util/exec-async-command');
-
-const create = ({
-    driver,
-    opts = {},
-    name
-}) => {
-    let command = `docker volume create ${ Object.entries(opts).map(([name, value]) => `--opt ${name}='${value}'`).join(' ') } `;
-
-    if (driver) {
-        command += `--driver ${ driver }`;
-    }
-
-    return execAsyncSpawn(`${ command } ${ name }`);
-};
+const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const { create } = require('./volume-api');
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const createVolumes = () => ({
     title: 'Creating volumes',
@@ -36,7 +23,7 @@ const createVolumes = () => ({
 });
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const removeVolumes = () => ({
     title: 'Removing volumes',
@@ -58,6 +45,5 @@ const removeVolumes = () => ({
 
 module.exports = {
     createVolumes,
-    removeVolumes,
-    createVolume: create
+    removeVolumes
 };

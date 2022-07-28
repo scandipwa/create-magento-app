@@ -1,6 +1,6 @@
 const { removeCacheFolder } = require('./cache');
 const { stopServices } = require('./docker');
-const { removeVolumes } = require('./docker/volumes');
+const { removeVolumes } = require('./docker/volume/tasks');
 const {
     uninstallMagento,
     removeMagento

@@ -1,10 +1,11 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable max-len */
 const { stopServices } = require('./index');
 const { getBaseConfig, getConfigFromMagentoVersion } = require('../../config');
 const getDockerConfig = require('../../config/docker');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const { folderName, legacyFolderName } = require('../../util/prefix');
-const { createVolume } = require('./volumes');
+const { volumeApi } = require('./volume');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -14,20 +15,20 @@ const convertLegacyVolumes = () => ({
         const { config: { overridenConfiguration } } = ctx;
         const newDockerConfig = await getDockerConfig(ctx, overridenConfiguration, getBaseConfig(process.cwd(), folderName));
 
-        const newVolumeNames = Object.values(newDockerConfig.volumes).filter((v) => !v.opts).map(({ name }) => name);
+        const newVolumeNames = Object.values(newDockerConfig.volumes).filter((v) => !v.opt).map(({ name }) => name);
 
-        const existingVolumes = (await execAsyncSpawn('docker volume ls -q')).split('\n');
+        const existingVolumes = await volumeApi.ls({ formatToJSON: true });
 
         if (newVolumeNames.every((v) => existingVolumes.includes(v))) {
             return;
         }
 
         const legacyDockerConfig = await getDockerConfig(ctx, overridenConfiguration, getBaseConfig(process.cwd(), legacyFolderName));
-        const legacyVolumeNames = Object.values(legacyDockerConfig.volumes).filter((v) => !v.opts).map(({ name }) => name);
+        const legacyVolumeNames = Object.values(legacyDockerConfig.volumes).filter((v) => !v.opt).map(({ name }) => name);
 
         if (
-            newVolumeNames.every((name) => !existingVolumes.includes(name))
-            && legacyVolumeNames.every((name) => existingVolumes.includes(name))
+            newVolumeNames.every((name) => !existingVolumes.some((v) => v.Name === name))
+            && legacyVolumeNames.every((name) => existingVolumes.some((v) => v.Name === name))
         ) {
             ctx.config = await getConfigFromMagentoVersion(ctx, {
                 magentoVersion: ctx.magentoVersion,
@@ -46,7 +47,7 @@ const convertLegacyVolumes = () => ({
                             const legacyVolumeConfig = legacyDockerConfig.volumes[volumeName];
 
                             subTask.output = `Creating volume ${volumeConfig.name}...`;
-                            await createVolume(volumeConfig);
+                            await volumeApi.create(volumeConfig);
                             subTask.output = `Copying data from ${legacyVolumeConfig.name} to ${volumeConfig.name}...`;
                             await execAsyncSpawn(
                                 `docker run --rm -v ${legacyVolumeConfig.name}:/from:ro -v ${volumeConfig.name}:/to alpine ash -c "cd /from; cp -av . /to"`, {
