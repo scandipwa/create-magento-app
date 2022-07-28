@@ -101,7 +101,7 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
     }
 
     dockerFileInstructions
-        .workDir('/var/www/html');
+        .workDir(ctx.config.baseConfig.containerMagentoDir);
 
     return dockerFileInstructions;
 };
