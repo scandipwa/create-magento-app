@@ -61,8 +61,8 @@ module.exports = (yargs) => {
             .addEmptyLine();
 
         block
-            .addLine(`Connect to MySQL server: ${logger.style.command('mysql')}`)
-            .addLine(`Connect to MySQL server as root: ${logger.style.command('mysqlroot')}`)
+            .addLine(`Connect to MariaDB server: ${logger.style.command('mariadb')}`)
+            .addLine(`Connect to MariaDB server as root: ${logger.style.command('mariadbroot')}`)
             .addEmptyLine();
 
         block.log();

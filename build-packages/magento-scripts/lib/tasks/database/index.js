@@ -1,6 +1,6 @@
 module.exports = {
-    connectToMySQL: require('./connect-to-mysql'),
-    importDumpToMySQL: require('./import-dump-to-mysql'),
+    connectToDatabase: require('./connect-to-database'),
+    importDumpToDatabase: require('./import-dump-to-database'),
     fixDB: require('./fix-db'),
     dumpThemeConfig: require('./dump-theme-config'),
     restoreThemeConfig: require('./restore-theme-config')

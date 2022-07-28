@@ -1,7 +1,7 @@
 const mergeFiles = require('merge-files');
 const { orderTables, customerTables } = require('../../magento-tables');
 const { execAsyncSpawn } = require('../../../../util/exec-async-command');
-const mysqlDumpCommandWithOptions = require('./mysqldump-command');
+const databaseDumpCommandWithOptions = require('./database-dump-command');
 const KnownError = require('../../../../errors/known-error');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
@@ -27,7 +27,7 @@ Do not enter "--result-file" option, we need to control that part.
 
 (documentation reference available here: https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html)
 `,
-                initial: mysqlDumpCommandWithOptions.join(' ')
+                initial: databaseDumpCommandWithOptions.join(' ')
             });
 
             if (dumpCommand.includes('--result-file')) {

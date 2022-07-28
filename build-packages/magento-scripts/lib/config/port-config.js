@@ -58,7 +58,7 @@ const defaultPorts = {
     varnish: 8080,
     sslTerminator: 80,
     fpm: 9000,
-    mysql: 3306,
+    mariadb: 3306,
     redis: 6379,
     elasticsearch: 9200
 };

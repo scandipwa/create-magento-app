@@ -13,12 +13,12 @@ const { pullImages, stopContainers } = require('./docker/containers');
 const dockerNetwork = require('./docker/network');
 const { setPrefix } = require('./prefix');
 const {
-    connectToMySQL
+    connectToDatabase
     // importDumpToMySQL,
     // fixDB,
     // restoreThemeConfig,
     // dumpThemeConfig
-} = require('./mysql');
+} = require('./database');
 const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
@@ -114,7 +114,7 @@ const configureProject = () => ({
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
-        connectToMySQL()
+        connectToDatabase()
     ])
 });
 

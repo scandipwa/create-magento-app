@@ -1,7 +1,7 @@
 const mergeFiles = require('merge-files');
 const { orderTables, customerTables } = require('../../magento-tables');
 const { execAsyncSpawn } = require('../../../../util/exec-async-command');
-const mysqlDumpCommandWithOptions = require('./mysqldump-command');
+const databaseDumpCommandWithOptions = require('./database-dump-command');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
@@ -25,7 +25,7 @@ const readymageSSH = () => ({
                  */
                 await ssh.execCommand(
                     [
-                        ...mysqlDumpCommandWithOptions,
+                        ...databaseDumpCommandWithOptions,
                         ...[...orderTables, ...customerTables].map((table) => `--ignore-table=magento.${table}`),
                         '--result-file=dump-0.sql'
                     ].join(' ')
@@ -33,7 +33,7 @@ const readymageSSH = () => ({
 
                 await ssh.execCommand(
                     [
-                        ...mysqlDumpCommandWithOptions,
+                        ...databaseDumpCommandWithOptions,
                         '--no-data',
                         '--result-file=dump-1.sql',
                         ...[...orderTables, ...customerTables]
@@ -41,7 +41,7 @@ const readymageSSH = () => ({
                 );
             } else {
                 task.output = 'Making remote database dump file with customers data...';
-                await ssh.execCommand([...mysqlDumpCommandWithOptions, '--result-file=dump.sql'].join(' '));
+                await ssh.execCommand([...databaseDumpCommandWithOptions, '--result-file=dump.sql'].join(' '));
             }
 
             if (!noCompress) {

@@ -11,7 +11,7 @@ export interface ListrContext {
         app: number
         fpm: number
         xdebug: number
-        mysql: number
+        mariadb: number
         redis: number
         elasticsearch: number
         varnish: number
@@ -45,15 +45,15 @@ export interface ListrContext {
             network: {
                 name: string
             }
-            volumes: Record<'mysql' | 'redis' | 'elasticsearch' | 'nginx' | 'appPub' | 'appSetup', {
+            volumes: Record<'mariadb' | 'redis' | 'elasticsearch' | 'nginx' | 'appPub' | 'appSetup', {
                 name: string
-                opts?: {
+                opt?: {
                     type: string
                     device: string
                     o: string
                 }
             }>
-            getContainers(): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mysql' | 'elasticsearch' | 'varnish', {
+            getContainers(): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'varnish', {
                 _: string
                 ports: string[]
                 healthCheck: {
@@ -88,6 +88,6 @@ export interface ListrContext {
         analytics: boolean
         useNonOverlappingPorts: boolean
     }
-    mysqlConnection: mysql2.Connection
+    databaseConnection: mysql2.Connection
     isSetupUpgradeNeeded?: boolean
 }

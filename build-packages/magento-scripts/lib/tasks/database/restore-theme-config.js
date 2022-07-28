@@ -6,7 +6,7 @@ const { updateTableValues } = require('../../util/database');
 const restoreThemeConfig = () => ({
     title: 'Restoring themes and theme configuration',
     task: async (ctx, task) => {
-        const { themeDump, mysqlConnection } = ctx;
+        const { themeDump, databaseConnection } = ctx;
 
         const { themeIdConfig, themes } = themeDump;
 
@@ -22,7 +22,7 @@ const restoreThemeConfig = () => ({
                     path: themeIdConfig.path,
                     value: themeIdConfig.value
                 }
-            ], { mysqlConnection, task });
+            ], { databaseConnection, task });
         }
 
         if (themes.length === 0) {
@@ -31,10 +31,10 @@ const restoreThemeConfig = () => ({
 
         // restore themes
         const themeKeys = Object.keys(themes[0]);
-        await mysqlConnection.query('delete from theme;');
+        await databaseConnection.query('delete from theme;');
 
         for (const theme of themes) {
-            await mysqlConnection.query(`
+            await databaseConnection.query(`
                 insert into theme (${themeKeys.join(', ')})
                 values (${themeKeys.map(() => '?').join(', ')})
             `, Object.values(theme));

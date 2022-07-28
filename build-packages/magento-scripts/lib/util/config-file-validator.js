@@ -108,7 +108,7 @@ const composerConfigurationSchema = Joi.object({
 const configurationSchema = Joi.object({
     php: phpConfigurationSchema.optional(),
     nginx: nginxConfigurationSchema.optional(),
-    mysql: serviceConfigurationSchema.optional(),
+    mariadb: serviceConfigurationSchema.optional(),
     elasticsearch: serviceConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),

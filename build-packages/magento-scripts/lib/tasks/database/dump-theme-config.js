@@ -6,9 +6,9 @@ const { isTableExists } = require('../../util/database');
 const dumpThemeConfig = () => ({
     title: 'Dumping themes and theme configuration',
     task: async (ctx, task) => {
-        const { mysqlConnection } = ctx;
+        const { databaseConnection } = ctx;
         if (await isTableExists('magento', 'theme', ctx)) {
-            const [themes] = await mysqlConnection.query('select * from theme;');
+            const [themes] = await databaseConnection.query('select * from theme;');
             if (themes.length === 0) {
                 ctx.themeDump = {
                     themes: [],
@@ -17,7 +17,7 @@ const dumpThemeConfig = () => ({
             }
 
             if (await isTableExists('magento', 'core_config_data', ctx)) {
-                const [themeIdConfig] = await mysqlConnection.query('select * from core_config_data where path = \'design/theme/theme_id\';');
+                const [themeIdConfig] = await databaseConnection.query('select * from core_config_data where path = \'design/theme/theme_id\';');
                 if (themeIdConfig.length !== 0) {
                     ctx.themeDump = {
                         themes,

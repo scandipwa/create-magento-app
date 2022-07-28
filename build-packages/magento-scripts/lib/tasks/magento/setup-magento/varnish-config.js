@@ -18,7 +18,7 @@ const varnishConfigSetup = () => ({
                     }
                 }
             },
-            mysqlConnection,
+            databaseConnection,
             ports,
             debug
         } = ctx;
@@ -45,10 +45,10 @@ const varnishConfigSetup = () => ({
                     path: 'system/full_page_cache/caching_application',
                     value: '2'
                 }
-            ], { mysqlConnection, task });
+            ], { databaseConnection, task });
         } else {
             // delete varnish configuration if exists
-            await mysqlConnection.query(`
+            await databaseConnection.query(`
                 DELETE FROM core_config_data WHERE path LIKE '%varnish%';
             `);
 
@@ -59,7 +59,7 @@ const varnishConfigSetup = () => ({
                     path: 'system/full_page_cache/caching_application',
                     value: '0'
                 }
-            ], { mysqlConnection, task });
+            ], { databaseConnection, task });
         }
     },
     options: {

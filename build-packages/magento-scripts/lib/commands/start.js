@@ -169,7 +169,7 @@ module.exports = (yargs) => {
                 block.log();
 
                 logger.note(
-                    `MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.
+                    `MariaDB credentials, containers status and project information available in ${logger.style.code('npm run status')} command.
       To access Magento CLI, Composer and PHP for this project use ${logger.style.code('npm run cli')} command.`
                 );
                 logger.log('');

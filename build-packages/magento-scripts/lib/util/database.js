@@ -4,8 +4,8 @@
  * @param {{path: string, value: string}[]} values
  * @param {import('../../typings/context').ListrContext} param1
  */
-const updateTableValues = async (table, values, { mysqlConnection, task }) => {
-    const [rows] = await mysqlConnection.query(`
+const updateTableValues = async (table, values, { databaseConnection, task }) => {
+    const [rows] = await databaseConnection.query(`
         SELECT * FROM ${table}
         WHERE ${values.map((p) => `path = '${p.path}'`).join(' OR ')};
     `);
@@ -13,7 +13,7 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
     if (rows.filter(Boolean).length !== values.length) {
         const lostConfigs = values.filter((p) => !rows.some((row) => row.path === p.path));
         for (const config of lostConfigs) {
-            await mysqlConnection.query(`
+            await databaseConnection.query(`
                 INSERT INTO ${table}
                 (scope, path, value)
                 VALUES ('default', ?, ?);
@@ -22,7 +22,7 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
 
         const configsToUpdate = values.filter((p) => rows.some((row) => row.path === p.path));
         for (const config of configsToUpdate) {
-            await mysqlConnection.query(`
+            await databaseConnection.query(`
                 UPDATE ${table}
                 SET value = ?
                 WHERE path = ?;
@@ -50,7 +50,7 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
     });
 
     for (const config of configsToUpdate) {
-        await mysqlConnection.query(`
+        await databaseConnection.query(`
             UPDATE ${table}
             SET value = ?
             WHERE path = ?;
@@ -63,11 +63,11 @@ const updateTableValues = async (table, values, { mysqlConnection, task }) => {
 * @param {String} tableName
 * @param {import('../../typings/context').ListrContext} param2
 */
-const isTableExists = async (database, tableName, { mysqlConnection }) => {
+const isTableExists = async (database, tableName, { databaseConnection }) => {
     /**
     * @type {{ tableCount: number }[][]}
     */
-    const [[{ tableCount }]] = await mysqlConnection.query(`
+    const [[{ tableCount }]] = await databaseConnection.query(`
    SELECT count(*) as tableCount
    FROM information_schema.TABLES
    WHERE (TABLE_SCHEMA = ?) AND (TABLE_NAME = ?);

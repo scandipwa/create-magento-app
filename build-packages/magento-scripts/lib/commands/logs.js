@@ -14,7 +14,7 @@ module.exports = (yargs) => {
 
 Available scopes:
 - magento
-- mysql
+- mariadb
 - redis
 - nginx
 - elasticsearch

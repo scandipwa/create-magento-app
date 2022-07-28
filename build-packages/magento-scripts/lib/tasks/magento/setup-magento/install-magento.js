@@ -24,19 +24,19 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 magentoConfiguration
             },
             ports,
-            mysqlConnection
+            databaseConnection
         } = ctx;
 
         const isLinux = ctx.platform === 'linux';
         const isNativeLinux = isLinux && !ctx.isWsl;
         const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
 
-        const [tableResponse] = await mysqlConnection.query(
+        const [tableResponse] = await databaseConnection.query(
             'SELECT * FROM information_schema.tables WHERE table_schema = \'magento\' AND table_name = \'admin_user\' LIMIT 1;'
         );
 
         if (tableResponse.length > 0) {
-            const response = await mysqlConnection.query(
+            const response = await databaseConnection.query(
                 'select * from admin_user where username=\'admin\';'
             );
 
@@ -58,23 +58,23 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                     ]
                 });
 
-                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+                await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
 
                 if (confirmDeleteAdminUsers === 'delete-all') {
-                    await mysqlConnection.query(`
+                    await databaseConnection.query(`
                     TRUNCATE TABLE admin_user;
                 `);
                 } else {
-                    await mysqlConnection.query(`
+                    await databaseConnection.query(`
                     DELETE FROM admin_user WHERE username='admin';
                 `);
                 }
 
-                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+                await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
             }
         }
 
-        const { mysql: { env } } = docker.getContainers(ports);
+        const { mariadb: { env } } = docker.getContainers(ports);
         const envPhpData = await envPhpToJson(ctx);
 
         const envPhpHaveEncryptionKey = envPhpData && envPhpData.crypt && envPhpData.crypt.key && envPhpData.crypt.key;
@@ -126,10 +126,10 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --cache-backend-redis-server='${ hostMachine }' \
                 --cache-backend-redis-port='${ ports.redis }' \
                 --cache-backend-redis-db='0't \
-                --db-host='${ hostMachine }:${ ports.mysql }' \
-                --db-name='${ env.MYSQL_DATABASE }' \
-                --db-user='${ env.MYSQL_USER }' \
-                --db-password='${ env.MYSQL_PASSWORD }' \
+                --db-host='${ hostMachine }:${ ports.mariadb }' \
+                --db-name='${ env.MARIADB_DATABASE }' \
+                --db-user='${ env.MARIADB_USER }' \
+                --db-password='${ env.MARIADB_PASSWORD }' \
                 --backend-frontname='${ magentoConfiguration.adminuri }' \
                 --no-interaction`;
 

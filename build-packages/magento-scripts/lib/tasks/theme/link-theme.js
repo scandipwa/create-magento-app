@@ -18,7 +18,7 @@ const linkTheme = () => ({
             absoluteThemePath,
             themePath,
             composerData,
-            mysqlConnection
+            databaseConnection
         } = ctx;
         const {
             magento: { edition: magentoEdition },
@@ -27,7 +27,7 @@ const linkTheme = () => ({
 
         const isEnterprise = magentoEdition === 'enterprise';
         const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4');
-        const [queryResult] = await mysqlConnection.query(`
+        const [queryResult] = await databaseConnection.query(`
                 SELECT value AS isPagebuilderEnabled
                 FROM core_config_data
                 WHERE path = 'cms/pagebuilder/enabled'

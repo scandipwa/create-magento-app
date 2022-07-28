@@ -37,8 +37,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     };
 
     const volumes = {
-        mysql: {
-            name: `${ prefix }_mysql-data`
+        mariadb: {
+            name: `${ prefix }_mariadb-data`
         },
         redis: {
             name: `${ prefix }_redis-data`
@@ -220,32 +220,26 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 name: `${ prefix }_redis`,
                 connectCommand: ['redis-cli']
             },
-            mysql: {
+            mariadb: {
                 _: 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
-                ports: [`127.0.0.1:${ ports.mysql }:3306`],
-                forwardedPorts: [`127.0.0.1:${ ports.mysql }:3306`],
-                mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
+                ports: [`127.0.0.1:${ ports.mariadb }:3306`],
+                forwardedPorts: [`127.0.0.1:${ ports.mariadb }:3306`],
+                mountVolumes: [
+                    `${ volumes.mariadb.name }:/var/lib/mysql`,
+                    `${ path.join(baseConfig.cacheDir, 'mariadb.cnf') }:/etc/mysql/my.cnf`
+                ],
                 env: {
-                    MYSQL_PORT: 3306,
-                    MYSQL_ROOT_PASSWORD: 'scandipwa',
-                    MYSQL_USER: 'magento',
-                    MYSQL_PASSWORD: 'magento',
-                    MYSQL_DATABASE: 'magento'
+                    MARIADB_PORT: 3306,
+                    MARIADB_ROOT_PASSWORD: 'scandipwa',
+                    MARIADB_USER: 'magento',
+                    MARIADB_PASSWORD: 'magento',
+                    MARIADB_DATABASE: 'magento'
                 },
-                /**
-                 * When database dump contains functions, MySQL can throw and error "access denied for those functions"
-                 * so to overcome this issue, we need to enable trust option for these functions to avoid errors during migrations.
-                 *
-                 * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
-                 */
                 command: [
-                    '--log_bin_trust_function_creators=1',
-                    '--default-authentication-plugin=mysql_native_password',
-                    '--max_allowed_packet=1GB',
-                    '--bind-address=0.0.0.0'
+                    '--log_bin_trust_function_creators=1'
                 ]
                     .join(' '),
                 securityOptions: [

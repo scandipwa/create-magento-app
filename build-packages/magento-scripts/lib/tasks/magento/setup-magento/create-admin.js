@@ -7,7 +7,7 @@ module.exports = () => ({
     title: 'Creating admin user',
     task: async (ctx, task) => {
         const { config: { magentoConfiguration } } = ctx;
-        const [[{ userCount }]] = await ctx.mysqlConnection.query(`
+        const [[{ userCount }]] = await ctx.databaseConnection.query(`
             SELECT count(*) AS userCount
             FROM admin_user
             WHERE username = ?;

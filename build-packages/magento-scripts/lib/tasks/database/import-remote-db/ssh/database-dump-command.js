@@ -1,4 +1,4 @@
-const mysqlDumpCommandWithOptions = [
+const databaseDumpCommandWithOptions = [
     'mysqldump',
     'magento',
     '--skip-lock-tables',
@@ -9,4 +9,4 @@ const mysqlDumpCommandWithOptions = [
     '--no-tablespaces'
 ];
 
-module.exports = mysqlDumpCommandWithOptions;
+module.exports = databaseDumpCommandWithOptions;

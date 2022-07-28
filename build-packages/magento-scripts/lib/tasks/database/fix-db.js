@@ -8,14 +8,14 @@ const varnishConfigSetup = require('../magento/setup-magento/varnish-config');
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const enableForeignKeyCheck = () => ({
-    task: ({ mysqlConnection }) => mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;')
+    task: ({ databaseConnection }) => databaseConnection.query('SET FOREIGN_KEY_CHECKS = 0;')
 });
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const disableForeignKeyCheck = () => ({
-    task: ({ mysqlConnection }) => mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;')
+    task: ({ databaseConnection }) => databaseConnection.query('SET FOREIGN_KEY_CHECKS = 1;')
 });
 
 /**

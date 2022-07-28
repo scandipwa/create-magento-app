@@ -5,7 +5,7 @@ const retrieveThemeData = require('./theme/retrieve-theme-data');
 const linkTheme = require('./theme/link-theme');
 const { startServices } = require('./docker');
 const checkConfigurationFile = require('../config/check-configuration-file');
-const { connectToMySQL } = require('./mysql');
+const { connectToDatabase } = require('./database');
 
 /**
  * @type {(theme: string) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -18,7 +18,7 @@ const linkTask = (themePath) => ({
         getCachedPorts(),
         startServices(),
         // startPhpFpm(),
-        connectToMySQL(),
+        connectToDatabase(),
         retrieveThemeData(themePath),
         linkTheme()
     ])
