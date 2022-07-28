@@ -19,7 +19,7 @@ const darwinMinimalVersion = '10.5';
 const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
     prefix: getPrefix(prefix),
     magentoDir: projectPath,
-    containerMagentoDir: '/var/www/html',
+    containerMagentoDir: projectPath,
     templateDir: path.join(__dirname, 'templates'),
     cacheDir: path.join(projectPath, 'node_modules', '.create-magento-app-cache')
 });
