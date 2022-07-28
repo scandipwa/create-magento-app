@@ -45,6 +45,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         },
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
+        },
+        composer_home: {
+            name: 'composer_home-data'
         }
     };
 
@@ -128,11 +131,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 network: isNotNativeLinux ? network.name : 'host',
                 mountVolumes: [
                     `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
+                    `${ volumes.composer_home.name }:/composer/home`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ],
                 env: {
-                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || ''
+                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || '',
+                    COMPOSER_HOME: '/composer/home'
                 },
                 restart: 'on-failure:5',
                 image: `local-cma-project:${ prefix }`,
