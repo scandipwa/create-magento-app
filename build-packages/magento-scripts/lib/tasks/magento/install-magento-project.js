@@ -97,8 +97,9 @@ const createMagentoProject = async (ctx, task, {
         `"${tempDir}"`
     ];
 
-    await runPHPContainerCommand(ctx, `composer ${installCommand.join(' ')} \n
-&& mv ${tempDir}/composer.json ${ctx.config.baseConfig.containerMagentoDir}/composer.json`);
+    await runPHPContainerCommand(ctx, `bash -c 'mkdir ${tempDir} && \
+composer ${installCommand.join(' ')} && \
+mv ${tempDir}/composer.json ${ctx.config.baseConfig.containerMagentoDir}/composer.json'`);
 };
 
 /**
