@@ -33,6 +33,13 @@ export interface NginxConfiguration extends ServiceWithImage {
     configTemplate: string
 }
 
+export interface ElasticSearchConfiguration extends ServiceWithImage {
+    /**
+     * Environmental variables used for Elasticsearch container
+     */
+    env: Record<string, unknown>
+}
+
 export interface VarnishConfiguration extends ServiceWithImage {
     /**
      * Enable or disable Varnish in the project
@@ -170,7 +177,7 @@ export interface CMAConfiguration {
         /**
          * ElasticSearch configuration
          */
-        elasticsearch: ServiceWithImage
+        elasticsearch: ElasticSearchConfiguration
 
         /**
          * Redis configuration

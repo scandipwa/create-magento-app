@@ -97,6 +97,14 @@ const serviceConfigurationSchema = Joi.object({
 });
 
 /**
+ * @type {Joi.ObjectSchema<import('../../typings').ElasticSearchConfiguration>}
+ */
+const elasticsearchConfigurationSchema = Joi.object({
+    image: Joi.string().optional(),
+    env: Joi.object().optional()
+});
+
+/**
  * @type {Joi.ObjectSchema<import('../../typings').ComposerConfiguration>}
  */
 const composerConfigurationSchema = Joi.object({
@@ -116,7 +124,7 @@ const configurationSchema = Joi.object({
     php: phpConfigurationSchema.optional(),
     nginx: nginxConfigurationSchema.optional(),
     mariadb: serviceConfigurationSchema.optional(),
-    elasticsearch: serviceConfigurationSchema.optional(),
+    elasticsearch: elasticsearchConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),

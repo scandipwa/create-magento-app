@@ -4,6 +4,7 @@ const getPhpConfig = require('./php-config');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
+const { deepmerge } = require('../util/deepmerge');
 
 /**
  *
@@ -30,7 +31,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         cacheDir
     } = baseConfig;
 
-    const cpuSupportedFlags = await systeminformation.cpuFlags();
+    const cpuSupportedFlags = (await systeminformation.cpuFlags()).split(' ');
 
     const network = {
         name: `${ prefix }_network`
@@ -258,14 +259,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
                 forwardedPorts: [`127.0.0.1:${ ports.elasticsearch }:9200`],
                 mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
-                env: {
-                    'bootstrap.memory_lock': true,
-                    'xpack.security.enabled': false,
-                    'discovery.type': 'single-node',
-                    ES_JAVA_OPTS: '-Xms512m -Xmx512m',
+                env: deepmerge({
                     // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
                     'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
-                },
+                }, elasticsearch.env),
                 network: network.name,
                 image: `${ elasticsearch.version ? `elasticsearch:${ elasticsearch.version }` : elasticsearch.image }`,
                 name: `${ prefix }_elasticsearch`
