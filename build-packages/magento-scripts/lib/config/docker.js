@@ -171,7 +171,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 restart: 'on-failure:5',
                 network: isNotNativeLinux ? network.name : 'host',
-                image: `nginx:${ nginx.version }`,
+                image: `${ nginx.version ? `nginx:${ nginx.version }` : nginx.image }`,
                 name: `${ prefix }_ssl-terminator`,
                 command: "nginx -g 'daemon off;'"
             },
@@ -203,7 +203,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 restart: 'on-failure:5',
                 // TODO: use connect instead
                 network: isNotNativeLinux ? network.name : 'host',
-                image: `nginx:${ nginx.version }`,
+                image: `${ nginx.version ? `nginx:${ nginx.version }` : nginx.image }`,
                 name: `${ prefix }_nginx`,
                 command: "nginx -g 'daemon off;'"
             },
@@ -217,11 +217,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 mounts: [`source=${ volumes.redis.name },target=/data`],
                 // TODO: use connect instead
                 network: network.name,
-                image: `redis:${ redis.version }`,
-                imageDetails: {
-                    name: 'redis',
-                    tag: redis.version
-                },
+                image: `${ redis.version ? `redis:${ redis.version }` : redis.image }`,
                 name: `${ prefix }_redis`,
                 connectCommand: ['redis-cli']
             },
@@ -251,7 +247,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: `mariadb:${ mariadb.version }`,
+                image: `${ mariadb.version ? `mariadb:${ mariadb.version }` : mariadb.image }`,
                 name: `${ prefix }_mariadb`
             },
             elasticsearch: {
@@ -285,7 +281,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         if (!ctx.debug && varnish.enabled) {
             dockerConfig.varnish = {
                 _: 'Varnish',
-                image: `varnish:${ varnish.version }`,
+                image: `${ varnish.version ? `varnish:${ varnish.version }` : varnish.image }`,
                 name: `${ prefix }_varnish`,
                 mountVolumes: [
                     `${ isLinux ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`
