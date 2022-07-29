@@ -271,7 +271,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
                 },
                 network: network.name,
-                image: `elasticsearch:${ elasticsearch.version }`,
+                image: `${ elasticsearch.version ? `elasticsearch:${ elasticsearch.version }` : elasticsearch.image }`,
                 name: `${ prefix }_elasticsearch`
             }
         };

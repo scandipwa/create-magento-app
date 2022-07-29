@@ -3,6 +3,7 @@ const { defaultMagentoConfig } = require('../magento-config');
 const { magento23PHPExtensionList } = require('../magento/required-php-extensions');
 const { repo } = require('../php/base-repo');
 const { php72 } = require('../php/versions');
+const { elasticsearch68 } = require('../services/elasticsearch/versions');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
 
@@ -27,9 +28,7 @@ module.exports = ({ templateDir } = {}) => ({
         mariadb: {
             version: '10.2'
         },
-        elasticsearch: {
-            version: '5.6.16'
-        },
+        elasticsearch: elasticsearch68(),
         composer: {
             version: '1'
         },

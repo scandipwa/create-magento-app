@@ -1,4 +1,5 @@
 const path = require('path');
+const { elasticsearch68 } = require('../services/elasticsearch/versions');
 const { defaultMagentoConfig } = require('../magento-config');
 const { magento23PHPExtensionList } = require('../magento/required-php-extensions');
 const { repo } = require('../php/base-repo');
@@ -27,9 +28,7 @@ module.exports = ({ templateDir } = {}) => ({
         mariadb: {
             version: '10.2'
         },
-        elasticsearch: {
-            version: '6.8.16'
-        },
+        elasticsearch: elasticsearch68(),
         composer: {
             version: '1'
         },
