@@ -18,7 +18,7 @@ module.exports = (yargs) => {
             yargs.usage(`Usage: npm run exec <container name> [commands...]
 
 Available containers:
-- mysql
+- mariadb
 - nginx
 - redis
 - elasticsearch

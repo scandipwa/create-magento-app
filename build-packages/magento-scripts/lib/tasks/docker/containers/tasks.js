@@ -13,12 +13,12 @@ const stop = async (containers) => {
 
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
 
-const remoteImageFilter = (container) => {
-    if (typeof container.remoteImage === 'boolean') {
-        return container.remoteImage;
+const remoteImageReducer = (acc, val) => {
+    if (Array.isArray(val.remoteImages) && val.remoteImages.every((image) => typeof image === 'string')) {
+        return acc.concat(val.remoteImages);
     }
 
-    return true;
+    return acc.concat([val.image]);
 };
 
 /**
@@ -29,27 +29,38 @@ const pullImages = () => ({
     task: async ({ config: { docker } }, task) => {
         const containers = Object.values(docker.getContainers());
         const imagesFilter = containers
-            .filter(remoteImageFilter)
-            .map((container) => `reference='${container.image}'`);
+            .reduce(remoteImageReducer, [])
+            .map((image) => `reference='${image}'`);
+
         const existingImages = await imageApi.ls({
             formatToJSON: true,
             filter: imagesFilter
         });
 
         const missingContainerImages = containers
-            .filter(remoteImageFilter)
-            .map((container) => {
-                const [image, tag = 'latest'] = container.image.split(':');
+            .reduce(remoteImageReducer, [])
+            .map((image) => {
+                const [repo, tag = 'latest'] = image.split(':');
 
-                return {
-                    ...container,
-                    imageDetails: {
-                        image, tag
-                    }
-                };
+                return { repo, tag };
             })
-            .filter((container) => !existingImages.some((image) => image.Repository === container.imageDetails.image && image.Tag === container.imageDetails.tag))
-            .reduce((acc, val) => acc.concat(acc.some((c) => c.imageDetails.name === val.imageDetails.name && c.imageDetails.tag === val.imageDetails.tag) ? [] : val), []);
+            .filter(
+                ({ repo, tag }) => !existingImages.some(
+                    (image) => image.Repository === repo
+                    && image.Tag === tag
+                )
+            )
+            .reduce(
+                (acc, val) => acc.concat(
+                    acc.some(
+                        (c) => c.repo === val.repo
+                        && c.tag === val.tag
+                    )
+                        ? []
+                        : val
+                ),
+                []
+            );
 
         if (missingContainerImages.length === 0) {
             task.skip();
@@ -57,9 +68,9 @@ const pullImages = () => ({
         }
 
         return task.newListr(
-            missingContainerImages.map((container) => ({
-                title: `Pulling ${ logger.style.file(`${container.image}`) } image`,
-                task: () => pull(`${container.image}`)
+            missingContainerImages.map(({ repo, tag }) => ({
+                title: `Pulling ${ logger.style.file(`${repo}:${tag}`) } image`,
+                task: () => pull(`${repo}:${tag}`)
             })), {
                 concurrent: true,
                 exitOnError: true

@@ -57,6 +57,10 @@ export function exec(command: string, container: string, options?: ContainerExec
 
 export interface ContainerRunOptions {
     /**
+     * Add a custom host-to-IP mapping (host:ip)
+     */
+    addHost?: string
+    /**
      * Automatically remove the container when it exits
      */
     rm?: boolean
@@ -115,6 +119,10 @@ export interface ContainerRunOptions {
      */
     securityOptions?: string[]
     tmpfs?: string[]
+    /**
+     * Username or UID (format: <name|uid>[:<group|gid>])
+     */
+    user?: string
 }
 
 export function run(containerOptions: ContainerRunOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<false>

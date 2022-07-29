@@ -1,4 +1,5 @@
 const path = require('path');
+const os = require('os');
 const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
@@ -41,7 +42,7 @@ const updateEnvPHP = () => ({
                     ctx.CSAThemeInstalled = true;
                 }
 
-                const envPhp = await envPhpToJson(process.cwd(), { magentoVersion: ctx.magentoVersion });
+                const envPhp = await envPhpToJson(ctx);
 
                 const persistedQueryConfig = envPhp.cache && envPhp.cache['persisted-query'];
 
@@ -49,7 +50,7 @@ const updateEnvPHP = () => ({
                     persistedQueryConfig
                     && persistedQueryConfig.redis
                     && persistedQueryConfig.redis.port === `${ ctx.ports.redis }`
-                    && persistedQueryConfig.redis.host === 'localhost'
+                    && persistedQueryConfig.redis.host === hostMachine
                 ) {
                     SETUP_PQ = '';
                     return;
@@ -76,7 +77,8 @@ const updateEnvPHP = () => ({
             ],
             image: php.image,
             detach: false,
-            rm: true
+            rm: true,
+            user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
         });
 
         task.output = result;

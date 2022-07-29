@@ -7,7 +7,7 @@ module.exports = () => ({
     title: 'Configuring Elasticsearch',
     skip: async (ctx) => !(await isTableExists('magento', 'core_config_data', ctx)),
     task: async (ctx, task) => {
-        const { ports, mysqlConnection } = ctx;
+        const { ports, databaseConnection } = ctx;
         const isLinux = ctx.platform === 'linux';
         const isNativeLinux = isLinux && !ctx.isWsl;
         const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
@@ -15,6 +15,6 @@ module.exports = () => ({
             { path: 'catalog/search/engine', value: 'elasticsearch7' },
             { path: 'catalog/search/elasticsearch7_server_hostname', value: hostMachine },
             { path: 'catalog/search/elasticsearch7_server_port', value: `${ports.elasticsearch}` }
-        ], { mysqlConnection, task });
+        ], { databaseConnection, task });
     }
 });

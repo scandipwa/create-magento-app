@@ -85,18 +85,12 @@ class EnvUpdater
             $hostMachine = '127.0.0.1';
         }
 
-        // update mysql config
+        // update mariadb config
         if (isset($this->config["db"]["connection"]["default"])) {
             $conn = &$this->config["db"]["connection"]["default"];
-            $mysqlHost = $hostMachine . ":" . $this->portConfig["mysql"];
-            if (
-                isset($conn["engine"]) &&
-                isset($conn["host"]) &&
-                $conn["engine"] === "innodb" &&
-                $conn["host"] !== $mysqlHost
-            ) {
-                $conn["host"] = $mysqlHost;
-            }
+            $mysqlHost = $hostMachine . ":" . $this->portConfig["mariadb"];
+
+            $conn["host"] = $mysqlHost;
         }
 
         // update redis session config

@@ -1,3 +1,4 @@
+const createMariaDBConfig = require('./create-mariadb-config');
 const createNginxConfig = require('./create-nginx-config');
 const createPhpConfig = require('./create-php-config');
 const createPhpFpmConfig = require('./create-php-fpm-config');
@@ -18,7 +19,8 @@ const prepareFileSystem = () => ({
         createPhpConfig(),
         createPhpStormConfig(),
         createVSCodeConfig(),
-        createVarnishConfig()
+        createVarnishConfig(),
+        createMariaDBConfig()
     ], {
         concurrent: true,
         exitOnError: false

@@ -7,8 +7,8 @@ const deleteAdminUsers = () => ({
     title: 'Deleting old admin users',
     skip: async (ctx) => !(await isTableExists('magento', 'admin_user', ctx)),
     task: async (ctx) => {
-        const { mysqlConnection } = ctx;
-        await mysqlConnection.query(`
+        const { databaseConnection } = ctx;
+        await databaseConnection.query(`
             TRUNCATE TABLE admin_user;
         `);
     }

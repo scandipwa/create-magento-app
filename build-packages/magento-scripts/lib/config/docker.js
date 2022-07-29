@@ -1,8 +1,6 @@
 const os = require('os');
 const path = require('path');
 const getPhpConfig = require('./php-config');
-const { getArch } = require('../util/arch');
-const getIsWsl = require('../util/is-wsl');
 const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
@@ -19,7 +17,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const {
         nginx,
         redis,
-        mysql,
         elasticsearch,
         mariadb,
         varnish
@@ -40,38 +37,40 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     };
 
     const volumes = {
-        mysql: {
-            name: `${ prefix }_mysql-data`
+        mariadb: {
+            name: `${ prefix }_mariadb-data`
         },
         redis: {
             name: `${ prefix }_redis-data`
         },
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
+        },
+        composer_home: {
+            name: 'composer_home-data'
         }
     };
 
-    const isLinux = os.platform() === 'linux';
-    const isWsl = await getIsWsl();
-    const isArm = (await getArch()) === 'arm64';
+    const isLinux = ctx.platform === 'linux';
+    const { isWsl } = ctx;
     const isNotNativeLinux = (!isLinux || isWsl);
 
     if (!isLinux) {
+        /**
+         * When CMA is running in non-native linux environment,
+         * we need also create named volumes for nginx to avoid performance penalty
+         */
         volumes.php = {
             name: `${ prefix }_project-data`,
-            opts: {
+            opt: {
                 type: 'nfs',
                 device: path.join(magentoDir),
                 o: 'bind'
             }
         };
-        /**
-         * When CMA is running in non-native linux environment,
-         * we need also create named volumes for nginx to avoid performance penalty
-         */
         volumes.nginx = {
             name: `${ prefix }_nginx-data`,
-            opts: {
+            opt: {
                 type: 'nfs',
                 device: path.join(cacheDir, 'nginx', 'conf.d'),
                 o: 'bind'
@@ -79,7 +78,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         };
         volumes.appPub = {
             name: `${ prefix }_pub-data`,
-            opts: {
+            opt: {
                 type: 'nfs',
                 device: path.join(magentoDir, 'pub'),
                 o: 'bind'
@@ -87,7 +86,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         };
         volumes.appSetup = {
             name: `${ prefix }_setup-data`,
-            opts: {
+            opt: {
                 type: 'nfs',
                 device: path.join(magentoDir, 'setup'),
                 o: 'bind'
@@ -95,7 +94,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         };
         volumes.sslTerminator = {
             name: `${ prefix }_ssl-terminator-data`,
-            opts: {
+            opt: {
                 type: 'nfs',
                 device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
                 o: 'bind'
@@ -105,7 +104,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         if (varnish.enabled) {
             volumes.varnish = {
                 name: `${ prefix }_varnish-data`,
-                opts: {
+                opt: {
                     type: 'nfs',
                     device: path.join(cacheDir, 'varnish'),
                     o: 'bind'
@@ -115,26 +114,41 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     }
 
     const getContainers = (ports = {}) => {
+        /**
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions>}
+         */
         const dockerConfig = {
             php: {
                 _: 'PHP',
-                ports: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
-                forwardedPorts: [`127.0.0.1:${ ports.fpm }:9000`], // .concat(ctx.debug ? ['127.0.0.1:9003:9003'] : []),
-                network: network.name,
+                ports: isNotNativeLinux ? [
+                    `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.fpm }:9000`
+                ] : [],
+                forwardedPorts: [
+                    isNotNativeLinux
+                        ? `127.0.0.1:${ ports.fpm }:9000`
+                        : `127.0.0.1:${ ports.fpm }`
+                ],
+                network: isNotNativeLinux ? network.name : 'host',
                 mountVolumes: [
                     `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
+                    `${ volumes.composer_home.name }:/composer/home`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ],
                 env: {
-                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || ''
+                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || '',
+                    COMPOSER_HOME: '/composer/home'
                 },
                 restart: 'on-failure:5',
-                image: `cmalocal:${ prefix.replace(/-/ig, '.') }`,
-                debugImage: `cmalocal:${ prefix.replace(/-/ig, '.') }.debug`,
-                remoteImage: false,
+                image: `local-cma-project:${ prefix }`,
+                debugImage: `local-cma-project:${ prefix }.debug`,
+                remoteImages: [
+                    configuration.php.baseImage,
+                    configuration.php.debugImage
+                ],
                 name: `${ prefix }_php`,
-                connectCommand: ['/bin/sh']
+                connectCommand: ['/bin/sh'],
+                user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -156,7 +170,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ isLinux ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
                 ],
                 restart: 'on-failure:5',
-                // TODO: use connect instead
                 network: isNotNativeLinux ? network.name : 'host',
                 image: `nginx:${ nginx.version }`,
                 name: `${ prefix }_ssl-terminator`,
@@ -212,41 +225,34 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 name: `${ prefix }_redis`,
                 connectCommand: ['redis-cli']
             },
-            mysql: {
-                _: !isArm ? 'MySQL' : 'MariaDB',
+            mariadb: {
+                _: 'MariaDB',
                 healthCheck: {
                     cmd: 'mysqladmin ping --silent'
                 },
-                ports: [`127.0.0.1:${ ports.mysql }:3306`],
-                forwardedPorts: [`127.0.0.1:${ ports.mysql }:3306`],
-                mounts: [`source=${ volumes.mysql.name },target=/var/lib/mysql`],
+                ports: [`127.0.0.1:${ ports.mariadb }:3306`],
+                forwardedPorts: [`127.0.0.1:${ ports.mariadb }:3306`],
+                mountVolumes: [
+                    `${ volumes.mariadb.name }:/var/lib/mysql`,
+                    `${ path.join(baseConfig.cacheDir, 'mariadb.cnf') }:/etc/mysql/my.cnf`
+                ],
                 env: {
-                    MYSQL_PORT: 3306,
-                    MYSQL_ROOT_PASSWORD: 'scandipwa',
-                    MYSQL_USER: 'magento',
-                    MYSQL_PASSWORD: 'magento',
-                    MYSQL_DATABASE: 'magento'
+                    MARIADB_PORT: 3306,
+                    MARIADB_ROOT_PASSWORD: 'scandipwa',
+                    MARIADB_USER: 'magento',
+                    MARIADB_PASSWORD: 'magento',
+                    MARIADB_DATABASE: 'magento'
                 },
-                /**
-                 * When database dump contains functions, MySQL can throw and error "access denied for those functions"
-                 * so to overcome this issue, we need to enable trust option for these functions to avoid errors during migrations.
-                 *
-                 * Documentation reference: https://dev.mysql.com/doc/refman/5.7/en/stored-programs-logging.html
-                 */
                 command: [
-                    '--log_bin_trust_function_creators=1',
-                    '--default-authentication-plugin=mysql_native_password',
-                    '--max_allowed_packet=1GB',
-                    '--bind-address=0.0.0.0'
+                    '--log_bin_trust_function_creators=1'
                 ]
-                    .concat(!isArm ? ['--secure-file-priv=NULL'] : [])
                     .join(' '),
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
                 network: network.name,
-                image: !isArm ? `mysql:${ mysql.version }` : `mariadb:${ mariadb.version }`,
-                name: !isArm ? `${ prefix }_mysql` : `${ prefix }_mariadb`
+                image: `mariadb:${ mariadb.version }`,
+                name: `${ prefix }_mariadb`
             },
             elasticsearch: {
                 _: 'ElasticSearch',

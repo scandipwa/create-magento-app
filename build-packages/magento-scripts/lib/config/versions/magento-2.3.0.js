@@ -1,6 +1,7 @@
 const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const { magento23PHPExtensionList } = require('../magento/required-php-extensions');
+const { repo } = require('../php/base-repo');
 const { php72 } = require('../php/versions');
 const { sslTerminator } = require('../ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
@@ -10,7 +11,8 @@ module.exports = ({ templateDir } = {}) => ({
     configuration: {
         php: php72({
             templateDir,
-            extensions: magento23PHPExtensionList
+            extensions: magento23PHPExtensionList,
+            baseImage: `${ repo }:php-7.2-magento-2.3`
         }),
         nginx: {
             version: '1.18.0',

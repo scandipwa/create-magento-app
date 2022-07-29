@@ -1,4 +1,4 @@
-const { DockerFileBuilder } = require('@scandipwa/dockerfile');
+const { DockerFileBuilder } = require('../../util/dockerfile-builder');
 const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
@@ -30,9 +30,6 @@ const getEnabledExtensionsFromImage = async (imageWithTag) => {
 const addExtensionToBuilder = (builder, ctx) => ([extensionName, extensionInstructions]) => {
     const { command, ...extensionInstructionsWithoutCommand } = extensionInstructions;
     let runCommand = '';
-    // if (extensionInstructionsWithoutCommand.dependencies && extensionInstructionsWithoutCommand.dependencies.length > 0) {
-    //     runCommand += `apk add --no-cache ${extensionInstructionsWithoutCommand.dependencies.join(' ')} &&`;
-    // }
     if (typeof command === 'string') {
         runCommand += ` ${command}`;
     } else if (typeof command === 'function') {
@@ -104,7 +101,7 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
     }
 
     dockerFileInstructions
-        .workDir('/var/www/html');
+        .workDir(ctx.config.baseConfig.containerMagentoDir);
 
     return dockerFileInstructions;
 };
@@ -117,10 +114,7 @@ const buildProjectImage = () => ({
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports);
         const [image, tag = 'latest'] = ctx.config.overridenConfiguration.configuration.php.baseImage.split(':');
-        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
-            image,
-            tag
-        });
+        const dockerFileInstructions = await buildDockerFileInstructions(ctx, { image, tag });
 
         try {
             await execAsyncSpawn(`docker build -t ${containers.php.image} -<<EOF
@@ -147,10 +141,7 @@ const buildDebugProjectImage = () => ({
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports);
         const [image, tag = 'latest'] = ctx.config.overridenConfiguration.configuration.php.debugImage.split(':');
-        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
-            image,
-            tag
-        });
+        const dockerFileInstructions = await buildDockerFileInstructions(ctx, { image, tag });
 
         try {
             await execAsyncSpawn(`docker build -t ${containers.php.debugImage} -<<EOF

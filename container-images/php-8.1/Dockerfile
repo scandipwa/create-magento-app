@@ -22,7 +22,8 @@ RUN apk add --no-cache \
 		tar \
 		xz \
 # https://github.com/docker-library/php/issues/494
-		openssl
+		openssl \
+		sudo
 
 # ensure www-data user exists
 RUN set -eux; \
@@ -31,6 +32,11 @@ RUN set -eux; \
 # https://git.alpinelinux.org/aports/tree/main/apache2/apache2.pre-install?h=3.14-stable
 # https://git.alpinelinux.org/aports/tree/main/lighttpd/lighttpd.pre-install?h=3.14-stable
 # https://git.alpinelinux.org/aports/tree/main/nginx/nginx.pre-install?h=3.14-stable
+
+# make new user able to use sudo commands
+RUN mkdir -p /etc/sudoers.d \
+        && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
+        && chmod 0440 /etc/sudoers.d/$USER
 
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
@@ -86,6 +92,8 @@ RUN set -eux; \
 COPY docker-php-source /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-php-source
+
+USER www-data
 
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \

@@ -109,11 +109,6 @@ export interface PHPConfiguration {
      * Extensions for PHP
      */
     extensions: PHPExtensions
-
-    /**
-     * Disabled extension list
-     */
-    disabledExtensions?: string[]
 }
 export interface SSLConfiguration {
     /**
@@ -152,11 +147,6 @@ export interface CMAConfiguration {
          * Nginx configuration
          */
         nginx: NginxConfiguration
-
-        /**
-         * MySQL configuration
-         */
-        mysql: ServiceWithVersion
 
         /**
          * MariaDB configuration

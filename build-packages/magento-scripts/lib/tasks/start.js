@@ -12,13 +12,7 @@ const { installMagentoProject, setupMagento } = require('./magento');
 const { pullImages, stopContainers } = require('./docker/containers');
 const dockerNetwork = require('./docker/network');
 const { setPrefix } = require('./prefix');
-const {
-    connectToMySQL
-    // importDumpToMySQL,
-    // fixDB,
-    // restoreThemeConfig,
-    // dumpThemeConfig
-} = require('./mysql');
+const { connectToDatabase } = require('./database');
 const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
@@ -32,7 +26,8 @@ const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
 const checkPHPVersion = require('./requirements/php-version');
-const volumes = require('./docker/volumes');
+const volumes = require('./docker/volume/tasks');
+const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -44,6 +39,7 @@ const retrieveProjectConfiguration = () => ({
         checkConfigurationFile(),
         getProjectConfiguration(),
         convertLegacyVolumes(),
+        convertMySQLDatabaseToMariaDB(),
         createCacheFolder(),
         getSystemConfigTask(),
         getCachedPorts()
@@ -114,7 +110,7 @@ const configureProject = () => ({
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
-        connectToMySQL()
+        connectToDatabase()
     ])
 });
 
@@ -125,22 +121,6 @@ const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
-        // {
-        //     skip: (ctx) => !ctx.importDb,
-        //     task: (ctx, task) => {
-        //         task.title = 'Importing database dump';
-        //         return task.newListr([
-        //             dumpThemeConfig(),
-        //             importDumpToMySQL(),
-        //             fixDB(),
-        //             restoreThemeConfig(),
-        //             setupMagento()
-        //         ], {
-        //             concurrent: false,
-        //             exitOnError: true
-        //         });
-        //     }
-        // },
         setupThemes(),
         waitingForVarnish()
     ], {

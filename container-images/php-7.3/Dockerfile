@@ -2,6 +2,10 @@
 
 FROM alpine:3.16
 
+COPY ./ext/intl/breakiterator/codepointiterator_internal.cpp /patched-files/
+COPY ./ext/intl/breakiterator/codepointiterator_internal.h /patched-files/
+COPY ./ext/intl/locale/locale_methods.c /patched-files/
+
 # dependencies required for running "phpize"
 # these get automatically installed and removed by "docker-php-ext-*" (unless they're already installed)
 ENV PHPIZE_DEPS \
@@ -114,13 +118,12 @@ RUN set -eux; \
 		CPPFLAGS="$PHP_CPPFLAGS" \
 		LDFLAGS="$PHP_LDFLAGS" \
 	; \
-	docker-php-source extract;
-
-COPY ./ext/intl/breakiterator/codepointiterator_internal.cpp /usr/src/php/ext/intl/breakiterator/
-COPY ./ext/intl/breakiterator/codepointiterator_internal.h /usr/src/php/ext/intl/breakiterator/
-COPY ./ext/intl/locale/locale_methods.c /usr/src/php/ext/intl/locale/
-
-RUN	cd /usr/src/php; \
+	docker-php-source extract; \
+	rm /usr/src/php/ext/intl/breakiterator/codepointiterator_internal.cpp; \
+	rm /usr/src/php/ext/intl/breakiterator/codepointiterator_internal.h; \
+	cp /patched-files/codepointiterator_internal.cpp /patched-files/codepointiterator_internal.h /usr/src/php/ext/intl/breakiterator/; \
+	cp /patched-files/locale_methods.c /usr/src/php/ext/intl/locale/; \
+	cd /usr/src/php; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
 	./configure \
 		--build="$gnuArch" \
@@ -218,6 +221,8 @@ RUN docker-php-ext-enable sodium
 ENTRYPOINT ["docker-php-entrypoint"]
 WORKDIR /var/www/html
 
+RUN rm -rf /patched-files
+
 RUN set -eux; \
 	cd /usr/local/etc; \
 	if [ -d php-fpm.d ]; then \
@@ -253,14 +258,6 @@ RUN set -eux; \
 		echo 'daemonize = no'; \
 		echo; \
 		echo '[www]'; \
-        echo 'catch_workers_output = yes'; \
-        echo 'pm.max_children = 32'; \
-        echo 'pm.start_servers = 3'; \
-        echo 'pm.max_requests = 5000'; \
-        echo 'pm.process_idle_timeout = 10s'; \
-        echo 'pm.status_path = /fpmstatus'; \
-        echo 'env[PATH] = $PATH'; \
-        echo; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 

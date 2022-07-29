@@ -14,7 +14,7 @@ module.exports = () => ({
                     ssl
                 }
             },
-            mysqlConnection
+            databaseConnection
         } = ctx;
         const isNgrok = host.endsWith('ngrok.io');
         const enableSecureFrontend = ssl.enabled ? '1' : '0';
@@ -29,6 +29,6 @@ module.exports = () => ({
             { path: 'web/secure/use_in_frontend', value: enableSecureFrontend },
             { path: 'web/secure/use_in_adminhtml', value: enableSecureFrontend },
             { path: 'web/cookie/cookie_domain', value: null }
-        ], { mysqlConnection, task });
+        ], { databaseConnection, task });
     }
 });

@@ -46,10 +46,16 @@ const sslSchema = Joi.object({
     ssl_certificate_key: Joi.string().required()
 });
 
+/**
+ * @type {Joi.ObjectSchema<import('../../typings/index').PHPExtensions>}
+ */
 const phpExtensionConfiguration = Joi.object()
     .pattern(
         Joi.string(),
         Joi.object({
+            alternativeName: Joi.array().items(Joi.string()).optional(),
+            command: Joi.func().optional(),
+            dependencies: Joi.array().items(Joi.string()).optional(),
             version: Joi.string().optional()
         })
             .unknown()
@@ -59,10 +65,11 @@ const phpExtensionConfiguration = Joi.object()
  * @type {Joi.ObjectSchema<import('../../typings').PHPConfiguration>}
  */
 const phpConfigurationSchema = Joi.object({
-    version: Joi.string().optional().custom(versionValidator),
+    baseImage: Joi.string().optional(),
+    debugImage: Joi.string().optional(),
+    fpmConfigTemplate: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
-    extensions: phpExtensionConfiguration.optional(),
-    disabledExtensions: Joi.array().items(Joi.string())
+    extensions: phpExtensionConfiguration.optional()
 });
 
 /**
@@ -108,7 +115,7 @@ const composerConfigurationSchema = Joi.object({
 const configurationSchema = Joi.object({
     php: phpConfigurationSchema.optional(),
     nginx: nginxConfigurationSchema.optional(),
-    mysql: serviceConfigurationSchema.optional(),
+    mariadb: serviceConfigurationSchema.optional(),
     elasticsearch: serviceConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),

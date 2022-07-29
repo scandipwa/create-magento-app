@@ -8,7 +8,7 @@ const importDump = require('../tasks/import-dump');
 module.exports = (yargs) => {
     yargs.command(
         'import-db [importDb]',
-        'Import database dump to MySQL',
+        'Import database dump to MariaDB',
         (yargs) => {
             yargs.option('remote-db', {
                 alias: 'r',
