@@ -31,7 +31,7 @@ const setupPHPWorkspaceProjectConfiguration = async (workspaceConfigs, ctx) => {
         hasChanges = true;
         workspaceConfigs.push({
             [nameKey]: PHP_WORKSPACE_PROJECT_CONFIGURATION_COMPONENT_NAME,
-            [currentInterpreterImage]: currentInterpreterImage,
+            [interpreterNameKey]: currentInterpreterImage,
             include_path: []
         });
     }
