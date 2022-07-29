@@ -5,6 +5,7 @@ const { isIpAddress } = require('../util/ip');
 
 const systeminformation = require('systeminformation');
 const { deepmerge } = require('../util/deepmerge');
+const defaultEsEnv = require('./services/elasticsearch/default-es-env');
 
 /**
  *
@@ -259,10 +260,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [`127.0.0.1:${ ports.elasticsearch }:9200`],
                 forwardedPorts: [`127.0.0.1:${ ports.elasticsearch }:9200`],
                 mounts: [`source=${ volumes.elasticsearch.name },target=/usr/share/elasticsearch/data`],
-                env: deepmerge({
+                env: deepmerge(
+                    {
                     // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
-                    'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
-                }, elasticsearch.env),
+                        'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some((sse42Flag) => cpuSupportedFlags.includes(sse42Flag))
+                    }, elasticsearch.env || defaultEsEnv
+                ),
                 network: network.name,
                 image: `${ elasticsearch.version ? `elasticsearch:${ elasticsearch.version }` : elasticsearch.image }`,
                 name: `${ prefix }_elasticsearch`
