@@ -53,7 +53,7 @@ RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
 RUN chmod 0775 config data logs
-COPY config/elasticsearch.yml config/log4j2.properties config/
+COPY config/elasticsearch.yml config/log4j2.properties config/$TARGETARCH/jvm.options config/
 
 ################################################################################
 # Build stage 1 (the actual elasticsearch image):
