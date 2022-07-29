@@ -16,10 +16,24 @@ FROM centos:7 AS builder
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 ENV JAVA_HOME /opt/jdk-15.0.1+9
 
-RUN for iter in {1..10}; do curl -L -s -S https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/jdk-15.0.1%2B9/OpenJDK15U-jdk_x64_linux_hotspot_15.0.1_9.tar.gz | tar -C /opt -zx && \
-    exit_code=0 && break || exit_code=\$? && echo "download error: retry $iter in 10s" && sleep 10; done; \
-    (exit $exit_code)
- 
+ARG TARGETOS TARGETARCH
+
+ENV JDK_AMD64_URL https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/jdk-15.0.1%2B9/OpenJDK15U-jdk_x64_linux_hotspot_15.0.1_9.tar.gz
+ENV JDK_ARM64_URL https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/jdk-15.0.1%2B9/OpenJDK15U-jdk_aarch64_linux_hotspot_15.0.1_9.tar.gz
+
+RUN case $TARGETARCH in \
+            arm64) for iter in {1..10}; do \
+            curl -fsSL --output elasticsearch.tar.gz "$JDK_ARM64_URL" && \
+            tar xvf elasticsearch.tar.gz -C /opt  && \
+    exit_code=0 && rm elasticsearch.tar.gz && break || exit_code=\$? && echo "download error: retry $iter in 10s" && sleep 10; done; \
+    (exit $exit_code) ;; \
+            amd64) for iter in {1..10}; do \
+            curl -fsSL --output elasticsearch.tar.gz "$JDK_AMD64_URL" && \
+            tar xvf elasticsearch.tar.gz -C /opt  && \
+    exit_code=0 && rm elasticsearch.tar.gz && break || exit_code=\$? && echo "download error: retry $iter in 10s" && sleep 10; done; \
+    (exit $exit_code) ;; \
+    esac;
+
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
 # REF: https://github.com/elastic/elasticsearch-docker/issues/171
