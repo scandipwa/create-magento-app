@@ -6,12 +6,14 @@ const linkTheme = require('./theme/link-theme');
 const { startServices } = require('./docker');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const { connectToMySQL } = require('./mysql');
+const { checkRequirements } = require('./requirements');
 
 /**
  * @type {(theme: string) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const linkTask = (themePath) => ({
     task: (ctx, task) => task.newListr([
+        checkRequirements(),
         getMagentoVersionConfig(),
         checkConfigurationFile(),
         getProjectConfiguration(),
