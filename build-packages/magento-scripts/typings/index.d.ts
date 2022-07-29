@@ -1,14 +1,21 @@
 import { ListrContext } from './context';
 
 /* eslint-disable no-use-before-define */
-export interface ServiceWithVersion {
+export interface ServiceWithImage {
     /**
      * Service version
+     *
+     * @deprecated
      */
     version: string
+
+    /**
+     * Service Docker image
+     */
+    image: string
 }
 
-export interface SSLTerminatorConfiguration extends ServiceWithVersion {
+export interface SSLTerminatorConfiguration extends ServiceWithImage {
     /**
      * Configuration file location
      *
@@ -17,7 +24,7 @@ export interface SSLTerminatorConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface NginxConfiguration extends ServiceWithVersion {
+export interface NginxConfiguration extends ServiceWithImage {
     /**
      * Configuration file location
      *
@@ -26,7 +33,7 @@ export interface NginxConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface VarnishConfiguration extends ServiceWithVersion {
+export interface VarnishConfiguration extends ServiceWithImage {
     /**
      * Enable or disable Varnish in the project
      */
@@ -38,6 +45,13 @@ export interface VarnishConfiguration extends ServiceWithVersion {
      * @example ./my-varnish-config.vcl
      */
     configTemplate: string
+}
+
+export interface ComposerConfiguration {
+    /**
+     * Composer version
+     */
+    version: string
 }
 
 export interface PHPExtensionInstallationInstruction {
@@ -151,22 +165,22 @@ export interface CMAConfiguration {
         /**
          * MariaDB configuration
          */
-        mariadb: ServiceWithVersion
+        mariadb: ServiceWithImage
 
         /**
          * ElasticSearch configuration
          */
-        elasticsearch: ServiceWithVersion
+        elasticsearch: ServiceWithImage
 
         /**
          * Redis configuration
          */
-        redis: ServiceWithVersion
+        redis: ServiceWithImage
 
         /**
          * Composer configuration
          */
-        composer: ServiceWithVersion
+        composer: ComposerConfiguration
 
         /**
          * Varnish configuration
@@ -212,8 +226,8 @@ export interface CMAConfiguration {
     }
     /**
      *  Custom host for website base url
-     * @default 'localhost'
-     * */
+     *  @default 'localhost'
+     */
     host: string
 
     /**
@@ -232,14 +246,4 @@ export interface CMAConfiguration {
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
     prefix: boolean
-
-    /**
-     * Non-overlapping ports config
-     * @default false
-     *
-     * @deprecated Use global configuration file.
-     * @description If set to `true` CMA will try retrieving others CMA projects port configuration
-     * and will not use their ports for itself.
-     */
-    useNonOverlappingPorts: boolean
 }

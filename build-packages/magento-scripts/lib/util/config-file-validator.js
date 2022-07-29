@@ -76,28 +76,28 @@ const phpConfigurationSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
  */
 const nginxConfigurationSchema = Joi.object({
-    version: Joi.string().optional(),
+    image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
+ * @type {Joi.ObjectSchema<import('../../typings').VarnishConfiguration>}
  */
 const varnishConfigurationSchema = Joi.object({
     enabled: Joi.boolean().optional(),
-    version: Joi.string().optional(),
+    image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').ServiceWithVersion>}
+ * @type {Joi.ObjectSchema<import('../../typings').ServiceWithImage>}
  */
 const serviceConfigurationSchema = Joi.object({
-    version: Joi.string().optional()
+    image: Joi.string().optional()
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']['composer']>}
+ * @type {Joi.ObjectSchema<import('../../typings').ComposerConfiguration>}
  */
 const composerConfigurationSchema = Joi.object({
     version: Joi.string().optional().custom((value) => {
@@ -131,8 +131,7 @@ const configFileSchema = Joi.object({
     host: Joi.string().optional(),
     ssl: sslSchema.optional(),
     prefix: Joi.bool().optional(),
-    configuration: configurationSchema.required(),
-    useNonOverlappingPorts: Joi.bool().forbidden()
+    configuration: configurationSchema.required()
 });
 
 /**
