@@ -30,6 +30,7 @@ NOTE: After installation it's recommended to log out and log back in so your gro
     if (automaticallyInstallDocker) {
         return task.newListr([
             installDocker(),
+            checkDockerSocketPermissions(),
             getDockerVersion(),
             {
                 task: (ctx) => {
@@ -80,6 +81,7 @@ Would you like to install it automatically using brew cask or you prefer to inst
     if (confirmationToInstallDocker === 'automatic') {
         return task.newListr([
             installDockerOnMac(),
+            checkDockerSocketPermissions(),
             checkDockerStatus(),
             getDockerVersion(),
             setVersionInContextTask(task)
@@ -122,6 +124,7 @@ const checkDocker = () => ({
         }
 
         return task.newListr([
+            checkDockerSocketPermissions(),
             checkDockerStatus(),
             getDockerVersion(),
             setVersionInContextTask(task)
@@ -134,7 +137,6 @@ const checkDocker = () => ({
  */
 module.exports = () => ({
     task: (ctx, task) => task.newListr([
-        checkDockerSocketPermissions(),
         checkDocker(),
         checkDockerPerformance()
     ], {
