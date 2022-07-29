@@ -49,8 +49,8 @@ const updateEnvPHP = () => ({
                 if (
                     persistedQueryConfig
                     && persistedQueryConfig.redis
-                    && persistedQueryConfig.redis.port === `${ ctx.ports.redis }`
-                    && persistedQueryConfig.redis.host === hostMachine
+                    && (persistedQueryConfig.redis.port !== `${ ctx.ports.redis }`
+                    || persistedQueryConfig.redis.host === hostMachine)
                 ) {
                     SETUP_PQ = '';
                     return;

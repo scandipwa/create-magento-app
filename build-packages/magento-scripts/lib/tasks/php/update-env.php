@@ -126,8 +126,14 @@ class EnvUpdater
             $cacheConfig = &$this->config["cache"];
             $redisPort = getenv("REDIS_PORT");
 
-            if (isset($cacheConfig) && isset($cacheConfig["persisted-query"]) && isset($cacheConfig["persisted-query"]["redis"]) && $cacheConfig["persisted-query"]["redis"]["port"] != $redisPort) {
-                $cacheConfig["persisted-query"]["redis"]["port"] = $redisPort;
+            if (isset($cacheConfig) && isset($cacheConfig["persisted-query"]) && isset($cacheConfig["persisted-query"]["redis"])) {
+                if ($cacheConfig["persisted-query"]["redis"]["port"] !== $redisPort) {
+                    $cacheConfig["persisted-query"]["redis"]["port"] = $redisPort;
+                }
+
+                if ($cacheConfig["persisted-query"]["redis"]["host"] !== $hostMachine) {
+                    $cacheConfig["persisted-query"]["redis"]["host"] = $hostMachine;
+                }
             } else {
                 if (!isset($cacheConfig)) {
                     $this->config["cache"] = [];
