@@ -37,7 +37,9 @@ const getIsHealthCheckRequestBroken = async (ctx) => {
  */
 const waitingForVarnish = () => ({
     title: 'Waiting for Varnish to return code 200',
-    skip: (ctx) => ctx.debug || !ctx.config.overridenConfiguration.configuration.varnish.enabled,
+    skip: (ctx) => ctx.debug
+        || !ctx.config.overridenConfiguration.configuration.varnish.enabled
+        || ctx.config.overridenConfiguration.ssl.enabled,
     task: async (ctx, task) => {
         const pureMagentoVersion = ctx.magentoVersion.match(/^([0-9]+\.[0-9]+\.[0-9]+)/)[1];
 
