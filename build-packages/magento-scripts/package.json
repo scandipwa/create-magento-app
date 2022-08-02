@@ -3,7 +3,7 @@
     "description": "Scripts and configuration used by CMA.",
     "homepage": "https://docs.create-magento-app.com/",
     "repository": "github:scandipwa/create-magento-app",
-    "version": "2.0.0-alpha.4",
+    "version": "2.0.0-alpha.5",
     "main": "./index.js",
     "types": "./typings/index.d.ts",
     "license": "OSL-3.0",
