@@ -68,7 +68,7 @@ const dependenciesForPlatforms = {
             'oniguruma-devel',
             'libxml2-devel',
             'bzip2-devel',
-            'curl-devel',
+            'libcurl-devel',
             'libxslt-devel',
             'autoconf',
             'php'
