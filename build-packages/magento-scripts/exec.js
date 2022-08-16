@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const yargs = require('yargs');
 const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const isInstalledGlobally = require('is-installed-globally');
 const isRunningRoot = require('./lib/util/is-running-root');
+const { executeTask } = require('./lib/tasks/execute');
 
 if (isRunningRoot()) {
     logger.error('Root privileges detected!');
@@ -18,18 +18,6 @@ If you are experiencing problems with ${ logger.style.misc('Docker') } or ${ log
 
     process.exit(1);
 }
-
-const commands = [
-    require('./lib/commands/link'),
-    require('./lib/commands/logs'),
-    require('./lib/commands/cli'),
-    require('./lib/commands/start'),
-    require('./lib/commands/stop'),
-    require('./lib/commands/cleanup'),
-    require('./lib/commands/status'),
-    require('./lib/commands/execute'),
-    require('./lib/commands/import-db')
-];
 
 process.title = 'magento-scripts';
 
@@ -66,11 +54,6 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
                 ];
             }
 
-            const doNotLogOutOfDateCommands = ['start'];
-
-            if (!yargs.argv._.some((arg) => doNotLogOutOfDateCommands.includes(arg))) {
-                logger.warn(...message);
-            }
             process.isOutOfDateVersion = true;
             process.isOutOfDateVersionMessage = message;
         }
@@ -79,11 +62,10 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
         logger.log(); // add empty line
     }
 
-    yargs.scriptName('magento-scripts');
+    const [containername, ...commands] = process.argv.slice(2);
 
-    // Initialize program commands
-    commands.forEach((command) => command(yargs));
-
-    // eslint-disable-next-line no-unused-expressions
-    yargs.argv;
+    return executeTask({
+        containername,
+        commands
+    });
 })();

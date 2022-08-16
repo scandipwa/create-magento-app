@@ -1,6 +1,9 @@
 const os = require('os');
 const { spawn } = require('child_process');
 
+/**
+ * @param {{ containerName: string, commands: string[] }} param0
+ */
 const executeInContainer = ({ containerName, commands }) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode');
@@ -14,7 +17,10 @@ const executeInContainer = ({ containerName, commands }) => {
         '-it',
         userArg,
         containerName
-    ].filter(Boolean).concat(...commands.map((command) => command.split(' '))), {
+    ]
+        .filter(Boolean)
+        .concat(...commands.map((command) => command.split(' ')).flat()),
+    {
         stdio: [0, 1, 2]
     });
 

@@ -8,7 +8,8 @@
     "types": "./typings/index.d.ts",
     "license": "OSL-3.0",
     "bin": {
-        "magento-scripts": "./index.js"
+        "magento-scripts": "./index.js",
+        "magento-scripts-exec": "./exec.js"
     },
     "engines": {
         "node": ">=12"
