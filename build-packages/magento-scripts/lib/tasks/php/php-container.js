@@ -10,9 +10,13 @@ const { containerApi } = require('../docker/containers');
 const runPHPContainerCommand = async (ctx, command, options = {}) => {
     const { php } = ctx.config.docker.getContainers(ctx.ports);
 
-    const containers = await containerApi.ls({ formatToJSON: true, all: true });
+    const containers = await containerApi.ls({
+        formatToJSON: true,
+        all: true,
+        filter: `name=${php.name}`
+    });
 
-    if (containers.some((c) => c.Names === php.name)) {
+    if (containers.length > 0) {
         return execPHPContainerCommand(ctx, command, options);
     }
 
