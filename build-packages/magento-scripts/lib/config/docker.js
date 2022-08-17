@@ -138,7 +138,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ],
                 env: {
-                    COMPOSER_AUTH: process.env.COMPOSER_AUTH || '',
+                    COMPOSER_AUTH: JSON.stringify(JSON.parse(process.env.COMPOSER_AUTH), null, 0) || '',
                     COMPOSER_HOME: '/composer/home'
                 },
                 restart: 'on-failure:5',
