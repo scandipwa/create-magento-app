@@ -6,6 +6,9 @@ const checkConfigurationFile = require('../config/check-configuration-file');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getCachedPorts } = require('../config/get-port-config');
 const executeInContainer = require('../util/execute-in-container');
+const { containerApi } = require('./docker/containers');
+const { runPHPContainerCommand } = require('./php/php-container');
+const KnownError = require('../errors/known-error');
 
 /**
  *
@@ -37,6 +40,9 @@ const executeTask = async (argv) => {
     const services = Object.keys(containers);
 
     if (services.includes(argv.containername) || services.some((service) => service.includes(argv.containername))) {
+        /**
+         * @type {import('./docker/containers/container-api').ContainerRunOptions}
+         */
         const container = containers[argv.containername]
             ? containers[argv.containername]
             : Object.entries(containers).find(([key]) => key.includes(argv.containername))[1];
@@ -52,13 +58,36 @@ const executeTask = async (argv) => {
             }
         }
 
-        logger.logN(`Executing container ${logger.style.misc(container._)} (command: ${logger.style.command(argv.commands.join(' '))})`);
-        await executeInContainer({
-            containerName: container.name,
-            commands: argv.commands
+        const containerList = await containerApi.ls({
+            formatToJSON: true,
+            all: true,
+            filter: `name=${container.name}`
         });
 
-        return;
+        if (containerList.length > 0) {
+            logger.logN(`Executing container ${logger.style.misc(container._)} (command: ${logger.style.command(argv.commands.join(' '))})`);
+            const result = await executeInContainer({
+                containerName: container.name,
+                commands: argv.commands
+            });
+
+            return result;
+        }
+
+        if (container.name.endsWith('php')) {
+            logger.logN(`Starting container ${logger.style.misc(container._)} with command: ${logger.style.command(argv.commands.join(' '))}`);
+            const result = await runPHPContainerCommand(
+                ctx,
+                argv.commands.join(' '),
+                {
+                    logOutput: true
+                }
+            );
+
+            return result;
+        }
+
+        throw new KnownError(`Container ${container.name} is not running!`);
     }
 
     logger.error(`No container found "${argv.containername}"`);

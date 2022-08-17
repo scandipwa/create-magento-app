@@ -1,11 +1,3 @@
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { Listr } = require('listr2');
-const checkConfigurationFile = require('../config/check-configuration-file');
-const getProjectConfiguration = require('../config/get-project-configuration');
-const executeInContainer = require('../tasks/execute');
-const getMagentoVersionConfig = require('../config/get-magento-version-config');
-const { checkRequirements } = require('../tasks/requirements');
-const { getCachedPorts } = require('../config/get-port-config');
 const { executeTask } = require('../tasks/execute');
 
 /**
