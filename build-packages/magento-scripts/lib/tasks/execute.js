@@ -5,9 +5,8 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getCachedPorts } = require('../config/get-port-config');
-const executeInContainer = require('../util/execute-in-container');
+const { executeInContainer, runInContainer } = require('../util/execute-in-container');
 const { containerApi } = require('./docker/containers');
-const { runPHPContainerCommand } = require('./php/php-container');
 const KnownError = require('../errors/known-error');
 
 /**
@@ -76,12 +75,12 @@ const executeTask = async (argv) => {
 
         if (container.name.endsWith('php')) {
             logger.logN(`Starting container ${logger.style.misc(container._)} with command: ${logger.style.command(argv.commands.join(' '))}`);
-            const result = await runPHPContainerCommand(
-                ctx,
-                argv.commands.join(' '),
+            const result = await runInContainer(
                 {
-                    logOutput: true
-                }
+                    ...container,
+                    name: `${container.name}_exec-${Date.now()}`
+                },
+                argv.commands
             );
 
             return result;

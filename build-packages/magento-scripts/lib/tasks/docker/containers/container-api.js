@@ -3,9 +3,9 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
  * @param {import('./container-api').ContainerRunOptions} options
- * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ * @returns {string[]}
  */
-const run = (options, execOptions = {}) => {
+const runCommand = (options) => {
     const {
         addHost,
         ports = [],
@@ -24,32 +24,35 @@ const run = (options, execOptions = {}) => {
         expose = [],
         detach = true,
         rm = false,
+        tty = false,
         user
     } = options;
 
     const detachArg = detach && '-d';
     const rmArg = rm && '--rm';
+    const ttyArg = tty && '-it';
     const exposeArg = expose && expose.map((e) => `--expose=${ e }`);
-    const restartArg = !rm && restart && `--restart ${ restart }`;
-    const networkArg = network && `--network ${ network }`;
-    const portsArgs = ports.map((port) => `-p ${ port }`).join(' ');
-    const mountsArgs = mounts.map((mount) => `--mount ${ mount }`).join(' ');
-    const mountVolumesArgs = mountVolumes.map((mount) => `-v ${mount}`).join(' ');
-    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env ${ key }='${ value }'`).join(' ');
-    const nameArg = name && `--name ${name}`;
-    const entrypointArg = entrypoint && `--entrypoint "${entrypoint}"`;
-    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key} '${value}'`).join(' ');
-    const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt ${opt}`).join(' ');
-    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs ${t}`).join(' ');
+    const restartArg = !rm && restart && `--restart=${ restart }`;
+    const networkArg = network && `--network=${ network }`;
+    const portsArgs = ports && ports.length > 0 && ports.map((port) => `-p=${ port }`).join(' ');
+    const mountsArgs = mounts && mounts.map((mount) => `--mount=${ mount }`).join(' ');
+    const mountVolumesArgs = mountVolumes && mountVolumes.map((mount) => `-v=${mount}`).join(' ');
+    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env=${ key }='${ value }'`).join(' ');
+    const nameArg = name && `--name=${name}`;
+    const entrypointArg = entrypoint && `--entrypoint="${entrypoint}"`;
+    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key}='${value}'`).join(' ');
+    const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt=${opt}`).join(' ');
+    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`).join(' ');
     const userArg = user && `--user=${user}`;
     const addHostArg = addHost && `--add-host=${addHost}`;
 
     const dockerCommand = [
         'docker',
         'run',
+        nameArg,
+        ttyArg,
         detachArg,
         rmArg,
-        nameArg,
         networkArg,
         restartArg,
         portsArgs,
@@ -65,10 +68,16 @@ const run = (options, execOptions = {}) => {
         addHostArg,
         image,
         command
-    ].filter(Boolean).join(' ');
+    ].filter(Boolean).filter((arg) => typeof arg === 'string');
 
-    return execAsyncSpawn(dockerCommand, execOptions);
+    return dockerCommand;
 };
+
+/**
+ * @param {import('./container-api').ContainerRunOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ */
+const run = (options, execOptions = {}) => execAsyncSpawn(runCommand(options).join(' '), execOptions);
 
 /**
  * @param {string} command
@@ -148,6 +157,7 @@ const ls = async (options = {}, execOptions = {}) => {
 
 module.exports = {
     run,
+    runCommand,
     exec,
     ls
 };

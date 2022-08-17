@@ -69,6 +69,8 @@ export interface ContainerRunOptions {
      * Run container in background and print container ID
      */
     detach?: boolean
+
+    tty?: boolean
     /**
      * Publish or expose port [docs](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose)
      */
@@ -126,3 +128,5 @@ export interface ContainerRunOptions {
 }
 
 export function run(containerOptions: ContainerRunOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<false>
+
+export function runCommand(options: ContainerRunOptions): string[]
