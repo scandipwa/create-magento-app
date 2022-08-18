@@ -39,7 +39,6 @@ const retrieveProjectConfiguration = () => ({
         checkConfigurationFile(),
         getProjectConfiguration(),
         convertLegacyVolumes(),
-        convertMySQLDatabaseToMariaDB(),
         createCacheFolder(),
         getSystemConfigTask(),
         getCachedPorts()
@@ -93,6 +92,7 @@ const retrieveFreshProjectConfiguration = () => ({
 const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
+        convertMySQLDatabaseToMariaDB(),
         pullImages(),
         dockerNetwork.tasks.createNetwork(),
         volumes.createVolumes(),
