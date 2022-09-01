@@ -8,7 +8,6 @@ const php72 = ({ templateDir, additionalExtensions = {} }) => ({
         gd: {
             macosOptions: '--with-zlib-dir=$(brew --prefix zlib) --with-freetype-dir=$(brew --prefix freetype)'
         },
-        intl: {},
         zlib: {},
         openssl: {},
         sockets: {},

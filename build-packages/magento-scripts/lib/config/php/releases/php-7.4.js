@@ -6,7 +6,6 @@ const php74 = ({ templateDir, additionalExtensions = {} } = {}) => ({
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     extensions: {
         gd: {},
-        intl: {},
         zlib: {},
         openssl: {},
         sockets: {},
