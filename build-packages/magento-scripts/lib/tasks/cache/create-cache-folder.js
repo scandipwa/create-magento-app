@@ -15,7 +15,9 @@ const createCacheFolder = () => ({
 
         task.title = 'Creating cache folder';
 
-        await fs.promises.mkdir(baseConfig.cacheDir);
+        await fs.promises.mkdir(baseConfig.cacheDir, {
+            recursive: true
+        });
     }
 });
 
