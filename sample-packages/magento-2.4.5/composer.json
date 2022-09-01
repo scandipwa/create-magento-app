@@ -10,7 +10,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "laminas/laminas-dependency-plugin": true,
-            "magento/*": true
+            "magento/*": true,
+            "hirak/prestissimo": false
         },
         "preferred-install": "dist",
         "sort-packages": true
@@ -87,4 +88,3 @@
         }
     }
 }
-
