@@ -7,3 +7,5 @@ RUN apk add --no-cache libxml2-dev libzip-dev libxslt-dev freetype-dev libjpeg-t
 RUN docker-php-ext-install soap zip xsl pdo_mysql bcmath opcache
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && docker-php-ext-install gd
+
+RUN apk add --no-cache patch bash git
