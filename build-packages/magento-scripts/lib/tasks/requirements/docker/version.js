@@ -14,6 +14,7 @@ const getDockerVersion = () => ({
             ctx.dockerServerData = dockerVersion.Server;
             ctx.dockerClientData = dockerVersion.Client;
             ctx.dockerVersion = dockerVersion.Server.Version;
+            ctx.isDockerDesktop = dockerVersion.Server.Platform.Name.includes('Desktop');
         } else {
             throw new UnknownError(`Got unexpected result during Docker version retrieval!\n\n${ dockerVersion }`);
         }

@@ -14,7 +14,7 @@ const createNginxConfig = () => ({
                 overridenConfiguration,
                 baseConfig
             },
-            isWsl
+            isDockerDesktop
         } = ctx;
 
         const {
@@ -23,10 +23,8 @@ const createNginxConfig = () => ({
             }
         } = overridenConfiguration;
 
-        const isLinux = ctx.platform === 'linux';
-        const isNativeLinux = isLinux && !isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
-        const hostPort = isNativeLinux ? ports.app : 80;
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
+        const hostPort = !isDockerDesktop ? ports.app : 80;
 
         try {
             await setConfigFile({

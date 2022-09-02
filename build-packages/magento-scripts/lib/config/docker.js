@@ -54,13 +54,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     };
 
     const isLinux = ctx.platform === 'linux';
-    const { isWsl } = ctx;
-    const isNotNativeLinux = (!isLinux || isWsl);
+    const { isDockerDesktop } = ctx;
 
-    if (!isLinux) {
+    if (isDockerDesktop) {
         /**
-         * When CMA is running in non-native linux environment,
-         * we need also create named volumes for nginx to avoid performance penalty
+         * When CMA is running with Docker Desktop,
+         * we need also create named volumes to avoid performance penalty
          */
         volumes.php = {
             name: `${ prefix }_project-data`,
@@ -122,17 +121,17 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         const dockerConfig = {
             php: {
                 _: 'PHP',
-                ports: isNotNativeLinux ? [
+                ports: isDockerDesktop ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.fpm }:9000`
                 ] : [],
                 forwardedPorts: [
-                    isNotNativeLinux
+                    isDockerDesktop
                         ? `127.0.0.1:${ ports.fpm }:9000`
                         : `127.0.0.1:${ ports.fpm }`
                 ],
-                network: isNotNativeLinux ? network.name : 'host',
+                network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
-                    `${ isLinux ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
+                    `${ !isDockerDesktop ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
                     `${ volumes.composer_home.name }:/composer/home`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
@@ -154,11 +153,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
-                ports: isNotNativeLinux ? [
+                ports: isDockerDesktop ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.sslTerminator }:80`
                 ] : [],
                 forwardedPorts: [
-                    isNotNativeLinux
+                    isDockerDesktop
                         ? `127.0.0.1:${ ports.sslTerminator }:80`
                         : `127.0.0.1:${ ports.sslTerminator }`
                 ],
@@ -169,21 +168,21 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                  * Mount volumes directly on linux
                  */
                 mountVolumes: [
-                    `${ isLinux ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
+                    `${ !isDockerDesktop ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
                 ],
                 restart: 'on-failure:5',
-                network: isNotNativeLinux ? network.name : 'host',
+                network: isDockerDesktop ? network.name : 'host',
                 image: `${ nginx.version ? `nginx:${ nginx.version }` : nginx.image }`,
                 name: `${ prefix }_ssl-terminator`,
                 command: "nginx -g 'daemon off;'"
             },
             nginx: {
                 _: 'Nginx',
-                ports: isNotNativeLinux ? [
+                ports: isDockerDesktop ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.app }:80`
                 ] : [],
                 forwardedPorts: [
-                    isNotNativeLinux
+                    isDockerDesktop
                         ? `127.0.0.1:${ ports.app }:80`
                         : `127.0.0.1:${ ports.app }`
                 ],
@@ -193,7 +192,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 /**
                  * Mount volumes directly on linux
                  */
-                mountVolumes: isLinux ? [
+                mountVolumes: !isDockerDesktop ? [
                     `${ cacheDir }/nginx/conf.d:/etc/nginx/conf.d`,
                     `${ path.join(magentoDir, 'pub') }:${path.join(containerMagentoDir, 'pub')}`,
                     `${ path.join(magentoDir, 'setup') }:${path.join(containerMagentoDir, 'setup')}`
@@ -204,7 +203,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 restart: 'on-failure:5',
                 // TODO: use connect instead
-                network: isNotNativeLinux ? network.name : 'host',
+                network: isDockerDesktop ? network.name : 'host',
                 image: `${ nginx.version ? `nginx:${ nginx.version }` : nginx.image }`,
                 name: `${ prefix }_nginx`,
                 command: "nginx -g 'daemon off;'"
@@ -284,13 +283,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 image: `${ varnish.version ? `varnish:${ varnish.version }` : varnish.image }`,
                 name: `${ prefix }_varnish`,
                 mountVolumes: [
-                    `${ isLinux ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`
+                    `${ !isDockerDesktop ? path.join(cacheDir, 'varnish') : volumes.varnish.name }:/etc/varnish`
                 ],
-                ports: isNotNativeLinux ? [
+                ports: isDockerDesktop ? [
                     `${ isIpAddress(host) ? host : '127.0.0.1' }:${ ports.varnish }:80`
                 ] : [],
                 forwardedPorts: [
-                    isNotNativeLinux
+                    isDockerDesktop
                         ? `127.0.0.1:${ ports.varnish }:80`
                         : `127.0.0.1:${ ports.varnish }`
                 ],
@@ -298,9 +297,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     VARNISH_SIZE: '2G'
                 },
                 restart: 'on-failure:30',
-                network: isNotNativeLinux ? network.name : 'host',
+                network: isDockerDesktop ? network.name : 'host',
                 // eslint-disable-next-line max-len
-                command: `/bin/bash -c "varnishd -a :${ isNotNativeLinux ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s Cache=malloc,2048m -s Transient=malloc,512m -p http_resp_hdr_len=70000 -p http_resp_size=100000 && varnishlog"`,
+                command: `/bin/bash -c "varnishd -a :${ isDockerDesktop ? 80 : ports.varnish } -t 600 -f /etc/varnish/default.vcl -s Cache=malloc,2048m -s Transient=malloc,512m -p http_resp_hdr_len=70000 -p http_resp_size=100000 && varnishlog"`,
                 tmpfs: [
                     '/var/lib/varnish:exec'
                 ]

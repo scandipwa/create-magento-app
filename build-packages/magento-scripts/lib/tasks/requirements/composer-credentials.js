@@ -96,9 +96,9 @@ ${ logger.style.misc('Password') } (${ logger.style.misc('Private key') }):`,
         };
 
         const authJsonContent = JSON.stringify(authContent, null, 4);
-        const authEnvContent = `export COMPOSER_AUTH='${JSON.stringify(authContent)}'`;
+        const authEnvContent = `export COMPOSER_AUTH='${JSON.stringify(authContent, null, 0)}'`;
 
-        process.env.COMPOSER_AUTH = authJsonContent;
+        process.env.COMPOSER_AUTH = JSON.stringify(JSON.parse(authJsonContent), null, 0);
 
         if (configureLocation === 'auth.json') {
             await fs.promises.writeFile(authJsonPath, authJsonContent, 'utf-8');
@@ -175,7 +175,11 @@ Would you like to load them now?`
 
                     if (loadCredentialsFrom) {
                         const credentialsLine = lines.find((line) => line.startsWith('export COMPOSER_AUTH='));
-                        process.env.COMPOSER_AUTH = credentialsLine.replace('export COMPOSER_AUTH=', '').replace(/'/ig, '').trim();
+                        process.env.COMPOSER_AUTH = JSON.stringify(
+                            JSON.parse(credentialsLine.replace('export COMPOSER_AUTH=', '').replace(/'/ig, '').trim()),
+                            null,
+                            0
+                        );
                         problems.delete(MISSING_COMPOSER_AUTH_ENV);
                     }
                 }

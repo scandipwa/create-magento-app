@@ -1,5 +1,6 @@
 import mysql2 from 'mysql2';
 
+import { DockerVersionResult } from '../lib/tasks/docker/api';
 import { CMAConfiguration, PHPExtensions } from './index';
 import { PHPStormConfig } from './phpstorm';
 
@@ -90,4 +91,8 @@ export interface ListrContext {
     }
     databaseConnection: mysql2.Connection
     isSetupUpgradeNeeded?: boolean
+    isDockerDesktop?: boolean
+    dockerServerData?: DockerVersionResult['Server']
+    dockerClientData?: DockerVersionResult['Client']
+    dockerVersion?: DockerVersionResult['Server']['Version']
 }

@@ -7,10 +7,8 @@ const setConfigFile = require('../../util/set-config');
 const createPhpFpmConfig = () => ({
     title: 'Setting php-fpm config',
     task: async (ctx) => {
-        const { config: { php } } = ctx;
-        const isLinux = ctx.platform === 'linux';
-        const isNativeLinux = isLinux && !ctx.isWsl;
-        const port = isNativeLinux ? ctx.ports.fpm : 9000;
+        const { config: { php }, isDockerDesktop } = ctx;
+        const port = !isDockerDesktop ? ctx.ports.fpm : 9000;
 
         try {
             await setConfigFile({

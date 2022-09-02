@@ -19,8 +19,6 @@ const checkRequirements = () => ({
         checkDocker(),
         // check for Node.js version
         checkNodeVersion(),
-        // check installed PHP version
-        // checkPHPVersion(),
         // check for COMPOSER_AUTH or auth.json
         localAuthJson(),
         checkComposerCredentials()

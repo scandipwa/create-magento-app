@@ -1,4 +1,3 @@
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const setConfigFile = require('../../util/set-config');
@@ -19,8 +18,8 @@ const createSSLTerminatorConfig = () => ({
                 overridenConfiguration,
                 baseConfig
             },
-            isWsl,
-            debug
+            debug,
+            isDockerDesktop
         } = ctx;
 
         const {
@@ -65,10 +64,8 @@ const createSSLTerminatorConfig = () => ({
         }
 
         const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
-        const isLinux = os.platform() === 'linux';
-        const isNativeLinux = isLinux && !isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
-        const hostPort = isNativeLinux ? ports.sslTerminator : 80;
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
+        const hostPort = !isDockerDesktop ? ports.sslTerminator : 80;
 
         try {
             await setConfigFile({

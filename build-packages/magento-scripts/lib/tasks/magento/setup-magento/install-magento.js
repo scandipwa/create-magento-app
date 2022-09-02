@@ -24,12 +24,11 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 magentoConfiguration
             },
             ports,
-            databaseConnection
+            databaseConnection,
+            isDockerDesktop
         } = ctx;
 
-        const isLinux = ctx.platform === 'linux';
-        const isNativeLinux = isLinux && !ctx.isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
 
         const [tableResponse] = await databaseConnection.query(
             'SELECT * FROM information_schema.tables WHERE table_schema = \'magento\' AND table_name = \'admin_user\' LIMIT 1;'

@@ -19,11 +19,10 @@ const updateEnvPHP = () => ({
             return;
         }
 
+        const { isDockerDesktop, platform } = ctx;
         const { php } = ctx.config.docker.getContainers(ctx.ports);
 
-        const isLinux = ctx.platform === 'linux';
-        const isNativeLinux = isLinux && !ctx.isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
 
         const useVarnish = (!ctx.debug && ctx.config.overridenConfiguration.configuration.varnish.enabled) ? '1' : '';
         const varnishHost = hostMachine;
@@ -78,7 +77,7 @@ const updateEnvPHP = () => ({
             image: php.image,
             detach: false,
             rm: true,
-            user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
+            user: platform === 'linux' ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
         });
 
         task.output = result;

@@ -14,15 +14,14 @@ const createPhpConfig = () => ({
                 php,
                 baseConfig
             },
-            debug
+            debug,
+            isDockerDesktop
         } = ctx;
         const containers = ctx.config.docker.getContainers(ctx.ports);
         const phpExtensions = await getEnabledExtensionsFromImage(containers.php.debugImage);
         const isXDebug2 = semver.satisfies(phpExtensions.xdebug, '2');
 
-        const isLinux = ctx.platform === 'linux';
-        const isNativeLinux = isLinux && !ctx.isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
 
         try {
             await setConfigFile({
