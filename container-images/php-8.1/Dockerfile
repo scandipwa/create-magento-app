@@ -33,11 +33,6 @@ RUN set -eux; \
 # https://git.alpinelinux.org/aports/tree/main/lighttpd/lighttpd.pre-install?h=3.14-stable
 # https://git.alpinelinux.org/aports/tree/main/nginx/nginx.pre-install?h=3.14-stable
 
-# make new user able to use sudo commands
-RUN mkdir -p /etc/sudoers.d \
-        && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
-        && chmod 0440 /etc/sudoers.d/$USER
-
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
 	mkdir -p "$PHP_INI_DIR/conf.d"; \
@@ -59,9 +54,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -pie"
 
 ENV GPG_KEYS 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD
 
-ENV PHP_VERSION 8.1.8
-ENV PHP_URL="https://www.php.net/distributions/php-8.1.8.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.1.8.tar.xz.asc"
-ENV PHP_SHA256="04c065515bc347bc68e0bb1ac7182669a98a731e4a17727e5731650ad3d8de4c"
+ENV PHP_VERSION 8.1.10
+ENV PHP_URL="https://www.php.net/distributions/php-8.1.10.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.1.10.tar.xz.asc"
+ENV PHP_SHA256="90e7120c77ee83630e6ac928d23bc6396603d62d83a3cf5df8a450d2e3070162"
 
 RUN set -eux; \
 	\
@@ -92,8 +87,6 @@ RUN set -eux; \
 COPY docker-php-source /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-php-source
-
-USER www-data
 
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
@@ -252,14 +245,6 @@ RUN set -eux; \
 		echo 'daemonize = no'; \
 		echo; \
 		echo '[www]'; \
-        echo 'catch_workers_output = yes'; \
-        echo 'pm.max_children = 32'; \
-        echo 'pm.start_servers = 3'; \
-        echo 'pm.max_requests = 5000'; \
-        echo 'pm.process_idle_timeout = 10s'; \
-        echo 'pm.status_path = /fpmstatus'; \
-        echo 'env[PATH] = $PATH'; \
-        echo; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 
