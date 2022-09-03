@@ -75,6 +75,14 @@ export interface ComposerConfiguration {
      * @url https://getcomposer.org/download/
      */
     version: string
+
+    /**
+     *  Composer global plugins that will be added to Docker image
+     */
+    plugins: Record<string, {
+        version?: string
+        options?: string
+    }>
 }
 
 export interface PHPExtensionInstallationInstruction {
