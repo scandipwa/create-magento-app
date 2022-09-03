@@ -94,6 +94,7 @@ const configureProject = () => ({
     task: (ctx, task) => task.newListr([
         convertMySQLDatabaseToMariaDB(),
         pullImages(),
+        checkPHPVersion(),
         dockerNetwork.tasks.createNetwork(),
         volumes.createVolumes(),
         {
@@ -104,7 +105,6 @@ const configureProject = () => ({
                 concurrent: true
             })
         },
-        checkPHPVersion(),
         getComposerVersionTask(),
         prepareFileSystem(),
         installMagentoProject(),

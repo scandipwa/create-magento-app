@@ -7,8 +7,10 @@ const { runContainerImage } = require('../../util/run-container-image');
 const checkPHPVersion = () => ({
     title: 'Checking container PHP version',
     task: async (ctx, task) => {
-        const { php } = ctx.config.docker.getContainers(ctx.ports);
-        const phpVersionResponse = await runContainerImage(php.image, 'php --version');
+        const phpVersionResponse = await runContainerImage(
+            ctx.config.overridenConfiguration.configuration.php.baseImage,
+            'php --version'
+        );
 
         const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d+\.\d+\.\d+)/i);
 
