@@ -7,6 +7,7 @@ import { PHPStormConfig } from './phpstorm';
 export interface ListrContext {
     magentoVersion: string
     composerVersion: string
+    phpVersion: string
     port?: number
     ports?: {
         app: number
@@ -68,6 +69,7 @@ export interface ListrContext {
                 network: string
                 image: string
                 debugImage?: string
+                remoteImages?: string[]
                 name: string
                 command: string
                 connectCommand: string[]

@@ -57,6 +57,22 @@ export interface VarnishConfiguration extends ServiceWithImage {
 export interface ComposerConfiguration {
     /**
      * Composer version
+     *
+     * This will become part of the url (`https://getcomposer.org/download/<version>/composer.phar`) so you can use the following variants as well:
+     * ```
+     * 'latest-stable'
+     * 'latest-preview'
+     * 'latest-1.x'
+     * 'latest-2.x'
+     * 'latest-2.2.x'
+     *
+     * '2.4.1'
+     * '2.3.10'
+     * '2.2.18'
+     * '2.1.14'
+     * ```
+     *
+     * @url https://getcomposer.org/download/
      */
     version: string
 }
@@ -80,7 +96,9 @@ export interface PHPExtensionInstallationInstruction {
      * pecl install xdebug && docker-php-ext-enable xdebug
      * ```
      */
-    command: (arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string | string
+    command: string |
+        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string) |
+        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => Promise<string>)
 
     /**
      * System dependencies required by the extension

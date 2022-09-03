@@ -27,13 +27,13 @@ const getEnabledExtensionsFromImage = async (imageWithTag) => {
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {});
 };
 
-const addExtensionToBuilder = (builder, ctx) => ([extensionName, extensionInstructions]) => {
+const addExtensionToBuilder = (builder, ctx) => async ([extensionName, extensionInstructions]) => {
     const { command, ...extensionInstructionsWithoutCommand } = extensionInstructions;
     let runCommand = '';
     if (typeof command === 'string') {
         runCommand += ` ${command}`;
-    } else if (typeof command === 'function') {
-        runCommand += ` ${command({ ...extensionInstructionsWithoutCommand, ctx })}`;
+    } else if (typeof command === 'function' || command instanceof Promise) {
+        runCommand += ` ${await Promise.resolve(command({ ...extensionInstructionsWithoutCommand, ctx }))}`;
     } else {
         runCommand += ` docker-php-ext-install ${extensionInstructionsWithoutCommand.name}`;
     }
@@ -79,7 +79,9 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
             .reduce((acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))), []);
 
         dockerFileInstructions.run(`apk add --no-cache ${allDependencies.join(' ')}`);
-        missingExtensions.forEach(addExtensionToBuilder(dockerFileInstructions, ctx));
+        for (const missingExtensionInstructions of missingExtensions) {
+            await addExtensionToBuilder(dockerFileInstructions, ctx)(missingExtensionInstructions);
+        }
     }
 
     const composerVersion = /^\d$/.test(composer.version)
