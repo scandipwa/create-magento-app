@@ -68,7 +68,7 @@ const executeTask = async (argv) => {
             const result = await executeInContainer({
                 containerName: container.name,
                 commands: argv.commands,
-                isWsl: ctx.isWsl
+                isDockerDesktop: ctx.isDockerDesktop
             });
 
             return result;

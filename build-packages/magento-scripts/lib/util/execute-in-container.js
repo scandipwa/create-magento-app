@@ -3,15 +3,15 @@ const { spawn } = require('child_process');
 const { runCommand } = require('../tasks/docker/containers/container-api');
 
 /**
- * @param {{ containerName: string, commands: string[], isWsl: boolean }} param0
+ * @param {{ containerName: string, commands: string[], isDockerDesktop: boolean }} param0
  */
-const executeInContainer = ({ containerName, commands, isWsl }) => {
+const executeInContainer = ({ containerName, commands, isDockerDesktop }) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode');
         process.exit(1);
     }
 
-    const userArg = os.platform() === 'linux' && !isWsl && `--user=${os.userInfo().uid}:${os.userInfo().gid}`;
+    const userArg = !isDockerDesktop && `--user=${os.userInfo().uid}:${os.userInfo().gid}`;
 
     spawn('docker', [
         'exec',

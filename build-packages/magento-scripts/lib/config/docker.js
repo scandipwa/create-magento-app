@@ -53,13 +53,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         }
     };
 
-    const isLinux = ctx.platform === 'linux';
     const { isDockerDesktop } = ctx;
 
     if (isDockerDesktop) {
         /**
          * When CMA is running with Docker Desktop,
-         * we need also create named volumes to avoid performance penalty
+         * we need create named volumes to avoid performance penalty
          */
         volumes.php = {
             name: `${ prefix }_project-data`,
@@ -155,7 +154,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 name: `${ prefix }_php`,
                 connectCommand: ['/bin/sh'],
-                user: isLinux ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
+                user: !isDockerDesktop ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -208,7 +207,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ volumes.appSetup.name }:${path.join(containerMagentoDir, 'setup')}`
                 ],
                 restart: 'on-failure:5',
-                // TODO: use connect instead
                 network: isDockerDesktop ? network.name : 'host',
                 image: `${ nginx.version ? `nginx:${ nginx.version }` : nginx.image }`,
                 name: `${ prefix }_nginx`,
@@ -222,7 +220,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [`127.0.0.1:${ ports.redis }:6379`],
                 forwardedPorts: [`127.0.0.1:${ ports.redis }:6379`],
                 mounts: [`source=${ volumes.redis.name },target=/data`],
-                // TODO: use connect instead
                 network: network.name,
                 image: `${ redis.version ? `redis:${ redis.version }` : redis.image }`,
                 name: `${ prefix }_redis`,
