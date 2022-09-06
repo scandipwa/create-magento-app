@@ -2,7 +2,7 @@ const os = require('os');
 const fs = require('fs');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const pathExists = require('../../../util/path-exists');
-const { execCommandTask } = require('../../../util/exec-async-command');
+const executeSudoCommand = require('../../../util/execute-sudo-command');
 
 const dockerSocketPath = '/var/run/docker.sock';
 
@@ -33,16 +33,7 @@ Otherwise installation will likely fail.`
                 });
 
                 if (confirmPrompt) {
-                    task.output = 'Enter your sudo password!';
-                    task.output = logger.style.command(`>[sudo] password for ${ os.userInfo().username }:`);
-                    return task.newListr(
-                        execCommandTask(fixCommand, {
-                            callback: (t) => {
-                                task.output = t;
-                            },
-                            pipeInput: true
-                        })
-                    );
+                    return task.newListr(executeSudoCommand(fixCommand));
                 }
                 task.skip(`Permission issue detected in ${ logger.style.file(dockerSocketPath) } but user decided not to fix it.`);
             }
