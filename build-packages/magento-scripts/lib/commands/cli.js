@@ -46,6 +46,11 @@ module.exports = (yargs) => {
             .addLine(`Available shortcuts: magento -> ${logger.style.command('m')}, composer -> ${logger.style.command('c')}`)
             .addEmptyLine();
 
+        block
+            .addLine(`Execute into any service: ${logger.style.command('exec <service name>')}`)
+            .addLine(`Execute into PHP container: ${logger.style.command('exec php')}`)
+            .addEmptyLine();
+
         if (ctx.config.overridenConfiguration.configuration.varnish.enabled) {
             block.addLine(`Clear Varnish cache: ${logger.style.command('cvc')}`);
         }

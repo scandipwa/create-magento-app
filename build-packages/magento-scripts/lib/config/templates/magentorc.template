@@ -2,16 +2,17 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-alias php="node ./node_modules/.bin/magento-scripts-exec php php"
+alias exec="node ./node_modules/.bin/magento-scripts-exec"
+alias php="exec php php"
 alias magento="php bin/magento"
 alias magneto="echo -e 'Not ${RED}magneto${NC} but ${GREEN}magento${NC} please! or at least ${GREEN}m${NC}!' && magento"
 alias m="magento"
-alias composer="node ./node_modules/.bin/magento-scripts-exec php composer"
+alias composer="exec php composer"
 alias c="composer"
 <% if (it.varnishEnabled) { %>
-alias cvc="node ./node_modules/.bin/magento-scripts-exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache cleared!'"
+alias cvc="exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache cleared!'"
 <% } %>
-alias mariadb="node ./node_modules/.bin/magento-scripts-exec mariadb 'mysql -umagento -pmagento'"
-alias mariadbroot="node ./node_modules/.bin/magento-scripts-exec mariadb 'mysql -uroot -pscandipwa'"
+alias mariadb="exec mariadb 'mysql -umagento -pmagento'"
+alias mariadbroot="exec mariadb 'mysql -uroot -pscandipwa'"
 
 export BASH_SILENCE_DEPRECATION_WARNING=1
