@@ -28,6 +28,17 @@ const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish')
 const checkPHPVersion = require('./requirements/php-version');
 const volumes = require('./docker/volume/tasks');
 const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
+const { cmaGlobalConfig } = require('../config/cma-config');
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const resetCmaGlobalConfig = () => ({
+    skip: (ctx) => !ctx.resetGlobalConfig,
+    task: () => {
+        cmaGlobalConfig.clear();
+    }
+});
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -138,6 +149,7 @@ const start = () => ({
     task: (ctx, task) => {
         task.title = `Starting project (magento-scripts@${pkg.version})`;
         return task.newListr([
+            resetCmaGlobalConfig(),
             checkRequirements(),
             retrieveProjectConfiguration(),
             stopProject(),

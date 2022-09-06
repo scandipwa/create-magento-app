@@ -26,8 +26,39 @@ const remoteImageReducer = (acc, val) => {
  */
 const pullImages = () => ({
     title: 'Pulling container images',
-    task: async ({ config: { docker } }, task) => {
+    task: async ({ config: { docker }, pullImages }, task) => {
         const containers = Object.values(docker.getContainers());
+
+        if (pullImages) {
+            return task.newListr(
+                containers
+                    .reduce(remoteImageReducer, [])
+                    .map((image) => {
+                        const [repo, tag = 'latest'] = image.split(':');
+
+                        return { repo, tag };
+                    })
+                    .reduce(
+                        (acc, val) => acc.concat(
+                            acc.some(
+                                (c) => c.repo === val.repo
+                                && c.tag === val.tag
+                            )
+                                ? []
+                                : val
+                        ),
+                        []
+                    )
+                    .map(({ repo, tag }) => ({
+                        title: `Pulling ${ logger.style.file(`${repo}:${tag}`) } image`,
+                        task: () => pull(`${repo}:${tag}`)
+                    })), {
+                    concurrent: true,
+                    exitOnError: true
+                }
+            );
+        }
+
         const imagesFilter = containers
             .reduce(remoteImageReducer, [])
             .map((image) => `reference='${image}'`);

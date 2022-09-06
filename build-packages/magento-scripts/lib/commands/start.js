@@ -83,6 +83,16 @@ module.exports = (yargs) => {
                 describe: 'Enable verbose logging',
                 type: 'boolean',
                 default: false
+            })
+            .option('pull-images', {
+                describe: 'Pull Docker images',
+                type: 'boolean',
+                default: false
+            })
+            .option('reset-global-config', {
+                describe: 'Reset global magento-scripts configuration',
+                type: 'boolean',
+                default: false
             }),
         async (args = {}) => {
             /**
