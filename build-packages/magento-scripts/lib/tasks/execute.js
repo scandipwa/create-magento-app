@@ -67,7 +67,8 @@ const executeTask = async (argv) => {
             logger.logN(`Executing container ${logger.style.misc(container._)} (command: ${logger.style.command(argv.commands.join(' '))})`);
             const result = await executeInContainer({
                 containerName: container.name,
-                commands: argv.commands
+                commands: argv.commands,
+                isWsl: ctx.isWsl
             });
 
             return result;
