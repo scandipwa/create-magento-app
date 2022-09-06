@@ -63,40 +63,45 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
          */
         volumes.php = {
             name: `${ prefix }_project-data`,
+            driver: 'local',
             opt: {
-                type: 'nfs',
+                type: 'none',
                 device: path.join(magentoDir),
                 o: 'bind'
             }
         };
         volumes.nginx = {
             name: `${ prefix }_nginx-data`,
+            driver: 'local',
             opt: {
-                type: 'nfs',
+                type: 'none',
                 device: path.join(cacheDir, 'nginx', 'conf.d'),
                 o: 'bind'
             }
         };
         volumes.appPub = {
             name: `${ prefix }_pub-data`,
+            driver: 'local',
             opt: {
-                type: 'nfs',
+                type: 'none',
                 device: path.join(magentoDir, 'pub'),
                 o: 'bind'
             }
         };
         volumes.appSetup = {
             name: `${ prefix }_setup-data`,
+            driver: 'local',
             opt: {
-                type: 'nfs',
+                type: 'none',
                 device: path.join(magentoDir, 'setup'),
                 o: 'bind'
             }
         };
         volumes.sslTerminator = {
             name: `${ prefix }_ssl-terminator-data`,
+            driver: 'local',
             opt: {
-                type: 'nfs',
+                type: 'none',
                 device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
                 o: 'bind'
             }
@@ -105,8 +110,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         if (varnish.enabled) {
             volumes.varnish = {
                 name: `${ prefix }_varnish-data`,
+                driver: 'local',
                 opt: {
-                    type: 'nfs',
+                    type: 'none',
                     device: path.join(cacheDir, 'varnish'),
                     o: 'bind'
                 }
