@@ -4,9 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const { request } = require('smol-request');
 const KnownError = require('../../../errors/known-error');
-const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const { NginxParser } = require('../../../util/nginx-logs-parser');
 const sleep = require('../../../util/sleep');
+const { containerApi } = require('../../docker/containers');
 
 const pathToWorkingHealthCheckPhp = path.join(__dirname, '..', '..', 'php', 'working_health_check.php');
 const pathToProjectsHealthCheckPhp = path.join(process.cwd(), 'pub', 'health_check.php');
@@ -17,19 +17,18 @@ const pathToHealthCheckBackupPhp = path.join(process.cwd(), 'pub', 'health_check
  */
 const getIsHealthCheckRequestBroken = async (ctx) => {
     const { nginx } = ctx.config.docker.getContainers(ctx.ports);
+    const parser = new NginxParser(
+        '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
+    );
+    const parsedLogs = await containerApi.logs({
+        name: nginx.name,
+        parser: (line) => parser.parseLine(line)
+    });
 
-    const nginxLogs = await execAsyncSpawn(`docker logs ${nginx.name}`);
+    const healthCheckRequests = parsedLogs
+        .filter((line) => line.request.includes('/health_check.php'));
 
-    const healthCheckRequests = nginxLogs
-        .split('\n')
-        .filter((line) => line.includes('"GET /health_check.php HTTP/1.1"'));
-
-    // eslint-disable-next-line max-len
-    const parser = new NginxParser('$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"');
-
-    const parsedRequests = healthCheckRequests.map((line) => parser.parseLine(line));
-
-    return parsedRequests.every((parsedRequest) => parsedRequest.status !== '200');
+    return healthCheckRequests.every((parsedRequest) => parsedRequest.status !== '200');
 };
 
 /**
