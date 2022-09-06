@@ -1,5 +1,6 @@
 const containers = require('./containers');
 const network = require('./network');
+const dockerApi = require('./api');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -27,5 +28,6 @@ const stopServices = () => ({
 
 module.exports = {
     startServices,
-    stopServices
+    stopServices,
+    dockerApi
 };

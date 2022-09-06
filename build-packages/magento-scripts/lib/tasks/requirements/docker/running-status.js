@@ -10,6 +10,41 @@ const getDockerVersion = () => execAsyncSpawn('docker version --format {{.Server
     withCode: true
 });
 
+const getDockerEngineAndDesktopServiceStatus = async () => {
+    const dockerEngineService = systemctlControl('docker');
+    const dockerDesktopService = systemctlControl('docker-desktop', { user: true });
+    const [
+        dockerEngineServiceExists,
+        dockerDesktopServiceExists,
+        dockerEngineServiceIsRunning,
+        dockerDesktopServiceIsRunning,
+        dockerEngineServiceIsEnabled,
+        dockerDesktopServiceIsEnabled
+    ] = await Promise.all([
+        dockerEngineService.exists(),
+        dockerDesktopService.exists(),
+        dockerEngineService.isRunning(),
+        dockerDesktopService.isRunning(),
+        dockerEngineService.isEnabled(),
+        dockerDesktopService.isEnabled()
+    ]);
+
+    return {
+        engine: {
+            service: dockerEngineService,
+            exists: dockerEngineServiceExists,
+            isRunning: dockerEngineServiceIsRunning,
+            isEnabled: dockerEngineServiceIsEnabled
+        },
+        desktop: {
+            service: dockerDesktopService,
+            exists: dockerDesktopServiceExists,
+            isRunning: dockerDesktopServiceIsRunning,
+            isEnabled: dockerDesktopServiceIsEnabled
+        }
+    };
+};
+
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
@@ -81,39 +116,71 @@ Please open Docker Desktop application for Windows and make sure that Docker is 
 const checkDockerStatusLinux = () => ({
     title: 'Checking Docker status on Linux',
     task: async (ctx, task) => {
-        const dockerService = systemctlControl('docker');
+        const {
+            engine,
+            desktop
+        } = await getDockerEngineAndDesktopServiceStatus();
 
-        const isRunning = await dockerService.isRunning();
-        const isEnabled = await dockerService.isEnabled();
+        if (engine.exists) {
+            if (!engine.isEnabled && !engine.isRunning) {
+                const dockerStartConfirmation = await task.prompt({
+                    type: 'Confirm',
+                    message: `Looks like Docker Engine is not enabled and not running, would you like to enable and run it?
 
-        if (!isEnabled && !isRunning) {
-            const dockerStartConfirmation = await task.prompt({
-                type: 'Confirm',
-                message: `Looks like Docker is not enabled and not running, would you like to enable and run it?
+    This action requires root privileges.`
+                });
 
-This action requires root privileges.`
-            });
+                if (dockerStartConfirmation) {
+                    await engine.service.enableAndStart();
 
-            if (dockerStartConfirmation) {
-                await dockerService.enableAndStart();
+                    return;
+                }
+                task.skip('User skipped running Docker');
+            } else if (!engine.isRunning) {
+                const dockerStartConfirmation = await task.prompt({
+                    type: 'Confirm',
+                    message: `Looks like Docker Engine is not running, would you like to run it?
 
-                return;
+    This action requires root privileges.`
+                });
+
+                if (dockerStartConfirmation) {
+                    await engine.service.start();
+
+                    return;
+                }
+                task.skip('User skipped running Docker Engine');
             }
-            task.skip('User skipped running Docker');
-        } else if (!isRunning) {
-            const dockerStartConfirmation = await task.prompt({
-                type: 'Confirm',
-                message: `Looks like Docker is not running, would you like to run it?
+        } else if (desktop.exists) {
+            if (!desktop.isEnabled && !desktop.isRunning) {
+                const dockerStartConfirmation = await task.prompt({
+                    type: 'Confirm',
+                    message: `Looks like Docker Desktop is not enabled and not running, would you like to enable and run it?
 
-This action requires root privileges.`
-            });
+    This action requires root privileges.`
+                });
 
-            if (dockerStartConfirmation) {
-                await dockerService.start();
+                if (dockerStartConfirmation) {
+                    await desktop.service.enableAndStart();
 
-                return;
+                    return;
+                }
+                task.skip('User skipped running Docker');
+            } else if (!desktop.isRunning) {
+                const dockerStartConfirmation = await task.prompt({
+                    type: 'Confirm',
+                    message: `Looks like Docker Desktop is not running, would you like to run it?
+
+    This action requires root privileges.`
+                });
+
+                if (dockerStartConfirmation) {
+                    await desktop.service.start();
+
+                    return;
+                }
+                task.skip('User skipped running Docker Desktop');
             }
-            task.skip('User skipped running Docker');
         }
     }
 });
@@ -135,4 +202,7 @@ const checkDockerStatus = () => ({
     }
 });
 
-module.exports = checkDockerStatus;
+module.exports = {
+    checkDockerStatus,
+    getDockerEngineAndDesktopServiceStatus
+};

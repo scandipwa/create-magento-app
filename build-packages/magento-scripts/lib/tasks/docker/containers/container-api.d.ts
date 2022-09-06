@@ -130,3 +130,17 @@ export interface ContainerRunOptions {
 export function run(containerOptions: ContainerRunOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<false>
 
 export function runCommand(options: ContainerRunOptions): string[]
+
+export interface ContainerLogsOptions<T = never> {
+    name: string
+    details?: boolean
+    follow?: boolean
+    since?: string
+    tail?: string
+    timestamps?: boolean
+    until?: string
+    parser?: (line: string) => T
+}
+
+export function logs(options?: ContainerLogsOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<string>
+export function logs<T>(options?: ContainerLogsOptions<T>, execOptions?: ExecAsyncSpawnOptions<false>): Promise<T[]>

@@ -149,15 +149,64 @@ const ls = async (options = {}, execOptions = {}) => {
 
     if (formatToJSON) {
         const result = await execAsyncSpawn(`docker container ls ${args}`, execOptions);
+        if (result.startsWith('[')) {
+            return JSON.parse(result);
+        }
+
         return JSON.parse(`[${result.split('\n').join(', ')}]`);
     }
 
     return execAsyncSpawn(`docker container ls ${args}`, execOptions);
 };
 
+/**
+ * @param {import('./container-api').ContainerLogsOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ */
+const logs = async (options = {}, execOptions = {}) => {
+    const {
+        name,
+        details = false,
+        follow = false,
+        since = '',
+        tail = '',
+        timestamps = false,
+        until = '',
+        parser
+    } = options;
+    const detailsArg = details && '--details';
+    const followArg = follow && '--follow';
+    const sinceArg = since && `--since=${since}`;
+    const tailArg = tail && `--tail=${tail}`;
+    const timestampsArg = timestamps && '--timestamps';
+    const untilArg = until && `--until=${until}`;
+
+    const logsCommand = [
+        'docker',
+        'container',
+        'logs',
+        detailsArg,
+        followArg,
+        sinceArg,
+        tailArg,
+        timestampsArg,
+        untilArg,
+        name
+    ].filter(Boolean).join(' ');
+
+    if (parser) {
+        const result = await execAsyncSpawn(logsCommand, execOptions);
+
+        return result.split('\n').map((line) => parser(line));
+    }
+
+    return execAsyncSpawn(logsCommand, execOptions);
+};
+
 module.exports = {
     run,
     runCommand,
     exec,
-    ls
+    ls,
+    logs
 };

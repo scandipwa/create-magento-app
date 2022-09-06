@@ -2,7 +2,6 @@ import { ExecAsyncSpawnOptions } from '../../util/exec-async-command';
 
 export interface DockerVersionOptions<T extends boolean = false> {
     format?: string
-    format?: string
     formatToJSON?: T
 }
 
@@ -69,3 +68,28 @@ export function version(
     options: DockerVersionOptions<true>,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<DockerVersionResult>
+
+export interface DockerContextOptions<T extends boolean = false> {
+    format?: string
+    formatToJSON?: T
+}
+
+export interface DockerContextResult {
+    Current: boolean
+    Description: string
+    DockerEndpoint: string
+    KubernetesEndpoint: string
+    ContextType: string
+    Name: string
+    StackOrchestrator: string
+}
+
+export function context(
+    options: DockerContextOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+
+export function context(
+    options: DockerContextOptions<true>,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<DockerContextResult[]>
