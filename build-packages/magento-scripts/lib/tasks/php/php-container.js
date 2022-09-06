@@ -29,7 +29,7 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
             },
             options.useXDebugContainer
                 ? {
-                    image: `${ php.image }.xdebug`
+                    image: php.debugImage
                 }
                 : {},
             {
