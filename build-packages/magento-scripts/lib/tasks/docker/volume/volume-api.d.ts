@@ -37,3 +37,13 @@ export function create(
     options?: VolumeCreateOptions,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<string>
+
+export interface VolumeRmOptions {
+    force?: boolean
+    volumes: string[]
+}
+
+export function rm(
+    options?: VolumeRmOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>

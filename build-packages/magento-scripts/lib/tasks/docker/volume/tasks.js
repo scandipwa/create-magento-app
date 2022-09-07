@@ -1,7 +1,6 @@
 const fs = require('fs');
-const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const pathExists = require('../../../util/path-exists');
-const { create } = require('./volume-api');
+const volumeApi = require('./volume-api');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -9,10 +8,12 @@ const { create } = require('./volume-api');
 const createVolumes = () => ({
     title: 'Creating volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls --format "{{.Name}}"')).split('\n');
+        const volumeList = await volumeApi.ls({
+            formatToJSON: true
+        });
 
         const missingVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => !volumeList.includes(name)
+            ({ name }) => !volumeList.some((v) => v.Name === name)
         );
 
         if (missingVolumes.length === 0) {
@@ -28,7 +29,7 @@ const createVolumes = () => ({
             }
         }));
 
-        await Promise.all(missingVolumes.map((volume) => create(volume)));
+        await Promise.all(missingVolumes.map((volume) => volumeApi.create(volume)));
     }
 });
 
@@ -38,10 +39,12 @@ const createVolumes = () => ({
 const removeVolumes = () => ({
     title: 'Removing volumes',
     task: async ({ config: { docker } }, task) => {
-        const volumeList = (await execAsyncSpawn('docker volume ls --format "{{.Name}}"')).split('\n');
+        const volumeList = await volumeApi.ls({
+            formatToJSON: true
+        });
 
         const deployedVolumes = Object.values(docker.volumes).filter(
-            ({ name }) => volumeList.includes(name)
+            ({ name }) => volumeList.some((v) => v.Name === name)
         );
 
         if (deployedVolumes.length === 0) {
@@ -49,11 +52,43 @@ const removeVolumes = () => ({
             return;
         }
 
-        await execAsyncSpawn(`docker volume rm ${deployedVolumes.map(({ name }) => name).join(' ')}`);
+        await volumeApi.rm({
+            volumes: deployedVolumes.map(({ name }) => name)
+        });
+    }
+});
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
+const removeLocalVolumes = () => ({
+    title: 'Removing local volumes',
+    task: async (ctx, task) => {
+        const volumeList = await volumeApi.ls({
+            formatToJSON: true
+        });
+        const { volumes } = ctx.config.docker;
+
+        const localVolumes = Object.values(volumes).filter(
+            (volume) => volume.opt && volume.opt.device
+        );
+
+        const existingLocalVolumes = localVolumes.filter(
+            (volume) => volumeList.some((v) => v.Name === volume.name)
+        );
+
+        if (existingLocalVolumes.length > 0) {
+            await volumeApi.rm({
+                volumes: existingLocalVolumes.map((volume) => volume.name)
+            });
+        } else {
+            task.skip();
+        }
     }
 });
 
 module.exports = {
     createVolumes,
-    removeVolumes
+    removeVolumes,
+    removeLocalVolumes
 };

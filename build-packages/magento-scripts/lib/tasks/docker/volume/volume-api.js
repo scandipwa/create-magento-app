@@ -60,7 +60,31 @@ const ls = async (options, execOptions = {}) => {
     return execAsyncSpawn(`docker volume ls ${args}`, execOptions);
 };
 
+/**
+ * @param {import('./volume-api').VolumeRmOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions} execOptions
+ */
+const rm = async (options, execOptions = {}) => {
+    const {
+        force,
+        volumes
+    } = options;
+
+    const forceArg = force && '--force';
+
+    const command = [
+        'docker',
+        'volume',
+        'rm',
+        forceArg,
+        ...volumes
+    ].filter(Boolean).join(' ');
+
+    return execAsyncSpawn(command, execOptions);
+};
+
 module.exports = {
     create,
-    ls
+    ls,
+    rm
 };

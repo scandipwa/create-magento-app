@@ -69,7 +69,8 @@ const retrieveProjectConfiguration = () => ({
 const stopProject = () => ({
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
-        stopContainers()
+        stopContainers(),
+        volumes.removeLocalVolumes()
     ]),
     options: {
         showTimer: false

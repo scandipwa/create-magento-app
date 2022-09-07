@@ -1,8 +1,9 @@
 const volumeApi = require('./volume-api');
-const { createVolumes, removeVolumes } = require('./tasks');
+const { createVolumes, removeVolumes, removeLocalVolumes } = require('./tasks');
 
 module.exports = {
     createVolumes,
     removeVolumes,
+    removeLocalVolumes,
     volumeApi
 };
