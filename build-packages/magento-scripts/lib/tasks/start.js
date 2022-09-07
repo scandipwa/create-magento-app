@@ -107,7 +107,6 @@ const configureProject = () => ({
         pullImages(),
         checkPHPVersion(),
         dockerNetwork.tasks.createNetwork(),
-        volumes.createVolumes(),
         {
             task: (ctx, task) => task.newListr([
                 buildProjectImage(),
@@ -118,6 +117,7 @@ const configureProject = () => ({
         },
         getComposerVersionTask(),
         prepareFileSystem(),
+        volumes.createVolumes(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
