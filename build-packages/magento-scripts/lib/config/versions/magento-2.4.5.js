@@ -1,11 +1,12 @@
-const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
 const sodium = require('../php/extensions/sodium');
 const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
 const { php81 } = require('../php/versions');
-const { sslTerminator } = require('../ssl-terminator');
+const { sslTerminator } = require('../services/ssl-terminator');
 const { varnish70 } = require('../varnish/varnish-7-0');
 const { repo } = require('../php/base-repo');
+const { nginx118 } = require('../services/nginx/versions');
+const { composer2 } = require('../services/composer/versions');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.5',
@@ -16,10 +17,7 @@ module.exports = ({ templateDir } = {}) => ({
             extensions: { ...magento24PHPExtensionList, sodium },
             baseImage: `${ repo }:php-8.1-magento-2.4`
         }),
-        nginx: {
-            version: '1.18.0',
-            configTemplate: path.join(templateDir || '', 'nginx.template.conf')
-        },
+        nginx: nginx118({ templateDir }),
         redis: {
             version: '6.0'
         },
@@ -32,9 +30,7 @@ module.exports = ({ templateDir } = {}) => ({
         elasticsearch: {
             version: '7.17.5'
         },
-        composer: {
-            version: '2'
-        },
+        composer: composer2(),
         varnish: varnish70({ templateDir }),
         sslTerminator: sslTerminator({ templateDir })
     },
