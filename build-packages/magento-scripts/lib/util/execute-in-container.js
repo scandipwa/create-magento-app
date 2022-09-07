@@ -11,7 +11,7 @@ const executeInContainer = ({ containerName, commands, isDockerDesktop }) => {
         process.exit(1);
     }
 
-    const userArg = !isDockerDesktop && `--user=${os.userInfo().uid}:${os.userInfo().gid}`;
+    const userArg = ((os.platform() === 'linux' && isDockerDesktop) || !isDockerDesktop) && `--user=${os.userInfo().uid}:${os.userInfo().gid}`;
 
     spawn('docker', [
         'exec',

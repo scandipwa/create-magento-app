@@ -154,7 +154,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 name: `${ prefix }_php`,
                 connectCommand: ['/bin/sh'],
-                user: !isDockerDesktop ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
+                user: ((ctx.platform === 'linux' && isDockerDesktop) || !isDockerDesktop) ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
