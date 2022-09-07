@@ -7,6 +7,7 @@ const getProjectConfiguration = require('../config/get-project-configuration');
 const { getCachedPorts } = require('../config/get-port-config');
 const { executeInContainer, runInContainer } = require('../util/execute-in-container');
 const { containerApi } = require('./docker/containers');
+const dockerNetwork = require('./docker/network');
 const KnownError = require('../errors/known-error');
 
 /**
@@ -20,7 +21,8 @@ const executeTask = async (argv) => {
         getMagentoVersionConfig(),
         checkConfigurationFile(),
         getProjectConfiguration(),
-        getCachedPorts()
+        getCachedPorts(),
+        dockerNetwork.tasks.createNetwork()
     ], {
         concurrent: false,
         exitOnError: true,
