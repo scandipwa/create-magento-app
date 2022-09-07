@@ -1,4 +1,6 @@
+const fs = require('fs');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
+const pathExists = require('../../../util/path-exists');
 const { create } = require('./volume-api');
 
 /**
@@ -17,6 +19,14 @@ const createVolumes = () => ({
             task.skip();
             return;
         }
+
+        await Promise.all(missingVolumes.map(async (volume) => {
+            if (volume.opt && volume.opt.device && !await pathExists(volume.opt.device)) {
+                await fs.promises.mkdir(volume.opt.device, {
+                    recursive: true
+                });
+            }
+        }));
 
         await Promise.all(missingVolumes.map((volume) => create(volume)));
     }
