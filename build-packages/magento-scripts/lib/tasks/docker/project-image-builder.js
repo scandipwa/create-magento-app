@@ -68,10 +68,6 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         .comment('project image')
         .from({ image, tag });
 
-    // install bash and patch in image
-    dockerFileInstructions
-        .run('apk add --no-cache bash patch');
-
     if (missingExtensions.length > 0) {
         const allDependencies = missingExtensions.map(
             ([_extensionName, extensionInstructions]) => (extensionInstructions.dependencies || [])
