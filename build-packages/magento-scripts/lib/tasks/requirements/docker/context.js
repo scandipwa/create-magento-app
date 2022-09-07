@@ -12,6 +12,7 @@ const { getDockerEngineAndDesktopServiceStatus } = require('./running-status');
 const getMagentoVersionConfig = require('../../../config/get-magento-version-config');
 const checkConfigurationFile = require('../../../config/check-configuration-file');
 const getProjectConfiguration = require('../../../config/get-project-configuration');
+const getDockerVersion = require('./version');
 
 const USE_DEFAULT_DOCKER_DESKTOP_CONTEXT_ANSWER = 'useDefaultDockerDesktopContext';
 
@@ -48,16 +49,16 @@ const checkDockerDesktopContext = () => ({
                 choices: [
                     {
                         name: 'yes',
-                        message: 'I don\'t know what this means and I want what is best for me!'
+                        message: 'Yes'
                     },
                     {
                         name: 'no',
-                        message: 'I don\'t know what this means, but you can ask again on next start.'
+                        message: 'No, I don\'t know what this means, but you can ask again on next start.'
                     },
                     {
                         name: 'skip',
                         // eslint-disable-next-line max-len
-                        message: 'I do know what this means and I DON\'T want to change context for Docker Desktop. Also, save this answer to never ask again.'
+                        message: 'I do know what this means and I DON\'T want to change context for Docker. Also, save this answer to never ask again.'
                     }
                 ]
             });
@@ -76,7 +77,8 @@ const checkDockerDesktopContext = () => ({
                     getSystemConfigTask(),
                     getCachedPorts(),
                     stopContainers(),
-                    execCommandTask('docker context use default')
+                    execCommandTask('docker context use default'),
+                    getDockerVersion()
                 ]);
             }
         }
