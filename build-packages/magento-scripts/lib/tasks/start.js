@@ -105,9 +105,19 @@ const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
         convertMySQLDatabaseToMariaDB(),
-        pullImages(),
-        checkPHPVersion(),
-        dockerNetwork.tasks.createNetwork(),
+        {
+            task: (ctx, task) => task.newListr([
+                pullImages(),
+                dockerNetwork.tasks.createNetwork(),
+                volumes.createVolumes()
+            ], { concurrent: true })
+        },
+        {
+            task: (ctx, task) => task.newListr([
+                checkPHPVersion(),
+                getComposerVersionTask()
+            ], { concurrent: true })
+        },
         {
             task: (ctx, task) => task.newListr([
                 buildProjectImage(),
@@ -116,9 +126,7 @@ const configureProject = () => ({
                 concurrent: true
             })
         },
-        getComposerVersionTask(),
         prepareFileSystem(),
-        volumes.createVolumes(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
