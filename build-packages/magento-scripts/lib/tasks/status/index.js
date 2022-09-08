@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
@@ -5,7 +6,6 @@ const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
-const { getComposerVersion } = require('../composer');
 const { getInstanceMetadata } = require('../../util/instance-metadata');
 
 /**
@@ -22,6 +22,9 @@ const parsePort = (port) => {
     };
 };
 
+/**
+ * @param {import('../../../typings/context').ListrContext & { containers: ReturnType<Awaited<ReturnType<import('../../config/docker')>>['getContainers']> }} ctx
+ */
 const prettyStatus = async (ctx) => {
     const {
         config: {
@@ -31,10 +34,10 @@ const prettyStatus = async (ctx) => {
         dockerVersion,
         platform,
         platformVersion,
-        containers
+        containers,
+        composerVersion
     } = ctx;
     const projectCreatedAt = getProjectCreatedAt();
-    const composerVersion = await getComposerVersion(ctx);
 
     const prefix = getPrefix();
 
@@ -103,6 +106,13 @@ const prettyStatus = async (ctx) => {
                 block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
             }
         }
+
+        if (container.description) {
+            block.addLine('Description:');
+            container.description.split('\n').forEach((line) => {
+                block.addLine(line);
+            });
+        }
     });
 
     const instanceMetadata = getInstanceMetadata(ctx);
@@ -123,14 +133,6 @@ const prettyStatus = async (ctx) => {
     instanceMetadata.admin.forEach(({ title, text }) => {
         block.addLine(`  ${title}: ${text}`);
     });
-    // block
-    //     .addEmptyLine()
-    //     .addSeparator('Magento status')
-    //     .addEmptyLine()
-    //     .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
-    //     .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
-    //     .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`)
-    //     .addEmptyLine();
 
     block.log();
 };

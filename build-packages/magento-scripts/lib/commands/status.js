@@ -9,6 +9,7 @@ const { statusContainers } = require('../tasks/docker/containers');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const checkPHPVersion = require('../tasks/requirements/php-version');
+const { getComposerVersionTask } = require('../tasks/composer');
 
 /**
  * @param {import('yargs')} yargs
@@ -21,7 +22,14 @@ module.exports = (yargs) => {
             checkConfigurationFile(),
             getProjectConfiguration(),
             getCachedPorts(),
-            checkPHPVersion(),
+            {
+                task: (ctx, task) => task.newListr([
+                    checkPHPVersion(),
+                    getComposerVersionTask()
+                ], {
+                    concurrent: true
+                })
+            },
             statusContainers()
         ], {
             concurrent: false,
