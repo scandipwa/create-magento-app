@@ -3,6 +3,8 @@ const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const sleep = require('../../util/sleep');
 const { createMagentoDatabase } = require('./create-magento-database');
+const { createMagentoUser } = require('./create-magento-user');
+const defaultMagentoUser = require('./default-magento-user');
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -60,9 +62,9 @@ const gettingDatabaseConnection = () => ({
                 const connection = await mysql2.createConnection({
                     host: '127.0.0.1',
                     port: ports.mariadb,
-                    user: mariadb.env.MARIADB_USER,
-                    password: mariadb.env.MARIADB_PASSWORD,
-                    database: mariadb.env.MARIADB_DATABASE
+                    user: defaultMagentoUser.user,
+                    password: defaultMagentoUser.password,
+                    database: 'magento'
                 });
 
                 ctx.databaseConnection = connection;
@@ -101,6 +103,7 @@ const connectToDatabase = () => ({
     task: (ctx, task) => task.newListr([
         waitForDatabaseInitialization(),
         createMagentoDatabase(),
+        createMagentoUser(),
         terminatingExistingConnection(),
         gettingDatabaseConnection()
     ], {

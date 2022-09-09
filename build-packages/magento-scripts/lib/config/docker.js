@@ -6,6 +6,7 @@ const { isIpAddress } = require('../util/ip');
 const systeminformation = require('systeminformation');
 const { deepmerge } = require('../util/deepmerge');
 const defaultEsEnv = require('./services/elasticsearch/default-es-env');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 
 /**
  *
@@ -237,22 +238,18 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ path.join(baseConfig.cacheDir, 'mariadb.cnf') }:/etc/mysql/my.cnf`
                 ],
                 env: {
-                    MARIADB_PORT: 3306,
-                    MARIADB_ROOT_PASSWORD: 'scandipwa',
-                    MARIADB_USER: 'magento',
-                    MARIADB_PASSWORD: 'magento',
-                    MARIADB_DATABASE: 'magento'
+                    MARIADB_ROOT_PASSWORD: 'scandipwa'
                 },
-                command: [
-                    '--log_bin_trust_function_creators=1'
-                ]
-                    .join(' '),
+                command: '--log_bin_trust_function_creators=1',
                 securityOptions: [
                     'seccomp=unconfined'
                 ],
                 network: network.name,
                 image: `${ mariadb.version ? `mariadb:${ mariadb.version }` : mariadb.image }`,
-                name: `${ prefix }_mariadb`
+                name: `${ prefix }_mariadb`,
+                description: `To connect to MariaDB you can use the following users:
+- ${ logger.style.command('root') }@${ logger.style.command('scandipwa') }
+- ${ logger.style.command('magento') }@${ logger.style.command('magento') }`
             },
             elasticsearch: {
                 _: 'ElasticSearch',

@@ -5,6 +5,8 @@ const UnknownError = require('../../../errors/unknown-error');
 const runMagentoCommand = require('../../../util/run-magento');
 const envPhpToJson = require('../../../util/env-php-json');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { defaultMagentoDatabase } = require('../../database/default-magento-database');
+const defaultMagentoUser = require('../../database/default-magento-user');
 
 /**
  * @param {Object} [param0]
@@ -20,7 +22,6 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
         const {
             magentoVersion,
             config: {
-                docker,
                 magentoConfiguration
             },
             ports,
@@ -72,8 +73,6 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
             }
         }
-
-        const { mariadb: { env } } = docker.getContainers(ports);
         const envPhpData = await envPhpToJson(ctx);
 
         const envPhpHaveEncryptionKey = envPhpData && envPhpData.crypt && envPhpData.crypt.key && envPhpData.crypt.key;
@@ -126,9 +125,9 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --cache-backend-redis-port='${ ports.redis }' \
                 --cache-backend-redis-db='0't \
                 --db-host='${ hostMachine }:${ ports.mariadb }' \
-                --db-name='${ env.MARIADB_DATABASE }' \
-                --db-user='${ env.MARIADB_USER }' \
-                --db-password='${ env.MARIADB_PASSWORD }' \
+                --db-name='${ defaultMagentoDatabase }' \
+                --db-user='${ defaultMagentoUser.user }' \
+                --db-password='${ defaultMagentoUser.password }' \
                 --backend-frontname='${ magentoConfiguration.adminuri }' \
                 --no-interaction`;
 

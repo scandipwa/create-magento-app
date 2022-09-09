@@ -5,6 +5,7 @@ const UnknownError = require('../../errors/unknown-error');
 const { execAsyncSpawn, execCommandTask } = require('../../util/exec-async-command');
 const pathExists = require('../../util/path-exists');
 const connectToDatabase = require('./connect-to-database');
+const defaultMagentoUser = require('./default-magento-user');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -88,8 +89,8 @@ const executeImportDumpSQL = () => ({
                     message: `root (${logger.style.command('Probably safest option')})`
                 },
                 {
-                    name: `--user=${mariadb.env.MARIADB_USER} --password=${mariadb.env.MARIADB_PASSWORD}`,
-                    message: `${mariadb.env.MARIADB_USER}`
+                    name: `--user=${defaultMagentoUser.user} --password=${defaultMagentoUser.password}`,
+                    message: `${defaultMagentoUser.user}`
                 }
             ]
         });
