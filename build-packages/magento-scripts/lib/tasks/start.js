@@ -108,8 +108,7 @@ const configureProject = () => ({
         {
             task: (ctx, task) => task.newListr([
                 pullImages(),
-                dockerNetwork.tasks.createNetwork(),
-                volumes.createVolumes()
+                dockerNetwork.tasks.createNetwork()
             ], { concurrent: true })
         },
         {
@@ -127,6 +126,7 @@ const configureProject = () => ({
             })
         },
         prepareFileSystem(),
+        volumes.createVolumes(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
