@@ -22,6 +22,7 @@ const reportErrors = async (errors) => {
         const path = (error.path && ` Error path: ${error.path} `) || '';
         if (error instanceof UnknownError || error instanceof KnownError) {
             logger.error(error.message);
+            logger.error(error.stack);
             if (error instanceof UnknownError) {
                 await googleAnalytics.trackError(`Unknown Error:${path}${error.stack}`);
             } else {
@@ -29,9 +30,11 @@ const reportErrors = async (errors) => {
             }
         } else if (error instanceof Error) {
             logger.error(error.message);
+            logger.error(error.stack);
             await googleAnalytics.trackError(`Regular Error:${path}${error.message}`);
         } else {
             logger.error(error);
+            logger.error(error.stack);
             await googleAnalytics.trackError(`Non Error:${path}${error}`); // track non-errors throws
         }
     }
@@ -180,10 +183,11 @@ module.exports = (yargs) => {
                 );
                 logger.log('');
 
-                if (!analytics && tasks.err && tasks.err.length > 0) {
-                    logger.warn('You have disabled analytics, but we\'ve encountered errors during startup!');
+                if (tasks.err && tasks.err.length > 0) {
+                    logger.warn('During the start, we encountered some errors that have not impacted the start-up process!');
+                    logger.log('');
                     for (const err of tasks.err) {
-                        logger.error(`${err.path}\n${err.message}\n\n${err.stack}`);
+                        logger.error(`Error path: ${err.path}\nError message: ${err.message}\n\nError stack: ${err.stack}`);
                     }
                 }
 
