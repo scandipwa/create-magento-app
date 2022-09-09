@@ -10,7 +10,7 @@ const createMagentoDatabase = () => ({
         const { mariadb } = ctx.config.docker.getContainers();
         task.title = `Creating Magento database in ${ mariadb._ }`;
         await containerApi.exec(
-            'mysql -umagento -pmagento -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS magento;"',
+            `mysql -uroot -p${ mariadb.env.MARIADB_ROOT_PASSWORD } -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS magento;"`,
             mariadb.name
         );
     }
