@@ -14,6 +14,7 @@ const php74 = ({
     debugImage: `${ baseImage }-debug`,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     fpmConfigTemplate: path.join(templateDir || '', 'php-fpm.template.conf'),
+    debugTemplate: path.join(templateDir || '', 'php-debug.template.ini'),
     extensions: {
         xdebug,
         ...extensions

@@ -144,6 +144,12 @@ export interface PHPConfiguration {
      * @example ./my-php-template.ini
      */
     configTemplate: string
+    /**
+     * PHP XDebug file template location
+     *
+     * @example ./my-php-debug-template.ini
+     */
+    debugTemplate: string
 
     /**
      * PHP-FPM configuration file template location

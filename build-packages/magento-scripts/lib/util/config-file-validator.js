@@ -69,6 +69,7 @@ const phpConfigurationSchema = Joi.object({
     debugImage: Joi.string().optional(),
     fpmConfigTemplate: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
+    debugTemplate: Joi.string().optional().custom(fileExistsValidator),
     extensions: phpExtensionConfiguration.optional()
 });
 

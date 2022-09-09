@@ -24,7 +24,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         varnish
     } = configuration;
 
-    const php = getPhpConfig(configuration, baseConfig);
+    const php = getPhpConfig(overridenConfiguration, baseConfig);
     const {
         prefix,
         magentoDir,
@@ -140,7 +140,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ volumes.composer_home.name }:/composer/home`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
-                ],
+                ].concat(ctx.debug ? [`${ php.debugIniPath }:/usr/local/etc/php/conf.d/00-xdebug.ini`] : []),
                 env: {
                     COMPOSER_AUTH: JSON.stringify(JSON.parse(process.env.COMPOSER_AUTH), null, 0) || '',
                     COMPOSER_HOME: '/composer/home'

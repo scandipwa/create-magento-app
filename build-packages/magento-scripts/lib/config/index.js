@@ -56,7 +56,7 @@ module.exports = {
         );
 
         return {
-            php: getPhpConfig(overridenConfiguration.configuration, newBaseConfig),
+            php: getPhpConfig(overridenConfiguration, newBaseConfig),
             docker: await getDockerConfig(ctx, overridenConfiguration, newBaseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
             baseConfig: newBaseConfig,
