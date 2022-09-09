@@ -38,12 +38,9 @@ const waitingForVarnish = () => ({
     title: 'Waiting for Varnish to return code 200',
     skip: (ctx) => ctx.debug
         || !ctx.config.overridenConfiguration.configuration.varnish.enabled
-        || ctx.config.overridenConfiguration.ssl.enabled,
+        || ctx.config.overridenConfiguration.ssl.enabled
+        || !ctx.config.overridenConfiguration.configuration.varnish.healthCheck,
     task: async (ctx, task) => {
-        const pureMagentoVersion = ctx.magentoVersion.match(/^([0-9]+\.[0-9]+\.[0-9]+)/)[1];
-
-        const isMagento23 = semver.satisfies(pureMagentoVersion, '<2.4');
-
         let tries = 0;
         while (tries < 10) {
             try {

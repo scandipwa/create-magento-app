@@ -52,6 +52,11 @@ export interface VarnishConfiguration extends ServiceWithImage {
      * @example ./my-varnish-config.vcl
      */
     configTemplate: string
+
+    /**
+     * Enable or disable healthcheck in the project
+     */
+    healthCheck: boolean
 }
 
 export interface ComposerConfiguration {

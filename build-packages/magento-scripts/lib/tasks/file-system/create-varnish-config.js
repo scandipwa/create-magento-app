@@ -37,7 +37,8 @@ const createVarnishConfig = () => ({
                 overwrite: true,
                 templateArgs: {
                     hostMachine: !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal',
-                    nginxPort: ports.app
+                    nginxPort: ports.app,
+                    healthCheck: varnish.healthCheck
                 }
             });
         } catch (e) {

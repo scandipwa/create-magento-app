@@ -86,6 +86,7 @@ const nginxConfigurationSchema = Joi.object({
  */
 const varnishConfigurationSchema = Joi.object({
     enabled: Joi.boolean().optional(),
+    healthCheck: Joi.boolean().optional(),
     image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
