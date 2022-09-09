@@ -111,12 +111,7 @@ const configureProject = () => ({
                 dockerNetwork.tasks.createNetwork()
             ], { concurrent: true })
         },
-        {
-            task: (ctx, task) => task.newListr([
-                checkPHPVersion(),
-                getComposerVersionTask()
-            ], { concurrent: true })
-        },
+        checkPHPVersion(),
         {
             task: (ctx, task) => task.newListr([
                 buildProjectImage(),
@@ -125,6 +120,7 @@ const configureProject = () => ({
                 concurrent: true
             })
         },
+        getComposerVersionTask(),
         prepareFileSystem(),
         volumes.createVolumes(),
         installMagentoProject(),
