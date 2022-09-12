@@ -6,9 +6,9 @@ const containerApi = require('./container-api');
 const { imageApi } = require('../image');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
-const stop = async (containers) => {
-    await execAsyncSpawn(`docker container stop ${containers.join(' ')}`);
-    await execAsyncSpawn(`docker container rm ${containers.join(' ')}`);
+const stopAndRemoveContainers = async (containers) => {
+    await containerApi.stop(containers);
+    await containerApi.rm(containers);
 };
 
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`);
@@ -116,10 +116,10 @@ const pullImages = () => ({
 const startContainers = () => ({
     title: 'Starting containers',
     task: async ({ ports, config: { docker }, debug }, task) => {
-        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
+        const containerList = await containerApi.ls({ formatToJSON: true, all: true });
 
         const missingContainers = Object.values(docker.getContainers(ports)).filter(
-            ({ name }) => !containerList.includes(name)
+            ({ name }) => !containerList.some((c) => c.Names === name)
         );
 
         if (missingContainers.length === 0) {
@@ -160,16 +160,16 @@ const startContainers = () => ({
 const stopContainers = () => ({
     title: 'Stopping Docker containers',
     task: async ({ config: { baseConfig: { prefix } } }, task) => {
-        const containerList = (await execAsyncSpawn('docker container ls --all --format="{{.Names}}"')).split('\n');
+        const containerList = await containerApi.ls({ formatToJSON: true, all: true });
 
-        const runningContainers = containerList.filter((containerName) => containerName.startsWith(prefix));
+        const runningContainers = containerList.filter((containerName) => containerName.Names.startsWith(prefix));
 
         if (runningContainers.length === 0) {
             task.skip();
             return;
         }
 
-        await stop(runningContainers);
+        await stopAndRemoveContainers(runningContainers);
     }
 });
 
