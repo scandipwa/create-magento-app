@@ -21,7 +21,7 @@ const createBashrcConfigFile = () => ({
                 }
             });
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during php.ini config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during .magentorc config creation\n\n${e}`);
         }
     }
 });
