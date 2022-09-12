@@ -5,7 +5,6 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
-// const { installComposer, installPrestissimo } = require('../tasks/composer');
 const ConsoleBlock = require('../util/console-block');
 const { checkComposerCredentials } = require('../tasks/requirements/composer-credentials');
 
@@ -69,6 +68,15 @@ module.exports = (yargs) => {
             .addLine(`Connect to MariaDB server: ${logger.style.command('mariadb')}`)
             .addLine(`Connect to MariaDB server as root: ${logger.style.command('mariadbroot')}`)
             .addEmptyLine();
+
+        if (ctx.debug) {
+            block
+                .addLine('Debug PHP in CLI:')
+                .addLine('1. Start debugger in VSCode or PHPStorm')
+                .addLine(`2. Go to PHP container: ${ logger.style.command('exec php') }`)
+                .addLine(`3. Run CLI command with ${ logger.style.code('XDEBUG_SESSION=phpstorm') } environmental variable: ${ logger.style.command('XDEBUG_SESSION=phpstorm magento <command>') }`)
+                .addLine('4. Enjoy');
+        }
 
         block.log();
 
