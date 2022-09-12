@@ -75,19 +75,25 @@ const prettyStatus = async (ctx) => {
 
         let containerStatus;
 
-        if (container.status && container.status.Health) {
-            containerStatus = `✓ ${ logger.style.file(container.status.Health.Status) } and ${ logger.style.file('running') }`;
-        } else if (container.status) {
-            containerStatus = logger.style.file(container.status.Status);
+        if (container.status && container.status.State && container.status.State.Health) {
+            containerStatus = `✓ ${ logger.style.file(container.status.State.Health.Status) } and ${ logger.style.file('running') }`;
+        } else if (container.status && container.status.State) {
+            containerStatus = logger.style.file(container.status.State.Status);
         } else {
             containerStatus = '✖ Not running';
         }
 
         block
             .addLine(`Status: ${containerStatus}`)
-            .addLine(`Name: ${logger.style.misc(container.name)}`)
-            .addLine(`Image: ${logger.style.file(container.image)}`)
-            .addLine(`Network: ${logger.style.link(container.network)}`);
+            .addLine(`Name: ${logger.style.misc(container.name)}`);
+
+        if (container.status && container.status.Config && container.status.Config.Image) {
+            block.addLine(`Image: ${logger.style.file(container.status.Config.Image)}`);
+        } else {
+            block.addLine(`Image: ${logger.style.file(container.image)}`);
+        }
+
+        block.addLine(`Network: ${logger.style.link(container.network)}`);
 
         if (!containerStatus.includes('Not running') && container.forwardedPorts && container.forwardedPorts.length > 0) {
             block.addLine('Port forwarding:');

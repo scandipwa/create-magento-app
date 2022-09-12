@@ -175,7 +175,7 @@ const stopContainers = () => ({
 
 const getContainerStatus = async (containerName) => {
     try {
-        return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .State}}' ${containerName}`));
+        return JSON.parse(await execAsyncSpawn(`docker inspect --format='{{json .}}' ${containerName}`));
     } catch {
         return null;
     }
@@ -198,11 +198,11 @@ const checkContainersAreRunning = () => ({
                 }))
             );
 
-            if (containersWithStatus.some((c) => c.status.Status !== 'running')) {
+            if (containersWithStatus.some((c) => c.status.State.Status !== 'running')) {
                 if (tries === 2) {
-                    throw new KnownError(`${containersWithStatus.filter((c) => c.status.Status !== 'running').map((c) => c._).join(', ')} containers are not running! Please check container logs for more details!`);
+                    throw new KnownError(`${containersWithStatus.filter((c) => c.status.State.Status !== 'running').map((c) => c._).join(', ')} containers are not running! Please check container logs for more details!`);
                 } else {
-                    task.output = `${containersWithStatus.filter((c) => c.status.Status !== 'running').map((c) => c._).join(', ')} are not running, waiting if something will change...`;
+                    task.output = `${containersWithStatus.filter((c) => c.status.State.Status !== 'running').map((c) => c._).join(', ')} are not running, waiting if something will change...`;
                     await sleep(2000);
                     tries++;
                 }
