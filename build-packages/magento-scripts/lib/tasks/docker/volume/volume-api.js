@@ -89,7 +89,7 @@ const rm = async (options, execOptions = {}) => {
  */
 const inspect = async (options, execOptions = {}) => {
     const {
-        image: volume,
+        volume,
         format,
         formatToJSON = false
     } = options;

@@ -86,8 +86,8 @@ const removeLocalVolumes = () => ({
             await Promise.all(existingLocalVolumesDetails.map(async (v) => {
                 if (v.Containers && Object.entries(v.Containers).length > 0) {
                     await Promise.all(Object.values(v.Containers).map(async (c) => {
-                        await containerApi.stop(c.Name);
-                        await containerApi.rm(c.Name);
+                        await containerApi.stop([c.Name]);
+                        await containerApi.rm([c.Name]);
                     }));
                 }
             }));
