@@ -7,6 +7,7 @@ const systeminformation = require('systeminformation');
 const { deepmerge } = require('../util/deepmerge');
 const defaultEsEnv = require('./services/elasticsearch/default-es-env');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const defaultMagentoUser = require('../tasks/database/default-magento-user');
 
 /**
  *
@@ -248,8 +249,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 image: `${ mariadb.version ? `mariadb:${ mariadb.version }` : mariadb.image }`,
                 name: `${ prefix }_mariadb`,
                 description: `To connect to MariaDB you can use the following users:
-- ${ logger.style.command('root') }@${ logger.style.command('scandipwa') }
-- ${ logger.style.command('magento') }@${ logger.style.command('magento') }`
+- User ${ logger.style.command('root') } with password ${ logger.style.command('scandipwa') }
+- User ${ logger.style.command(defaultMagentoUser.user) } with password ${ logger.style.command(defaultMagentoUser.password) }`
             },
             elasticsearch: {
                 _: 'ElasticSearch',
