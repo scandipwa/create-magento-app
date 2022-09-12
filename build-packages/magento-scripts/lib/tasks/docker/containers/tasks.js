@@ -169,7 +169,7 @@ const stopContainers = () => ({
             return;
         }
 
-        await stopAndRemoveContainers(runningContainers);
+        await stopAndRemoveContainers(runningContainers.map(({ Names }) => Names));
     }
 });
 
