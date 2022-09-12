@@ -34,15 +34,15 @@ const runCommand = (options) => {
     const exposeArg = expose && expose.map((e) => `--expose=${ e }`);
     const restartArg = !rm && restart && `--restart=${ restart }`;
     const networkArg = network && `--network=${ network }`;
-    const portsArgs = ports && ports.length > 0 && ports.map((port) => `-p=${ port }`).join(' ');
-    const mountsArgs = mounts && mounts.map((mount) => `--mount=${ mount }`).join(' ');
-    const mountVolumesArgs = mountVolumes && mountVolumes.map((mount) => `-v=${mount}`).join(' ');
-    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env=${ key }='${ value }'`).join(' ');
+    const portsArgs = ports && ports.length > 0 && ports.map((port) => `-p=${ port }`);
+    const mountsArgs = mounts && mounts.map((mount) => `--mount=${ mount }`);
+    const mountVolumesArgs = mountVolumes && mountVolumes.map((mount) => `-v=${mount}`);
+    const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env=${ key }='${ value }'`);
     const nameArg = name && `--name=${name}`;
     const entrypointArg = entrypoint && `--entrypoint="${entrypoint}"`;
-    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key}='${value}'`).join(' ');
-    const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt=${opt}`).join(' ');
-    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`).join(' ');
+    const healthCheckArg = healthCheck && Object.entries(healthCheck).map(([key, value]) => `--health-${key}='${value}'`);
+    const securityArg = securityOptions.length > 0 && securityOptions.map((opt) => `--security-opt=${opt}`);
+    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`);
     const userArg = user && `--user=${user}`;
     const addHostArg = addHost && `--add-host=${addHost}`;
 
@@ -68,7 +68,7 @@ const runCommand = (options) => {
         addHostArg,
         image,
         command
-    ].filter(Boolean).filter((arg) => typeof arg === 'string');
+    ].flat().filter(Boolean).filter((arg) => typeof arg === 'string');
 
     return dockerCommand;
 };
@@ -203,10 +203,16 @@ const logs = async (options = {}, execOptions = {}) => {
     return execAsyncSpawn(logsCommand, execOptions);
 };
 
+const stop = (containers, execOptions = {}) => execAsyncSpawn(`docker container stop ${containers.join(' ')}`, execOptions);
+
+const rm = (containers, execOptions = {}) => execAsyncSpawn(`docker container rm ${containers.join(' ')}`, execOptions);
+
 module.exports = {
     run,
     runCommand,
     exec,
     ls,
-    logs
+    logs,
+    stop,
+    rm
 };

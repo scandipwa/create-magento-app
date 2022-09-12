@@ -144,3 +144,6 @@ export interface ContainerLogsOptions<T = never> {
 
 export function logs(options?: ContainerLogsOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<string>
 export function logs<T>(options?: ContainerLogsOptions<T>, execOptions?: ExecAsyncSpawnOptions<false>): Promise<T[]>
+
+export function stop(containers: string[], execOptions: ExecAsyncSpawnOptions<false>): Promise<string>
+export function rm(containers: string[], execOptions: ExecAsyncSpawnOptions<false>): Promise<string>

@@ -47,3 +47,33 @@ export function rm(
     options?: VolumeRmOptions,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<string>
+
+export interface VolumeInspectOptions<T extends boolean = false> {
+    volume: string
+    format?: string
+    formatToJSON?: T
+}
+
+export interface VolumeInspectResult {
+    CreatedAt: string
+    Driver: string
+    Labels: unknown
+    Mountpoint: string
+    Name: string
+    Options: unknown
+    Scope: string
+    CreatedTime: number
+    Containers: Record<string, {
+        Name: string
+        Destination: string
+    }>
+}
+
+export function inspect(
+    options?: VolumeInspectOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+export function inspect(
+    options?: VolumeInspectOptions<true>,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<VolumeInspectResult>

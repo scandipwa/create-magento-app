@@ -83,8 +83,37 @@ const rm = async (options, execOptions = {}) => {
     return execAsyncSpawn(command, execOptions);
 };
 
+/**
+ * @param {import('./volume-api').VolumeInspectOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions} execOptions
+ */
+const inspect = async (options, execOptions = {}) => {
+    const {
+        image: volume,
+        format,
+        formatToJSON = false
+    } = options;
+
+    const formatArg = !formatToJSON && format
+        ? `--format=${format}`
+        : formatToJSON && '--format=\'{{json .}}\'';
+
+    const args = [
+        formatArg,
+        volume
+    ].filter(Boolean).join(' ');
+
+    if (formatToJSON) {
+        const result = await execAsyncSpawn(`docker volume inspect ${args}`, execOptions);
+        return JSON.parse(result);
+    }
+
+    return execAsyncSpawn(`docker volume inspect ${args}`, execOptions);
+};
+
 module.exports = {
     create,
     ls,
-    rm
+    rm,
+    inspect
 };

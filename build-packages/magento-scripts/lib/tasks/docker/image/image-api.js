@@ -1,7 +1,6 @@
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 
 /**
- *
  * @param {import('./image-api').ImagesLsOptions} options
  * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions} execOptions
  */
@@ -44,6 +43,35 @@ const ls = async (options, execOptions = {}) => {
     return execAsyncSpawn(`docker image ls ${args}`, execOptions);
 };
 
+/**
+ * @param {import('./image-api').ImagesInspectOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions} execOptions
+ */
+const inspect = async (options, execOptions = {}) => {
+    const {
+        image,
+        format,
+        formatToJSON = false
+    } = options;
+
+    const formatArg = !formatToJSON && format
+        ? `--format=${format}`
+        : formatToJSON && '--format=\'{{json .}}\'';
+
+    const args = [
+        formatArg,
+        image
+    ].filter(Boolean).join(' ');
+
+    if (formatToJSON) {
+        const result = await execAsyncSpawn(`docker image inspect ${args}`, execOptions);
+        return JSON.parse(result);
+    }
+
+    return execAsyncSpawn(`docker image inspect ${args}`, execOptions);
+};
+
 module.exports = {
-    ls
+    ls,
+    inspect
 };
