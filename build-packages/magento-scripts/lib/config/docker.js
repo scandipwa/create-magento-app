@@ -272,7 +272,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             }
         };
 
-        if (ssl.enabled) {
+        if (ssl.enabled && isDockerDesktop) {
             dockerConfig.sslTerminator.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             );
