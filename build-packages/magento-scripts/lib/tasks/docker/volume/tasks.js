@@ -1,5 +1,6 @@
 const fs = require('fs');
 const pathExists = require('../../../util/path-exists');
+const { containerApi } = require('../containers');
 const volumeApi = require('./volume-api');
 
 /**
@@ -78,6 +79,18 @@ const removeLocalVolumes = () => ({
         );
 
         if (existingLocalVolumes.length > 0) {
+            const existingLocalVolumesDetails = await Promise.all(
+                existingLocalVolumes.map((v) => volumeApi.inspect({ volume: v.name, formatToJSON: true }))
+            );
+
+            await Promise.all(existingLocalVolumesDetails.map(async (v) => {
+                if (v.Containers && Object.entries(v.Containers).length > 0) {
+                    await Promise.all(Object.values(v.Containers).map(async (c) => {
+                        await containerApi.stop(c.Name);
+                        await containerApi.rm(c.Name);
+                    }));
+                }
+            }));
             await volumeApi.rm({
                 volumes: existingLocalVolumes.map((volume) => volume.name)
             });
