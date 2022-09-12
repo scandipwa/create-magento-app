@@ -1,21 +1,21 @@
+const { setProjectConfig } = require('../../config/config');
 const { setPrefix: setPrefixUtil } = require('../../util/prefix');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const setPrefix = () => ({
-    // if project is missing prefix, set one
-    title: 'Settings project prefix',
+const setProjectConfigTask = () => ({
+    title: 'Settings project config',
     task: (ctx) => {
         const { config: { overridenConfiguration: { prefix } } } = ctx;
 
         setPrefixUtil(prefix);
+
+        setProjectConfig('debug', ctx.debug);
     },
     options: {
         showTimer: false
     }
 });
 
-module.exports = {
-    setPrefix
-};
+module.exports = { setProjectConfigTask };

@@ -28,7 +28,8 @@ const parsePort = (port) => {
 const prettyStatus = async (ctx) => {
     const {
         config: {
-            baseConfig
+            baseConfig,
+            projectConfig
         },
         magentoVersion,
         dockerVersion,
@@ -48,7 +49,7 @@ const prettyStatus = async (ctx) => {
     block
         .addHeader(`magento-scripts version: ${ logger.style.link(packageVersion) }`)
         .addEmptyLine()
-        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'} (with php container)`)
+        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'} (with php container)${ projectConfig.debug ? ' (with debugging)' : '' }`)
         .addLine(`Project location: ${logger.style.link(process.cwd())}`);
 
     if (projectCreatedAt) {

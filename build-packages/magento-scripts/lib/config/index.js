@@ -9,6 +9,7 @@ const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
 const UnknownError = require('../errors/unknown-error');
+const { getProjectConfig } = require('./config');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
@@ -33,7 +34,11 @@ const magento = {
 
 module.exports = {
     /**
-     * @param {string} magentoVersion
+     * @param {import('../../typings/context')} ctx
+     * @param {Object} param1
+     * @param {String} [param1.magentoVersion]
+     * @param {String} [param1.projectPath]
+     * @param {String} [param1.prefix]
      */
     async getConfigFromMagentoVersion(ctx, {
         magentoVersion,
@@ -45,6 +50,7 @@ module.exports = {
         if (!configurations[magentoVersion]) {
             throw new UnknownError(`No config found for magento version ${magentoVersion}`);
         }
+        const projectConfig = getProjectConfig();
 
         const {
             overridenConfiguration,
@@ -62,7 +68,8 @@ module.exports = {
             baseConfig: newBaseConfig,
             overridenConfiguration,
             userConfiguration,
-            nonOverridenConfiguration: configurations[magentoVersion]
+            nonOverridenConfiguration: configurations[magentoVersion],
+            projectConfig
         };
     },
     baseConfig,

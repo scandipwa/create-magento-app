@@ -5,7 +5,6 @@ const { volumeApi, createVolumes } = require('./volume');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const { containerApi, stopContainers, pullImages } = require('./containers');
 const { importDumpToDatabase, connectToDatabase } = require('../database');
-const { setPrefix } = require('../prefix');
 const getProjectConfiguration = require('../../config/get-project-configuration');
 const { getAvailablePorts, getCachedPorts } = require('../../config/get-port-config');
 const { saveConfiguration } = require('../../config/save-config');
@@ -21,6 +20,7 @@ const KnownError = require('../../errors/known-error');
 const { createCacheFolder } = require('../cache');
 const { getSystemConfigTask } = require('../../config/system-config');
 const sleep = require('../../util/sleep');
+const { setProjectConfigTask } = require('../project-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -203,7 +203,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
                     getSystemConfigTask(),
                     getCachedPorts(),
                     stopContainers(),
-                    setPrefix(),
+                    setProjectConfigTask(),
                     getProjectConfiguration(),
                     // get fresh ports
                     getAvailablePorts(),

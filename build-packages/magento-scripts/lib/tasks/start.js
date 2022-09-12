@@ -11,7 +11,6 @@ const { prepareFileSystem } = require('./file-system');
 const { installMagentoProject, setupMagento } = require('./magento');
 const { pullImages, stopContainers } = require('./docker/containers');
 const dockerNetwork = require('./docker/network');
-const { setPrefix } = require('./prefix');
 const { connectToDatabase } = require('./database');
 const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
@@ -29,6 +28,7 @@ const checkPHPVersion = require('./requirements/php-version');
 const volumes = require('./docker/volume/tasks');
 const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
 const { cmaGlobalConfig } = require('../config/cma-config');
+const { setProjectConfigTask } = require('./project-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -83,7 +83,7 @@ const stopProject = () => ({
 const retrieveFreshProjectConfiguration = () => ({
     title: 'Retrieving fresh project configuration',
     task: (ctx, task) => task.newListr([
-        setPrefix(),
+        setProjectConfigTask(),
         getProjectConfiguration(),
         // get fresh ports
         getAvailablePorts(),

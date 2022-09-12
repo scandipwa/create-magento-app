@@ -1,5 +1,6 @@
 import mysql2 from 'mysql2';
 
+import { ProjectConfig } from '../lib/config/config';
 import { DockerVersionResult } from '../lib/tasks/docker/api';
 import { CMAConfiguration, PHPExtensions } from './index';
 import { PHPStormConfig } from './phpstorm';
@@ -86,6 +87,7 @@ export interface ListrContext {
         userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         phpStorm: PHPStormConfig
+        projectConfig: ProjectConfig
     }
     systemConfiguration: {
         analytics: boolean
