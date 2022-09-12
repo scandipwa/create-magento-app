@@ -1,3 +1,4 @@
+const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { cmaGlobalConfig } = require('../../../config/cma-config');
 const KnownError = require('../../../errors/known-error');
@@ -10,12 +11,13 @@ const { checkDockerPerformance } = require('./performance');
 const { checkDockerSocketPermissions } = require('./permissions');
 const { checkDockerStatus, getDockerEngineAndDesktopServiceStatus } = require('./running-status');
 const getDockerVersion = require('./version');
+const getIsWsl = require('../../../util/is-wsl');
 
 const USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER = 'useDockerEngineWithDockerDesktop';
 
 const setVersionInContextTask = (task) => ({
     task: (ctx) => {
-        if (ctx.platform === 'darwin' && ctx.dockerServerData && ctx.dockerServerData.Platform && ctx.dockerServerData.Platform.Name) {
+        if (os.platform() === 'darwin' && ctx.dockerServerData && ctx.dockerServerData.Platform && ctx.dockerServerData.Platform.Name) {
             task.title = `Using ${ctx.dockerServerData.Platform.Name} for Mac`;
         } else {
             task.title = `Using Docker version ${ctx.dockerVersion}`;
@@ -152,8 +154,9 @@ const checkDocker = () => ({
         });
 
         if (code !== 0) {
-            if (ctx.platform === 'linux') {
-                if (!ctx.isWsl) {
+            if (os.platform() === 'linux') {
+                const isWsl = await getIsWsl();
+                if (!isWsl) {
                     const { engine } = await getDockerEngineAndDesktopServiceStatus();
                     if (!engine.exists) {
                         const result = await dockerInstallPromptLinux(task);
@@ -161,7 +164,7 @@ const checkDocker = () => ({
                             return result;
                         }
                     }
-                } else if (ctx.isWsl) {
+                } else if (isWsl) {
                     dockerInstallPromptWindows();
                 }
             } else {
@@ -170,7 +173,7 @@ const checkDocker = () => ({
                     return result;
                 }
             }
-        } else if (ctx.platform === 'linux') {
+        } else if (os.platform() === 'linux') {
             const { engine, desktop } = await getDockerEngineAndDesktopServiceStatus();
             if (!engine.exists
                 && desktop.exists
