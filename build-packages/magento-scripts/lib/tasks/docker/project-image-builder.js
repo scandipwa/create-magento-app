@@ -1,8 +1,10 @@
+const path = require('path');
 const { DockerFileBuilder } = require('../../util/dockerfile-builder');
 const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
 const { runContainerImage } = require('../../util/run-container-image');
+const { imageApi } = require('./image');
 
 /**
  * Get enabled extensions list with versions
@@ -49,6 +51,7 @@ const addExtensionToBuilder = (builder, ctx) => async ([extensionName, extension
 const buildDockerFileInstructions = async (ctx, { image, tag }) => {
     const { composer } = ctx.config.overridenConfiguration.configuration;
     const existingPHPExtensions = await getEnabledExtensionsFromImage(`${image}:${tag}`);
+    const imageDetails = await imageApi.inspect({ image: `${image}:${tag}`, formatToJSON: true });
 
     const missingExtensions = Object.entries(
         ctx.config.overridenConfiguration.configuration.php.extensions
@@ -100,6 +103,13 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
 
     dockerFileInstructions
         .workDir(ctx.config.baseConfig.containerMagentoDir);
+
+    const imagePathEnv = imageDetails.Config.Env.find((env) => env.startsWith('PATH'));
+
+    dockerFileInstructions
+        .env({
+            PATH: `${ imagePathEnv.split('=').pop() }:${ path.join(ctx.config.baseConfig.containerMagentoDir, 'bin') }`
+        });
 
     return dockerFileInstructions;
 };
