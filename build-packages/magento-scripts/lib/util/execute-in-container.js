@@ -45,12 +45,10 @@ const runInContainer = (options, commands) => {
         tty: true,
         detach: false,
         rm: true,
-        command: commands.map((command) => command.split(' ')).flat().join(' ')
+        command: commands.join(' ')
     });
 
-    const args = runArgs.slice(1).map((command) => command.split(' ')).flat();
-
-    spawn('docker', args, { stdio: [0, 1, 2] });
+    spawn('bash', ['-c', runArgs.join(' ')], { stdio: [0, 1, 2] });
 
     return new Promise((_resolve) => {
         // never resolve
