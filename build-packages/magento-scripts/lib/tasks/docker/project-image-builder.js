@@ -93,7 +93,8 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         .comment('make composer executable')
         .run('chmod +x ./composer')
         .comment('move composer to bin directory')
-        .run('mv composer /usr/local/bin/composer');
+        .run('mv composer /usr/local/bin/composer')
+        .env({ COMPOSER_HOME: '/composer/home' });
 
     if (semver.satisfies(composer.version, '^1')) {
         dockerFileInstructions

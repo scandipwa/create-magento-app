@@ -144,8 +144,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ].concat(ctx.debug ? [`${ php.debugIniPath }:/usr/local/etc/php/conf.d/00-xdebug.ini`] : []),
                 env: {
-                    COMPOSER_AUTH: JSON.stringify(JSON.parse(process.env.COMPOSER_AUTH), null, 0) || '',
-                    COMPOSER_HOME: '/composer/home'
+                    COMPOSER_AUTH: JSON.stringify(JSON.parse(process.env.COMPOSER_AUTH), null, 0) || ''
                 },
                 restart: 'on-failure:5',
                 image: `local-cma-project:${ prefix }`,
