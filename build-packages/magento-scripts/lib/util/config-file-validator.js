@@ -116,7 +116,17 @@ const composerConfigurationSchema = Joi.object({
         }
 
         return versionValidator(value);
-    })
+    }),
+    plugins: Joi.object()
+        .pattern(
+            Joi.string(),
+            Joi.object({
+                version: Joi.string().optional(),
+                options: Joi.string().optional(),
+                enabled: Joi.boolean().optional()
+            })
+                .unknown()
+        )
 });
 
 /**

@@ -87,6 +87,10 @@ export interface ComposerConfiguration {
     plugins: Record<string, {
         version?: string
         options?: string
+        /**
+         * Enable composer plugin
+         */
+        enabled?: boolean
     }>
 }
 

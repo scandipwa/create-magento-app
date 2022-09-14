@@ -1,6 +1,6 @@
 const path = require('path');
+const os = require('os');
 const { DockerFileBuilder } = require('../../util/dockerfile-builder');
-const semver = require('semver');
 const { execAsyncSpawn } = require('../../util/exec-async-command');
 const KnownError = require('../../errors/known-error');
 const { runContainerImage } = require('../../util/run-container-image');
@@ -94,12 +94,23 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         .run('chmod +x ./composer')
         .comment('move composer to bin directory')
         .run('mv composer /usr/local/bin/composer')
+        .run('mkdir -p /composer/home')
         .env({ COMPOSER_HOME: '/composer/home' });
 
-    if (semver.satisfies(composer.version, '^1')) {
+    if (composer.plugins && Object.values(composer.plugins).length > 0) {
+        for (const [pluginName, pluginOptions] of Object.entries(composer.plugins)) {
+            if (pluginOptions.enabled) {
+                dockerFileInstructions
+                    .comment(`install ${pluginName} composer global package`)
+                    // eslint-disable-next-line max-len
+                    .run(`composer global require ${pluginName}${ pluginOptions.options ? ` ${pluginOptions.options}` : '' }${ pluginOptions.options ? ` ${pluginOptions.options}` : ''}`);
+            }
+        }
+    }
+
+    if (!ctx.isDockerDesktop) {
         dockerFileInstructions
-            .comment('install prestissimo composer plugin')
-            .run('composer global require hirak/prestissimo');
+            .run(`chown -R ${os.userInfo().uid}:${os.userInfo().gid} /composer/home`);
     }
 
     dockerFileInstructions
