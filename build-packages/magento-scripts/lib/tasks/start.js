@@ -29,6 +29,7 @@ const volumes = require('./docker/volume/tasks');
 const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
 const { cmaGlobalConfig } = require('../config/cma-config');
 const { setProjectConfigTask } = require('./project-config');
+const { convertComposerHomeToComposerCacheVolume } = require('./docker/convert-composer-home-to-composer-cache-volume');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -123,6 +124,7 @@ const configureProject = () => ({
         getComposerVersionTask(),
         prepareFileSystem(),
         volumes.createVolumes(),
+        convertComposerHomeToComposerCacheVolume(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
         startServices(),
