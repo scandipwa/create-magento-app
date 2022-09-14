@@ -16,6 +16,11 @@ const convertComposerHomeToComposerCacheVolume = () => ({
         return volumeList.length === 0;
     },
     task: async (ctx, task) => {
+        if (ctx.platform === 'linux' && !ctx.isDockerDesktop) {
+            await volumeApi.rm({ volumes: [composeHomeDataVolumeName] });
+            return;
+        }
+
         const { composer_cache } = ctx.config.docker.volumes;
         task.title = `Migrating from ${ composer_cache.name } volume to ${ composeHomeDataVolumeName }...`;
         await containerApi.run({
