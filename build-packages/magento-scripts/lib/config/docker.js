@@ -50,8 +50,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
         },
-        composer_home: {
-            name: 'composer_home-data'
+        composer_cache: {
+            name: 'composer_cache-data',
+            opts: {
+                mode: 'z'
+            }
         }
     };
 
@@ -139,7 +142,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
                     `${ !isDockerDesktop ? magentoDir : volumes.php.name }:${containerMagentoDir}`,
-                    `${ volumes.composer_home.name }:/composer/home`,
+                    `${ volumes.composer_cache.name }:/composer/home/cache`,
                     `${ php.iniPath }:/usr/local/etc/php/php.ini`,
                     `${ php.fpmConfPath }:/usr/local/etc/php-fpm.d/zz-docker.conf`
                 ].concat(ctx.debug ? [`${ php.debugIniPath }:/usr/local/etc/php/conf.d/00-xdebug.ini`] : []),
