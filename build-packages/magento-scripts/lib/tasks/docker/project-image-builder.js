@@ -94,8 +94,11 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         .run('chmod +x ./composer')
         .comment('move composer to bin directory')
         .run('mv composer /usr/local/bin/composer')
-        .run('mkdir -p /composer/home')
-        .env({ COMPOSER_HOME: '/composer/home' });
+        .run('mkdir -p /composer/home/cache')
+        .env({
+            COMPOSER_HOME: '/composer/home',
+            COMPOSER_CACHE_DIR: '/composer/home/cache'
+        });
 
     if (composer.plugins && Object.values(composer.plugins).length > 0) {
         for (const [pluginName, pluginOptions] of Object.entries(composer.plugins)) {
