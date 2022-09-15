@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run lint || c=$?; echo "you need to setup the .huskyrc file! https://typicode.github.io/husky/#/?id=command-not-found"; $(exit $c)
+npm run lint || (c=$?; if [ "$c" = 127 ]; then (echo "you need to setup the .huskyrc file! https://typicode.github.io/husky/#/?id=command-not-found"; $(exit $c)); else $(exit $c); fi);
