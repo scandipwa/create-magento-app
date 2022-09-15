@@ -34,6 +34,15 @@ const convertComposerHomeToComposerCacheVolume = () => ({
             command: 'ash -c "cd /from/cache; cp -av . /to"'
         });
 
+        const runningContainers = await volumeApi.inspect({ volume: composeHomeDataVolumeName, formatToJSON: true });
+
+        if (runningContainers.Containers && Object.entries(runningContainers.Containers).length > 0) {
+            await Promise.all(Object.values(runningContainers.Containers).map(async (c) => {
+                await containerApi.stop([c.Name]);
+                await containerApi.rm([c.Name]);
+            }));
+        }
+
         await volumeApi.rm({ volumes: [composeHomeDataVolumeName] });
     }
 });
