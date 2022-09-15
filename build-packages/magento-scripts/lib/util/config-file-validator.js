@@ -140,7 +140,8 @@ const configurationSchema = Joi.object({
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),
-    sslTerminator: nginxConfigurationSchema.optional()
+    sslTerminator: nginxConfigurationSchema.optional(),
+    maildev: serviceConfigurationSchema.optional()
 });
 
 /**
