@@ -60,7 +60,9 @@ const defaultPorts = {
     fpm: 9000,
     mariadb: 3306,
     redis: 6379,
-    elasticsearch: 9200
+    elasticsearch: 9200,
+    maildevSMTP: 1025,
+    maildevWeb: 1080
 };
 
 /**

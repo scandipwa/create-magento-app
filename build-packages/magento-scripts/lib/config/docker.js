@@ -23,7 +23,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         redis,
         elasticsearch,
         mariadb,
-        varnish
+        varnish,
+        maildev
     } = configuration;
 
     const php = getPhpConfig(overridenConfiguration, baseConfig);
@@ -55,6 +56,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             opts: {
                 mode: 'z'
             }
+        },
+        maildev: {
+            name: `${ prefix }_maildev-data`
         }
     };
 
@@ -271,6 +275,32 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 network: network.name,
                 image: `${ elasticsearch.version ? `elasticsearch:${ elasticsearch.version }` : elasticsearch.image }`,
                 name: `${ prefix }_elasticsearch`
+            },
+            maildev: {
+                _: 'MailDev',
+                ports: isDockerDesktop ? [
+                    `127.0.0.1:${ ports.maildevWeb }:1080`,
+                    `127.0.0.1:${ ports.maildevSMTP }:1025`
+                ] : [],
+                forwardedPorts: isDockerDesktop ? [
+                    `127.0.0.1:${ ports.maildevWeb }:1080`,
+                    `127.0.0.1:${ ports.maildevSMTP }:1025`
+                ] : [
+                    `127.0.0.1:${ ports.maildevWeb }`,
+                    `127.0.0.1:${ ports.maildevSMTP }`
+                ],
+                mountVolumes: [
+                    `${ volumes.maildev.name }:/tmp/maildev`
+                ],
+                env: {
+                    MAILDEV_SMTP_PORT: isDockerDesktop ? '1025' : ports.maildevSMTP,
+                    MAILDEV_WEB_PORT: isDockerDesktop ? '1080' : ports.maildevWeb,
+                    MAILDEV_MAIL_DIRECTORY: '/tmp/maildev'
+                },
+                name: `${ prefix }_maildev`,
+                network: isDockerDesktop ? network.name : 'host',
+                image: maildev.image,
+                user: !isDockerDesktop ? 'root:root' : ''
             }
         };
 

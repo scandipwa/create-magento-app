@@ -4,6 +4,7 @@ const { repo } = require('../php/base-repo');
 const { php72 } = require('../php/versions');
 const { composer1 } = require('../services/composer/versions');
 const { elasticsearch68 } = require('../services/elasticsearch/versions');
+const { maildev } = require('../services/maildev');
 const { nginx118 } = require('../services/nginx/versions');
 const { sslTerminator } = require('../services/ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
@@ -29,7 +30,8 @@ module.exports = ({ templateDir } = {}) => ({
         elasticsearch: elasticsearch68(),
         composer: composer1(),
         varnish: varnish66({ templateDir }),
-        sslTerminator: sslTerminator({ templateDir })
+        sslTerminator: sslTerminator({ templateDir }),
+        maildev: maildev()
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

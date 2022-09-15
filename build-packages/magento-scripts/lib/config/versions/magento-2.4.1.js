@@ -7,6 +7,7 @@ const { varnish66 } = require('../varnish/varnish-6-6');
 const { repo } = require('../php/base-repo');
 const { nginx118 } = require('../services/nginx/versions');
 const { composer1 } = require('../services/composer/versions');
+const { maildev } = require('../services/maildev');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.1',
@@ -31,7 +32,8 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: composer1(),
         varnish: varnish66({ templateDir }),
-        sslTerminator: sslTerminator({ templateDir })
+        sslTerminator: sslTerminator({ templateDir }),
+        maildev: maildev()
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

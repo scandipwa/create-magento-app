@@ -150,6 +150,13 @@ module.exports = (yargs) => {
                     block.addLine(`  ${title}: ${text}`);
                 });
 
+                block.addEmptyLine();
+
+                block.addLine(logger.style.misc('MailDev'));
+                instanceMetadata.maildev.forEach(({ title, text }) => {
+                    block.addLine(`  ${title}: ${text}`);
+                });
+
                 const themes = await getCSAThemes();
                 if (themes.length > 0) {
                     const theme = themes[0];

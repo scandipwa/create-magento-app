@@ -19,6 +19,8 @@ export interface ListrContext {
         elasticsearch: number
         varnish: number
         sslTerminator: number
+        maildevSMTP: number
+        maildevWeb: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean

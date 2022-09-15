@@ -3,6 +3,7 @@ const { magento24PHPExtensionList } = require('../magento/required-php-extension
 const { repo } = require('../php/base-repo');
 const { php74 } = require('../php/versions');
 const { composer1 } = require('../services/composer/versions');
+const { maildev } = require('../services/maildev');
 const { nginx118 } = require('../services/nginx/versions');
 const { sslTerminator } = require('../services/ssl-terminator');
 const { varnish60 } = require('../varnish/varnish-6-0');
@@ -30,7 +31,8 @@ module.exports = ({ templateDir } = {}) => ({
         },
         composer: composer1(),
         varnish: varnish60({ templateDir }),
-        sslTerminator: sslTerminator({ templateDir })
+        sslTerminator: sslTerminator({ templateDir }),
+        maildev: maildev()
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

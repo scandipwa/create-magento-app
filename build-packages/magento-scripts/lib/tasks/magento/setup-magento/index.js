@@ -12,6 +12,7 @@ const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
 const adjustFullPageCache = require('./adjust-full-page-cache');
 const updateEnvPHP = require('../../php/update-env-php');
+const setMailConfig = require('./set-mail-config');
 
 /**
  * @param {Object} [options]
@@ -40,6 +41,7 @@ const setupMagento = (options = {}) => ({
                 task: (ctx, task) => task.newListr([
                     setBaseUrl(),
                     setUrlRewrite(),
+                    setMailConfig(),
                     increaseAdminSessionLifetime()
                 ], {
                     concurrent: true
