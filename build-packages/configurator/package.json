@@ -1,0 +1,25 @@
+{
+    "name": "@scandipwa/magento-scripts-configurator",
+    "repository": "github:scandipwa/create-magento-app",
+    "version": "1.0.0",
+    "license": "OSL-3.0",
+    "bin": {
+        "magento-scripts-configure": "./index.js"
+    },
+    "engines": {
+        "node": ">=12"
+    },
+    "os": [
+        "darwin",
+        "linux"
+    ],
+    "cpu": [
+        "x64",
+        "arm64"
+    ],
+    "dependencies": {
+        "acorn": "^8.8.0",
+        "astravel": "^0.6.1",
+        "astring": "^1.8.3"
+    }
+}
