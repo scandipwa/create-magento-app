@@ -39,8 +39,8 @@ const getProjectConfigFilePath = async () => {
             } = {}
         } = {}
     } = modulesConfigData || {};
-    const filePath = module && module['@_filepath']
-    return filePath ? filePath.replace('$PROJECT_DIR$', process.cwd()) : null
+    const filePath = module && module['@_filepath'];
+    return filePath ? filePath.replace('$PROJECT_DIR$', process.cwd()) : null;
 };
 
 const setupDefaultsForExcludedFoldersConfig = (projectConfigData) => {
