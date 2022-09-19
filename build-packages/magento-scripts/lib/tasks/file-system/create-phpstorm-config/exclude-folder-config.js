@@ -17,11 +17,21 @@ const excludeFoldersPaths = [
 /**
  * Will retrieve project config file path from module.xml
  *
- * @returns {Promise<String>}
+ * @returns {Promise<String | null>}
  */
 const getProjectConfigFilePath = async () => {
     const modulesConfigData = await loadXmlFile(pathToModulesConfig);
-    return modulesConfigData.project.component.modules.module['@_filepath'].replace('$PROJECT_DIR$', process.cwd());
+    const {
+        project: {
+            component: {
+                modules: {
+                    module
+                } = {}
+            } = {}
+        } = {}
+    } = modulesConfigData || {};
+    const filePath = module && module['@_filepath']
+    return filePath ? filePath.replace('$PROJECT_DIR$', process.cwd()) : null
 };
 
 /**
@@ -127,7 +137,7 @@ const setupExcludedFoldersConfig = () => ({
     task: async (ctx, task) => {
         if (await pathExists(pathToModulesConfig)) {
             const projectFilePath = await getProjectConfigFilePath();
-            if (await pathExists(projectFilePath)) {
+            if (projectFilePath && await pathExists(projectFilePath)) {
                 const projectConfigData = await loadXmlFile(projectFilePath);
                 const excludedFoldersConfig = getExcludedFoldersConfig(projectConfigData);
                 const hasChanges = setupExcludedFolders(excludedFoldersConfig);
