@@ -8,3 +8,5 @@ run:
 	docker run -it ghcr.io/scandipwa/create-magento-app:elasticsearch-6.8
 buildandrun:
 	build --no-cache && run
+pull:
+	docker pull ghcr.io/scandipwa/create-magento-app:elasticsearch-6.8

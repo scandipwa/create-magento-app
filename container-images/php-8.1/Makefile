@@ -8,3 +8,5 @@ run:
 	docker run -it ghcr.io/scandipwa/create-magento-app:php-8.1
 buildandrun:
 	build --no-cache && run
+pull:
+	docker pull ghcr.io/scandipwa/create-magento-app:php-8.1
