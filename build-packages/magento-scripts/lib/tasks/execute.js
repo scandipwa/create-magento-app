@@ -70,7 +70,7 @@ const executeTask = async (argv) => {
             const result = await executeInContainer({
                 containerName: container.name,
                 commands: argv.commands,
-                isDockerDesktop: ctx.isDockerDesktop
+                user: container.user
             });
 
             return result;
