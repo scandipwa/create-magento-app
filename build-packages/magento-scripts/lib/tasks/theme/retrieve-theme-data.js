@@ -12,6 +12,15 @@ const retrieveThemeData = (themePath) => ({
     task: async (ctx) => {
         let absoluteThemePath = path.join(process.cwd(), themePath);
 
+        // validate if theme is located inside magento directory
+        if (!absoluteThemePath.includes(process.cwd())) {
+            throw new KnownError(`You are trying to link the theme from outside of your Magento project!
+
+This is not supported in ${ logger.style.command('magento-scripts') } version 2.
+
+Move your theme inside Magento project!`);
+        }
+
         // check if path not relative
         if (!(await pathExists(path.join(absoluteThemePath, 'composer.json')))) {
             // if composer.json is not found, then it's not correct path
@@ -23,15 +32,6 @@ const retrieveThemeData = (themePath) => ({
         } else {
             // path is relative, so we use it
             absoluteThemePath = themePath;
-        }
-
-        // validate if theme is located inside magento directory
-        if (!absoluteThemePath.includes(process.cwd())) {
-            throw new KnownError(`You are trying to link the theme from outside of your Magento project!
-
-This is not supported in ${ logger.style.command('magento-scripts') } version 2.
-
-Move your theme inside Magento project!`);
         }
 
         const composerData = await getJsonfileData(path.join(absoluteThemePath, 'composer.json'));
