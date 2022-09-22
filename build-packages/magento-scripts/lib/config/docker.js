@@ -300,7 +300,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 name: `${ prefix }_maildev`,
                 network: isDockerDesktop ? network.name : 'host',
                 image: maildev.image,
-                user: !isDockerDesktop ? 'root:root' : ''
+                user: !isDockerDesktop ? 'root:root' : '',
+                connectCommand: ['/bin/sh'],
+                healthCheck: {
+                    cmd: `wget -O - http://127.0.0.1:${ isDockerDesktop ? '1080' : ports.maildevWeb }/healthz || exit 1`
+                }
             }
         };
 
