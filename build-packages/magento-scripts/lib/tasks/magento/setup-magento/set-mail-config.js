@@ -8,15 +8,11 @@ const setMailConfig = () => ({
     task: async ({ databaseConnection, ports, isDockerDesktop }, task) => {
         await updateTableValues('core_config_data', [
             {
-                path: 'system/smtp/port',
+                path: 'smtp/configuration_option/port',
                 value: `${ ports.maildevSMTP }`
             },
             {
-                path: 'system/smtp/disable',
-                value: '0'
-            },
-            {
-                path: 'system/smtp/host',
+                path: 'smtp/configuration_option/host',
                 value: isDockerDesktop ? 'host.docker.internal' : 'localhost'
             }
         ], { databaseConnection, task });
