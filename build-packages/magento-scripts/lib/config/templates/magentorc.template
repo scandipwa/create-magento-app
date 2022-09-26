@@ -21,4 +21,4 @@ alias mariadbroot="exec mariadb 'mysql -uroot -pscandipwa'"
 # silence warning on macos
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-export PS1="[${RED}cli${NC}] \w [Magento ${YELLOW}<%~ it.magentoVersion %>${NC}] [${GREEN}\t${NC}] \nbash \v: "
+export PS1="[${YELLOW}cli${NC}] \w [${YELLOW}<%~ it.magentoVersion %>${NC}] [${GREEN}\t${NC}] \nbash \v: "

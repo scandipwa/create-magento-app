@@ -7,6 +7,7 @@ const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const ConsoleBlock = require('../util/console-block');
 const { checkComposerCredentials } = require('../tasks/requirements/composer-credentials');
+const pkg = require('../../package.json');
 
 /**
  * @param {import('yargs')} yargs
@@ -40,6 +41,9 @@ module.exports = (yargs) => {
 
         block
             .addHeader('Create Magento App CLI')
+            .addEmptyLine()
+            .addLine(`Magento version: ${logger.style.link(ctx.magentoVersion)}`)
+            .addLine(`${logger.style.file('magento-scripts')} version: ${logger.style.link(pkg.version)}`)
             .addEmptyLine()
             .addLine(`Available aliases: ${logger.style.command('php')}, ${logger.style.command('magento')}, ${logger.style.command('composer')}`)
             .addLine(`Available shortcuts: magento -> ${logger.style.command('m')}, composer -> ${logger.style.command('c')}`)
