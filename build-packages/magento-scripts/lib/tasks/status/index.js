@@ -8,6 +8,19 @@ const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
 const { getInstanceMetadata } = require('../../util/instance-metadata');
 
+const isJSON = (str) => {
+    try {
+        const result = JSON.parse(str);
+        if (typeof result === 'object') {
+            return true;
+        }
+    } catch (e) {
+        //
+    }
+
+    return false;
+};
+
 /**
  * @param {string} port
  * @return {{ host: string, hostPort: string, containerPort: string }}
@@ -110,7 +123,24 @@ const prettyStatus = async (ctx) => {
         if (container.env && Object.keys(container.env).length > 0) {
             block.addLine('Environment variables:');
             for (const [envName, envValue] of Object.entries(container.env)) {
-                block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+                if (isJSON(envValue)) {
+                    const beautifyJSONLines = JSON.stringify(JSON.parse(envValue), null, 1).split('\n');
+
+                    block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(beautifyJSONLines.shift())}`);
+
+                    let currentOpeningBracket = 0;
+
+                    beautifyJSONLines.forEach((line) => {
+                        block.addLine(`${'  '.repeat(2 + currentOpeningBracket)}${logger.style.file(line)}`);
+                        if (['{', '['].some((openingBracketVariant) => line.includes(openingBracketVariant))) {
+                            currentOpeningBracket++;
+                        } else if (['}', ']'].some((closingBracketVariant) => line.includes(closingBracketVariant))) {
+                            currentOpeningBracket--;
+                        }
+                    });
+                } else {
+                    block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+                }
             }
         }
 
