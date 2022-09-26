@@ -17,7 +17,9 @@ const createBashrcConfigFile = () => ({
                 overwrite: true,
                 templateArgs: {
                     php,
-                    varnishEnabled
+                    varnishEnabled,
+                    magentoVersion: ctx.magentoVersion,
+                    config: ctx.config
                 }
             });
         } catch (e) {
