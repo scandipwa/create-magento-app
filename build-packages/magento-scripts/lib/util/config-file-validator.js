@@ -53,8 +53,9 @@ const phpExtensionConfiguration = Joi.object()
     .pattern(
         Joi.string(),
         Joi.object({
+            name: Joi.string().optional(),
             alternativeName: Joi.array().items(Joi.string()).optional(),
-            command: Joi.func().optional(),
+            command: Joi.alternatives().try(Joi.func(), Joi.string()).optional(),
             dependencies: Joi.array().items(Joi.string()).optional(),
             version: Joi.string().optional()
         })

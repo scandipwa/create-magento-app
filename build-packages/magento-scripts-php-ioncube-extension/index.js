@@ -34,6 +34,7 @@ tar -zxf ./${path.basename(downloadLink)} --directory /usr/; \
 
 /** @type {import('@scandipwa/magento-scripts').PHPExtensionInstallationInstruction} */
 const ioncubeExtension = {
+    name: 'ioncube',
     alternativeName: ['ionCube Loader'],
     command: ioncubeExtensionCommand
 };

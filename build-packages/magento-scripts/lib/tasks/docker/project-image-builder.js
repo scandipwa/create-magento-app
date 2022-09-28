@@ -37,7 +37,7 @@ const addExtensionToBuilder = (builder, ctx) => async ([extensionName, extension
     } else if (typeof command === 'function' || command instanceof Promise) {
         runCommand += ` ${await Promise.resolve(command({ ...extensionInstructionsWithoutCommand, ctx }))}`;
     } else {
-        runCommand += ` docker-php-ext-install ${extensionInstructionsWithoutCommand.name}`;
+        runCommand += ` docker-php-ext-install ${extensionInstructionsWithoutCommand.name || extensionName}`;
     }
     builder
         .comment(`extension ${extensionName} installation command`)

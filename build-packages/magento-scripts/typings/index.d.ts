@@ -96,6 +96,10 @@ export interface ComposerConfiguration {
 
 export interface PHPExtensionInstallationInstruction {
     /**
+     * Main extension name that will be used for `docker-php-ext-install` command
+     */
+    name?: string
+    /**
      * Alternative name for extension
      *
      * @example ```js
