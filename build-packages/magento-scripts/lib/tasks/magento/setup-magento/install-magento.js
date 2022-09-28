@@ -141,9 +141,6 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 installed = true;
             } catch (e) {
                 errors.push(e);
-                if (tries === 2) {
-                    throw e;
-                }
             }
 
             if (installed) {
