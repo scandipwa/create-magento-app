@@ -102,6 +102,23 @@ To also pull PHP 7.4 image with extensions for Magento 2.4 with XDebug run the f
 make pull-php-74-magento-24-debug
 ```
 
+##### 7.4 version with extensions for Magento 2.3
+
+To pull PHP 7.4 image with extensions for Magento 2.3 with and without XDebug run the following command:
+```bash
+make pull-php-74-magento-23 && make pull-php-74-magento-23-debug
+```
+
+To pull PHP 7.4 image with extensions for Magento 2.3 without XDebug run the following command:
+```bash
+make pull-php-74-magento-23
+```
+
+To also pull PHP 7.4 image with extensions for Magento 2.3 with XDebug run the following command:
+```bash
+make pull-php-74-magento-23-debug
+```
+
 ##### 7.3 version
 
 To pull PHP 7.3 image with and without XDebug run the following command:
@@ -117,23 +134,6 @@ make pull-php-73
 To also pull PHP 7.3 image with XDebug run the following command:
 ```bash
 make pull-php-73-debug
-```
-
-##### 7.3 version with extensions for Magento 2.4
-
-To pull PHP 7.3 image with extensions for Magento 2.4 with and without XDebug run the following command:
-```bash
-make pull-php-73-magento-24 && make pull-php-73-magento-24-debug
-```
-
-To pull PHP 7.3 image with extensions for Magento 2.4 without XDebug run the following command:
-```bash
-make pull-php-73-magento-24
-```
-
-To also pull PHP 7.3 image with extensions for Magento 2.4 with XDebug run the following command:
-```bash
-make pull-php-73-magento-24-debug
 ```
 
 ##### 7.3 version with extensions for Magento 2.3
@@ -290,6 +290,23 @@ To also build PHP 7.4 image with extensions for Magento 2.4 with XDebug run the 
 make build-php-74-magento-24-debug
 ```
 
+##### 7.4 version with extensions for Magento 2.3
+
+To build PHP 7.4 image with extensions for Magento 2.3 with and without XDebug run the following command:
+```bash
+make build-php-74-magento-23 && make build-php-74-magento-23-debug
+```
+
+To build PHP 7.4 image with extensions for Magento 2.3 without XDebug run the following command:
+```bash
+make build-php-74-magento-23
+```
+
+To also build PHP 7.4 image with extensions for Magento 2.3 with XDebug run the following command:
+```bash
+make build-php-74-magento-23-debug
+```
+
 ##### 7.3 version
 
 To build PHP 7.3 image with and without XDebug run the following command:
@@ -305,23 +322,6 @@ make build-php-73
 To also build PHP 7.3 image with XDebug run the following command:
 ```bash
 make build-php-73-debug
-```
-
-##### 7.3 version with extensions for Magento 2.4
-
-To build PHP 7.3 image with extensions for Magento 2.4 with and without XDebug run the following command:
-```bash
-make build-php-73-magento-24 && make build-php-73-magento-24-debug
-```
-
-To build PHP 7.3 image with extensions for Magento 2.4 without XDebug run the following command:
-```bash
-make build-php-73-magento-24
-```
-
-To also build PHP 7.3 image with extensions for Magento 2.4 with XDebug run the following command:
-```bash
-make build-php-73-magento-24-debug
 ```
 
 ##### 7.3 version with extensions for Magento 2.3
@@ -471,6 +471,23 @@ To also build PHP 7.4 image with extensions for Magento 2.4 with XDebug run the 
 make buildx-php-74-magento-24-debug
 ```
 
+##### 7.4 version with extensions for Magento 2.3
+
+To build PHP 7.4 image with extensions for Magento 2.3 with and without XDebug run the following command:
+```bash
+make buildx-php-74-magento-23 && make buildx-php-74-magento-23-debug
+```
+
+To build PHP 7.4 image with extensions for Magento 2.3 without XDebug run the following command:
+```bash
+make buildx-php-74-magento-23
+```
+
+To also build PHP 7.4 image with extensions for Magento 2.3 with XDebug run the following command:
+```bash
+make buildx-php-74-magento-23-debug
+```
+
 ##### 7.3 version
 
 To build PHP 7.3 image with and without XDebug run the following command:
@@ -486,23 +503,6 @@ make buildx-php-73
 To also build PHP 7.3 image with XDebug run the following command:
 ```bash
 make buildx-php-73-debug
-```
-
-##### 7.3 version with extensions for Magento 2.4
-
-To build PHP 7.3 image with extensions for Magento 2.4 with and without XDebug run the following command:
-```bash
-make buildx-php-73-magento-24 && make buildx-php-73-magento-24-debug
-```
-
-To build PHP 7.3 image with extensions for Magento 2.4 without XDebug run the following command:
-```bash
-make buildx-php-73-magento-24
-```
-
-To also build PHP 7.3 image with extensions for Magento 2.4 with XDebug run the following command:
-```bash
-make buildx-php-73-magento-24-debug
 ```
 
 ##### 7.3 version with extensions for Magento 2.3
@@ -651,6 +651,22 @@ To also build PHP 7.4 image with extensions for Magento 2.4 with XDebug run the 
 ```bash
 make buildxpush-php-74-magento-24-debug
 ```
+##### 7.4 version with extensions for Magento 2.3
+
+To build PHP 7.4 image with extensions for Magento 2.3 with and without XDebug run the following command:
+```bash
+make buildxpush-php-74-magento-23 && make buildxpush-php-74-magento-23-debug
+```
+
+To build PHP 7.4 image with extensions for Magento 2.3 without XDebug run the following command:
+```bash
+make buildxpush-php-74-magento-23
+```
+
+To also build PHP 7.4 image with extensions for Magento 2.3 with XDebug run the following command:
+```bash
+make buildxpush-php-74-magento-23-debug
+```
 
 ##### 7.3 version
 
@@ -669,22 +685,6 @@ To also build PHP 7.3 image with XDebug run the following command:
 make buildxpush-php-73-debug
 ```
 
-##### 7.3 version with extensions for Magento 2.4
-
-To build PHP 7.3 image with extensions for Magento 2.4 with and without XDebug run the following command:
-```bash
-make buildxpush-php-73-magento-24 && make buildxpush-php-73-magento-24-debug
-```
-
-To build PHP 7.3 image with extensions for Magento 2.4 without XDebug run the following command:
-```bash
-make buildxpush-php-73-magento-24
-```
-
-To also build PHP 7.3 image with extensions for Magento 2.4 with XDebug run the following command:
-```bash
-make buildxpush-php-73-magento-24-debug
-```
 
 ##### 7.3 version with extensions for Magento 2.3
 
