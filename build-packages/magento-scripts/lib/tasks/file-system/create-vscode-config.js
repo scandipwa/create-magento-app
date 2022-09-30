@@ -121,7 +121,8 @@ const createVSCodeConfig = () => ({
         } catch (e) {
             throw new UnknownError(`Unexpected error accrued during launch.json config creation!\n\n${e}`);
         }
-    }
+    },
+    exitOnError: false
 });
 
 module.exports = createVSCodeConfig;

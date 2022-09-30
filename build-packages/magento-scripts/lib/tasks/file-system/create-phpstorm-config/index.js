@@ -22,7 +22,8 @@ const createPhpStormConfig = () => ({
         setupStylelintConfig(),
         setupESLintConfig()
     ], {
-        concurrent: true
+        concurrent: true,
+        exitOnError: false
     })
 });
 

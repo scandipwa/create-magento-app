@@ -24,8 +24,7 @@ const prepareFileSystem = () => ({
         createVarnishConfig(),
         createMariaDBConfig()
     ], {
-        concurrent: true,
-        exitOnError: false
+        concurrent: true
     })
 });
 
