@@ -10,7 +10,7 @@ const pathExists = require('../../util/path-exists');
 const retrieveThemeData = (themePath) => ({
     title: 'Checking theme folder',
     task: async (ctx) => {
-        let absoluteThemePath = path.join(process.cwd(), themePath);
+        let absoluteThemePath = path.resolve(themePath);
 
         // validate if theme is located inside magento directory
         if (!absoluteThemePath.includes(process.cwd())) {
