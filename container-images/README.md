@@ -38,17 +38,17 @@ make pull-all-php-debug
 
 To pull PHP 8.1 image with and without XDebug run the following command:
 ```bash
-make pull-php-81 && make pull-php-81-debug
+make pull-php-81-all
 ```
 
 To pull PHP 8.1 image without XDebug run the following command:
 ```bash
-make pull-php-81
+make pull-php-81 && make pull-php-81-magento-24
 ```
 
 To also pull PHP 8.1 image with XDebug run the following command:
 ```bash
-make pull-php-81-debug
+make pull-php-81-debug && make pull-php-81-magento-24-debug
 ```
 
 ##### 8.1 version with extensions for Magento 2.4
@@ -72,17 +72,17 @@ make pull-php-81-magento-24-debug
 
 To pull PHP 7.4 image with and without XDebug run the following command:
 ```bash
-make pull-php-74 && make pull-php-74-debug
+make pull-php-74-all
 ```
 
 To pull PHP 7.4 image without XDebug run the following command:
 ```bash
-make pull-php-74
+make pull-php-74 && make pull-php-74-magento-24 && make pull-php-74-magento-23
 ```
 
 To also pull PHP 7.4 image with XDebug run the following command:
 ```bash
-make pull-php-74-debug
+make pull-php-74-debug && make pull-php-74-magento-24-debug && make pull-php-74-magento-23-debug
 ```
 
 ##### 7.4 version with extensions for Magento 2.4
