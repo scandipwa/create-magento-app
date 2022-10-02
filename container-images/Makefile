@@ -117,6 +117,12 @@ buildxpush-php-72-magento-23-debug:
 pull-php-72-magento-23-debug:
 	cd ./php-7.2-magento-2.3-debug && $(MAKE) pull;
 
+# php 7.2 all
+pull-php-72-all: pull-php-72 pull-php-72-debug pull-php-72-magento-23 pull-php-72-magento-23-debug
+build-php-72-all: build-php-72 build-php-72-debug build-php-72-magento-23 build-php-72-magento-23-debug
+buildx-php-72-all: buildx-php-72 buildx-php-72-debug buildx-php-72-magento-23 buildx-php-72-magento-23-debug
+buildxpush-php-72-all: buildxpush-php-72 buildxpush-php-72-debug buildxpush-php-72-magento-23 buildxpush-php-72-magento-23-debug
+
 # php 7.3
 build-php-73:
 	cd ./php-7.3 && $(MAKE) build;
@@ -168,6 +174,12 @@ buildxpush-php-73-magento-23-debug:
 
 pull-php-73-magento-23-debug:
 	cd ./php-7.3-magento-2.3-debug && $(MAKE) pull;
+
+# php 7.3 all
+pull-php-73-all: pull-php-73 pull-php-73-debug pull-php-73-magento-23 pull-php-73-magento-23-debug
+build-php-73-all: build-php-73 build-php-73-debug build-php-73-magento-23 build-php-73-magento-23-debug
+buildx-php-73-all: buildx-php-73 buildx-php-73-debug buildx-php-73-magento-23 buildx-php-73-magento-23-debug
+buildxpush-php-73-all: buildxpush-php-73 buildxpush-php-73-debug buildxpush-php-73-magento-23 buildxpush-php-73-magento-23-debug
 
 # php 7.4
 build-php-74:
@@ -247,6 +259,12 @@ buildxpush-php-74-magento-24-debug:
 pull-php-74-magento-24-debug:
 	cd ./php-7.4-magento-2.4-debug && $(MAKE) pull;
 
+# php 7.4 all
+pull-php-74-all: pull-php-74 pull-php-74-debug pull-php-74-magento-24 pull-php-74-magento-24-debug pull-php-74-magento-23 pull-php-74-magento-23-debug
+build-php-74-all: build-php-74 build-php-74-debug build-php-74-magento-24 build-php-74-magento-24-debug build-php-74-magento-23 build-php-74-magento-23-debug
+buildx-php-74-all: buildx-php-74 buildx-php-74-debug buildx-php-74-magento-24 buildx-php-74-magento-24-debug buildx-php-74-magento-23 buildx-php-74-magento-23-debug
+buildxpush-php-74-all: buildxpush-php-74 buildxpush-php-74-debug buildxpush-php-74-magento-24 buildxpush-php-74-magento-24-debug buildxpush-php-74-magento-23 buildxpush-php-74-magento-23-debug
+
 # php 8.1
 build-php-81:
 	cd ./php-8.1 && $(MAKE) build;
@@ -298,3 +316,9 @@ buildxpush-php-81-magento-24-debug:
 
 pull-php-81-magento-24-debug:
 	cd ./php-8.1-magento-2.4-debug && $(MAKE) pull;
+
+# php 8.1 all
+pull-php-81-all: pull-php-81 pull-php-81-debug pull-php-81-magento-24 pull-php-81-magento-24-debug
+build-php-81-all: build-php-81 build-php-81-debug build-php-81-magento-24 build-php-81-magento-24-debug
+buildx-php-81-all: buildx-php-81 buildx-php-81-debug buildx-php-81-magento-24 buildx-php-81-magento-24-debug
+buildxpush-php-81-all: buildxpush-php-81 buildxpush-php-81-debug buildxpush-php-81-magento-24 buildxpush-php-81-magento-24-debug
