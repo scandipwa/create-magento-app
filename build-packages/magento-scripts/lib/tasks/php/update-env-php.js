@@ -52,7 +52,6 @@ const updateEnvPHP = () => ({
                     || persistedQueryConfig.redis.host === hostMachine)
                 ) {
                     SETUP_PQ = '';
-                    return;
                 }
             }
         }
