@@ -181,7 +181,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                  * Mount volumes directly on linux
                  */
                 mountVolumes: [
-                    `${ !isDockerDesktop ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`
+                    `${ !isDockerDesktop ? path.join(cacheDir, 'ssl-terminator', 'conf.d') : volumes.sslTerminator.name }:/etc/nginx/conf.d`,
+                    `${ path.join(cacheDir, 'ssl-terminator', 'fastcgi_params') }:/etc/nginx/fastcgi_params`
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',

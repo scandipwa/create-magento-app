@@ -87,7 +87,25 @@ const createSSLTerminatorConfig = () => ({
                 }
             });
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during ssl terminator config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error appeared during ssl terminator config creation\n\n${e}`);
+        }
+
+        // fixes ngrok error "ngrok.io redirected you too many times"
+        try {
+            await setConfigFile({
+                configPathname: path.join(
+                    baseConfig.cacheDir,
+                    'ssl-terminator',
+                    'fastcgi_params'
+                ),
+                template: path.join(baseConfig.templateDir, 'nginx.fastcgi_params.template'),
+                overwrite: true,
+                templateArgs: {
+                    isNgrok: host.endsWith('ngrok.io')
+                }
+            });
+        } catch (e) {
+            throw new UnknownError(`Unexpected error appeared during ssl terminator fastcgi_params config creation\n\n${e}`);
         }
     }
 });
