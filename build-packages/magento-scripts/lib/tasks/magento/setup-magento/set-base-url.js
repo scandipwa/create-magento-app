@@ -17,7 +17,7 @@ module.exports = () => ({
             databaseConnection
         } = ctx;
         const isNgrok = host.endsWith('ngrok.io');
-        const enableSecureFrontend = (ctx.config.overridenConfiguration.configuration.varnish.enabled && ssl.enabled) ? '1' : '0';
+        const enableSecureFrontend = (isNgrok || ssl.enabled) ? '1' : '0';
         const location = `${host}${ !isNgrok && ports.sslTerminator !== 80 ? `:${ports.sslTerminator }` : '' }/`;
         const secureLocation = `${host}/`; // SSL will work only on port 443, so you cannot run multiple projects with SSL at the same time.
         const httpUrl = `http://${location}`;
