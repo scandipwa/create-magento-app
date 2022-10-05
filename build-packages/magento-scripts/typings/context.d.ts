@@ -1,21 +1,26 @@
 import mysql2 from 'mysql2';
 
+import { ProjectConfig } from '../lib/config/config';
+import { DockerVersionResult } from '../lib/tasks/docker/api';
 import { CMAConfiguration, PHPExtensions } from './index';
 import { PHPStormConfig } from './phpstorm';
 
 export interface ListrContext {
     magentoVersion: string
     composerVersion: string
+    phpVersion: string
     port?: number
     ports?: {
         app: number
         fpm: number
         xdebug: number
-        mysql: number
+        mariadb: number
         redis: number
         elasticsearch: number
         varnish: number
         sslTerminator: number
+        maildevSMTP: number
+        maildevWeb: number
     }
     arch: 'arm64' | 'x64'
     isArm: boolean
@@ -31,12 +36,8 @@ export interface ListrContext {
     edition?: 'community' | 'enterprise'
     config: {
         php: {
-            binPath: string
-            iniPath: string
             iniTemplatePath: string
-            fpmBinPath: string
             fpmConfPath: string
-            fpmPidFilePath: string
             extensions: PHPExtensions
             version: string
         }
@@ -49,15 +50,15 @@ export interface ListrContext {
             network: {
                 name: string
             }
-            volumes: Record<'mysql' | 'redis' | 'elasticsearch' | 'nginx' | 'appPub' | 'appSetup', {
+            volumes: Record<'mariadb' | 'redis' | 'elasticsearch' | 'nginx' | 'appPub' | 'appSetup', {
                 name: string
-                opts?: {
+                opt?: {
                     type: string
                     device: string
                     o: string
                 }
             }>
-            getContainers(): Record<'nginx' | 'redis' | 'mysql' | 'elasticsearch' | 'varnish', {
+            getContainers(): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'varnish', {
                 _: string
                 ports: string[]
                 healthCheck: {
@@ -70,10 +71,8 @@ export interface ListrContext {
                 securityOptions: string[]
                 network: string
                 image: string
-                imageDetails: {
-                    name: string
-                    tag: string
-                }
+                debugImage?: string
+                remoteImages?: string[]
                 name: string
                 command: string
                 connectCommand: string[]
@@ -84,16 +83,22 @@ export interface ListrContext {
             magentoDir: string
             templateDir: string
             cacheDir: string
+            containerMagentoDir: string
         }
         overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
         phpStorm: PHPStormConfig
+        projectConfig: ProjectConfig
     }
     systemConfiguration: {
         analytics: boolean
         useNonOverlappingPorts: boolean
     }
-    mysqlConnection: mysql2.Connection
+    databaseConnection: mysql2.Connection
     isSetupUpgradeNeeded?: boolean
+    isDockerDesktop?: boolean
+    dockerServerData?: DockerVersionResult['Server']
+    dockerClientData?: DockerVersionResult['Client']
+    dockerVersion?: DockerVersionResult['Server']['Version']
 }

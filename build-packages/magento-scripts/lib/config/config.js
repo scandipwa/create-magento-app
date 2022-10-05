@@ -2,6 +2,16 @@ const Conf = require('conf');
 
 const pkg = require('../../package.json');
 
+/**
+ * @typedef ProjectConfig
+ * @prop {String} [createdAt]
+ * @prop {String} [prefix]
+ * @prop {Boolean} debug
+ */
+
+/**
+ * @type {import('conf').default<Record<string, ProjectConfig>>}
+ */
 const projectsConfig = new Conf({
     configName: 'projects',
     projectName: 'create-magento-app',
@@ -9,6 +19,12 @@ const projectsConfig = new Conf({
     defaults: {}
 });
 const projectKey = process.cwd();
+
+const setProjectConfig = (key, value) => {
+    projectsConfig.set(`${projectKey}.${key}`, value);
+};
+
+const getProjectConfig = () => projectsConfig.get(projectKey);
 
 const getProjectsFromProjectKeys = (path, project) => {
     if (project.createdAt) {
@@ -21,7 +37,7 @@ const getProjectsFromProjectKeys = (path, project) => {
 };
 /**
  *
- * @returns {Record<string, { createdAt?: string, prefix?: string}>}
+ * @returns {Record<string, ProjectConfig>}
  */
 const getProjects = () => {
     const projects = {};
@@ -45,5 +61,7 @@ const getProjects = () => {
 module.exports = {
     projectsConfig,
     projectKey,
-    getProjects
+    getProjects,
+    setProjectConfig,
+    getProjectConfig
 };

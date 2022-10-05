@@ -5,8 +5,6 @@ const { baseConfig } = require('../../../../config');
  * @param {import('../../../../../typings/index').CMAConfiguration} app
  */
 const getWorkspaceConfig = (app) => ({
-    v2Port: '9111',
-    v3Port: '9003',
     debugServerAddress: `http://${ app.host }`,
     serverName: 'create-magento-app',
     runManagerName: 'create-magento-app',

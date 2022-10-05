@@ -6,13 +6,11 @@ const runMagentoCommand = require('../../../util/run-magento');
  */
 module.exports = () => ({
     title: 'Disabling 2fa for admin',
-    task: async ({ magentoVersion }, task) => {
-        const { modules } = await configPhpToJson(process.cwd(), { magentoVersion });
+    task: async (ctx, task) => {
+        const { modules } = await configPhpToJson(ctx);
 
         if (modules.Magento_TwoFactorAuth !== undefined && modules.Magento_TwoFactorAuth !== 0) {
-            await runMagentoCommand('module:disable Magento_TwoFactorAuth', {
-                magentoVersion
-            });
+            await runMagentoCommand(ctx, 'module:disable Magento_TwoFactorAuth');
 
             return;
         }

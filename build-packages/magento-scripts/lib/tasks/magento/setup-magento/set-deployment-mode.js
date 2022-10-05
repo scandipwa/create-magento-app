@@ -6,10 +6,10 @@ const runMagentoCommand = require('../../../util/run-magento');
  */
 module.exports = () => ({
     title: 'Switching Magento mode',
-    task: async ({ magentoVersion, config: { magentoConfiguration: { mode } } }, task) => {
-        const { result } = await runMagentoCommand('deploy:mode:show', {
-            throwNonZeroCode: false,
-            magentoVersion
+    task: async (ctx, task) => {
+        const { config: { magentoConfiguration: { mode } } } = ctx;
+        const { result } = await runMagentoCommand(ctx, 'deploy:mode:show', {
+            throwNonZeroCode: false
         });
 
         if (result.includes(mode)) {

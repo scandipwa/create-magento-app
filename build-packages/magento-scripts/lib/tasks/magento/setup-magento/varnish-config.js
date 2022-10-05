@@ -1,6 +1,4 @@
-const os = require('os');
 const { updateTableValues } = require('../../../util/database');
-const getIsWsl = require('../../../util/is-wsl');
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -18,18 +16,17 @@ const varnishConfigSetup = () => ({
                     }
                 }
             },
-            mysqlConnection,
-            ports
+            databaseConnection,
+            ports,
+            debug,
+            isDockerDesktop
         } = ctx;
 
-        const isLinux = os.platform() === 'linux';
-        const isWsl = await getIsWsl();
-
-        if (varnishEnabled) {
+        if (!debug && varnishEnabled) {
             await updateTableValues('core_config_data', [
                 {
                     path: 'system/full_page_cache/varnish/backend_host',
-                    value: 'localhost'
+                    value: isDockerDesktop ? 'host.docker.internal' : 'localhost'
                 },
                 {
                     path: 'system/full_page_cache/varnish/backend_port',
@@ -37,16 +34,16 @@ const varnishConfigSetup = () => ({
                 },
                 {
                     path: 'system/full_page_cache/varnish/access_list',
-                    value: (!isLinux || isWsl) ? 'host.docker.internal,localhost' : 'localhost'
+                    value: isDockerDesktop ? 'host.docker.internal,localhost' : 'localhost'
                 },
                 {
                     path: 'system/full_page_cache/caching_application',
                     value: '2'
                 }
-            ], { mysqlConnection, task });
+            ], { databaseConnection, task });
         } else {
             // delete varnish configuration if exists
-            await mysqlConnection.query(`
+            await databaseConnection.query(`
                 DELETE FROM core_config_data WHERE path LIKE '%varnish%';
             `);
 
@@ -57,7 +54,7 @@ const varnishConfigSetup = () => ({
                     path: 'system/full_page_cache/caching_application',
                     value: '0'
                 }
-            ], { mysqlConnection, task });
+            ], { databaseConnection, task });
         }
     },
     options: {

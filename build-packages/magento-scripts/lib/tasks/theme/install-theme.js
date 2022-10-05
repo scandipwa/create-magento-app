@@ -18,7 +18,7 @@ const installTheme = (theme) => ({
         }
 
         try {
-            await runComposerCommand(`require ${theme.composerData.name}`, {
+            await runComposerCommand(ctx, `require ${theme.composerData.name}`, {
                 magentoVersion,
                 callback: !verbose ? undefined : (t) => {
                     task.output = t;

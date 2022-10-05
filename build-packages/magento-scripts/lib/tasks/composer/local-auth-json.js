@@ -27,7 +27,7 @@ const localAuthJson = () => ({
                 throw new KnownError(`Your ./auth.json file does not contain the ${ logger.style.misc("{ 'http-basic': { 'repo.magento.com': <> } }") } field.`);
             }
 
-            process.env.COMPOSER_AUTH = localAuthJson;
+            process.env.COMPOSER_AUTH = JSON.stringify(JSON.parse(localAuthJson), null, 0);
         }
     },
     options: {

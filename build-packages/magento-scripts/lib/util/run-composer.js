@@ -1,28 +1,20 @@
-const { execAsyncSpawn } = require('./exec-async-command');
-const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config');
 const UnknownError = require('../errors/unknown-error');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 /**
  * Execute composer command
+ * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command composer command
  * @param {Object} options
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
  * @param {String} options.magentoVersion Magento version for config
  */
-const runComposerCommand = async (command, options = {}) => {
+const runComposerCommand = async (ctx, command, options = {}) => {
     const {
-        throwNonZeroCode = true,
-        magentoVersion = defaultConfiguration.name
+        throwNonZeroCode = true
     } = options;
-    const {
-        php,
-        composer,
-        baseConfig: { magentoDir }
-    } = await getConfigFromMagentoVersion(magentoVersion);
-    const { code, result } = await execAsyncSpawn(`${php.binPath} -c ${php.iniPath} ${composer.binPath} ${command}`, {
+    const { code, result } = await runPHPContainerCommand(ctx, `composer ${command}`, {
         ...options,
-        cwd: magentoDir,
-        withCode: true,
-        useRosetta2: true
+        withCode: true
     });
 
     if (throwNonZeroCode && code !== 0) {

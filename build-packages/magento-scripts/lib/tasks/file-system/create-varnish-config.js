@@ -17,8 +17,7 @@ const createVarnishConfig = () => ({
                     cacheDir
                 }
             },
-            isWsl,
-            platform
+            isDockerDesktop
         } = ctx;
 
         const {
@@ -26,9 +25,6 @@ const createVarnishConfig = () => ({
                 varnish
             }
         } = overridenConfiguration;
-
-        const isLinux = platform === 'linux';
-        const isNativeLinux = isLinux && !isWsl;
 
         try {
             await setConfigFile({
@@ -40,8 +36,9 @@ const createVarnishConfig = () => ({
                 template: varnish.configTemplate,
                 overwrite: true,
                 templateArgs: {
-                    hostMachine: isNativeLinux ? '127.0.0.1' : 'host.docker.internal',
-                    nginxPort: ports.app
+                    hostMachine: !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal',
+                    nginxPort: ports.app,
+                    healthCheck: varnish.healthCheck
                 }
             });
         } catch (e) {

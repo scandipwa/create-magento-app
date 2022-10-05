@@ -5,21 +5,22 @@ const {
     defaultConfiguration
 } = require('./versions');
 const getPhpConfig = require('./php-config');
-const getComposerConfig = require('./composer');
 const { getMagentoConfig } = require('./magento-config');
 const resolveConfigurationWithOverrides = require('../util/resolve-configuration-with-overrides');
 const { getPrefix, folderName } = require('../util/prefix');
 const UnknownError = require('../errors/unknown-error');
+const { getProjectConfig } = require('./config');
 
 const platforms = ['linux', 'darwin'];
 const darwinMinimalVersion = '10.5';
 
 /**
- * @returns {{prefix: string,magentoDir: string,templateDir: string,cacheDir: string}}
+ * @returns {import('../../typings/context').ListrContext['config']['baseConfig']}
  */
 const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
     prefix: getPrefix(prefix),
     magentoDir: projectPath,
+    containerMagentoDir: projectPath,
     templateDir: path.join(__dirname, 'templates'),
     cacheDir: path.join(projectPath, 'node_modules', '.create-magento-app-cache')
 });
@@ -27,19 +28,29 @@ const getBaseConfig = (projectPath = process.cwd(), prefix = folderName) => ({
 const baseConfig = getBaseConfig();
 
 const magento = {
-    binPath: path.join(baseConfig.magentoDir, 'bin', 'magento')
+    binPath: path.join(baseConfig.magentoDir, 'bin', 'magento'),
+    containerBinPath: path.join(baseConfig.containerMagentoDir, 'bin', 'magento')
 };
 
 module.exports = {
     /**
-     * @param {string} magentoVersion
+     * @param {import('../../typings/context')} ctx
+     * @param {Object} param1
+     * @param {String} [param1.magentoVersion]
+     * @param {String} [param1.projectPath]
+     * @param {String} [param1.prefix]
      */
-    async getConfigFromMagentoVersion(magentoVersion, projectPath = process.cwd(), prefix = folderName) {
+    async getConfigFromMagentoVersion(ctx, {
+        magentoVersion,
+        projectPath = process.cwd(),
+        prefix = folderName
+    }) {
         const newBaseConfig = getBaseConfig(projectPath, prefix);
         const configurations = getConfigurations(newBaseConfig);
         if (!configurations[magentoVersion]) {
             throw new UnknownError(`No config found for magento version ${magentoVersion}`);
         }
+        const projectConfig = getProjectConfig();
 
         const {
             overridenConfiguration,
@@ -51,21 +62,20 @@ module.exports = {
         );
 
         return {
-            php: getPhpConfig(overridenConfiguration.configuration, newBaseConfig),
-            docker: await getDockerConfig(overridenConfiguration, newBaseConfig),
-            composer: getComposerConfig(overridenConfiguration.configuration, newBaseConfig),
+            php: getPhpConfig(overridenConfiguration, newBaseConfig),
+            docker: await getDockerConfig(ctx, overridenConfiguration, newBaseConfig),
             magentoConfiguration: getMagentoConfig(overridenConfiguration.magento),
             baseConfig: newBaseConfig,
             overridenConfiguration,
             userConfiguration,
-            nonOverridenConfiguration: configurations[magentoVersion]
+            nonOverridenConfiguration: configurations[magentoVersion],
+            projectConfig
         };
     },
     baseConfig,
     getBaseConfig,
     magento,
     platforms,
-    docker: getDockerConfig(defaultConfiguration, baseConfig),
     darwinMinimalVersion,
     defaultConfiguration
 };

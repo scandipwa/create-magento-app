@@ -21,9 +21,11 @@
     },
     "version": "2.4.4",
     "require": {
-        "magento/product-community-edition": "2.4.4",
         "magento/composer-dependency-version-audit-plugin": "~0.1",
-        "magento/composer-root-update-plugin": "~2.0"
+        "magento/composer-root-update-plugin": "~2.0",
+        "magento/product-community-edition": "2.4.4",
+        "scandipwa/sample-data": "^1.2",
+        "scandipwa/scandipwa": "^0.0.1"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -76,12 +78,16 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": [
-        {
+    "repositories": {
+        "scandipwa": {
+            "type": "path",
+            "url": "./scandipwa"
+        },
+        "0": {
             "type": "composer",
             "url": "https://repo.magento.com/"
         }
-    ],
+    },
     "extra": {
         "magento-force": "override",
         "magento-deploy-ignore": {

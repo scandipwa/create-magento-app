@@ -17,8 +17,8 @@ const postInstallSteps = [
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const installDocker = () => ({
-    title: 'Installing Docker',
+const installDockerEngine = () => ({
+    title: 'Installing Docker Engine',
     task: async (ctx, task) => {
         const distro = await osPlatform();
         switch (distro) {
@@ -32,12 +32,21 @@ const installDocker = () => ({
                 ...postInstallSteps
             ]);
         }
-        case 'Fedora':
+        case 'Fedora': {
+            return task.newListr([
+                executeSudoCommand('sudo dnf -y install dnf-plugins-core'),
+                executeSudoCommand('sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo'),
+                executeSudoCommand('sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin'),
+                enableAndStartDockerCommand(),
+                ...postInstallSteps
+            ]);
+        }
         case 'CentOS': {
             return task.newListr([
-                downloadDockerInstallScriptCommand(),
-                runDockerInstallScriptCommand(),
-                enableAndStartDockerCommand()
+                executeSudoCommand('sudo yum install -y yum-utils'),
+                executeSudoCommand('sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'),
+                executeSudoCommand('sudo yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin'),
+                ...postInstallSteps
             ]);
         }
         case 'Ubuntu': {
@@ -53,7 +62,12 @@ const installDocker = () => ({
 Your distro ${distro} is not supported by automatic installation.`);
         }
         }
+    },
+    options: {
+        bottomBar: 10
     }
 });
 
-module.exports = installDocker;
+module.exports = {
+    installDockerEngine
+};

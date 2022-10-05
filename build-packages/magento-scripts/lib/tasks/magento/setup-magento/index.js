@@ -11,6 +11,8 @@ const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime'
 const magentoTask = require('../../../util/magento-task');
 const urnHighlighter = require('./urn-highlighter');
 const adjustFullPageCache = require('./adjust-full-page-cache');
+const updateEnvPHP = require('../../php/update-env-php');
+const setMailConfig = require('./set-mail-config');
 
 /**
  * @param {Object} [options]
@@ -32,12 +34,14 @@ const setupMagento = (options = {}) => ({
         return task.newListr([
             flushRedisConfig(),
             waitingForRedis(),
+            updateEnvPHP(),
             migrateDatabase(),
             {
                 title: 'Configuring Magento settings',
                 task: (ctx, task) => task.newListr([
                     setBaseUrl(),
                     setUrlRewrite(),
+                    setMailConfig(),
                     increaseAdminSessionLifetime()
                 ], {
                     concurrent: true

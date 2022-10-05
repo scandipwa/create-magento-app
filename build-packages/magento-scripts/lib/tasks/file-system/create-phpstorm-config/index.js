@@ -5,6 +5,7 @@ const setupInspectionToolsConfig = require('./inspection-tools-config');
 const setupExcludedFoldersConfig = require('./exclude-folder-config');
 const setupStylelintConfig = require('./stylelint-config');
 const setupESLintConfig = require('./eslint-config');
+const setupPhpDockerSettingsConfig = require('./php-docker-settings-config');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -14,13 +15,15 @@ const createPhpStormConfig = () => ({
     task: (ctx, task) => task.newListr([
         setupWorkspaceConfig(),
         setupPhpConfig(),
+        setupPhpDockerSettingsConfig(),
         setupDatabaseConfig(),
         setupInspectionToolsConfig(),
         setupExcludedFoldersConfig(),
         setupStylelintConfig(),
         setupESLintConfig()
     ], {
-        concurrent: true
+        concurrent: true,
+        exitOnError: false
     })
 });
 

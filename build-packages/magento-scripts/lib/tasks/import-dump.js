@@ -1,11 +1,11 @@
 const path = require('path');
 const { checkRequirements } = require('./requirements');
 const {
-    importDumpToMySQL,
+    importDumpToDatabase,
     fixDB,
     dumpThemeConfig,
     restoreThemeConfig
-} = require('./mysql');
+} = require('./database');
 const { setupMagento } = require('./magento');
 const indexProducts = require('./magento/setup-magento/index-products');
 const {
@@ -14,7 +14,7 @@ const {
     retrieveFreshProjectConfiguration,
     configureProject
 } = require('./start');
-const importRemoteDb = require('./mysql/import-remote-db');
+const importRemoteDb = require('./database/import-remote-db');
 const matchFilesystem = require('../util/match-filesystem');
 
 /**
@@ -34,8 +34,8 @@ const importDump = () => ({
             // skip setup if env.php and config.php are present in app/etc folder and db is not empty
             skip: async (ctx) => {
                 const isFsMatching = await matchFilesystem(path.join(process.cwd(), 'app', 'etc'), ['config.php', 'env.php']);
-                const { mysqlConnection } = ctx;
-                const [[{ tableCount }]] = await mysqlConnection.query(`
+                const { databaseConnection } = ctx;
+                const [[{ tableCount }]] = await databaseConnection.query(`
                     SELECT count(*) AS tableCount
                     FROM INFORMATION_SCHEMA.TABLES
                     WHERE TABLE_SCHEMA = 'magento';
@@ -48,7 +48,7 @@ const importDump = () => ({
             )
         },
         dumpThemeConfig(),
-        importDumpToMySQL(),
+        importDumpToDatabase(),
         restoreThemeConfig(),
         fixDB(),
         setupMagento(),

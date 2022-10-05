@@ -5,24 +5,31 @@ import std;
 # The minimal Varnish version is 6.0
 # For SSL offloading, pass the following header in your proxy server or load balancer: 'X-Forwarded-Proto: https'
 
+<% if (it.healthCheck) { %>
+probe healthcheck {
+    # .url = "/health_check.php";
+    .request =
+        "GET /health_check.php HTTP/1.1"
+        "Host: localhost"
+        "Connection: close"
+        "User-Agent: Varnish Health Probe";
+    .interval  = 10s;
+    .timeout   = 5s;
+    .window    = 8;
+    .threshold = 3;
+    .initial   = 3;
+}
+<% } %>
+
 backend default {
     .host = "<%= it.hostMachine %>";
     .host_header = "Host: localhost";
     .port = "<%= it.nginxPort %>";
     .first_byte_timeout = 600s;
-    .probe = {
-        # .url = "/health_check.php";
-        .request =
-            "GET /health_check.php HTTP/1.1"
-            "Host: localhost"
-            "Connection: close"
-            "User-Agent: Varnish Health Probe";
-        .interval  = 10s;
-        .timeout   = 5s;
-        .window    = 5;
-        .threshold = 3;
-   }
-}
+    .connect_timeout = 10s;
+    <% if (it.healthCheck) { %>
+.probe = healthcheck;
+    <% } %>}
 
 acl purge {
     "<%= it.hostMachine %>";

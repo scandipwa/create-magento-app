@@ -1,37 +1,94 @@
+const os = require('os');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { cmaGlobalConfig } = require('../../../config/cma-config');
 const KnownError = require('../../../errors/known-error');
 const { execAsyncSpawn } = require('../../../util/exec-async-command');
 const openBrowser = require('../../../util/open-browser');
-const installDocker = require('./install');
+const checkDockerDesktopContext = require('./context');
+const { installDockerEngine } = require('./install');
 const installDockerOnMac = require('./install-on-mac');
+const { checkDockerPerformance } = require('./performance');
 const { checkDockerSocketPermissions } = require('./permissions');
-const checkDockerStatus = require('./running-status');
+const { checkDockerStatus, getDockerEngineAndDesktopServiceStatus } = require('./running-status');
 const getDockerVersion = require('./version');
+const getIsWsl = require('../../../util/is-wsl');
 
-const dockerInstallPromptLinux = async (task) => {
-    const automaticallyInstallDocker = await task.prompt({
-        type: 'Confirm',
+const USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER = 'useDockerEngineWithDockerDesktop';
+
+const setVersionInContextTask = (task) => ({
+    task: (ctx) => {
+        if (os.platform() === 'darwin' && ctx.dockerServerData && ctx.dockerServerData.Platform && ctx.dockerServerData.Platform.Name) {
+            task.title = `Using ${ctx.dockerServerData.Platform.Name} for Mac`;
+        } else {
+            task.title = `Using Docker version ${ctx.dockerVersion}`;
+        }
+    }
+});
+
+const dockerInstallPromptLinux = async (task, { skipPrompt = false } = {}) => {
+    const automaticallyInstallDocker = skipPrompt ? 'yes' : await task.prompt({
+        type: 'Select',
         message: `You don't have Docker installed!
 Do you want to install it automatically?
-NOTE: After installation it's recommended to log out and log back in so your group membership is re-evaluated!`
+`,
+        choices: [
+            {
+                name: 'yes',
+                message: 'Yes, I to install Docker automatically'
+            },
+            {
+                name: 'no',
+                message: 'No, I want to install Docker myself'
+            },
+            {
+                name: 'skip',
+                message: 'Skip installing Docker'
+            }
+        ]
     });
 
-    if (automaticallyInstallDocker) {
+    if (automaticallyInstallDocker === 'yes') {
         return task.newListr([
-            installDocker(),
+            installDockerEngine(),
+            checkDockerSocketPermissions(),
             getDockerVersion(),
             {
-                task: (ctx) => {
+                task: async (ctx) => {
                     task.title = `Using docker version ${ctx.dockerVersion}`;
+
+                    const confirmLogOut = await task.prompt({
+                        type: 'Select',
+                        message: 'Docker installed successfully!\n',
+                        choices: [
+                            {
+                                name: 'log-out',
+                                message: `${logger.style.command('[Recommended]')} Now I will log out and log back it (or restart my system) to re-evaluate group membership`
+                            },
+                            {
+                                name: 'skip',
+                                message: 'Skip log out and proceed with installation'
+                            }
+                        ]
+                    });
+
+                    if (confirmLogOut === 'skip') {
+                        return;
+                    }
 
                     throw new KnownError(
                         `Docker is installed successfully!
-Please log out and log back to so your group membership is re-evaluated!
+Please log out and log back in (or restart your system) so your group membership is re-evaluated!
 Learn more here: ${ logger.style.link('https://docs.docker.com/engine/install/linux-postinstall/') }`
                     );
                 }
-            }
+            },
+            checkDockerStatus(),
+            checkDockerDesktopContext()
         ]);
+    }
+
+    if (automaticallyInstallDocker === 'skip') {
+        return;
     }
 
     throw new KnownError('Docker is not installed!');
@@ -47,14 +104,14 @@ ${ logger.style.link('https://docs.create-magento-app.com/getting-started/prereq
 };
 
 /**
- *
  * @param {import('listr2').ListrTaskWrapper} task
  */
 const dockerInstallPromptMacOS = async (task) => {
     const confirmationToInstallDocker = await task.prompt({
         type: 'Select',
         message: `You don't have Docker installed!
-Would you like to install it automatically using brew cask or you prefer to install it manually?`,
+Would you like to install it automatically using brew cask or you prefer to install it manually?
+`,
         choices: [
             {
                 name: 'automatic',
@@ -70,13 +127,10 @@ Would you like to install it automatically using brew cask or you prefer to inst
     if (confirmationToInstallDocker === 'automatic') {
         return task.newListr([
             installDockerOnMac(),
+            checkDockerSocketPermissions(),
             checkDockerStatus(),
             getDockerVersion(),
-            {
-                task: (ctx) => {
-                    task.title = `Using Docker version ${ctx.dockerVersion}`;
-                }
-            }
+            setVersionInContextTask(task)
         ]);
     }
 
@@ -100,29 +154,72 @@ const checkDocker = () => ({
         });
 
         if (code !== 0) {
-            if (ctx.platform === 'linux' && !ctx.isWsl) {
-                const result = await dockerInstallPromptLinux(task);
-                if (result) {
-                    return result;
+            if (os.platform() === 'linux') {
+                const isWsl = await getIsWsl();
+                if (!isWsl) {
+                    const { engine } = await getDockerEngineAndDesktopServiceStatus();
+                    if (!engine.exists) {
+                        const result = await dockerInstallPromptLinux(task);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                } else if (isWsl) {
+                    dockerInstallPromptWindows();
                 }
-            } else if (ctx.isWsl) {
-                dockerInstallPromptWindows();
             } else {
                 const result = await dockerInstallPromptMacOS(task);
                 if (result) {
                     return result;
                 }
             }
+        } else if (os.platform() === 'linux') {
+            const { engine, desktop } = await getDockerEngineAndDesktopServiceStatus();
+            if (!engine.exists
+                && desktop.exists
+                && cmaGlobalConfig.get(USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER) !== false
+            ) {
+                const confirmInstallingDockerEngine = await task.prompt({
+                    type: 'Select',
+                    message: `Looks like you have Docker Desktop installed on Linux system, but Docker Engine is not installed.
+Do you want to install it and use it's context together with Docker Desktop?
+`,
+                    choices: [
+                        {
+                            name: 'yes',
+                            message: 'Sure, if it means I will have less issues with my setup!'
+                        },
+                        {
+                            name: 'no',
+                            message: 'No. But you can ask me again later.'
+                        },
+                        {
+                            name: 'skip',
+                            message: 'No. And don\'t ask me again.'
+                        }
+                    ]
+                });
+
+                if (confirmInstallingDockerEngine === 'skip') {
+                    cmaGlobalConfig.set(USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER, false);
+                } else if (confirmInstallingDockerEngine === 'yes') {
+                    const result = await dockerInstallPromptLinux(task, {
+                        skipPrompt: true
+                    });
+
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
         }
 
         return task.newListr([
+            checkDockerSocketPermissions(),
             checkDockerStatus(),
             getDockerVersion(),
-            {
-                task: (ctx) => {
-                    task.title = `Using Docker version ${ctx.dockerVersion}`;
-                }
-            }
+            checkDockerDesktopContext(),
+            setVersionInContextTask(task)
         ]);
     }
 });
@@ -132,8 +229,8 @@ const checkDocker = () => ({
  */
 module.exports = () => ({
     task: (ctx, task) => task.newListr([
-        checkDockerSocketPermissions(),
-        checkDocker()
+        checkDocker(),
+        checkDockerPerformance()
     ], {
         concurrent: false
     })

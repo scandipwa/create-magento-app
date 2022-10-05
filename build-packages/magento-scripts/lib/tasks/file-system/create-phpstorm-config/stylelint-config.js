@@ -3,6 +3,7 @@ const fs = require('fs');
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const pathExists = require('../../../util/path-exists');
 const { valueKey, nameKey } = require('./keys');
+const { setupXMLStructure } = require('./setup-xml-structure');
 
 const STYLELINT_CONFIGURATION_COMPONENT_NAME = 'StylelintConfiguration';
 
@@ -26,7 +27,7 @@ const setupStylelintConfig = () => ({
     task: async (ctx, task) => {
         if (await pathExists(pathToStylelintConfig)) {
             let hasChanges = false;
-            const styleLintConfigurationData = await loadXmlFile(pathToStylelintConfig);
+            const styleLintConfigurationData = setupXMLStructure(await loadXmlFile(pathToStylelintConfig));
 
             if (styleLintConfigurationData.project.component && !Array.isArray(styleLintConfigurationData.project.component)) {
                 hasChanges = true;

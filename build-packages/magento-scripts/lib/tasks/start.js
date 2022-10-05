@@ -3,23 +3,16 @@ const openBrowser = require('../util/open-browser');
 const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { saveConfiguration } = require('../config/save-config');
 const { getAvailablePorts, getCachedPorts } = require('../config/get-port-config');
-const { installComposer, installPrestissimo } = require('./composer');
+const { getComposerVersionTask } = require('./composer');
 const { startServices } = require('./docker');
-const { installPhp, configurePhp } = require('./php');
 const { checkRequirements } = require('./requirements');
 const { createCacheFolder } = require('./cache');
-const { startPhpFpm, stopPhpFpm } = require('./php-fpm');
 const { prepareFileSystem } = require('./file-system');
 const { installMagentoProject, setupMagento } = require('./magento');
-const { pullContainers, stopContainers } = require('./docker/containers');
-const { setPrefix } = require('./prefix');
-const {
-    connectToMySQL,
-    importDumpToMySQL,
-    fixDB,
-    restoreThemeConfig,
-    dumpThemeConfig
-} = require('./mysql');
+const { pullImages, stopContainers } = require('./docker/containers');
+const dockerNetwork = require('./docker/network');
+const { connectToDatabase } = require('./database');
+const { buildProjectImage, buildDebugProjectImage } = require('./docker/project-image-builder');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const { getSystemConfigTask } = require('../config/system-config');
 const setupThemes = require('./theme/setup-themes');
@@ -30,9 +23,23 @@ const enableMagentoComposerPlugins = require('./magento/enable-magento-composer-
 const getIsWsl = require('../util/is-wsl');
 const checkForXDGOpen = require('../util/xdg-open-exists');
 const { getInstanceMetadata, constants: { WEB_LOCATION_TITLE } } = require('../util/instance-metadata');
-const validatePHPInstallation = require('./php/validate-php');
-const installSodiumExtension = require('./php/install-sodium');
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish');
+const checkPHPVersion = require('./requirements/php-version');
+const volumes = require('./docker/volume/tasks');
+const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb');
+const { cmaGlobalConfig } = require('../config/cma-config');
+const { setProjectConfigTask } = require('./project-config');
+const { convertComposerHomeToComposerCacheVolume } = require('./docker/convert-composer-home-to-composer-cache-volume');
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ */
+const resetCmaGlobalConfig = () => ({
+    skip: (ctx) => !ctx.resetGlobalConfig,
+    task: () => {
+        cmaGlobalConfig.clear();
+    }
+});
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -64,14 +71,8 @@ const stopProject = () => ({
     title: 'Stopping project',
     task: (ctx, task) => task.newListr([
         stopContainers(),
-        stopPhpFpm()
-    ], {
-        concurrent: true,
-        rendererOptions: {
-            collapse: true,
-            showTimer: false
-        }
-    }),
+        volumes.removeLocalVolumes()
+    ]),
     options: {
         showTimer: false
     }
@@ -83,7 +84,7 @@ const stopProject = () => ({
 const retrieveFreshProjectConfiguration = () => ({
     title: 'Retrieving fresh project configuration',
     task: (ctx, task) => task.newListr([
-        setPrefix(),
+        setProjectConfigTask(),
         getProjectConfiguration(),
         // get fresh ports
         getAvailablePorts(),
@@ -104,26 +105,30 @@ const retrieveFreshProjectConfiguration = () => ({
 const configureProject = () => ({
     title: 'Configuring project',
     task: (ctx, task) => task.newListr([
-        installPhp(),
-        installComposer(),
+        convertMySQLDatabaseToMariaDB(),
         {
             task: (ctx, task) => task.newListr([
-                prepareFileSystem(),
-                pullContainers()
+                pullImages(),
+                dockerNetwork.tasks.createNetwork()
+            ], { concurrent: true })
+        },
+        checkPHPVersion(),
+        {
+            task: (ctx, task) => task.newListr([
+                buildProjectImage(),
+                buildDebugProjectImage()
             ], {
-                concurrent: true,
-                exitOnError: true
+                concurrent: true
             })
         },
-        installSodiumExtension(),
-        configurePhp(),
-        validatePHPInstallation(),
-        installPrestissimo(),
+        getComposerVersionTask(),
+        prepareFileSystem(),
+        volumes.createVolumes(),
+        convertComposerHomeToComposerCacheVolume(),
         installMagentoProject(),
         enableMagentoComposerPlugins(),
-        startPhpFpm(),
         startServices(),
-        connectToMySQL()
+        connectToDatabase()
     ])
 });
 
@@ -134,22 +139,6 @@ const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     skip: ({ skipSetup }) => skipSetup,
     task: (ctx, task) => task.newListr([
-        {
-            skip: (ctx) => !ctx.importDb,
-            task: (ctx, task) => {
-                task.title = 'Importing database dump';
-                return task.newListr([
-                    dumpThemeConfig(),
-                    importDumpToMySQL(),
-                    fixDB(),
-                    restoreThemeConfig(),
-                    setupMagento()
-                ], {
-                    concurrent: false,
-                    exitOnError: true
-                });
-            }
-        },
         setupThemes(),
         waitingForVarnish()
     ], {
@@ -167,6 +156,7 @@ const start = () => ({
     task: (ctx, task) => {
         task.title = `Starting project (magento-scripts@${pkg.version})`;
         return task.newListr([
+            resetCmaGlobalConfig(),
             checkRequirements(),
             retrieveProjectConfiguration(),
             stopProject(),

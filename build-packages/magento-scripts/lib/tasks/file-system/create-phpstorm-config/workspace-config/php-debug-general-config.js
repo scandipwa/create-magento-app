@@ -8,12 +8,13 @@ const portKey = '@_port';
 const xdebugDebugPortKey = '@_xdebug_debug_port';
 const ignoreConnectionsThroughUnregisteredServersKey = '@_ignore_connections_through_unregistered_servers';
 
+const xdebugPort = '9003';
+
 /**
  * @param {Array} workspaceConfigs
- * @param {ReturnType<typeof import('./workspace-config').getWorkspaceConfig>} workspaceConfig
  * @returns {Promise<Boolean>}
  */
-const setupPHPDebugGeneral = async (workspaceConfigs, workspaceConfig) => {
+const setupPHPDebugGeneral = async (workspaceConfigs) => {
     let hasChanges = false;
     const phpDebugGeneralComponent = workspaceConfigs.find(
         (workspaceConfig) => workspaceConfig[nameKey] === PHP_DEBUG_GENERAL_COMPONENT_NAME
@@ -30,30 +31,29 @@ const setupPHPDebugGeneral = async (workspaceConfigs, workspaceConfig) => {
 
         if (!(xdebugDebugPortKey in phpDebugGeneralComponent)) {
             hasChanges = true;
-            phpDebugGeneralComponent[xdebugDebugPortKey] = workspaceConfig.v3Port;
+            phpDebugGeneralComponent[xdebugDebugPortKey] = xdebugPort;
         }
 
-        const missingXDebugPorts = [workspaceConfig.v3Port, workspaceConfig.v2Port].filter(
-            (port) => !phpDebugGeneralComponent.xdebug_debug_ports.some((xPort) => xPort[portKey] === port)
-        );
-
-        if (missingXDebugPorts.length > 0) {
+        if (phpDebugGeneralComponent[xdebugDebugPortKey] !== xdebugPort) {
             hasChanges = true;
-            missingXDebugPorts.forEach((port) => {
-                phpDebugGeneralComponent.xdebug_debug_ports.push({
-                    [portKey]: port
-                });
+            phpDebugGeneralComponent[xdebugDebugPortKey] = xdebugPort;
+        }
+
+        if (!phpDebugGeneralComponent.xdebug_debug_ports.some((xPort) => xPort[portKey] === xdebugPort)) {
+            hasChanges = true;
+            phpDebugGeneralComponent.xdebug_debug_ports.push({
+                [portKey]: xdebugPort
             });
         }
     } else {
         hasChanges = true;
         workspaceConfigs.push({
             [nameKey]: PHP_DEBUG_GENERAL_COMPONENT_NAME,
-            [xdebugDebugPortKey]: workspaceConfig.v3Port,
+            [xdebugDebugPortKey]: xdebugPort,
             [ignoreConnectionsThroughUnregisteredServersKey]: 'true',
-            xdebug_debug_ports: [workspaceConfig.v3Port, workspaceConfig.v2Port].map((port) => ({
-                [portKey]: port
-            }))
+            xdebug_debug_ports: [{
+                [portKey]: xdebugPort
+            }]
         });
     }
 

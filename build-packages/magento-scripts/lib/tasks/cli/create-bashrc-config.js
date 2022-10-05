@@ -17,11 +17,13 @@ const createBashrcConfigFile = () => ({
                 overwrite: true,
                 templateArgs: {
                     php,
-                    varnishEnabled
+                    varnishEnabled,
+                    config: ctx.config,
+                    magentoVersion: ctx.magentoVersion
                 }
             });
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during php.ini config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error accrued during .magentorc config creation\n\n${e}`);
         }
     }
 });

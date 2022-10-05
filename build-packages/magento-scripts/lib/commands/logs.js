@@ -1,6 +1,12 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { docker } = require('../config');
+const { Listr } = require('listr2');
+const { checkRequirements } = require('../tasks/requirements');
+const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const { execAsyncSpawn } = require('../util/exec-async-command');
+const checkConfigurationFile = require('../config/check-configuration-file');
+const getProjectConfiguration = require('../config/get-project-configuration');
+const { getCachedPorts } = require('../config/get-port-config');
+const dockerNetwork = require('../tasks/docker/network');
 
 /**
  * @param {import('yargs')} yargs
@@ -14,7 +20,7 @@ module.exports = (yargs) => {
 
 Available scopes:
 - magento
-- mysql
+- mariadb
 - redis
 - nginx
 - elasticsearch
@@ -77,7 +83,27 @@ npm run logs re (will match redis)`);
             );
         },
         async (argv) => {
-            const containers = (await docker).getContainers();
+            const tasks = new Listr([
+                checkRequirements(),
+                getMagentoVersionConfig(),
+                checkConfigurationFile(),
+                getProjectConfiguration(),
+                getCachedPorts(),
+                dockerNetwork.tasks.createNetwork()
+            ], {
+                concurrent: false,
+                exitOnError: true,
+                ctx: { throwMagentoVersionMissing: true },
+                rendererOptions: { collapse: false, clearOutput: true }
+            });
+            let ctx;
+            try {
+                ctx = await tasks.run();
+            } catch (e) {
+                logger.error(e.message || e);
+                process.exit(1);
+            }
+            const containers = ctx.config.docker.getContainers();
             const services = Object.keys(containers);
 
             if (services.includes(argv.scope) || services.some((service) => service.includes(argv.scope))) {

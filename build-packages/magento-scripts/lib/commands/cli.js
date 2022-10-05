@@ -5,9 +5,9 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
-const { installComposer, installPrestissimo } = require('../tasks/composer');
 const ConsoleBlock = require('../util/console-block');
-const checkComposerCredentials = require('../tasks/requirements/composer');
+const { checkComposerCredentials } = require('../tasks/requirements/composer-credentials');
+const pkg = require('../../package.json');
 
 /**
  * @param {import('yargs')} yargs
@@ -18,8 +18,6 @@ module.exports = (yargs) => {
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
-            installComposer(),
-            installPrestissimo(),
             createBashrcConfigFile(),
             checkComposerCredentials()
         ], {
@@ -44,8 +42,16 @@ module.exports = (yargs) => {
         block
             .addHeader('Create Magento App CLI')
             .addEmptyLine()
+            .addLine(`Magento version: ${logger.style.link(ctx.magentoVersion)}`)
+            .addLine(`${logger.style.file('magento-scripts')} version: ${logger.style.link(pkg.version)}`)
+            .addEmptyLine()
             .addLine(`Available aliases: ${logger.style.command('php')}, ${logger.style.command('magento')}, ${logger.style.command('composer')}`)
             .addLine(`Available shortcuts: magento -> ${logger.style.command('m')}, composer -> ${logger.style.command('c')}`)
+            .addEmptyLine();
+
+        block
+            .addLine(`Execute into any service: ${logger.style.command('exec <service name>')}`)
+            .addLine(`Execute into PHP container: ${logger.style.command('exec php')}`)
             .addEmptyLine();
 
         if (ctx.config.overridenConfiguration.configuration.varnish.enabled) {
@@ -63,9 +69,18 @@ module.exports = (yargs) => {
             .addEmptyLine();
 
         block
-            .addLine(`Connect to MySQL server: ${logger.style.command('mysql')}`)
-            .addLine(`Connect to MySQL server as root: ${logger.style.command('mysqlroot')}`)
+            .addLine(`Connect to MariaDB server: ${logger.style.command('mariadb')}`)
+            .addLine(`Connect to MariaDB server as root: ${logger.style.command('mariadbroot')}`)
             .addEmptyLine();
+
+        if (ctx.debug) {
+            block
+                .addLine('Debug PHP in CLI:')
+                .addLine('1. Start debugger in VSCode or PHPStorm')
+                .addLine(`2. Go to PHP container: ${ logger.style.command('exec php') }`)
+                .addLine(`3. Run CLI command with ${ logger.style.code('XDEBUG_SESSION=phpstorm') } environmental variable: ${ logger.style.command('XDEBUG_SESSION=phpstorm magento <command>') }`)
+                .addLine('4. Enjoy');
+        }
 
         block.log();
 

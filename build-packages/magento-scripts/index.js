@@ -13,7 +13,7 @@ if (isRunningRoot()) {
 We detected that you are running ${ logger.style.misc('magento-scripts') } as root user.
 We cannot allow you to run ${ logger.style.misc('magento-scripts') } with root privileges, this will only cause more problems.
 
-If you are experiencing problems with ${ logger.style.misc('Docker') }, ${ logger.style.misc('PHPBrew') } and ${ logger.style.misc('PHP') } compilation or ${ logger.style.misc('Magento') } setup, running ${ logger.style.misc('magento-scripts') } as root will not solve those problems.
+If you are experiencing problems with ${ logger.style.misc('Docker') } or ${ logger.style.misc('Magento') } setup, running ${ logger.style.misc('magento-scripts') } as root will not solve those problems.
 `);
 
     process.exit(1);

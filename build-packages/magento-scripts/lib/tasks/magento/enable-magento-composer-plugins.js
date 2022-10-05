@@ -4,7 +4,6 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const semver = require('semver');
 const pathExists = require('../../util/path-exists');
 const getJsonfileData = require('../../util/get-jsonfile-data');
-const KnownError = require('../../errors/known-error');
 
 const vendorPath = path.join(process.cwd(), 'vendor');
 const composerJsonPath = path.join(process.cwd(), 'composer.json');
@@ -86,29 +85,80 @@ const enableMagentoComposerPlugins = () => ({
         } = composerJsonData;
         const allowPluginsKeys = Object.keys(allowPlugins);
 
+        const missingPluginsFromAllowPlugins = composerPlugins.filter((plugin) => {
+            const [pluginVendor, pluginName] = plugin.split('/');
+            return !allowPluginsKeys.some((allowedPlugin) => {
+                const [allowedPluginVendor, allowedPluginName] = allowedPlugin.split('/');
+                if (allowedPluginVendor === pluginVendor) {
+                    if (allowedPluginName === '*') {
+                        return true;
+                    }
+
+                    return allowedPluginName === pluginName;
+                }
+
+                return false;
+            });
+        });
+
         if (
             allowPluginsKeys.length === 0
-            || composerPlugins.some((p) => !allowPluginsKeys.includes(p))
+            || missingPluginsFromAllowPlugins.length > 0
         ) {
-            const missingPlugins = composerPlugins.filter((p) => !allowPluginsKeys.includes(p));
+            const missingVendors = missingPluginsFromAllowPlugins.reduce((acc, val) => {
+                const [pluginVendor] = val.split('/');
+
+                if (acc.length === 0) {
+                    return [pluginVendor];
+                }
+
+                if (!acc.includes(pluginVendor)) {
+                    return [...acc, pluginVendor];
+                }
+
+                return acc;
+            }, []);
+
+            const pluginOptions = [
+                {
+                    name: 'all-individual',
+                    message: 'Enable all individually'
+                },
+                {
+                    name: 'manual',
+                    message: 'Configure manually'
+                },
+                {
+                    name: 'skip',
+                    message: 'Skip this step'
+                }
+            ];
+
+            if (missingVendors.length === 1) {
+                pluginOptions.unshift({
+                    name: 'all',
+                    message: `Enable all (${logger.style.code(`"${missingVendors[0]}/*"`)})`
+                });
+            }
+
             const answerForEnablingPlugins = await task.prompt({
                 type: 'Select',
                 message: `Composer 2.2 requires manually allowing composer-plugins to run.
 Magento requires the following plugins to correctly operate:
 
-${missingPlugins.map((p) => logger.style.code(p)).join('\n')}
+${missingPluginsFromAllowPlugins.map((p) => logger.style.code(p)).join('\n')}
 
 Do you want to enable them all or disable some of them?`,
-                choices: ['Enable all', 'Configure manually', 'Skip this step']
+                choices: pluginOptions
             });
 
             switch (answerForEnablingPlugins.toLowerCase()) {
-            case 'enable all': {
+            case 'all': {
                 composerJsonData.config = {
                     ...(composerJsonData.config || {}),
                     'allow-plugins': {
                         ...allowPlugins,
-                        ...missingPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                        [`${missingVendors[0]}/*`]: true
                     }
                 };
 
@@ -117,36 +167,41 @@ Do you want to enable them all or disable some of them?`,
                 });
                 break;
             }
-            case 'configure manually': {
+            case 'all-individual': {
+                composerJsonData.config = {
+                    ...(composerJsonData.config || {}),
+                    'allow-plugins': {
+                        ...allowPlugins,
+                        ...missingPluginsFromAllowPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                    }
+                };
+
+                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
+                    encoding: 'utf-8'
+                });
+                break;
+            }
+            case 'manual': {
                 const userEnabledPlugins = await task.prompt({
                     type: 'MultiSelect',
                     message: 'Please pick plugins you want to enable!',
-                    choices: missingPlugins.map((p) => ({ name: p }))
+                    choices: missingPluginsFromAllowPlugins.map((p) => ({ name: p }))
                 });
 
-                const userConfirmation = await task.prompt({
-                    type: 'Confirm',
-                    message: `Please confirm enabling of the following plugins:\n\n${userEnabledPlugins.map((p) => logger.style.code(p)).join('\n')}\n`
+                const disabledPlugins = composerPlugins.filter((p) => !userEnabledPlugins.includes(p));
+
+                composerJsonData.config = {
+                    ...(composerJsonData.config || {}),
+                    'allow-plugins': {
+                        ...allowPlugins,
+                        ...disabledPlugins.reduce((acc, val) => ({ ...acc, [val]: false }), {}),
+                        ...userEnabledPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                    }
+                };
+
+                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
+                    encoding: 'utf-8'
                 });
-
-                if (userConfirmation) {
-                    const disabledPlugins = composerPlugins.filter((p) => !userEnabledPlugins.includes(p));
-
-                    composerJsonData.config = {
-                        ...(composerJsonData.config || {}),
-                        'allow-plugins': {
-                            ...allowPlugins,
-                            ...disabledPlugins.reduce((acc, val) => ({ ...acc, [val]: false }), {}),
-                            ...userEnabledPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
-                        }
-                    };
-
-                    await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
-                        encoding: 'utf-8'
-                    });
-                } else {
-                    throw new KnownError('Please confirm your choice or choose other option.');
-                }
 
                 break;
             }

@@ -1,16 +1,21 @@
-import { ListrTaskWrapper } from 'listr2';
-
 import { ListrContext } from './context';
 
 /* eslint-disable no-use-before-define */
-export interface ServiceWithVersion {
+export interface ServiceWithImage {
     /**
      * Service version
+     *
+     * @deprecated
      */
     version: string
+
+    /**
+     * Service Docker image
+     */
+    image: string
 }
 
-export interface SSLTerminatorConfiguration extends ServiceWithVersion {
+export interface SSLTerminatorConfiguration extends ServiceWithImage {
     /**
      * Configuration file location
      *
@@ -19,7 +24,7 @@ export interface SSLTerminatorConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface NginxConfiguration extends ServiceWithVersion {
+export interface NginxConfiguration extends ServiceWithImage {
     /**
      * Configuration file location
      *
@@ -28,7 +33,14 @@ export interface NginxConfiguration extends ServiceWithVersion {
     configTemplate: string
 }
 
-export interface VarnishConfiguration extends ServiceWithVersion {
+export interface ElasticSearchConfiguration extends ServiceWithImage {
+    /**
+     * Environmental variables used for Elasticsearch container
+     */
+    env: Record<string, unknown>
+}
+
+export interface VarnishConfiguration extends ServiceWithImage {
     /**
      * Enable or disable Varnish in the project
      */
@@ -40,82 +52,104 @@ export interface VarnishConfiguration extends ServiceWithVersion {
      * @example ./my-varnish-config.vcl
      */
     configTemplate: string
+
+    /**
+     * Enable or disable healthcheck in the project
+     */
+    healthCheck: boolean
 }
 
-export interface PHPExtension extends Record<string, unknown> {
+export interface ComposerConfiguration {
+    /**
+     * Composer version
+     *
+     * This will become part of the url (`https://getcomposer.org/download/<version>/composer.phar`) so you can use the following variants as well:
+     * ```
+     * 'latest-stable'
+     * 'latest-preview'
+     * 'latest-1.x'
+     * 'latest-2.x'
+     * 'latest-2.2.x'
+     *
+     * '2.4.1'
+     * '2.3.10'
+     * '2.2.18'
+     * '2.1.14'
+     * ```
+     *
+     * @url https://getcomposer.org/download/
+     */
+    version: string
+
+    /**
+     *  Composer global plugins that will be added to Docker image
+     */
+    plugins: Record<string, {
+        version?: string
+        options?: string
+        /**
+         * Enable composer plugin
+         */
+        enabled?: boolean
+    }>
+}
+
+export interface PHPExtensionInstallationInstruction {
+    /**
+     * Main extension name that will be used for `docker-php-ext-install` command
+     */
+    name?: string
+    /**
+     * Alternative name for extension
+     *
+     * @example ```js
+     * alternativeName: ['Zend OPcache']
+     * ```
+     */
+    alternativeName?: string[]
+    /**
+     * Command to install extension
+     *
+     * @example ```bash
+     * docker-php-ext-install bcmath
+     * ```
+     * @example ```bash
+     * pecl install xdebug && docker-php-ext-enable xdebug
+     * ```
+     */
+    command: string |
+        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string) |
+        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => Promise<string>)
+
+    /**
+     * System dependencies required by the extension
+     *
+     * @example ```js
+     * dependencies: ['icu-dev']
+     * ```
+     */
+    dependencies?: string[]
+
+    /**
+     * Extension version (if supported)
+     */
     version?: string
-    /**
-     * Name of the extension loaded to PHP.
-     *
-     * @example `libsodium` extension is using `sodium` extensionName because it is loaded into PHP as `sodium` extension
-     * and dynamic library that it requires called `sodium`
-     *
-     * ```
-     * {
-     *  php: {
-     *      extensions: {
-     *          libsodium: {
-     *              extensionName: 'sodium'
-     *          }
-     *      }
-     *  }
-     * }
-     * ```
-     */
-    linuxOptions?: string
-    macosOptions?: string
-    extensionName?: string
-    hooks?: {
-        preEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postEnable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        preDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postDisable?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        preInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-        postInstall?: (config: CMAConfiguration['configuration']) => Promise<void> | void
-    }
-    /**
-     * Allow to define custom logic to install extension
-     */
-    install?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
-
-    /**
-     * Allow to define custom logic to enable an extension
-     */
-    enable?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
-
-    /**
-     * Allow to define custom logic to disable an extension
-     */
-    disable?: (
-        ctx: ListrContext,
-        task: ListrTaskWrapper<ListrContext, any>
-    ) => Promise<void> | void
 }
 
 export interface PHPExtensions {
-    gd: PHPExtension
-    intl: PHPExtension
-    zlib: PHPExtension
-    openssl: PHPExtension
-    sockets: PHPExtension
-    simpleXML: PHPExtension
-    xdebug: PHPExtension
-    fileinfo: PHPExtension
-    libsodium: PHPExtension
-    [key: string]: PHPExtension
+    [key: string]: PHPExtensionInstallationInstruction
 }
 
 export interface PHPConfiguration {
     /**
-     * PHP version
+     * Base image with tag
      */
-    version: string
+    baseImage?: string
+
+    /**
+     * Image with XDebug enabled
+     */
+    debugImage?: string
 
     /**
      * Configuration file template location
@@ -123,16 +157,24 @@ export interface PHPConfiguration {
      * @example ./my-php-template.ini
      */
     configTemplate: string
+    /**
+     * PHP XDebug file template location
+     *
+     * @example ./my-php-debug-template.ini
+     */
+    debugTemplate: string
+
+    /**
+     * PHP-FPM configuration file template location
+     *
+     * @example ./my-php-fpm-template.conf
+     */
+    fpmConfigTemplate: string
 
     /**
      * Extensions for PHP
      */
-    extensions: PHPExtensions & Record<string, PHPExtension>
-
-    /**
-     * Disabled extension list
-     */
-    disabledExtensions?: string[]
+    extensions: PHPExtensions
 }
 export interface SSLConfiguration {
     /**
@@ -173,29 +215,24 @@ export interface CMAConfiguration {
         nginx: NginxConfiguration
 
         /**
-         * MySQL configuration
-         */
-        mysql: ServiceWithVersion
-
-        /**
          * MariaDB configuration
          */
-        mariadb: ServiceWithVersion
+        mariadb: ServiceWithImage
 
         /**
          * ElasticSearch configuration
          */
-        elasticsearch: ServiceWithVersion
+        elasticsearch: ElasticSearchConfiguration
 
         /**
          * Redis configuration
          */
-        redis: ServiceWithVersion
+        redis: ServiceWithImage
 
         /**
          * Composer configuration
          */
-        composer: ServiceWithVersion
+        composer: ComposerConfiguration
 
         /**
          * Varnish configuration
@@ -241,8 +278,8 @@ export interface CMAConfiguration {
     }
     /**
      *  Custom host for website base url
-     * @default 'localhost'
-     * */
+     *  @default 'localhost'
+     */
     host: string
 
     /**
@@ -261,14 +298,4 @@ export interface CMAConfiguration {
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
     prefix: boolean
-
-    /**
-     * Non-overlapping ports config
-     * @default false
-     *
-     * @deprecated Use global configuration file.
-     * @description If set to `true` CMA will try retrieving others CMA projects port configuration
-     * and will not use their ports for itself.
-     */
-    useNonOverlappingPorts: boolean
 }

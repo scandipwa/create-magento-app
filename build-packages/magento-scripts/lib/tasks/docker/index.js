@@ -1,6 +1,7 @@
 const containers = require('./containers');
 const network = require('./network');
-const volumes = require('./volumes');
+const volume = require('./volume');
+const dockerApi = require('./api');
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -8,17 +9,6 @@ const volumes = require('./volumes');
 const startServices = () => ({
     title: 'Starting Docker services',
     task: (ctx, task) => task.newListr([
-        {
-            title: 'Preparing services',
-            task: (ctx, task) => task.newListr([
-                network.createNetwork(),
-                volumes.createVolumes()
-            ], {
-                concurrent: true,
-                exitOnError: true,
-                ctx
-            })
-        },
         containers.startContainers(),
         containers.checkContainersAreRunning()
     ], {
@@ -31,13 +21,16 @@ const startServices = () => ({
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const stopServices = () => ({
+    title: 'Stopping Docker services',
     task: (ctx, task) => task.newListr([
         containers.stopContainers(),
-        network.removeNetwork()
+        volume.removeLocalVolumes(),
+        network.tasks.removeNetwork()
     ])
 });
 
 module.exports = {
     startServices,
-    stopServices
+    stopServices,
+    dockerApi
 };

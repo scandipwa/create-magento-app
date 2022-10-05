@@ -8,13 +8,12 @@ const runMagentoCommand = require('./run-magento');
  */
 const magentoTask = (command, options = {}) => ({
     title: `Running command 'magento ${command}'`,
-    task: async ({ magentoVersion, verbose }, task) => {
+    task: async (ctx, task) => {
         try {
-            await runMagentoCommand(command, {
-                callback: !verbose ? undefined : (t) => {
+            await runMagentoCommand(ctx, command, {
+                callback: !ctx.verbose ? undefined : (t) => {
                     task.output = t;
                 },
-                magentoVersion,
                 throwNonZeroCode: true
             });
         } catch (e) {

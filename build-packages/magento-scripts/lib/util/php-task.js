@@ -1,4 +1,4 @@
-const runPhpCode = require('./run-php');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 
 /**
  * @param {String} command
@@ -7,14 +7,11 @@ const runPhpCode = require('./run-php');
  */
 const phpTask = (command, options = {}) => ({
     title: !options.noTitle ? `Running command 'php ${command}` : undefined,
-    task: (ctx, task) => runPhpCode(command, {
+    task: (ctx, task) => runPHPContainerCommand(ctx, command, {
         callback: (t) => {
             task.output = t;
         },
-        throwNonZeroCode: true,
-        magentoVersion: ctx.magentoVersion,
-        env: options.env,
-        useRosettaOnMac: ctx.arch === 'arm64' && ctx.platform === 'darwin'
+        throwNonZeroCode: true
     })
 });
 

@@ -1,4 +1,3 @@
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const setConfigFile = require('../../util/set-config');
@@ -19,7 +18,8 @@ const createSSLTerminatorConfig = () => ({
                 overridenConfiguration,
                 baseConfig
             },
-            isWsl
+            debug,
+            isDockerDesktop
         } = ctx;
 
         const {
@@ -64,10 +64,8 @@ const createSSLTerminatorConfig = () => ({
         }
 
         const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1';
-        const isLinux = os.platform() === 'linux';
-        const isNativeLinux = isLinux && !isWsl;
-        const hostMachine = isNativeLinux ? '127.0.0.1' : 'host.docker.internal';
-        const hostPort = isNativeLinux ? ports.sslTerminator : 80;
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
+        const hostPort = !isDockerDesktop ? ports.sslTerminator : 80;
 
         try {
             await setConfigFile({
@@ -84,11 +82,30 @@ const createSSLTerminatorConfig = () => ({
                     hostMachine,
                     hostPort,
                     config: overridenConfiguration,
-                    networkToBindTo
+                    networkToBindTo,
+                    debug
                 }
             });
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during ssl terminator config creation\n\n${e}`);
+            throw new UnknownError(`Unexpected error appeared during ssl terminator config creation\n\n${e}`);
+        }
+
+        // fixes ngrok error "ngrok.io redirected you too many times"
+        try {
+            await setConfigFile({
+                configPathname: path.join(
+                    baseConfig.cacheDir,
+                    'ssl-terminator',
+                    'fastcgi_params'
+                ),
+                template: path.join(baseConfig.templateDir, 'nginx.fastcgi_params.template'),
+                overwrite: true,
+                templateArgs: {
+                    isNgrok: host.endsWith('ngrok.io')
+                }
+            });
+        } catch (e) {
+            throw new UnknownError(`Unexpected error appeared during ssl terminator fastcgi_params config creation\n\n${e}`);
         }
     }
 });

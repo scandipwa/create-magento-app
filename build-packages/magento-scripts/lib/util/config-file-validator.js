@@ -46,10 +46,17 @@ const sslSchema = Joi.object({
     ssl_certificate_key: Joi.string().required()
 });
 
+/**
+ * @type {Joi.ObjectSchema<import('../../typings/index').PHPExtensions>}
+ */
 const phpExtensionConfiguration = Joi.object()
     .pattern(
         Joi.string(),
         Joi.object({
+            name: Joi.string().optional(),
+            alternativeName: Joi.array().items(Joi.string()).optional(),
+            command: Joi.alternatives().try(Joi.func(), Joi.string()).optional(),
+            dependencies: Joi.array().items(Joi.string()).optional(),
             version: Joi.string().optional()
         })
             .unknown()
@@ -59,38 +66,49 @@ const phpExtensionConfiguration = Joi.object()
  * @type {Joi.ObjectSchema<import('../../typings').PHPConfiguration>}
  */
 const phpConfigurationSchema = Joi.object({
-    version: Joi.string().optional().custom(versionValidator),
+    baseImage: Joi.string().optional(),
+    debugImage: Joi.string().optional(),
+    fpmConfigTemplate: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
-    extensions: phpExtensionConfiguration.optional(),
-    disabledExtensions: Joi.array().items(Joi.string())
+    debugTemplate: Joi.string().optional().custom(fileExistsValidator),
+    extensions: phpExtensionConfiguration.optional()
 });
 
 /**
  * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
  */
 const nginxConfigurationSchema = Joi.object({
-    version: Joi.string().optional(),
+    image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').NginxConfiguration>}
+ * @type {Joi.ObjectSchema<import('../../typings').VarnishConfiguration>}
  */
 const varnishConfigurationSchema = Joi.object({
     enabled: Joi.boolean().optional(),
-    version: Joi.string().optional(),
+    healthCheck: Joi.boolean().optional(),
+    image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator)
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').ServiceWithVersion>}
+ * @type {Joi.ObjectSchema<import('../../typings').ServiceWithImage>}
  */
 const serviceConfigurationSchema = Joi.object({
-    version: Joi.string().optional()
+    image: Joi.string().optional()
 });
 
 /**
- * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']['composer']>}
+ * @type {Joi.ObjectSchema<import('../../typings').ElasticSearchConfiguration>}
+ */
+const elasticsearchConfigurationSchema = Joi.object({
+    image: Joi.string().optional(),
+    env: Joi.object().optional()
+});
+
+/**
+ * @type {Joi.ObjectSchema<import('../../typings').ComposerConfiguration>}
  */
 const composerConfigurationSchema = Joi.object({
     version: Joi.string().optional().custom((value) => {
@@ -99,7 +117,17 @@ const composerConfigurationSchema = Joi.object({
         }
 
         return versionValidator(value);
-    })
+    }),
+    plugins: Joi.object()
+        .pattern(
+            Joi.string(),
+            Joi.object({
+                version: Joi.string().optional(),
+                options: Joi.string().optional(),
+                enabled: Joi.boolean().optional()
+            })
+                .unknown()
+        )
 });
 
 /**
@@ -108,12 +136,13 @@ const composerConfigurationSchema = Joi.object({
 const configurationSchema = Joi.object({
     php: phpConfigurationSchema.optional(),
     nginx: nginxConfigurationSchema.optional(),
-    mysql: serviceConfigurationSchema.optional(),
-    elasticsearch: serviceConfigurationSchema.optional(),
+    mariadb: serviceConfigurationSchema.optional(),
+    elasticsearch: elasticsearchConfigurationSchema.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),
-    sslTerminator: nginxConfigurationSchema.optional()
+    sslTerminator: nginxConfigurationSchema.optional(),
+    maildev: serviceConfigurationSchema.optional()
 });
 
 /**
@@ -124,8 +153,7 @@ const configFileSchema = Joi.object({
     host: Joi.string().optional(),
     ssl: sslSchema.optional(),
     prefix: Joi.bool().optional(),
-    configuration: configurationSchema.required(),
-    useNonOverlappingPorts: Joi.bool().forbidden()
+    configuration: configurationSchema.required()
 });
 
 /**

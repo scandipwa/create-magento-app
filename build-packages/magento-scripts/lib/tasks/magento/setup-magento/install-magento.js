@@ -5,6 +5,8 @@ const UnknownError = require('../../../errors/unknown-error');
 const runMagentoCommand = require('../../../util/run-magento');
 const envPhpToJson = require('../../../util/env-php-json');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
+const { defaultMagentoDatabase } = require('../../database/default-magento-database');
+const defaultMagentoUser = require('../../database/default-magento-user');
 
 /**
  * @param {Object} [param0]
@@ -20,19 +22,21 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
         const {
             magentoVersion,
             config: {
-                docker,
                 magentoConfiguration
             },
             ports,
-            mysqlConnection
+            databaseConnection,
+            isDockerDesktop
         } = ctx;
 
-        const [tableResponse] = await mysqlConnection.query(
+        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
+
+        const [tableResponse] = await databaseConnection.query(
             'SELECT * FROM information_schema.tables WHERE table_schema = \'magento\' AND table_name = \'admin_user\' LIMIT 1;'
         );
 
         if (tableResponse.length > 0) {
-            const response = await mysqlConnection.query(
+            const response = await databaseConnection.query(
                 'select * from admin_user where username=\'admin\';'
             );
 
@@ -54,26 +58,22 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                     ]
                 });
 
-                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
+                await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 0;');
 
                 if (confirmDeleteAdminUsers === 'delete-all') {
-                    await mysqlConnection.query(`
+                    await databaseConnection.query(`
                     TRUNCATE TABLE admin_user;
                 `);
                 } else {
-                    await mysqlConnection.query(`
+                    await databaseConnection.query(`
                     DELETE FROM admin_user WHERE username='admin';
                 `);
                 }
 
-                await mysqlConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
+                await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 1;');
             }
         }
-
-        const { mysql: { env } } = docker.getContainers(ports);
-        const envPhpData = await envPhpToJson(process.cwd(), {
-            magentoVersion: ctx.magentoVersion
-        });
+        const envPhpData = await envPhpToJson(ctx);
 
         const envPhpHaveEncryptionKey = envPhpData && envPhpData.crypt && envPhpData.crypt.key && envPhpData.crypt.key;
 
@@ -95,7 +95,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
 
         const elasticsearchConfiguration = ` \
 --search-engine='elasticsearch7' \
---elasticsearch-host='127.0.0.1' \
+--elasticsearch-host='${ hostMachine }' \
 --elasticsearch-port='${ ports.elasticsearch }'`;
 
         /**
@@ -114,25 +114,24 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 ${ !isMagento23 ? elasticsearchConfiguration : '' } \
                 ${encryptionKeyOption || ''} \
                 --session-save=redis \
-                --session-save-redis-host='127.0.0.1' \
+                --session-save-redis-host='${ hostMachine }' \
                 --session-save-redis-port='${ ports.redis }' \
                 --session-save-redis-log-level='3' \
                 --session-save-redis-max-concurrency='30' \
                 --session-save-redis-db='1' \
                 --session-save-redis-disable-locking='1' \
                 --cache-backend='redis' \
-                --cache-backend-redis-server='127.0.0.1' \
+                --cache-backend-redis-server='${ hostMachine }' \
                 --cache-backend-redis-port='${ ports.redis }' \
                 --cache-backend-redis-db='0't \
-                --db-host='127.0.0.1:${ ports.mysql }' \
-                --db-name='${ env.MYSQL_DATABASE }' \
-                --db-user='${ env.MYSQL_USER }' \
-                --db-password='${ env.MYSQL_PASSWORD }' \
+                --db-host='${ hostMachine }:${ ports.mariadb }' \
+                --db-name='${ defaultMagentoDatabase }' \
+                --db-user='${ defaultMagentoUser.user }' \
+                --db-password='${ defaultMagentoUser.password }' \
                 --backend-frontname='${ magentoConfiguration.adminuri }' \
                 --no-interaction`;
 
-                await runMagentoCommand(command, {
-                    magentoVersion,
+                await runMagentoCommand(ctx, command, {
                     throwNonZeroCode: true,
                     callback: !ctx.verbose ? undefined : (t) => {
                         task.output = t;
@@ -142,9 +141,6 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 installed = true;
             } catch (e) {
                 errors.push(e);
-                if (tries === 2) {
-                    throw e;
-                }
             }
 
             if (installed) {

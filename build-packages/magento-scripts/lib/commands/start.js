@@ -17,6 +17,29 @@ const cmaGaTrackingId = 'UA-127741417-7';
 
 googleAnalytics.setGaTrackingId(cmaGaTrackingId);
 
+const reportErrors = async (errors) => {
+    for (const error of errors) {
+        const path = (error.path && ` Error path: ${error.path} `) || '';
+        if (error instanceof UnknownError || error instanceof KnownError) {
+            logger.error(error.message);
+            logger.error(error.stack);
+            if (error instanceof UnknownError) {
+                await googleAnalytics.trackError(`Unknown Error:${path}${error.stack}`);
+            } else {
+                await googleAnalytics.trackError(`Known Error:${path}${error.message}`);
+            }
+        } else if (error instanceof Error) {
+            logger.error(error.message);
+            logger.error(error.stack);
+            await googleAnalytics.trackError(`Regular Error:${path}${error.message}`);
+        } else {
+            logger.error(error);
+            logger.error(error.stack);
+            await googleAnalytics.trackError(`Non Error:${path}${error}`); // track non-errors throws
+        }
+    }
+};
+
 /**
  * @param {import('yargs')} yargs
  */
@@ -49,10 +72,6 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             })
-            .option('import-db', {
-                describe: 'Import database dump to MySQL',
-                type: 'string'
-            })
             .option('edition', {
                 alias: 'e',
                 describe: 'Magento Edition to install',
@@ -65,6 +84,16 @@ module.exports = (yargs) => {
             .option('verbose', {
                 alias: 'v',
                 describe: 'Enable verbose logging',
+                type: 'boolean',
+                default: false
+            })
+            .option('pull-images', {
+                describe: 'Pull Docker images',
+                type: 'boolean',
+                default: false
+            })
+            .option('reset-global-config', {
+                describe: 'Reset global magento-scripts configuration',
                 type: 'boolean',
                 default: false
             }),
@@ -80,7 +109,8 @@ module.exports = (yargs) => {
                     rendererOptions: {
                         showErrorMessage: false,
                         showTimer: true
-                    }
+                    },
+                    collectErrors: 'minimal'
                 }
             );
             const timeStamp = Date.now();
@@ -120,6 +150,13 @@ module.exports = (yargs) => {
                     block.addLine(`  ${title}: ${text}`);
                 });
 
+                block.addEmptyLine();
+
+                block.addLine(logger.style.misc('MailDev'));
+                instanceMetadata.maildev.forEach(({ title, text }) => {
+                    block.addLine(`  ${title}: ${text}`);
+                });
+
                 const themes = await getCSAThemes();
                 if (themes.length > 0) {
                     const theme = themes[0];
@@ -148,10 +185,18 @@ module.exports = (yargs) => {
                 block.log();
 
                 logger.note(
-                    `MySQL credentials, containers status and project information available in ${logger.style.code('npm run status')} command.
+                    `MariaDB credentials, containers status and project information available in ${logger.style.code('npm run status')} command.
       To access Magento CLI, Composer and PHP for this project use ${logger.style.code('npm run cli')} command.`
                 );
                 logger.log('');
+
+                if (tasks.err && tasks.err.length > 0) {
+                    logger.warn('During the start, we encountered some errors that have not impacted the start-up process!');
+                    logger.log('');
+                    for (const err of tasks.err) {
+                        logger.error(`Error path: ${err.path}\nError message: ${err.message}\n\nError stack: ${err.stack}`);
+                    }
+                }
 
                 if (!analytics) {
                     process.exit(0);
@@ -178,22 +223,16 @@ module.exports = (yargs) => {
                     await googleAnalytics.trackError(e.message || e);
                 }
 
+                if (tasks.err && tasks.err.length > 0) {
+                    for (const err of tasks.err) {
+                        console.log(err);
+                    }
+                    await reportErrors(tasks.err);
+                }
+
                 process.exit(0);
             } catch (e) {
-                if (e instanceof UnknownError || e instanceof KnownError) {
-                    logger.error(e.message);
-                    if (e instanceof UnknownError) {
-                        await googleAnalytics.trackError(`Unknown Error: ${e.stack}`);
-                    } else {
-                        await googleAnalytics.trackError(`Known Error: ${e.message}`);
-                    }
-                } else if (e instanceof Error) {
-                    logger.error(e.message);
-                    await googleAnalytics.trackError(`Regular Error: ${e.message}`);
-                } else {
-                    logger.error(e);
-                    await googleAnalytics.trackError(`Non Error: ${e}`); // track non-errors throws
-                }
+                await reportErrors([e]);
                 process.exit(1);
             }
         }

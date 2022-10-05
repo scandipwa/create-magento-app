@@ -1,17 +1,23 @@
-const path = require('path');
 const { defaultMagentoConfig } = require('../magento-config');
-const { php74 } = require('../php/releases');
-const { sslTerminator } = require('../ssl-terminator');
+const sodium = require('../php/extensions/sodium');
+const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
+const { php74 } = require('../php/versions');
+const { sslTerminator } = require('../services/ssl-terminator');
 const { varnish66 } = require('../varnish/varnish-6-6');
+const { repo } = require('../php/base-repo');
+const { nginx118 } = require('../services/nginx/versions');
+const { composer1 } = require('../services/composer/versions');
+const { maildev } = require('../services/maildev');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.1',
     configuration: {
-        php: php74({ templateDir }),
-        nginx: {
-            version: '1.18.0',
-            configTemplate: path.join(templateDir || '', 'nginx.template.conf')
-        },
+        php: php74({
+            templateDir,
+            extensions: { ...magento24PHPExtensionList, sodium },
+            baseImage: `${ repo }:php-7.4-magento-2.4`
+        }),
+        nginx: nginx118({ templateDir }),
         redis: {
             version: '6.0.10-alpine'
         },
@@ -24,11 +30,10 @@ module.exports = ({ templateDir } = {}) => ({
         elasticsearch: {
             version: '7.12.1'
         },
-        composer: {
-            version: '1'
-        },
+        composer: composer1(),
         varnish: varnish66({ templateDir }),
-        sslTerminator: sslTerminator({ templateDir })
+        sslTerminator: sslTerminator({ templateDir }),
+        maildev: maildev()
     },
     magento: defaultMagentoConfig,
     host: 'localhost',

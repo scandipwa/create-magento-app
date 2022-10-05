@@ -1,3 +1,4 @@
+const { getProjectConfig } = require('./config');
 const { getConfigFromMagentoVersion } = require('./index');
 
 /**
@@ -8,7 +9,13 @@ const getProjectConfiguration = () => ({
     task: async (ctx) => {
         const { magentoVersion } = ctx;
 
-        ctx.config = await getConfigFromMagentoVersion(magentoVersion, process.cwd());
+        if (typeof ctx.debug !== 'boolean') {
+            ctx.debug = getProjectConfig().debug;
+        }
+
+        ctx.config = await getConfigFromMagentoVersion(ctx, {
+            magentoVersion
+        });
     }
 });
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const path = require('path');
 const logger = require('@scandipwa/scandipwa-dev-utils/logger');
 const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
@@ -5,8 +6,20 @@ const { getProjectCreatedAt, getPrefix } = require('../../util/prefix');
 const { version: packageVersion } = require('../../../package.json');
 const { getArchSync } = require('../../util/arch');
 const ConsoleBlock = require('../../util/console-block');
-const { getComposerVersion } = require('../composer');
 const { getInstanceMetadata } = require('../../util/instance-metadata');
+
+const isJSON = (str) => {
+    try {
+        const result = JSON.parse(str);
+        if (typeof result === 'object') {
+            return true;
+        }
+    } catch (e) {
+        //
+    }
+
+    return false;
+};
 
 /**
  * @param {string} port
@@ -22,22 +35,23 @@ const parsePort = (port) => {
     };
 };
 
+/**
+ * @param {import('../../../typings/context').ListrContext & { containers: ReturnType<Awaited<ReturnType<import('../../config/docker')>>['getContainers']> }} ctx
+ */
 const prettyStatus = async (ctx) => {
     const {
         config: {
             baseConfig,
-            php,
-            composer
+            projectConfig
         },
         magentoVersion,
         dockerVersion,
-        PHPBrewVersion,
         platform,
         platformVersion,
-        containers
+        containers,
+        composerVersion
     } = ctx;
     const projectCreatedAt = getProjectCreatedAt();
-    const composerVersion = await getComposerVersion({ composer, php });
 
     const prefix = getPrefix();
 
@@ -48,7 +62,7 @@ const prettyStatus = async (ctx) => {
     block
         .addHeader(`magento-scripts version: ${ logger.style.link(packageVersion) }`)
         .addEmptyLine()
-        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'}`)
+        .addLine(`Project: ${logger.style.file(baseConfig.prefix)} ${prefix === folderName ? '(without prefix)' : '(with prefix)'} (with php container)${ projectConfig.debug ? ' (with debugging)' : '' }`)
         .addLine(`Project location: ${logger.style.link(process.cwd())}`);
 
     if (projectCreatedAt) {
@@ -57,12 +71,9 @@ const prettyStatus = async (ctx) => {
 
     block
         .addLine(`Magento 2 version: ${logger.style.file(magentoVersion)}`)
-        .addLine(`PHP version: ${logger.style.file(php.version)}`)
-        .addLine(`PHP location: ${logger.style.link(php.binPath)}`)
+        .addLine(`PHP version: ${logger.style.file(ctx.phpVersion)}`)
         .addLine(`Composer version: ${logger.style.file(composerVersion)}`)
-        .addLine(`Composer location: ${logger.style.link(path.relative(process.cwd(), composer.binPath))}`)
         .addLine(`Docker version: ${logger.style.file(dockerVersion)}`)
-        .addLine(`PHPBrew version: ${logger.style.file(PHPBrewVersion)}`)
         .addLine(`Platform: ${logger.style.code(platform)}`)
         .addLine(`Platform version: ${logger.style.file(platformVersion)}`)
         .addLine(`Platform architecture: ${logger.style.file(getArchSync())}`)
@@ -77,19 +88,27 @@ const prettyStatus = async (ctx) => {
 
         let containerStatus;
 
-        if (container.status && container.status.Health) {
-            containerStatus = `✓ ${ logger.style.file(container.status.Health.Status) } and ${ logger.style.file('running') }`;
+        if (container.status && container.status.State && container.status.State.Health) {
+            containerStatus = `✓ ${ logger.style.file(container.status.State.Health.Status) } and ${ logger.style.file('running') }`;
+        } else if (container.status && container.status.State) {
+            containerStatus = logger.style.file(container.status.State.Status);
         } else {
-            containerStatus = logger.style.file(container.status.Status);
+            containerStatus = '✖ Not running';
         }
 
         block
             .addLine(`Status: ${containerStatus}`)
-            .addLine(`Name: ${logger.style.misc(container.name)}`)
-            .addLine(`Image: ${logger.style.file(container.image)}`)
-            .addLine(`Network: ${logger.style.link(container.network)}`);
+            .addLine(`Name: ${logger.style.misc(container.name)}`);
 
-        if (container.forwardedPorts && container.forwardedPorts.length > 0) {
+        if (container.status && container.status.Config && container.status.Config.Image) {
+            block.addLine(`Image: ${logger.style.file(container.status.Config.Image)}`);
+        } else {
+            block.addLine(`Image: ${logger.style.file(container.image)}`);
+        }
+
+        block.addLine(`Network: ${logger.style.link(container.network)}`);
+
+        if (!containerStatus.includes('Not running') && container.forwardedPorts && container.forwardedPorts.length > 0) {
             block.addLine('Port forwarding:');
             container.forwardedPorts.forEach((port) => {
                 const { host, hostPort, containerPort } = parsePort(port);
@@ -104,8 +123,32 @@ const prettyStatus = async (ctx) => {
         if (container.env && Object.keys(container.env).length > 0) {
             block.addLine('Environment variables:');
             for (const [envName, envValue] of Object.entries(container.env)) {
-                block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+                if (isJSON(envValue)) {
+                    const beautifyJSONLines = JSON.stringify(JSON.parse(envValue), null, 1).split('\n');
+
+                    block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(beautifyJSONLines.shift())}`);
+
+                    let currentOpeningBracket = 0;
+
+                    beautifyJSONLines.forEach((line) => {
+                        block.addLine(`${'  '.repeat(2 + currentOpeningBracket)}${logger.style.file(line)}`);
+                        if (['{', '['].some((openingBracketVariant) => line.includes(openingBracketVariant))) {
+                            currentOpeningBracket++;
+                        } else if (['}', ']'].some((closingBracketVariant) => line.includes(closingBracketVariant))) {
+                            currentOpeningBracket--;
+                        }
+                    });
+                } else {
+                    block.addLine(`${' '.repeat(3)} ${logger.style.misc(envName)}=${logger.style.file(envValue)}`);
+                }
             }
+        }
+
+        if (container.description) {
+            block.addLine('Description:');
+            container.description.split('\n').forEach((line) => {
+                block.addLine(line);
+            });
         }
     });
 
@@ -127,14 +170,6 @@ const prettyStatus = async (ctx) => {
     instanceMetadata.admin.forEach(({ title, text }) => {
         block.addLine(`  ${title}: ${text}`);
     });
-    // block
-    //     .addEmptyLine()
-    //     .addSeparator('Magento status')
-    //     .addEmptyLine()
-    //     .addLine(`Web location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/`)}`)
-    //     .addLine(`Magento Admin panel location: ${logger.style.link(`${ssl.enabled ? 'https' : 'http'}://${host}${ports.app === 80 ? '' : `:${ports.app}`}/${magentoConfiguration.adminuri}`)}`)
-    //     .addLine(`Magento Admin panel credentials: ${logger.style.misc(magentoConfiguration.user)} - ${logger.style.misc(magentoConfiguration.password)}`)
-    //     .addEmptyLine();
 
     block.log();
 };

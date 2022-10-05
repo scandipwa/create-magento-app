@@ -9,7 +9,9 @@
             "type": "php",
             "request": "launch",
             "port": <%~ it.XDebugPort %>,
-            "runtimeExecutable": "<%~ it.PHPBinPath %>"
+            "pathMappings": {
+                "<%~ it.baseConfig.containerMagentoDir %>": "${workspaceFolder}"
+            }
         }
     ]
 }

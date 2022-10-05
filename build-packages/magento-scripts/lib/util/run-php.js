@@ -1,34 +1,23 @@
-const { execAsyncSpawn } = require('./exec-async-command');
-const { getConfigFromMagentoVersion, defaultConfiguration } = require('../config');
 const UnknownError = require('../errors/unknown-error');
+const { runPHPContainerCommand } = require('../tasks/php/php-container');
 /**
  * Execute PHP code
- * @param {String} command magento command
+ * @param {import('../../typings/context').ListrContext} ctx
+ * @param {String} command php command
  * @param {Object} options
  * @param {Boolean} options.logOutput Log output to console using logger
  * @param {Boolean} options.withCode
  * @param {String} options.cwd
  * @param {() => {}} options.callback
  * @param {Boolean} options.throwNonZeroCode Throw if command return non 0 code.
- * @param {String} options.magentoVersion Magento version for config
  * @param {Record<string, string>} options.env Environment variables
  * @param {Boolean} options.useRosettaOnMac Use Rosetta 2 on MacOS
  */
-const runPhpCode = async (command, options = {}) => {
+const runPhpCode = async (ctx, command, options = {}) => {
     const {
-        throwNonZeroCode = true,
-        magentoVersion = defaultConfiguration.magentoVersion
+        throwNonZeroCode = true
     } = options;
-    const { php } = await getConfigFromMagentoVersion(magentoVersion);
-    let spawnCommand = `${php.binPath} -c ${php.iniPath} ${command}`;
-    if (options.env && Object.keys(options.env).length > 0) {
-        const env = Object.entries(options.env).map(([key, value]) => `${key}=${value}`).join(' ');
-        spawnCommand = `${env} ${spawnCommand}`;
-    }
-    if (options.useRosettaOnMac) {
-        spawnCommand = `arch -x86_64 bash -c '${spawnCommand}'`;
-    }
-    const { code, result } = await execAsyncSpawn(spawnCommand, {
+    const { code, result } = await runPHPContainerCommand(ctx, `php ${command}`, {
         ...options,
         withCode: true
     });
