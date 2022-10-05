@@ -209,11 +209,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 mountVolumes: !isDockerDesktop ? [
                     `${ cacheDir }/nginx/conf.d:/etc/nginx/conf.d`,
                     `${ path.join(magentoDir, 'pub') }:${path.join(containerMagentoDir, 'pub')}`,
-                    `${ path.join(magentoDir, 'setup') }:${path.join(containerMagentoDir, 'setup')}`
+                    `${ path.join(magentoDir, 'setup') }:${path.join(containerMagentoDir, 'setup')}`,
+                    `${ path.join(cacheDir, 'ssl-terminator', 'fastcgi_params') }:/etc/nginx/fastcgi_params`
                 ] : [
                     `${ volumes.nginx.name }:/etc/nginx/conf.d`,
                     `${ volumes.appPub.name }:${path.join(containerMagentoDir, 'pub')}`,
-                    `${ volumes.appSetup.name }:${path.join(containerMagentoDir, 'setup')}`
+                    `${ volumes.appSetup.name }:${path.join(containerMagentoDir, 'setup')}`,
+                    `${ path.join(cacheDir, 'ssl-terminator', 'fastcgi_params') }:/etc/nginx/fastcgi_params`
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
