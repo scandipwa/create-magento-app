@@ -28,6 +28,7 @@ module.exports = () => ({
             { path: 'web/secure/base_url', value: httpsUrl },
             { path: 'web/secure/use_in_frontend', value: enableSecureFrontend },
             { path: 'web/secure/use_in_adminhtml', value: enableSecureFrontend },
+            { path: 'web/secure/enable_upgrade_insecure', value: enableSecureFrontend },
             { path: 'web/cookie/cookie_domain', value: null }
         ], { databaseConnection, task });
     }
