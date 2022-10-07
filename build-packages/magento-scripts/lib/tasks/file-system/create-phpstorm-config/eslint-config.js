@@ -17,6 +17,17 @@ const defaultESLintComponentConfiguration = {
     }
 };
 
+const esLintDefaultConfigurationData = {
+    '?xml': {
+        '@_version': '1.0',
+        '@_encoding': 'UTF-8'
+    },
+    project: {
+        '@_version': '4',
+        component: defaultESLintComponentConfiguration
+    }
+};
+
 const setupESlintConfig = async (esLintConfigurationData) => {
     let hasChanges = false;
     const themes = await getCSAThemes();
@@ -56,6 +67,18 @@ const setupESLintConfigTask = () => ({
             let hasChanges = false;
             const esLintConfigurationData = await loadXmlFile(pathToESLintConfig);
 
+            if (!esLintConfigurationData.project) {
+                esLintConfigurationData.project = {
+                    ...esLintDefaultConfigurationData.project
+                };
+            }
+
+            if (!esLintConfigurationData['?xml']) {
+                esLintConfigurationData['?xml'] = {
+                    ...esLintDefaultConfigurationData['?xml']
+                };
+            }
+
             if (esLintConfigurationData.project.component && !Array.isArray(esLintConfigurationData.project.component)) {
                 hasChanges = true;
                 esLintConfigurationData.project.component = [esLintConfigurationData.project.component];
@@ -84,20 +107,9 @@ const setupESLintConfigTask = () => ({
             return;
         }
 
-        const esLintConfigurationData = {
-            '?xml': {
-                '@_version': '1.0',
-                '@_encoding': 'UTF-8'
-            },
-            project: {
-                '@_version': '4',
-                component: defaultESLintComponentConfiguration
-            }
-        };
+        await setupESlintConfig(esLintDefaultConfigurationData);
 
-        await setupESlintConfig(esLintConfigurationData);
-
-        await buildXmlFile(pathToESLintConfig, esLintConfigurationData);
+        await buildXmlFile(pathToESLintConfig, esLintDefaultConfigurationData);
     }
 });
 
