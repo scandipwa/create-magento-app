@@ -120,10 +120,12 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         .workDir(ctx.config.baseConfig.containerMagentoDir);
 
     const imagePathEnv = imageDetails.Config.Env.find((env) => env.startsWith('PATH'));
+    const magentoBinDir = path.join(ctx.config.baseConfig.containerMagentoDir, 'bin');
+    const vendorBinDir = path.join(ctx.config.baseConfig.containerMagentoDir, 'vendor', 'bin');
 
     dockerFileInstructions
         .env({
-            PATH: `${ imagePathEnv.split('=').pop() }:${ path.join(ctx.config.baseConfig.containerMagentoDir, 'bin') }`
+            PATH: `${ imagePathEnv.split('=').pop() }:${ magentoBinDir }:${vendorBinDir }`
         });
 
     return dockerFileInstructions;
