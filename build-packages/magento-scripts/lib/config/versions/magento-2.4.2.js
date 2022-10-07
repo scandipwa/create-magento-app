@@ -1,13 +1,14 @@
 const { defaultMagentoConfig } = require('../magento-config');
-const sodium = require('../php/extensions/sodium');
+const sodium = require('../services/php/extensions/sodium');
 const { magento24PHPExtensionList } = require('../magento/required-php-extensions');
-const { php74 } = require('../php/versions');
+const { php74 } = require('../services/php/versions');
 const { sslTerminator } = require('../services/ssl-terminator');
-const { varnish66 } = require('../varnish/varnish-6-6');
-const { repo } = require('../php/base-repo');
+const { varnish66 } = require('../services/varnish');
+const { repo } = require('../services/php/base-repo');
 const { nginx118 } = require('../services/nginx/versions');
 const { composer2 } = require('../services/composer/versions');
 const { maildev } = require('../services/maildev');
+const { redis60 } = require('../services/redis');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.4.2',
@@ -18,9 +19,7 @@ module.exports = ({ templateDir } = {}) => ({
             baseImage: `${ repo }:php-7.4-magento-2.4`
         }),
         nginx: nginx118({ templateDir }),
-        redis: {
-            version: '6.0'
-        },
+        redis: redis60(),
         mysql: {
             version: '8.0'
         },

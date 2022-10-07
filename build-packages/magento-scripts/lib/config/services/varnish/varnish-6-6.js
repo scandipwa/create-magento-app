@@ -10,6 +10,4 @@ const varnish66 = ({ templateDir }) => ({
     configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
 });
 
-module.exports = {
-    varnish66
-};
+module.exports = varnish66;
