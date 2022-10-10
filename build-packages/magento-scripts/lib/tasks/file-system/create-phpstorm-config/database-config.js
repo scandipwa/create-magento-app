@@ -3,6 +3,7 @@ const path = require('path');
 const { baseConfig } = require('../../../config');
 const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
 const UnknownError = require('../../../errors/unknown-error');
+const { connectionStringParser, connectionStringBuilder } = require('../../../util/connection-string');
 const pathExists = require('../../../util/path-exists');
 const setConfigFile = require('../../../util/set-config');
 
@@ -40,7 +41,7 @@ const getToDataSource = (data, defaultData) => {
 
     return data.project.component['data-source'];
 };
-
+// const mariadbVersion = await ctx.databaseConnection.query('SHOW VARIABLES LIKE "%version%";');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
@@ -153,8 +154,6 @@ const setupDataSourceLocalConfig = () => ({
  */
 const setupDataSourceConfig = () => ({
     task: async (ctx, task) => {
-        const jdbcUrl = `jdbc:mysql://localhost:${ctx.ports.mysql}/magento`;
-
         if (await pathExists(databaseConfiguration.dataSources.path)) {
             let hasChanges = false;
             const dataSourcesData = await loadXmlFile(databaseConfiguration.dataSources.path);
@@ -176,6 +175,26 @@ const setupDataSourceConfig = () => ({
                 }
             );
 
+            if (dataSource['jdbc-url']) {
+                const parsedJDBC = dataSource['jdbc-url'].match(/jdbc:(\S+)/i);
+                if (parsedJDBC && parsedJDBC.length > 0) {
+                    const url = parsedJDBC[1];
+                    const parsedJDBCUrl = connectionStringParser(url);
+
+                    if (/\S+:undefined/.test(parsedJDBCUrl.host)) {
+                        hasChanges = true;
+                        parsedJDBCUrl.host = parsedJDBCUrl.host.split(':').shift();
+                    }
+
+                    if (parsedJDBCUrl.port !== `${ctx.ports.mariadb}`) {
+                        hasChanges = true;
+                        parsedJDBCUrl.port = `${ctx.ports.mariadb}`;
+
+                        dataSource['jdbc-url'] = `jdbc:${connectionStringBuilder(parsedJDBCUrl)}`;
+                    }
+                }
+            }
+
             if (dataSource['@_uuid'] === undefined) {
                 hasChanges = true;
                 dataSource['@_uuid'] = 'a2eadb3c-6fc9-4d85-b5f4-d8114906ce2f';
@@ -186,7 +205,7 @@ const setupDataSourceConfig = () => ({
                 'driver-ref': 'mysql.8',
                 synchronize: true,
                 'jdbc-driver': 'com.mysql.cj.jdbc.Driver',
-                'jdbc-url': jdbcUrl,
+                'jdbc-url': `jdbc:mysql://localhost:${ctx.ports.mariadb}/magento`,
                 'working-dir': '$ProjectFileDir$',
                 '@_source': 'LOCAL'
             };
@@ -222,7 +241,7 @@ const setupDataSourceConfig = () => ({
                     overwrite: true,
                     templateArgs: {
                         databaseConfiguration,
-                        jdbcUrl
+                        jdbcUrl: `jdbc:mysql://localhost:${ctx.ports.mariadb}/magento`
                     }
                 });
             } catch (e) {
