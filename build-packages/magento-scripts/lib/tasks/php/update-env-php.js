@@ -19,7 +19,7 @@ const updateEnvPHP = () => ({
             return;
         }
 
-        const { isDockerDesktop, platform } = ctx;
+        const { isDockerDesktop } = ctx;
         const { php } = ctx.config.docker.getContainers(ctx.ports);
 
         const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
@@ -71,12 +71,12 @@ const updateEnvPHP = () => ({
             command: 'php ./update-env-php.php',
             mountVolumes: [
                 `${path.join(__dirname, 'update-env.php')}:${ctx.config.baseConfig.containerMagentoDir}/update-env-php.php`,
-                `${envPhpPath}:/${ctx.config.baseConfig.containerMagentoDir}/env.php`
+                `${envPhpPath}:${ctx.config.baseConfig.containerMagentoDir}/env.php`
             ],
             image: php.image,
             detach: false,
             rm: true,
-            user: platform === 'linux' ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
+            user: ((ctx.platform === 'linux' && isDockerDesktop) || !isDockerDesktop) ? `${os.userInfo().uid}:${os.userInfo().gid}` : ''
         });
 
         task.output = result;
