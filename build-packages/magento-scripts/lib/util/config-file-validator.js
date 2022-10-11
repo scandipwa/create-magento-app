@@ -153,7 +153,8 @@ const configFileSchema = Joi.object({
     host: Joi.string().optional(),
     ssl: sslSchema.optional(),
     prefix: Joi.bool().optional(),
-    configuration: configurationSchema.required()
+    configuration: configurationSchema.required(),
+    containerEngine: Joi.string().valid('default', 'docker', 'docker-desktop', 'podman')
 });
 
 /**

@@ -298,4 +298,15 @@ export interface CMAConfiguration {
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
     prefix: boolean
+
+    /**
+     * Container engine
+     *
+     * Allowed values:
+     * - default
+     * - docker
+     * - docker-desktop
+     * - podman
+     */
+    containerEngine: string
 }
