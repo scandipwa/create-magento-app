@@ -7,6 +7,14 @@ const networkApi = require('./network-api');
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
+const pruneNetworks = () => ({
+    title: 'Removing custom networks not used by at least one container',
+    task: () => execAsyncSpawn('docker network prune -f')
+});
+
+/**
+ * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const createNetwork = () => ({
     title: 'Deploying Docker network',
     task: async ({ config: { docker } }, task) => {
@@ -22,17 +30,22 @@ const createNetwork = () => ({
                 driver: 'bridge'
             });
         } catch (e) {
-            if (e.includes('could not find an available, non-overlapping IPv4 address pool')) {
-                const pruneNetworks = await task.prompt({
+            if (e.message.includes('could not find an available, non-overlapping IPv4 address pool')) {
+                const doPruneNetworks = await task.prompt({
                     type: 'Confirm',
                     message: `You don't have available, non-overlapping IPv4 address pool on you system.
 Do you want remove all custom networks not used by at least one container?`
                 });
 
-                if (pruneNetworks) {
-                    return task.newListr(
-                        pruneNetworks()
-                    );
+                if (doPruneNetworks) {
+                    return task.newListr([
+                        pruneNetworks(),
+                        {
+                            task: () => networkApi.create({
+                                network: docker.network.name,
+                                driver: 'bridge'
+                            })
+                        }]);
                 }
 
                 throw new KnownError(`Unable to create network for your project.
@@ -60,14 +73,6 @@ const removeNetwork = () => ({
 
         await execAsyncSpawn(`docker network rm ${ docker.network.name }`);
     }
-});
-
-/**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
- */
-const pruneNetworks = () => ({
-    title: 'Removing custom networks not used by at least one container',
-    task: () => execAsyncSpawn('docker network prune -f')
 });
 
 module.exports = {
