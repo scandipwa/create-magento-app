@@ -57,6 +57,7 @@ const dependenciesForPlatforms = {
         dependencies: [
             'openssl-devel',
             'libjpeg-turbo-devel',
+            'readline-devel',
             'libpng-devel',
             'gd-devel',
             'libicu',
