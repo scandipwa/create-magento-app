@@ -14,7 +14,7 @@ const create = async (options, execOptions = {}) => {
 
     const driverArg = driver && `--driver=${driver}`;
     const labelArg = label && `--label=${label}`;
-    const optArg = opt && Object.entries(opt).map(([name, value]) => `--opt ${name}='${value}'`).join(' ');
+    const optArg = opt && Object.entries(opt).map(([name, value]) => `--opt ${name}="${value}"`).join(' ');
 
     const args = [
         driverArg,

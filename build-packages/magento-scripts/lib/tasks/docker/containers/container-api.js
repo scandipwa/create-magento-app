@@ -35,8 +35,8 @@ const runCommand = (options) => {
     const restartArg = !rm && restart && `--restart=${ restart }`;
     const networkArg = network && `--network=${ network }`;
     const portsArgs = ports && ports.length > 0 && ports.map((port) => `-p=${ port }`);
-    const mountsArgs = mounts && mounts.map((mount) => `--mount=${ mount }`);
-    const mountVolumesArgs = mountVolumes && mountVolumes.map((mount) => `-v=${mount}`);
+    const mountsArgs = mounts && mounts.map((mount) => `--mount="${ mount }"`);
+    const mountVolumesArgs = mountVolumes && mountVolumes.map((mount) => `-v="${mount}"`);
     const envArgs = !env ? '' : Object.entries(env).map(([key, value]) => `--env=${ key }='${ value }'`);
     const nameArg = name && `--name=${name}`;
     const entrypointArg = entrypoint && `--entrypoint="${entrypoint}"`;
