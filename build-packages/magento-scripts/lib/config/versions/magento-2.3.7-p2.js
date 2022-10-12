@@ -8,6 +8,8 @@ const { nginx118 } = require('../services/nginx/versions');
 const { redis60 } = require('../services/redis');
 const { sslTerminator } = require('../services/ssl-terminator');
 const { varnish66 } = require('../services/varnish');
+const { mariadb103 } = require('../services/mariadb/versions');
+const { elasticsearch79 } = require('../services/elasticsearch/versions');
 
 module.exports = ({ templateDir } = {}) => ({
     magentoVersion: '2.3.7-p2',
@@ -22,12 +24,8 @@ module.exports = ({ templateDir } = {}) => ({
         mysql: {
             version: '5.7'
         },
-        mariadb: {
-            version: '10.2'
-        },
-        elasticsearch: {
-            version: '7.9.3'
-        },
+        mariadb: mariadb103(),
+        elasticsearch: elasticsearch79(),
         composer: composer2(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
