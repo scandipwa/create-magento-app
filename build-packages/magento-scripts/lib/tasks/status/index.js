@@ -49,7 +49,8 @@ const prettyStatus = async (ctx) => {
         platform,
         platformVersion,
         containers,
-        composerVersion
+        composerVersion,
+        systemDFData
     } = ctx;
     const projectCreatedAt = getProjectCreatedAt();
 
@@ -151,6 +152,31 @@ const prettyStatus = async (ctx) => {
             });
         }
     });
+
+    block
+        .addSeparator('Docker volume data')
+        .addEmptyLine();
+
+    const { volumes } = ctx.config.docker;
+
+    Object.values(volumes)
+        .map((volume) => {
+            volume.volumeData = systemDFData.Volumes
+                .find((v) => v.Name === volume.name);
+
+            return volume;
+        })
+        .forEach((v) => {
+            block
+                .addLine(`> ${logger.style.misc(v.name)}`);
+            if (v.volumeData) {
+                block.addLine(`Size: ${logger.style.code(v.volumeData.Size)}`);
+            }
+
+            if (ctx.isDockerDesktop && v.opt && v.opt.device) {
+                block.addLine(`Mountpoint: ${logger.style.file(v.opt.device.replace(process.cwd(), '<project location>'))}`);
+            }
+        });
 
     const instanceMetadata = getInstanceMetadata(ctx);
 

@@ -21,6 +21,12 @@ const df = async (options, execOptions = {}) => {
         verboseArg
     ].filter(Boolean).join(' ');
 
+    if (formatToJSON) {
+        const result = await execAsyncSpawn(`docker system df ${args}`, execOptions);
+
+        return JSON.parse(result);
+    }
+
     return execAsyncSpawn(`docker system df ${args}`, execOptions);
 };
 

@@ -51,14 +51,14 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         elasticsearch: {
             name: `${ prefix }_elasticsearch-data`
         },
+        maildev: {
+            name: `${ prefix }_maildev-data`
+        },
         composer_cache: {
             name: 'composer_cache-data',
             opts: {
                 mode: 'z'
             }
-        },
-        maildev: {
-            name: `${ prefix }_maildev-data`
         }
     };
 

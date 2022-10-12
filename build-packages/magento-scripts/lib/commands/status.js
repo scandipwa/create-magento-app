@@ -10,6 +10,7 @@ const getProjectConfiguration = require('../config/get-project-configuration');
 const checkConfigurationFile = require('../config/check-configuration-file');
 const checkPHPVersion = require('../tasks/requirements/php-version');
 const { getComposerVersionTask } = require('../tasks/composer');
+const { systemApi } = require('../tasks/docker/system');
 
 /**
  * @param {import('yargs')} yargs
@@ -23,9 +24,18 @@ module.exports = (yargs) => {
             getProjectConfiguration(),
             getCachedPorts(),
             {
-                task: (ctx, task) => task.newListr([
+                task: (_ctx, task) => task.newListr([
                     checkPHPVersion(),
-                    getComposerVersionTask()
+                    getComposerVersionTask(),
+                    {
+                        title: 'Retrieving Docker System data',
+                        task: async (ctx) => {
+                            ctx.systemDFData = await systemApi.df({
+                                formatToJSON: true,
+                                verbose: true
+                            });
+                        }
+                    }
                 ], {
                     concurrent: true
                 })
