@@ -1,4 +1,4 @@
-const ioncube = require('@scandipwa/magento-scripts-php-ioncube-extension');
+const { ioncube } = require('@scandipwa/magento-scripts-php-extensions');
 
 /** @type {import('@scandipwa/magento-scripts').CMAConfiguration} */
 module.exports = {
