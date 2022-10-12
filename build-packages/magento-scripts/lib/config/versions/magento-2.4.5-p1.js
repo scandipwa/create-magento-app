@@ -28,7 +28,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.4'
         },
         elasticsearch: {
-            version: '7.17.5'
+            version: '7.17.6'
         },
         composer: composer2(),
         varnish: varnish70({ templateDir }),

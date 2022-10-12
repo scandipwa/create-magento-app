@@ -23,7 +23,7 @@ module.exports = ({ templateDir } = {}) => ({
             version: '10.4'
         },
         elasticsearch: {
-            version: '7.16.3'
+            version: '7.17.6'
         },
         composer: {
             version: '2'
