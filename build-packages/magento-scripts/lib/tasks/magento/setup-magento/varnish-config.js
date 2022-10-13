@@ -48,11 +48,11 @@ const varnishConfigSetup = () => ({
             `);
 
             // update cache policy to not use varnish
-            // 0 - magento cache, 2 - varnish cache
+            // 1 - magento cache, 2 - varnish cache
             await updateTableValues('core_config_data', [
                 {
                     path: 'system/full_page_cache/caching_application',
-                    value: '0'
+                    value: '1'
                 }
             ], { databaseConnection, task });
         }
