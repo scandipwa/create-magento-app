@@ -32,10 +32,10 @@ const setupMagento = (options = {}) => ({
         }
 
         return task.newListr([
-            flushRedisConfig(),
             waitingForRedis(),
             updateEnvPHP(),
             migrateDatabase(),
+            flushRedisConfig(),
             {
                 title: 'Configuring Magento settings',
                 task: (ctx, task) => task.newListr([
