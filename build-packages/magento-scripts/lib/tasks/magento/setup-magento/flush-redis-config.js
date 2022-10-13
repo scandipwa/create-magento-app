@@ -5,7 +5,7 @@ const UnknownError = require('../../../errors/unknown-error');
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
-    title: 'Flushing Magento redis cache',
+    title: 'Flushing Magento Redis cache',
     task: async ({ ports, config: { docker }, isDockerDesktop }) => {
         const { redis: { name } } = docker.getContainers(ports);
         const host = !isDockerDesktop ? 'localhost' : 'host.docker.internal';
