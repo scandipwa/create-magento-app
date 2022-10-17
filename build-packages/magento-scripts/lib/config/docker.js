@@ -24,7 +24,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         elasticsearch,
         mariadb,
         varnish,
-        maildev
+        maildev,
+        newRelic
     } = configuration;
 
     const php = getPhpConfig(overridenConfiguration, baseConfig);
@@ -344,6 +345,22 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     '/var/lib/varnish:exec'
                 ],
                 description: `Varnish HealthCheck status: ${ logger.style.command(varnish.healthCheck ? 'enabled' : 'disabled') }`
+            };
+        }
+
+        if (newRelic.enabled) {
+            dockerConfig.newRelicPHPDaemon = {
+                _: 'New Relic PHP daemon',
+                ports: [],
+                name: `${ prefix }_newrelic-php-daemon`,
+                network: isDockerDesktop ? network.name : 'host',
+                image: 'newrelic/php-daemon',
+                mountVolumes: [
+                    '/var/run/docker.sock:/var/run/docker.sock',
+                    '/:/host:ro',
+                    `${path.join(process.cwd(), 'newrelic-infra.yml')}:/etc/newrelic-infra.yml`
+                ],
+                capAdd: 'SYS_PTRACE'
             };
         }
 
