@@ -1,6 +1,5 @@
 const path = require('path');
 const os = require('os');
-const envPhpToJson = require('../../util/env-php-json');
 const getJsonfileData = require('../../util/get-jsonfile-data');
 const pathExists = require('../../util/path-exists');
 const { containerApi } = require('../docker/containers');
@@ -36,23 +35,8 @@ const updateEnvPHP = () => ({
         if (await pathExists(composerLockPath)) {
             const composerLockData = await getJsonfileData(composerLockPath);
 
-            if (composerLockData.packages.some(({ name }) => name === 'scandipwa/persisted-query')) {
-                if (typeof ctx.CSAThemeInstalled !== 'boolean') {
-                    ctx.CSAThemeInstalled = true;
-                }
-
-                const envPhp = await envPhpToJson(ctx);
-
-                const persistedQueryConfig = envPhp.cache && envPhp.cache['persisted-query'];
-
-                if (
-                    persistedQueryConfig
-                    && persistedQueryConfig.redis
-                    && (persistedQueryConfig.redis.port !== `${ ctx.ports.redis }`
-                    || persistedQueryConfig.redis.host === hostMachine)
-                ) {
-                    SETUP_PQ = '';
-                }
+            if (!composerLockData.packages.some(({ name }) => name === 'scandipwa/persisted-query')) {
+                SETUP_PQ = '';
             }
         }
 
