@@ -1,4 +1,6 @@
 /* eslint-disable max-len */
+import { ExecOptions } from 'child_process'
+
 /**
  * Execute bash command
  * @param command Bash command

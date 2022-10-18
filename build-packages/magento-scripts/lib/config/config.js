@@ -1,6 +1,6 @@
-const Conf = require('conf');
+const Conf = require('conf')
 
-const pkg = require('../../package.json');
+const pkg = require('../../package.json')
 
 /**
  * @typedef ProjectConfig
@@ -17,39 +17,47 @@ const projectsConfig = new Conf({
     projectName: 'create-magento-app',
     projectVersion: pkg.version,
     defaults: {}
-});
-const projectKey = process.cwd();
+})
+const projectKey = process.cwd()
 
 const setProjectConfig = (key, value) => {
-    projectsConfig.set(`${projectKey}.${key}`, value);
-};
+    projectsConfig.set(`${projectKey}.${key}`, value)
+}
 
-const getProjectConfig = () => projectsConfig.get(projectKey);
+const getProjectConfig = () => projectsConfig.get(projectKey)
 
 const getProjectsFromProjectKeys = (path, project) => {
     if (project.createdAt) {
-        return { [path]: project };
+        return { [path]: project }
     }
 
     return Object.entries(project)
-        .map(([subProjectPath, subProjectValue]) => getProjectsFromProjectKeys(`${path}.${subProjectPath}`, subProjectValue))
-        .reduce((acc, val) => ({ ...acc, ...val }), {});
-};
+        .map(([subProjectPath, subProjectValue]) =>
+            getProjectsFromProjectKeys(
+                `${path}.${subProjectPath}`,
+                subProjectValue
+            )
+        )
+        .reduce((acc, val) => ({ ...acc, ...val }), {})
+}
 /**
  *
  * @returns {Record<string, ProjectConfig>}
  */
 const getProjects = () => {
-    const projects = {};
+    const projects = {}
     for (const [projectPath, projectValueWithProjects] of projectsConfig) {
-        const projectList = getProjectsFromProjectKeys(projectPath, projectValueWithProjects);
+        const projectList = getProjectsFromProjectKeys(
+            projectPath,
+            projectValueWithProjects
+        )
         Object.entries(projectList).forEach(([key, value]) => {
-            projects[key] = value;
-        });
+            projects[key] = value
+        })
     }
 
-    return projects;
-};
+    return projects
+}
 /**
  * Those 2 functions are needed to remain compatibility with older CMA instances,
  * because when this part of code was written,
@@ -64,4 +72,4 @@ module.exports = {
     getProjects,
     setProjectConfig,
     getProjectConfig
-};
+}

@@ -17,6 +17,6 @@ const dependenciesForPlatforms = {
     Ubuntu: {
         packageManager: 'apt'
     }
-};
+}
 
-module.exports = dependenciesForPlatforms;
+module.exports = dependenciesForPlatforms

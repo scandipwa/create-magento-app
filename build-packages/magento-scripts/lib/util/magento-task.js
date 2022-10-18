@@ -1,4 +1,4 @@
-const runMagentoCommand = require('./run-magento');
+const runMagentoCommand = require('./run-magento')
 
 /**
  * @param {String} command
@@ -11,20 +11,22 @@ const magentoTask = (command, options = {}) => ({
     task: async (ctx, task) => {
         try {
             await runMagentoCommand(ctx, command, {
-                callback: !ctx.verbose ? undefined : (t) => {
-                    task.output = t;
-                },
+                callback: !ctx.verbose
+                    ? undefined
+                    : (t) => {
+                          task.output = t
+                      },
                 throwNonZeroCode: true
-            });
+            })
         } catch (e) {
             if (options.onError) {
-                options.onError(e);
+                options.onError(e)
             }
         }
     },
     options: {
         bottomBar: 10
     }
-});
+})
 
-module.exports = magentoTask;
+module.exports = magentoTask

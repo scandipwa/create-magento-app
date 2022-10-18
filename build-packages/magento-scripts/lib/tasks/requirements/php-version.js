@@ -1,5 +1,5 @@
-const UnknownError = require('../../errors/unknown-error');
-const { runContainerImage } = require('../../util/run-container-image');
+const UnknownError = require('../../errors/unknown-error')
+const { runContainerImage } = require('../../util/run-container-image')
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -10,19 +10,22 @@ const checkPHPVersion = () => ({
         const phpVersionResponse = await runContainerImage(
             ctx.config.overridenConfiguration.configuration.php.baseImage,
             'php --version'
-        );
+        )
 
-        const phpVersionResponseResult = phpVersionResponse.match(/PHP\s(\d+\.\d+\.\d+)/i);
+        const phpVersionResponseResult =
+            phpVersionResponse.match(/PHP\s(\d+\.\d+\.\d+)/i)
 
         if (phpVersionResponseResult && phpVersionResponseResult.length > 0) {
-            const phpVersion = phpVersionResponseResult[1];
+            const phpVersion = phpVersionResponseResult[1]
 
-            ctx.phpVersion = phpVersion;
-            task.title = `Using PHP version ${phpVersion} in container`;
+            ctx.phpVersion = phpVersion
+            task.title = `Using PHP version ${phpVersion} in container`
         } else {
-            throw new UnknownError(`Cannot retrieve PHP Version!\n\n${phpVersionResponse}`);
+            throw new UnknownError(
+                `Cannot retrieve PHP Version!\n\n${phpVersionResponse}`
+            )
         }
     }
-});
+})
 
-module.exports = checkPHPVersion;
+module.exports = checkPHPVersion

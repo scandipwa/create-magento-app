@@ -1,4 +1,4 @@
-import { ListrContext } from './context';
+import { ListrContext } from './context'
 
 /* eslint-disable no-use-before-define */
 export interface ServiceWithImage {
@@ -84,14 +84,17 @@ export interface ComposerConfiguration {
     /**
      *  Composer global plugins that will be added to Docker image
      */
-    plugins: Record<string, {
-        version?: string
-        options?: string
-        /**
-         * Enable composer plugin
-         */
-        enabled?: boolean
-    }>
+    plugins: Record<
+        string,
+        {
+            version?: string
+            options?: string
+            /**
+             * Enable composer plugin
+             */
+            enabled?: boolean
+        }
+    >
 }
 
 export interface PHPExtensionInstallationInstruction {
@@ -117,9 +120,18 @@ export interface PHPExtensionInstallationInstruction {
      * pecl install xdebug && docker-php-ext-enable xdebug
      * ```
      */
-    command: string |
-        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string) |
-        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => Promise<string>)
+    command:
+        | string
+        | ((
+              arg0: Omit<PHPExtensionInstallationInstruction, 'command'> & {
+                  ctx: ListrContext
+              }
+          ) => string)
+        | ((
+              arg0: Omit<PHPExtensionInstallationInstruction, 'command'> & {
+                  ctx: ListrContext
+              }
+          ) => Promise<string>)
 
     /**
      * System dependencies required by the extension
@@ -144,12 +156,12 @@ export interface PHPConfiguration {
     /**
      * Base image with tag
      */
-    baseImage?: string
+    baseImage: string
 
     /**
      * Image with XDebug enabled
      */
-    debugImage?: string
+    debugImage: string
 
     /**
      * Configuration file template location
@@ -243,6 +255,11 @@ export interface CMAConfiguration {
          * SSL Terminator configuration
          */
         sslTerminator: SSLTerminatorConfiguration
+
+        /**
+         * MailDev configuration
+         */
+        maildev: ServiceWithImage
     }
     /**
      * Magento configuration

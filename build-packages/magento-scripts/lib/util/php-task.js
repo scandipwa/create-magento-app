@@ -1,4 +1,4 @@
-const { runPHPContainerCommand } = require('../tasks/php/php-container');
+const { runPHPContainerCommand } = require('../tasks/php/php-container')
 
 /**
  * @param {String} command
@@ -7,12 +7,13 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container');
  */
 const phpTask = (command, options = {}) => ({
     title: !options.noTitle ? `Running command 'php ${command}` : undefined,
-    task: (ctx, task) => runPHPContainerCommand(ctx, command, {
-        callback: (t) => {
-            task.output = t;
-        },
-        throwNonZeroCode: true
-    })
-});
+    task: (ctx, task) =>
+        runPHPContainerCommand(ctx, command, {
+            callback: (t) => {
+                task.output = t
+            },
+            throwNonZeroCode: true
+        })
+})
 
-module.exports = phpTask;
+module.exports = phpTask

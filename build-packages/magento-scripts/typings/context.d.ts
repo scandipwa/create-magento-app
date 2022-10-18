@@ -1,11 +1,17 @@
-import mysql2 from 'mysql2';
+import * as mysql2 from 'mysql2'
 
-import { ProjectConfig } from '../lib/config/config';
-import { DockerVersionResult } from '../lib/tasks/docker/api';
-import { CMAConfiguration, PHPExtensions } from './index';
-import { PHPStormConfig } from './phpstorm';
+import { ProjectConfig } from '../lib/config/config'
+import { DockerVersionResult } from '../lib/tasks/docker/api'
+import { systemApi } from '../lib/tasks/docker/system'
+import { CMAConfiguration, PHPExtensions } from './index'
+import { PHPStormConfig } from './phpstorm'
 
 export interface ListrContext {
+    throwMagentoVersionMissing: boolean
+    projectPath: string
+    systemDFData?: systemApi.SystemDFResult
+    debug: boolean
+    verbose: boolean
     magentoVersion: string
     composerVersion: string
     phpVersion: string
@@ -50,33 +56,46 @@ export interface ListrContext {
             network: {
                 name: string
             }
-            volumes: Record<'mariadb' | 'redis' | 'elasticsearch' | 'nginx' | 'appPub' | 'appSetup', {
-                name: string
-                opt?: {
-                    type: string
-                    device: string
-                    o: string
+            volumes: Record<string,
+                {
+                    name: string,
+                    driver?: string,
+                    opt?: {
+                        mode?: string,
+                        device?: string,
+                        o?: string,
+                        type?: string
+                    }
                 }
-            }>
-            getContainers(): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'varnish', {
-                _: string
-                ports: string[]
-                healthCheck: {
-                    cmd: string
+            >
+            getContainers(ports?: Record<string, number>): Record<
+                | 'php'
+                | 'sslTerminator'
+                | 'nginx'
+                | 'redis'
+                | 'mariadb'
+                | 'elasticsearch'
+                | 'varnish',
+                {
+                    _: string
+                    ports: string[]
+                    healthCheck: {
+                        cmd: string
+                    }
+                    env: Record<string, string>
+                    mountVolumes: string[]
+                    mounts: string[]
+                    restart: string
+                    securityOptions: string[]
+                    network: string
+                    image: string
+                    debugImage?: string
+                    remoteImages?: string[]
+                    name: string
+                    command: string
+                    connectCommand: string[]
                 }
-                env: Record<string, string>
-                mountVolumes: string[]
-                mounts: string[]
-                restart: string
-                securityOptions: string[]
-                network: string
-                image: string
-                debugImage?: string
-                remoteImages?: string[]
-                name: string
-                command: string
-                connectCommand: string[]
-            }>
+            >
         }
         baseConfig: {
             prefix: string
@@ -85,9 +104,18 @@ export interface ListrContext {
             cacheDir: string
             containerMagentoDir: string
         }
-        overridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
-        userConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
-        nonOverridenConfiguration: Omit<CMAConfiguration, 'prefix' | 'useNonOverlappingPorts'>
+        overridenConfiguration: Omit<
+            CMAConfiguration,
+            'prefix' | 'useNonOverlappingPorts'
+        >
+        userConfiguration: Omit<
+            CMAConfiguration,
+            'prefix' | 'useNonOverlappingPorts'
+        >
+        nonOverridenConfiguration: Omit<
+            CMAConfiguration,
+            'prefix' | 'useNonOverlappingPorts'
+        >
         phpStorm: PHPStormConfig
         projectConfig: ProjectConfig
     }

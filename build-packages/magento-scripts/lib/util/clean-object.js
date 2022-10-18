@@ -1,13 +1,11 @@
-function cleanObject(
-    object,
-    filterKeys
-) {
+function cleanObject(object, filterKeys) {
     return Object.keys(object).reduce(
-        (acc, key) => (filterKeys.includes(key)
-            ? Object.assign(acc, { [key]: object[key] })
-            : acc),
+        (acc, key) =>
+            filterKeys.includes(key)
+                ? Object.assign(acc, { [key]: object[key] })
+                : acc,
         {}
-    );
+    )
 }
 
-module.exports = cleanObject;
+module.exports = cleanObject

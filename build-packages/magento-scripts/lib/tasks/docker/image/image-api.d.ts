@@ -1,4 +1,4 @@
-import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command'
 
 export interface ImagesLsOptions<T extends boolean = false> {
     all?: boolean
@@ -51,7 +51,7 @@ export interface ImagesInspectResult {
     DockerVersion: string
     Author: string
     Config: {
-        Env: string[],
+        Env: string[]
         Cmd: string[]
         WorkingDir: string
         Entrypoint: string[]

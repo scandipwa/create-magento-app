@@ -1,13 +1,18 @@
-const path = require('path');
-const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
-const pathExists = require('../../../util/path-exists');
-const { valueKey, nameKey } = require('./keys');
-const { getCSAThemes } = require('../../../util/CSA-theme');
-const { formatPathForPHPStormConfig } = require('./xml-utils');
+const path = require('path')
+const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser')
+const pathExists = require('../../../util/path-exists')
+const { valueKey, nameKey } = require('./keys')
+const { getCSAThemes } = require('../../../util/CSA-theme')
+const { formatPathForPHPStormConfig } = require('./xml-utils')
 
-const ESLINT_COMPONENT_NAME = 'EslintConfiguration';
+const ESLINT_COMPONENT_NAME = 'EslintConfiguration'
 
-const pathToESLintConfig = path.join(process.cwd(), '.idea', 'jsLinters', 'eslint.xml');
+const pathToESLintConfig = path.join(
+    process.cwd(),
+    '.idea',
+    'jsLinters',
+    'eslint.xml'
+)
 
 const defaultESLintComponentConfiguration = {
     [nameKey]: ESLINT_COMPONENT_NAME,
@@ -15,7 +20,7 @@ const defaultESLintComponentConfiguration = {
         [nameKey]: 'fix-on-save',
         [valueKey]: 'true'
     }
-};
+}
 
 const esLintDefaultConfigurationData = {
     '?xml': {
@@ -26,36 +31,43 @@ const esLintDefaultConfigurationData = {
         '@_version': '4',
         component: defaultESLintComponentConfiguration
     }
-};
+}
 
 const setupESlintConfig = async (esLintConfigurationData) => {
-    let hasChanges = false;
-    const themes = await getCSAThemes();
+    let hasChanges = false
+    const themes = await getCSAThemes()
 
     if (themes.length > 0) {
-        const theme = themes[0];
+        const theme = themes[0]
         if (await pathExists(theme.themePath)) {
             if (esLintConfigurationData['work-dir-pattern'] === undefined) {
-                hasChanges = true;
+                hasChanges = true
                 esLintConfigurationData['work-dir-pattern'] = {
                     [valueKey]: formatPathForPHPStormConfig(theme.themePath)
-                };
+                }
             }
-            const packageJsonPath = path.join(process.cwd(), theme.themePath, 'package.json');
+            const packageJsonPath = path.join(
+                process.cwd(),
+                theme.themePath,
+                'package.json'
+            )
             if (await pathExists(packageJsonPath)) {
-                if (esLintConfigurationData['custom-configuration-file'] === undefined) {
-                    hasChanges = true;
+                if (
+                    esLintConfigurationData['custom-configuration-file'] ===
+                    undefined
+                ) {
+                    hasChanges = true
                     esLintConfigurationData['custom-configuration-file'] = {
                         '@_used': 'true',
                         '@_path': formatPathForPHPStormConfig(packageJsonPath)
-                    };
+                    }
                 }
             }
         }
     }
 
-    return hasChanges;
-};
+    return hasChanges
+}
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -64,53 +76,65 @@ const setupESLintConfigTask = () => ({
     title: 'Set up ESLint configuration',
     task: async (ctx, task) => {
         if (await pathExists(pathToESLintConfig)) {
-            let hasChanges = false;
-            const esLintConfigurationData = await loadXmlFile(pathToESLintConfig);
+            let hasChanges = false
+            const esLintConfigurationData = await loadXmlFile(
+                pathToESLintConfig
+            )
 
             if (!esLintConfigurationData.project) {
                 esLintConfigurationData.project = {
                     ...esLintDefaultConfigurationData.project
-                };
+                }
             }
 
             if (!esLintConfigurationData['?xml']) {
                 esLintConfigurationData['?xml'] = {
                     ...esLintDefaultConfigurationData['?xml']
-                };
+                }
             }
 
-            if (esLintConfigurationData.project.component && !Array.isArray(esLintConfigurationData.project.component)) {
-                hasChanges = true;
-                esLintConfigurationData.project.component = [esLintConfigurationData.project.component];
+            if (
+                esLintConfigurationData.project.component &&
+                !Array.isArray(esLintConfigurationData.project.component)
+            ) {
+                hasChanges = true
+                esLintConfigurationData.project.component = [
+                    esLintConfigurationData.project.component
+                ]
             }
 
-            const esLintConfigurationComponent = esLintConfigurationData.project.component.find(
-                (config) => config[nameKey] === ESLINT_COMPONENT_NAME
-            );
+            const esLintConfigurationComponent =
+                esLintConfigurationData.project.component.find(
+                    (config) => config[nameKey] === ESLINT_COMPONENT_NAME
+                )
 
             if (!esLintConfigurationComponent) {
-                hasChanges = true;
-                esLintConfigurationData.project.component.push(defaultESLintComponentConfiguration);
+                hasChanges = true
+                esLintConfigurationData.project.component.push(
+                    defaultESLintComponentConfiguration
+                )
             }
 
-            const hasThemeEslintChanges = await setupESlintConfig(esLintConfigurationComponent);
+            const hasThemeEslintChanges = await setupESlintConfig(
+                esLintConfigurationComponent
+            )
             if (hasThemeEslintChanges) {
-                hasChanges = hasThemeEslintChanges;
+                hasChanges = hasThemeEslintChanges
             }
 
             if (hasChanges) {
-                await buildXmlFile(pathToESLintConfig, esLintConfigurationData);
+                await buildXmlFile(pathToESLintConfig, esLintConfigurationData)
             } else {
-                task.skip();
+                task.skip()
             }
 
-            return;
+            return
         }
 
-        await setupESlintConfig(esLintDefaultConfigurationData);
+        await setupESlintConfig(esLintDefaultConfigurationData)
 
-        await buildXmlFile(pathToESLintConfig, esLintDefaultConfigurationData);
+        await buildXmlFile(pathToESLintConfig, esLintDefaultConfigurationData)
     }
-});
+})
 
-module.exports = setupESLintConfigTask;
+module.exports = setupESLintConfigTask

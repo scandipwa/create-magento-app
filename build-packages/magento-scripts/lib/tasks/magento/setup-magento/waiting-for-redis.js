@@ -1,4 +1,4 @@
-const waitForIt = require('../../../util/wait-for-it');
+const waitForIt = require('../../../util/wait-for-it')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -12,11 +12,11 @@ module.exports = () => ({
             port: ports.redis,
             output: (t) => {
                 // eslint-disable-next-line no-param-reassign
-                task.output = t;
+                task.output = t
             }
-        });
+        })
     },
     options: {
         bottomBar: 10
     }
-});
+})

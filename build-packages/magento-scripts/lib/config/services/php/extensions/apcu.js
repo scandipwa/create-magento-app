@@ -9,4 +9,4 @@ module.exports = {
 && pecl install apcu \
 && docker-php-ext-enable apcu \
 && apk del -f .build-deps`
-};
+}

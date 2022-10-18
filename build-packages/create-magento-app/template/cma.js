@@ -11,4 +11,4 @@ module.exports = {
         edition: 'community'
     },
     configuration: {}
-};
+}

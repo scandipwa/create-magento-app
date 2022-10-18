@@ -1,15 +1,19 @@
-const os = require('os');
-const { request } = require('smol-request');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const generateUUID = require('@tilework/mosaic-dev-utils/uuid');
-const { getSystemConfigSync } = require('../config/system-config');
-const { getExternalIpAddress } = require('./ip');
-const pkg = require('../../package.json');
+const os = require('os')
+const { request } = require('smol-request')
+const logger = require('@scandipwa/scandipwa-dev-utils/logger')
+const generateUUID = require('@tilework/mosaic-dev-utils/uuid')
+const { getSystemConfigSync } = require('../config/system-config')
+const { getExternalIpAddress } = require('./ip')
+const pkg = require('../../package.json')
 
-const GA_TRACKING_ID = process.env.GA_TRACKING_ID || 'UA-127741417-8';
-const UNKNOWN = 'unknown';
+const GA_TRACKING_ID = process.env.GA_TRACKING_ID || 'UA-127741417-8'
+const UNKNOWN = 'unknown'
 
-const anonymizeError = (text) => text.replace(new RegExp(`${os.homedir()}`, 'gi'), '/home/magento-scripts-user');
+const anonymizeError = (text) =>
+    text.replace(
+        new RegExp(`${os.homedir()}`, 'gi'),
+        '/home/magento-scripts-user'
+    )
 
 /**
  * Google Analytics Parameters
@@ -101,77 +105,84 @@ const gaParametersMapping = {
         version: 'av',
         installedID: 'aiid'
     },
-    customDimension: Array.from({ length: 200 }, (_, i) => i + 1).reduce((acc, val) => ({
-        ...acc,
-        [`customDimension${val}`]: `cd${val}`
-    }), {})
-};
+    customDimension: Array.from({ length: 200 }, (_, i) => i + 1).reduce(
+        (acc, val) => ({
+            ...acc,
+            [`customDimension${val}`]: `cd${val}`
+        }),
+        {}
+    )
+}
 
 const getAppData = () => ({
     name: pkg.name,
     version: pkg.version
-});
+})
 
 /**
  * @param {GAParameters} parameters
  */
 const collectAnalyticsParameters = (parameters) => {
-    const parsedParameters = {};
+    const parsedParameters = {}
 
-    for (const [firstLevelKey, firstLevelValue] of Object.entries(gaParametersMapping)) {
+    for (const [firstLevelKey, firstLevelValue] of Object.entries(
+        gaParametersMapping
+    )) {
         if (typeof firstLevelValue === 'object' && firstLevelValue !== null) {
-            for (const [secondLevelKey, secondLevelValue] of Object.entries(firstLevelValue)) {
-                if (parameters[firstLevelKey] && parameters[firstLevelKey][secondLevelKey]) {
-                    parsedParameters[secondLevelValue] = parameters[firstLevelKey][secondLevelKey];
+            for (const [secondLevelKey, secondLevelValue] of Object.entries(
+                firstLevelValue
+            )) {
+                if (
+                    parameters[firstLevelKey] &&
+                    parameters[firstLevelKey][secondLevelKey]
+                ) {
+                    parsedParameters[secondLevelValue] =
+                        parameters[firstLevelKey][secondLevelKey]
                 }
             }
         } else if (parameters[firstLevelKey]) {
-            parsedParameters[firstLevelValue] = parameters[firstLevelKey];
+            parsedParameters[firstLevelValue] = parameters[firstLevelKey]
         }
     }
 
-    return parsedParameters;
-};
+    return parsedParameters
+}
 
 class Analytics {
     constructor() {
-        this.isGaDisabled = this.getIsGaDisabled();
-        this.gaTrackingId = GA_TRACKING_ID;
-        this.clientIdentifier = UNKNOWN;
-        this.currentUrl = UNKNOWN;
-        this.lang = UNKNOWN;
+        this.isGaDisabled = this.getIsGaDisabled()
+        this.gaTrackingId = GA_TRACKING_ID
+        this.clientIdentifier = UNKNOWN
+        this.currentUrl = UNKNOWN
+        this.lang = UNKNOWN
 
         try {
-            this.setClientIdentifier(
-                generateUUID()
-            );
+            this.setClientIdentifier(generateUUID())
         } catch (e) {
-            this.setClientIdentifier(
-                Date.now()
-            );
+            this.setClientIdentifier(Date.now())
         }
     }
 
     setLang(lang) {
-        this.lang = lang;
+        this.lang = lang
     }
 
     setCurrentUrl(currentUrl) {
-        this.currentUrl = currentUrl;
+        this.currentUrl = currentUrl
     }
 
     setClientIdentifier(id) {
-        this.clientIdentifier = id;
+        this.clientIdentifier = id
     }
 
     setGaTrackingId(id) {
-        this.gaTrackingId = id;
+        this.gaTrackingId = id
     }
 
     getIsGaDisabled() {
-        const { analytics } = getSystemConfigSync({ validate: false });
+        const { analytics } = getSystemConfigSync({ validate: false })
 
-        return !analytics;
+        return !analytics
     }
 
     /**
@@ -180,7 +191,7 @@ class Analytics {
     async _collect(data) {
         if (this.isGaDisabled) {
             // skip GA
-            return;
+            return
         }
 
         /**
@@ -194,12 +205,12 @@ class Analytics {
                 clientID: this.clientIdentifier
             },
             app: getAppData()
-        };
+        }
 
         try {
             analyticsParameters.systemInfo = {
                 ipOverride: await getExternalIpAddress()
-            };
+            }
         } catch (e) {
             // Do nothing
         }
@@ -208,53 +219,52 @@ class Analytics {
             // get system language here
             analyticsParameters.systemInfo = {
                 userLanguage: this.lang
-            };
+            }
         }
 
         if (this.currentUrl !== UNKNOWN) {
-            const {
-                hostname,
-                pathname
-            } = new URL(this.currentUrl);
+            const { hostname, pathname } = new URL(this.currentUrl)
 
             analyticsParameters.contentInformation = {
                 documentLocationUrl: this.currentUrl,
                 documentPath: pathname,
                 documentHostName: hostname
-            };
+            }
         }
 
-        const params = new URLSearchParams(collectAnalyticsParameters(analyticsParameters)).toString();
+        const params = new URLSearchParams(
+            collectAnalyticsParameters(analyticsParameters)
+        ).toString()
 
         try {
             if (!process.env.GA_DEBUG) {
                 await request(
-                    `https://www.google-analytics.com/collect?${ params }`,
+                    `https://www.google-analytics.com/collect?${params}`,
                     {
                         headers: { 'User-Agent': 'Google-Cloud-Functions' },
                         responseType: 'headers'
                     }
-                );
+                )
 
-                return;
+                return
             }
 
             const { data: jsonResponse } = await request(
-                `https://www.google-analytics.com/debug/collect?${ params }`,
+                `https://www.google-analytics.com/debug/collect?${params}`,
                 {
                     headers: { 'User-Agent': 'Google-Cloud-Functions' },
                     responseType: 'json'
                 }
-            );
+            )
 
-            logger.log(analyticsParameters);
-            logger.log(JSON.stringify(jsonResponse, null, 2));
+            logger.log(analyticsParameters)
+            logger.log(JSON.stringify(jsonResponse, null, 2))
 
-        // eslint-disable-next-line no-empty
+            // eslint-disable-next-line no-empty
         } catch (e) {
-            console.log('Failed to report telemetry data');
+            console.log('Failed to report telemetry data')
             if (process.env.GA_DEBUG) {
-                logger.error(e);
+                logger.error(e)
             }
         }
     }
@@ -266,10 +276,12 @@ class Analytics {
                 type: 'exception'
             },
             exception: {
-                description: anonymizeError(typeof error === 'string' ? error : error.message),
+                description: anonymizeError(
+                    typeof error === 'string' ? error : error.message
+                ),
                 fatal: isFatal
             }
-        });
+        })
     }
 
     trackTiming(label, time, category = UNKNOWN) {
@@ -283,7 +295,7 @@ class Analytics {
                 userTimingLabel: this.currentUrl,
                 userTimingTime: Math.round(time)
             }
-        });
+        })
     }
 
     trackPageView() {
@@ -291,7 +303,7 @@ class Analytics {
             hit: {
                 type: 'pageview'
             }
-        });
+        })
     }
 
     trackEvent(action, label, value, category = UNKNOWN) {
@@ -305,16 +317,20 @@ class Analytics {
                 label,
                 value
             }
-        });
+        })
     }
 
     printAboutAnalytics() {
         if (!this.isGaDisabled) {
-            logger.log('We collect analytics data to make our products more stable and reliable!');
-            logger.log('If you want to know more go here https://docs.scandipwa.com/about/data-analytics');
-            logger.logN();
+            logger.log(
+                'We collect analytics data to make our products more stable and reliable!'
+            )
+            logger.log(
+                'If you want to know more go here https://docs.scandipwa.com/about/data-analytics'
+            )
+            logger.logN()
         }
     }
 }
 
-module.exports = new Analytics();
+module.exports = new Analytics()

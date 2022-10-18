@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command'
 
 export interface ContainerLsOptions<T extends boolean = false> {
     all?: boolean
@@ -28,8 +28,14 @@ export interface ContainerLsResult {
     Status: string
 }
 
-export function ls(options?: ContainerLsOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<string>
-export function ls(options?: ContainerLsOptions<true>, execOptions?: ExecAsyncSpawnOptions<false>): Promise<ContainerLsResult[]>
+export function ls(
+    options?: ContainerLsOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+export function ls(
+    options?: ContainerLsOptions<true>,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<ContainerLsResult[]>
 
 export interface ContainerExecOptions {
     /**
@@ -53,7 +59,12 @@ export interface ContainerExecOptions {
     tty?: boolean
 }
 
-export function exec(command: string, container: string, options?: ContainerExecOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<string>
+export function exec(
+    command: string,
+    container: string,
+    options?: ContainerExecOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
 
 export interface ContainerRunOptions {
     /**
@@ -74,7 +85,7 @@ export interface ContainerRunOptions {
     /**
      * Publish or expose port [docs](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose)
      */
-    ports?: number[]
+    ports?: string[]
 
     /**
      * Add bind mounts or volumes using the --mount flag [docs](https://docs.docker.com/engine/reference/commandline/run/#add-bind-mounts-or-volumes-using-the---mount-flag)
@@ -89,7 +100,7 @@ export interface ContainerRunOptions {
     /**
      * Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
      */
-    env?: Record<string, string>
+    env?: Record<string, unknown>
     image?: string
     /**
      * Restart policies [docs](https://docs.docker.com/engine/reference/commandline/run/#restart-policies---restart)
@@ -114,7 +125,12 @@ export interface ContainerRunOptions {
     /**
      * Container heathcheck properties
      */
-    healthCheck?: Record<'cmd' | 'interval' | 'retries' | 'start-period' | 'timeout', string>
+    healthCheck?: Partial<
+        Record<
+            'cmd' | 'interval' | 'retries' | 'start-period' | 'timeout',
+            string
+        >
+    >
 
     /**
      * Security options [docs](https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt)
@@ -125,9 +141,14 @@ export interface ContainerRunOptions {
      * Username or UID (format: <name|uid>[:<group|gid>])
      */
     user?: string
+
+    network?: string
 }
 
-export function run(containerOptions: ContainerRunOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<false>
+export function run(
+    containerOptions: ContainerRunOptions,
+    execOptions?: ExecAsyncSpawnOptions
+): Promise<false>
 
 export function runCommand(options: ContainerRunOptions): string[]
 
@@ -142,8 +163,20 @@ export interface ContainerLogsOptions<T = never> {
     parser?: (line: string) => T
 }
 
-export function logs(options?: ContainerLogsOptions, execOptions?: ExecAsyncSpawnOptions<false>): Promise<string>
-export function logs<T>(options?: ContainerLogsOptions<T>, execOptions?: ExecAsyncSpawnOptions<false>): Promise<T[]>
+export function logs(
+    options?: ContainerLogsOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+export function logs<T>(
+    options?: ContainerLogsOptions<T>,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<T[]>
 
-export function stop(containers: string[], execOptions: ExecAsyncSpawnOptions<false>): Promise<string>
-export function rm(containers: string[], execOptions: ExecAsyncSpawnOptions<false>): Promise<string>
+export function stop(
+    containers: string[],
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+export function rm(
+    containers: string[],
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>

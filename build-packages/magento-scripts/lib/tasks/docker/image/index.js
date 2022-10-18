@@ -1,5 +1,5 @@
-const imageApi = require('./image-api');
+const imageApi = require('./image-api')
 
 module.exports = {
     imageApi
-};
+}

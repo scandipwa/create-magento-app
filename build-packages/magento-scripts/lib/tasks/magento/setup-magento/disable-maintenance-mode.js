@@ -1,4 +1,4 @@
-const runMagentoCommand = require('../../../util/run-magento');
+const runMagentoCommand = require('../../../util/run-magento')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -8,15 +8,15 @@ const disableMaintenanceMode = () => ({
     task: async (ctx, task) => {
         const { result } = await runMagentoCommand(ctx, 'maintenance:status', {
             throwNonZeroCode: false
-        });
+        })
 
         if (result.includes('maintenance mode is not active')) {
-            task.skip();
-            return;
+            task.skip()
+            return
         }
 
-        await runMagentoCommand(ctx, 'maintenance:disable');
+        await runMagentoCommand(ctx, 'maintenance:disable')
     }
-});
+})
 
-module.exports = disableMaintenanceMode;
+module.exports = disableMaintenanceMode

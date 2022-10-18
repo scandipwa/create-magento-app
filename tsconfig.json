@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true
+    },
+    "exclude": [
+        "./sample-package",
+        "**/node_modules",
+        "./docker-actions",
+        "./container-images"
+    ]
+}

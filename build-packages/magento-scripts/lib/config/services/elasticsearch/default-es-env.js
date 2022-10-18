@@ -3,4 +3,4 @@ module.exports = {
     'xpack.security.enabled': false,
     'discovery.type': 'single-node',
     ES_JAVA_OPTS: '-Xms512m -Xmx512m'
-};
+}

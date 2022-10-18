@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 /**
  * @returns {import('../../../../../typings/index').NginxConfiguration}
@@ -6,6 +6,6 @@ const path = require('path');
 const nginx118 = ({ templateDir }) => ({
     version: '1.18.0',
     configTemplate: path.join(templateDir || '', 'nginx.template.conf')
-});
+})
 
-module.exports = nginx118;
+module.exports = nginx118

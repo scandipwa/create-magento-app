@@ -103,7 +103,8 @@ export interface CommentInstruction {
     comment: string
 }
 
-export type DockerfileInstruction = FromInstruction
+export type DockerfileInstruction =
+    | FromInstruction
     | RunInstruction
     | CmdInstruction
     | LabelInstruction

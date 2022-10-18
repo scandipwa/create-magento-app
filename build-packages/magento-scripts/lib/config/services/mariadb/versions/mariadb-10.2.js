@@ -3,6 +3,6 @@
  */
 const mariadb102 = () => ({
     version: '10.2'
-});
+})
 
-module.exports = mariadb102;
+module.exports = mariadb102

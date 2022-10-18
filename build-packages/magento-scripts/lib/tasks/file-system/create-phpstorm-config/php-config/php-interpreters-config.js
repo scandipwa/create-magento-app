@@ -1,6 +1,6 @@
-const { nameKey, propertyKey } = require('../keys');
+const { nameKey, propertyKey } = require('../keys')
 
-const PHP_INTERPRETERS_COMPONENT_NAME = 'PhpInterpreters';
+const PHP_INTERPRETERS_COMPONENT_NAME = 'PhpInterpreters'
 
 /**
  * @param {Array} phpConfigs
@@ -8,13 +8,13 @@ const PHP_INTERPRETERS_COMPONENT_NAME = 'PhpInterpreters';
  * @returns {Promise<Boolean>}
  */
 const setupPHPInterpreters = async (phpConfigs, ctx) => {
-    let hasChanges = false;
+    let hasChanges = false
     const phpInterpretersComponent = phpConfigs.find(
         (phpConfig) => phpConfig[nameKey] === PHP_INTERPRETERS_COMPONENT_NAME
-    );
+    )
 
-    const { php } = ctx.config.docker.getContainers(ctx.ports);
-    const currentInterpreterImage = ctx.debug ? php.debugImage : php.image;
+    const { php } = ctx.config.docker.getContainers(ctx.ports)
+    const currentInterpreterImage = ctx.debug ? php.debugImage : php.image
 
     const defaultPhpInterpreterConfiguration = {
         [nameKey]: currentInterpreterImage,
@@ -28,54 +28,76 @@ const setupPHPInterpreters = async (phpConfigs, ctx) => {
             [propertyKey('RUN_AS_ROOT_VIA_SUDO')]: 'false',
             [propertyKey('DOCKER_ACCOUNT_NAME')]: 'Docker',
             [propertyKey('DOCKER_IMAGE_NAME')]: currentInterpreterImage,
-            [propertyKey('DOCKER_REMOTE_PROJECT_PATH')]: ctx.config.baseConfig.containerMagentoDir
+            [propertyKey('DOCKER_REMOTE_PROJECT_PATH')]:
+                ctx.config.baseConfig.containerMagentoDir
         }
-    };
+    }
 
     if (phpInterpretersComponent) {
         if (!phpInterpretersComponent.interpreters) {
-            hasChanges = true;
-            phpInterpretersComponent.interpreters = {};
+            hasChanges = true
+            phpInterpretersComponent.interpreters = {}
         }
 
         if (!Array.isArray(phpInterpretersComponent.interpreters.interpreter)) {
-            hasChanges = true;
-            phpInterpretersComponent.interpreters.interpreter = [phpInterpretersComponent.interpreters.interpreter];
+            hasChanges = true
+            phpInterpretersComponent.interpreters.interpreter = [
+                phpInterpretersComponent.interpreters.interpreter
+            ]
         }
 
-        const phpInterpreterConfiguration = phpInterpretersComponent.interpreters.interpreter.find(
-            (interpreter) => interpreter[nameKey] === php.image || interpreter[nameKey] === php.debugImage
-        );
+        const phpInterpreterConfiguration =
+            phpInterpretersComponent.interpreters.interpreter.find(
+                (interpreter) =>
+                    interpreter[nameKey] === php.image ||
+                    interpreter[nameKey] === php.debugImage
+            )
 
         if (!phpInterpreterConfiguration) {
-            hasChanges = true;
-            phpInterpretersComponent.interpreters.interpreter.push(defaultPhpInterpreterConfiguration);
+            hasChanges = true
+            phpInterpretersComponent.interpreters.interpreter.push(
+                defaultPhpInterpreterConfiguration
+            )
         } else {
-            if (phpInterpreterConfiguration[nameKey] !== currentInterpreterImage) {
-                hasChanges = true;
-                phpInterpreterConfiguration[nameKey] = currentInterpreterImage;
+            if (
+                phpInterpreterConfiguration[nameKey] !== currentInterpreterImage
+            ) {
+                hasChanges = true
+                phpInterpreterConfiguration[nameKey] = currentInterpreterImage
             }
-            if (phpInterpreterConfiguration.remote_data[propertyKey('DOCKER_IMAGE_NAME')] !== currentInterpreterImage) {
-                hasChanges = true;
-                phpInterpreterConfiguration.remote_data[propertyKey('DOCKER_IMAGE_NAME')] = currentInterpreterImage;
+            if (
+                phpInterpreterConfiguration.remote_data[
+                    propertyKey('DOCKER_IMAGE_NAME')
+                ] !== currentInterpreterImage
+            ) {
+                hasChanges = true
+                phpInterpreterConfiguration.remote_data[
+                    propertyKey('DOCKER_IMAGE_NAME')
+                ] = currentInterpreterImage
             }
 
-            if (phpInterpreterConfiguration.remote_data[propertyKey('DOCKER_REMOTE_PROJECT_PATH')] !== ctx.config.baseConfig.containerMagentoDir) {
-                hasChanges = true;
-                phpInterpreterConfiguration.remote_data[propertyKey('DOCKER_REMOTE_PROJECT_PATH')] = ctx.config.baseConfig.containerMagentoDir;
+            if (
+                phpInterpreterConfiguration.remote_data[
+                    propertyKey('DOCKER_REMOTE_PROJECT_PATH')
+                ] !== ctx.config.baseConfig.containerMagentoDir
+            ) {
+                hasChanges = true
+                phpInterpreterConfiguration.remote_data[
+                    propertyKey('DOCKER_REMOTE_PROJECT_PATH')
+                ] = ctx.config.baseConfig.containerMagentoDir
             }
         }
     } else {
-        hasChanges = true;
+        hasChanges = true
         phpConfigs.push({
             [nameKey]: PHP_INTERPRETERS_COMPONENT_NAME,
             interpreters: {
                 interpreter: defaultPhpInterpreterConfiguration
             }
-        });
+        })
     }
 
-    return hasChanges;
-};
+    return hasChanges
+}
 
-module.exports = setupPHPInterpreters;
+module.exports = setupPHPInterpreters

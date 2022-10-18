@@ -4,12 +4,16 @@ class KnownError extends Error {
      * @param {String} [name] Error name
      * @param {{ reportToAnalytics?: boolean }} [param2]
      */
-    constructor(message, name = 'Known Error', { reportToAnalytics = true } = {}) {
-        super(message);
-        this.name = name;
+    constructor(
+        message,
+        name = 'Known Error',
+        { reportToAnalytics = true } = {}
+    ) {
+        super(message)
+        this.name = name
 
-        this.reportToAnalytics = reportToAnalytics;
+        this.reportToAnalytics = reportToAnalytics
     }
 }
 
-module.exports = KnownError;
+module.exports = KnownError

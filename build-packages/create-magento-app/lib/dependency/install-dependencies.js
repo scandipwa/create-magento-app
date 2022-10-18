@@ -1,8 +1,8 @@
 // const os = require('os');
-const { prompt } = require('enquirer');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const execAsync = require('../exec-async');
-const dependenciesForPlatforms = require('./dependencies-for-platforms');
+const { prompt } = require('enquirer')
+const logger = require('@scandipwa/scandipwa-dev-utils/logger')
+const execAsync = require('../exec-async')
+const dependenciesForPlatforms = require('./dependencies-for-platforms')
 
 /**
  * Install dependencies
@@ -11,33 +11,41 @@ const dependenciesForPlatforms = require('./dependencies-for-platforms');
  * @param {string[]} options.dependenciesToInstall List of dependencies to install
  */
 const installDependencies = async (options) => {
-    const { dependenciesToInstall, platform } = options;
-    const cmd = dependenciesForPlatforms[platform].installCommand(dependenciesToInstall.join(' '));
-    const installCommand = logger.style.code(cmd);
-    const dependenciesWordFormatter = `dependenc${dependenciesToInstall.length > 1 ? 'ies' : 'y'}`;
-    logger.logN(`Missing ${ dependenciesWordFormatter } ${ logger.style.code(dependenciesToInstall.join(', ')) } detected!`);
-    logger.logN('These dependencies required for CMA to operate!');
+    const { dependenciesToInstall, platform } = options
+    const cmd = dependenciesForPlatforms[platform].installCommand(
+        dependenciesToInstall.join(' ')
+    )
+    const installCommand = logger.style.code(cmd)
+    const dependenciesWordFormatter = `dependenc${
+        dependenciesToInstall.length > 1 ? 'ies' : 'y'
+    }`
+    logger.logN(
+        `Missing ${dependenciesWordFormatter} ${logger.style.code(
+            dependenciesToInstall.join(', ')
+        )} detected!`
+    )
+    logger.logN('These dependencies required for CMA to operate!')
 
     const { installAnswer } = await prompt({
         type: 'select',
-        message: `Do you want to install missing ${ dependenciesWordFormatter } now?`,
+        message: `Do you want to install missing ${dependenciesWordFormatter} now?`,
         name: 'installAnswer',
         choices: [
             {
                 name: 'install',
-                message: `Install ${ dependenciesWordFormatter } now!`
+                message: `Install ${dependenciesWordFormatter} now!`
             },
             {
                 name: 'not-install',
-                message: `Install ${ dependenciesWordFormatter } later, when I feel it.`
+                message: `Install ${dependenciesWordFormatter} later, when I feel it.`
             }
         ]
-    });
+    })
 
     if (installAnswer === 'not-install') {
-        throw new Error(`Okay, skipping ${ dependenciesWordFormatter } installation for now.
+        throw new Error(`Okay, skipping ${dependenciesWordFormatter} installation for now.
 
-To install missing ${ dependenciesWordFormatter } manually, run the following command: ${ installCommand }`);
+To install missing ${dependenciesWordFormatter} manually, run the following command: ${installCommand}`)
     }
 
     if (installAnswer === 'install') {
@@ -50,8 +58,8 @@ To install missing ${ dependenciesWordFormatter } manually, run the following co
         await execAsync(cmd, {
             callback: logger.log,
             pipeInput: true
-        });
+        })
     }
-};
+}
 
-module.exports = installDependencies;
+module.exports = installDependencies

@@ -4,7 +4,5 @@ module.exports = {
     && pecl install pdo_sqlsrv \
     && docker-php-ext-enable pdo_sqlsrv \
     && apk del -f .build-deps`,
-    dependencies: [
-        'unixodbc-dev'
-    ]
-};
+    dependencies: ['unixodbc-dev']
+}

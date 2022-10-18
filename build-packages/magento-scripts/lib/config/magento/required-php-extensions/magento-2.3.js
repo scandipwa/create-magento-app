@@ -14,6 +14,6 @@ const magento23RequiredPHPExtensions = [
     'soap',
     'xsl',
     'zip'
-];
+]
 
-module.exports = magento23RequiredPHPExtensions;
+module.exports = magento23RequiredPHPExtensions

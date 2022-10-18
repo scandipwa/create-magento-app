@@ -1,5 +1,5 @@
-const { setProjectConfig } = require('../../config/config');
-const { setPrefix: setPrefixUtil } = require('../../util/prefix');
+const { setProjectConfig } = require('../../config/config')
+const { setPrefix: setPrefixUtil } = require('../../util/prefix')
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -7,15 +7,19 @@ const { setPrefix: setPrefixUtil } = require('../../util/prefix');
 const setProjectConfigTask = () => ({
     title: 'Settings project config',
     task: (ctx) => {
-        const { config: { overridenConfiguration: { prefix } } } = ctx;
+        const {
+            config: {
+                overridenConfiguration: { prefix }
+            }
+        } = ctx
 
-        setPrefixUtil(prefix);
+        setPrefixUtil(prefix)
 
-        setProjectConfig('debug', ctx.debug);
+        setProjectConfig('debug', ctx.debug)
     },
     options: {
         showTimer: false
     }
-});
+})
 
-module.exports = { setProjectConfigTask };
+module.exports = { setProjectConfigTask }

@@ -1,5 +1,5 @@
-const UnknownError = require('../../../errors/unknown-error');
-const sshDb = require('./ssh');
+const UnknownError = require('../../../errors/unknown-error')
+const sshDb = require('./ssh')
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -7,7 +7,7 @@ const sshDb = require('./ssh');
 const importRemoteDbSSH = () => ({
     skip: (ctx) => typeof ctx.remoteDb === 'undefined',
     task: async (ctx, task) => {
-        task.title = 'Importing database from remote server';
+        task.title = 'Importing database from remote server'
 
         if (!ctx.remoteDb) {
             ctx.remoteDb = await task.prompt({
@@ -15,26 +15,24 @@ const importRemoteDbSSH = () => ({
                 message: `Please enter a remote server connection string.
 It can be a SSH (ssh://<url>) connection or mysql (mysql://<url>) connection.
 `
-            });
+            })
         }
 
-        const url = new URL(ctx.remoteDb);
+        const url = new URL(ctx.remoteDb)
 
-        ctx.remoteDbUrl = url;
+        ctx.remoteDbUrl = url
 
-        const { protocol } = url;
+        const { protocol } = url
 
         switch (protocol) {
-        case 'ssh:': {
-            return task.newListr(
-                sshDb()
-            );
-        }
-        default: {
-            throw new UnknownError(`Unsupported protocol ${protocol}`);
-        }
+            case 'ssh:': {
+                return task.newListr(sshDb())
+            }
+            default: {
+                throw new UnknownError(`Unsupported protocol ${protocol}`)
+            }
         }
     }
-});
+})
 
-module.exports = importRemoteDbSSH;
+module.exports = importRemoteDbSSH

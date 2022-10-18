@@ -1,13 +1,13 @@
-const fs = require('fs');
+const fs = require('fs')
 
 const pathExistsSync = (path) => {
     try {
-        fs.accessSync(path, fs.constants.F_OK);
+        fs.accessSync(path, fs.constants.F_OK)
     } catch (e) {
-        return false;
+        return false
     }
 
-    return true;
-};
+    return true
+}
 
-module.exports = pathExistsSync;
+module.exports = pathExistsSync

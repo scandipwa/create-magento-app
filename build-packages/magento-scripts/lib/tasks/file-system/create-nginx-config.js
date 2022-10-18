@@ -1,6 +1,6 @@
-const path = require('path');
-const setConfigFile = require('../../util/set-config');
-const UnknownError = require('../../errors/unknown-error');
+const path = require('path')
+const setConfigFile = require('../../util/set-config')
+const UnknownError = require('../../errors/unknown-error')
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -10,21 +10,18 @@ const createNginxConfig = () => ({
     task: async (ctx) => {
         const {
             ports,
-            config: {
-                overridenConfiguration,
-                baseConfig
-            },
+            config: { overridenConfiguration, baseConfig },
             isDockerDesktop
-        } = ctx;
+        } = ctx
 
         const {
-            configuration: {
-                nginx
-            }
-        } = overridenConfiguration;
+            configuration: { nginx }
+        } = overridenConfiguration
 
-        const hostMachine = !isDockerDesktop ? '127.0.0.1' : 'host.docker.internal';
-        const hostPort = !isDockerDesktop ? ports.app : 80;
+        const hostMachine = !isDockerDesktop
+            ? '127.0.0.1'
+            : 'host.docker.internal'
+        const hostPort = !isDockerDesktop ? ports.app : 80
 
         try {
             await setConfigFile({
@@ -43,11 +40,13 @@ const createNginxConfig = () => ({
                     hostPort,
                     config: overridenConfiguration
                 }
-            });
+            })
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during nginx config creation\n\n${e}`);
+            throw new UnknownError(
+                `Unexpected error accrued during nginx config creation\n\n${e}`
+            )
         }
     }
-});
+})
 
-module.exports = createNginxConfig;
+module.exports = createNginxConfig

@@ -1,4 +1,4 @@
-import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command'
 
 export interface NetworkLsOptions<T extends boolean = false> {
     filter?: string | string[]
@@ -56,13 +56,16 @@ export interface NetworkInspectResult {
         Network: string
     }
     ConfigOnly: boolean
-    Containers: Record<string, {
-        Name: string
-        EndpointID: string
-        MacAddress: string
-        IPv4Address: string
-        IPv6Address: string
-    }>
+    Containers: Record<
+        string,
+        {
+            Name: string
+            EndpointID: string
+            MacAddress: string
+            IPv4Address: string
+            IPv6Address: string
+        }
+    >
     Options: Record<string, unknown>
     Labels: Record<string, unknown>
 }

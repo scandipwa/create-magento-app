@@ -7,6 +7,6 @@ const databaseDumpCommandWithOptions = [
     '--column-statistics=0',
     '--max_allowed_packet=1GB',
     '--no-tablespaces'
-];
+]
 
-module.exports = databaseDumpCommandWithOptions;
+module.exports = databaseDumpCommandWithOptions

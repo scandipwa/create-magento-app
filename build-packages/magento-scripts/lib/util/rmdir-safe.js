@@ -1,28 +1,28 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-const pathExists = require('./path-exists');
+const pathExists = require('./path-exists')
 
 const rmdirSafe = async (dirPath) => {
-    const dirExists = await pathExists(dirPath);
+    const dirExists = await pathExists(dirPath)
 
     if (!dirExists) {
-        return true;
+        return true
     }
     const files = await fs.promises.readdir(dirPath, {
         encoding: 'utf-8',
         withFileTypes: true
-    });
+    })
 
     for (const file of files) {
-        const filePath = path.join(dirPath, file.name);
+        const filePath = path.join(dirPath, file.name)
         await fs.promises.rm(filePath, {
             recursive: true,
             force: true
-        });
+        })
     }
 
-    return true;
-};
+    return true
+}
 
-module.exports = rmdirSafe;
+module.exports = rmdirSafe

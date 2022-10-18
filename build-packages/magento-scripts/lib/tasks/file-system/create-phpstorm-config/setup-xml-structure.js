@@ -1,4 +1,4 @@
-const { propertyKey } = require('./keys');
+const { propertyKey } = require('./keys')
 
 const xmlConfiguration = () => ({
     '?xml': {
@@ -9,34 +9,35 @@ const xmlConfiguration = () => ({
         [propertyKey('version')]: '4',
         component: []
     }
-});
+})
 
 const setupXMLStructure = (data) => {
     if (!data) {
-        data = xmlConfiguration();
+        data = xmlConfiguration()
     }
 
     if (data['?xml'] === undefined) {
-        data['?xml'] = xmlConfiguration()['?xml'];
+        data['?xml'] = xmlConfiguration()['?xml']
     }
 
     if (data.project === undefined) {
-        data.project = xmlConfiguration().project;
+        data.project = xmlConfiguration().project
     }
 
     if (data.project.component === undefined) {
-        data.project.component = [];
+        data.project.component = []
     }
 
-    if (!Array.isArray(data.project.component) && Boolean(data.project.component)) {
-        data.project.component = [
-            data.project.component
-        ];
+    if (
+        !Array.isArray(data.project.component) &&
+        Boolean(data.project.component)
+    ) {
+        data.project.component = [data.project.component]
     }
 
-    return data;
-};
+    return data
+}
 
 module.exports = {
     setupXMLStructure
-};
+}

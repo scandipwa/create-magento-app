@@ -1,4 +1,4 @@
-const defaultEnv = require('../default-es-env');
+const defaultEnv = require('../default-es-env')
 
 /**
  * @returns {import('../../../../../typings/index').ServiceWithImage}
@@ -6,6 +6,6 @@ const defaultEnv = require('../default-es-env');
 const elasticsearch710 = () => ({
     image: 'elasticsearch:7.10.1',
     env: defaultEnv
-});
+})
 
-module.exports = elasticsearch710;
+module.exports = elasticsearch710

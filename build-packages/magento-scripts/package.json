@@ -23,7 +23,8 @@
         "arm64"
     ],
     "dependencies": {
-        "@scandipwa/scandipwa-dev-utils": "0.1.13",
+        "@scandipwa/scandipwa-dev-utils": "0.1.16",
+        "@tilework/mosaic-dev-utils": "^0.2.3",
         "conf": "10.1.2",
         "enquirer": "2.3.6",
         "eta": "1.12.3",
@@ -53,5 +54,8 @@
         "elasticsearch",
         "mysql",
         "scandipwa"
-    ]
+    ],
+    "devDependencies": {
+        "@types/yargs": "^17.0.13"
+    }
 }

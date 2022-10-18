@@ -44,7 +44,7 @@ const orderTables = [
     'sales_shipping_aggregated_order',
     'tax_order_aggregated_created',
     'tax_order_aggregated_updated'
-];
+]
 
 const customerTables = [
     'customer_address_entity',
@@ -72,9 +72,9 @@ const customerTables = [
     'review_entity_summary',
     'review_store',
     'report_event'
-];
+]
 
 module.exports = {
     customerTables,
     orderTables
-};
+}

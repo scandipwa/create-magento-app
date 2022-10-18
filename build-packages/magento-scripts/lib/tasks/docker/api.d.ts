@@ -1,4 +1,4 @@
-import { ExecAsyncSpawnOptions } from '../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../util/exec-async-command'
 
 export interface DockerVersionOptions<T extends boolean = false> {
     format?: string

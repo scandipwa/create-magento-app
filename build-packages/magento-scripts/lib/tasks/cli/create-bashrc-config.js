@@ -1,6 +1,6 @@
-const path = require('path');
-const UnknownError = require('../../errors/unknown-error');
-const setConfigFile = require('../../util/set-config');
+const path = require('path')
+const UnknownError = require('../../errors/unknown-error')
+const setConfigFile = require('../../util/set-config')
 
 /**
  * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -8,12 +8,18 @@ const setConfigFile = require('../../util/set-config');
 const createBashrcConfigFile = () => ({
     title: 'Setting Bashrc config',
     task: async (ctx) => {
-        const { config: { php, baseConfig, overridenConfiguration } } = ctx;
-        const varnishEnabled = overridenConfiguration.configuration.varnish.enabled;
+        const {
+            config: { php, baseConfig, overridenConfiguration }
+        } = ctx
+        const varnishEnabled =
+            overridenConfiguration.configuration.varnish.enabled
         try {
             await setConfigFile({
                 configPathname: path.join(baseConfig.cacheDir, '.magentorc'),
-                template: path.join(baseConfig.templateDir, 'magentorc.template'),
+                template: path.join(
+                    baseConfig.templateDir,
+                    'magentorc.template'
+                ),
                 overwrite: true,
                 templateArgs: {
                     php,
@@ -21,11 +27,13 @@ const createBashrcConfigFile = () => ({
                     config: ctx.config,
                     magentoVersion: ctx.magentoVersion
                 }
-            });
+            })
         } catch (e) {
-            throw new UnknownError(`Unexpected error accrued during .magentorc config creation\n\n${e}`);
+            throw new UnknownError(
+                `Unexpected error accrued during .magentorc config creation\n\n${e}`
+            )
         }
     }
-});
+})
 
-module.exports = createBashrcConfigFile;
+module.exports = createBashrcConfigFile

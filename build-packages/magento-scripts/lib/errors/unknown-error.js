@@ -4,12 +4,16 @@ class UnknownError extends Error {
      * @param {String} [name] Error name
      * @param {{ reportToAnalytics?: boolean }} [param2]
      */
-    constructor(message, name = 'Unknown Error', { reportToAnalytics = true } = {}) {
-        super(message);
-        this.name = name;
+    constructor(
+        message,
+        name = 'Unknown Error',
+        { reportToAnalytics = true } = {}
+    ) {
+        super(message)
+        this.name = name
 
-        this.reportToAnalytics = reportToAnalytics;
+        this.reportToAnalytics = reportToAnalytics
     }
 }
 
-module.exports = UnknownError;
+module.exports = UnknownError

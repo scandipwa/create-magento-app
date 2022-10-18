@@ -4,7 +4,5 @@
 module.exports = {
     name: 'sodium',
     command: 'docker-php-ext-install sodium',
-    dependencies: [
-        'libsodium-dev'
-    ]
-};
+    dependencies: ['libsodium-dev']
+}

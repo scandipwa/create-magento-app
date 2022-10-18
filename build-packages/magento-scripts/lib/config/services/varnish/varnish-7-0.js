@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 /**
  * @returns {import('../../../typings/index').VarnishConfiguration}
@@ -8,6 +8,6 @@ const varnish70 = ({ templateDir }) => ({
     healthCheck: false,
     version: '7.0',
     configTemplate: path.join(templateDir || '', 'varnish.template.vcl')
-});
+})
 
-module.exports = varnish70;
+module.exports = varnish70

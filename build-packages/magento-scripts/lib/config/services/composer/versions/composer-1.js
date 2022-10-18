@@ -8,6 +8,6 @@ const composer1 = () => ({
             enabled: true
         }
     }
-});
+})
 
-module.exports = composer1;
+module.exports = composer1

@@ -1,8 +1,9 @@
-const { request } = require('smol-request');
+const { request } = require('smol-request')
 
-const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const ipRegex =
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
 
-const isIpAddress = (text) => ipRegex.test(text);
+const isIpAddress = (text) => ipRegex.test(text)
 
 const externalIpProviders = [
     'http://api.ipify.org/',
@@ -16,24 +17,24 @@ const externalIpProviders = [
     'http://ipecho.net/plain',
     'http://diagnostic.opendns.com/myip',
     'http://trackip.net/ip'
-];
+]
 
 /**
  * Get an external IP address
  * @returns {Promise<string>}
  */
 const getExternalIpAddress = async () => {
-    let ip;
+    let ip
 
     for (const ipProvider of externalIpProviders) {
         try {
             const response = await request(ipProvider, {
                 responseType: 'text'
-            });
+            })
 
             if (response.status === 200) {
-                ip = response.data;
-                break;
+                ip = response.data
+                break
             }
         } catch (e) {
             //
@@ -41,14 +42,14 @@ const getExternalIpAddress = async () => {
     }
 
     if (!ip) {
-        throw new Error('External IP address is not available!');
+        throw new Error('External IP address is not available!')
     }
 
-    return ip;
-};
+    return ip
+}
 
 module.exports = {
     ipRegex,
     isIpAddress,
     getExternalIpAddress
-};
+}
