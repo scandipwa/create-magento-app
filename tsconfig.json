@@ -7,9 +7,13 @@
         "resolveJsonModule": true
     },
     "exclude": [
-        "./sample-package",
+        "./sample-package/**",
         "**/node_modules",
-        "./docker-actions",
-        "./container-images"
+        "./docker-actions/**",
+        "./container-images/**",
+        "./build-packages/magento-scripts/lib/config/templates/**"
+    ],
+    "include": [
+        "./build-packages/**/*.js"
     ]
 }

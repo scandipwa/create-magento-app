@@ -1,15 +1,25 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 const path = require('path')
 const yargs = require('yargs')
 const semver = require('semver')
+// @ts-ignore
 const getLatestVersion = require('@scandipwa/scandipwa-dev-utils/latest-version')
+// @ts-ignore
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
+// @ts-ignore
 const createFilesystem = require('@scandipwa/scandipwa-dev-utils/create-filesystem')
+// @ts-ignore
 const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn')
+// @ts-ignore
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps')
 const { checkDependencies } = require('./lib/dependency')
 
+/**
+ * @param {string} name
+ * @param {string} pathname
+ */
 const greet = (name, pathname) => {
     const relativePathname = `./${pathname}`
     const displayedCommand = shouldUseYarn() ? 'yarn' : 'npm run'
@@ -49,6 +59,9 @@ const greet = (name, pathname) => {
     logger.logN('Happy coding! <3')
 }
 
+/**
+ * @param {{ name: string, path: string }} options
+ */
 const createApp = async (options) => {
     const { name, path: pathname } = options
 
@@ -96,6 +109,9 @@ const createApp = async (options) => {
     greet(name, pathname)
 }
 
+/**
+ * @param {{ name: string, path: string }} options
+ */
 const init = async (options) => {
     await checkDependencies()
 
@@ -139,17 +155,19 @@ const init = async (options) => {
 yargs.command(
     '$0 <destination>',
     'Create Magento App',
-    (yargs) => {
+    (yargs) =>
         yargs.example(
             '$0 my-app',
             'Creates a new Magento 2 application in the "my-app" folder relative to current working directory.'
-        )
-    },
+        ),
+    /**
+     * @arg {import('yargs').ArgumentsCamelCase<{ destination: string }>} args
+     */
     async (args) => {
         const { destination } = args
 
         const pathArr = destination.split(path.sep)
-        const name = pathArr.slice(-1)
+        const name = pathArr.slice(-1)[0]
 
         await init({
             name, // we do not care about organization it is or not

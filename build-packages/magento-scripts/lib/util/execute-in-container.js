@@ -3,6 +3,7 @@ const { runCommand } = require('../tasks/docker/containers/container-api')
 
 /**
  * @param {{ containerName: string, commands: string[], user?: string }} param0
+ * @returns {Promise<never>}
  */
 const executeInContainer = ({ containerName, commands, user }) => {
     if (!process.stdin.isTTY) {

@@ -9,7 +9,7 @@ const archivesByArch = require('./lib/config')
 const getDownloadLink = (arch) => {
     switch (arch) {
         case 'x64':
-        case 'amd64': {
+        case 'arm64': {
             return archivesByArch[arch]
         }
         default: {
@@ -22,11 +22,11 @@ const getDownloadLink = (arch) => {
 const ioncubeExtensionCommand = async ({ ctx }) => {
     const downloadLink = getDownloadLink(ctx.arch)
     const phpExtensionsDirectory = '/usr/ioncube'
-    // eslint-disable-next-line no-unused-vars
-    const [_, phpMajorVersion, phpMinorVersion] =
-        ctx.phpVersion.match(/^(\d)\.(\d)/i)
+    const phpVersionMatch = ctx.phpVersion.match(/^(\d)\.(\d)/i)
 
-    return `curl ${downloadLink} --output ioncube_loaders_lin_x86-64.tar.gz; \
+    if (phpVersionMatch && phpVersionMatch.length > 1) {
+        const [_, phpMajorVersion, phpMinorVersion] = phpVersionMatch
+        return `curl ${downloadLink} --output ioncube_loaders_lin_x86-64.tar.gz; \
 tar -zxf ./${path.basename(downloadLink)} --directory /usr/; \
 { \
     echo 'zend_extension=${path.join(
@@ -34,6 +34,9 @@ tar -zxf ./${path.basename(downloadLink)} --directory /usr/; \
         `ioncube_loader_lin_${phpMajorVersion}.${phpMinorVersion}.so`
     )}'; \
 } | tee /usr/local/etc/php/conf.d/00-ioncube.ini`
+    }
+
+    throw new Error('cannot parse php version from context!')
 }
 
 /** @type {import('@scandipwa/magento-scripts').PHPExtensionInstallationInstruction} */

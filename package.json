@@ -2,7 +2,9 @@
     "private": true,
     "name": "create-magento-app",
     "scripts": {
-        "lint": "eslint ./build-packages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
+        "check-types": "tsc --noemit",
+        "lint-eslint": "eslint ./build-pack,ages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
+        "lint": "npm run check-types && npm run lint-eslint",
         "publish": "lerna publish --exact --no-private",
         "publish:alpha": "lerna publish --preid alpha --no-private --dist-tag alpha",
         "postinstall": "lerna bootstrap && husky install",
@@ -56,6 +58,7 @@
             "**/*.d.ts"
         ],
         "rules": {
+            "no-unused-vars": "off",
             "@typescript-eslint/no-unused-vars": "warn",
             "@typescript-eslint/no-var-requires": "off"
         }
