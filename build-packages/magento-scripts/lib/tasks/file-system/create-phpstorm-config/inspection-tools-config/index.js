@@ -30,7 +30,7 @@ const inspectionProfileDefaults = {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
 const setupInspectionToolsConfigTask = () => ({
     title: 'Set up inspection tools configuration',
@@ -55,7 +55,6 @@ const setupInspectionToolsConfigTask = () => ({
                 inspectionToolsData.component.profile.inspection_tool = []
             }
 
-            // eslint-disable-next-line max-len
             if (
                 !Array.isArray(
                     inspectionToolsData.component.profile.inspection_tool

@@ -3,7 +3,7 @@ const setConfigFile = require('../../util/set-config')
 const UnknownError = require('../../errors/unknown-error')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createNginxConfig = () => ({
     title: 'Setting nginx config',

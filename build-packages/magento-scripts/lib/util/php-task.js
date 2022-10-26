@@ -2,7 +2,7 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container')
 
 /**
  * @param {String} command
- * @param {{ noTitle: boolean, env: Record<string, string> }} options
+ * @param {{ noTitle?: boolean, env?: Record<string, string> }} [options]
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const phpTask = (command, options = {}) => ({

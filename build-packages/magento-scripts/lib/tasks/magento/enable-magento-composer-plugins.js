@@ -17,6 +17,8 @@ const getInstalledComposerPlugins = async () => {
         withFileTypes: true
     })
 
+    /** @type {string[]} */
+    const init = []
     const composerPlugins = (
         await Promise.all(
             rootVendorFolders.map(async (f) => {
@@ -31,6 +33,9 @@ const getInstalledComposerPlugins = async () => {
                         }
                     )
 
+                    /**
+                     * @type {string[]}
+                     */
                     const vendorPackagesComposerPlugins = (
                         await Promise.all(
                             vendorPackages.map(async (p) => {
@@ -47,6 +52,9 @@ const getInstalledComposerPlugins = async () => {
                                             vendorPackageComposerJsonPath
                                         )
                                     ) {
+                                        /**
+                                         *
+                                         */
                                         const {
                                             name: vendorPackageName,
                                             type: vendorPackageType
@@ -82,14 +90,14 @@ const getInstalledComposerPlugins = async () => {
             })
         )
     )
-        .reduce((acc, val) => acc.concat(val), []) // flattens the array
+        .reduce((acc, val) => (val ? acc.concat(val) : acc), init) // flattens the array
         .filter((p) => typeof p === 'string')
 
     return composerPlugins
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const enableMagentoComposerPlugins = () => ({
     task: async (ctx, task) => {
@@ -129,6 +137,8 @@ const enableMagentoComposerPlugins = () => ({
             allowPluginsKeys.length === 0 ||
             missingPluginsFromAllowPlugins.length > 0
         ) {
+            /** @type {string[]} */
+            const init = []
             const missingVendors = missingPluginsFromAllowPlugins.reduce(
                 (acc, val) => {
                     const [pluginVendor] = val.split('/')
@@ -143,7 +153,7 @@ const enableMagentoComposerPlugins = () => ({
 
                     return acc
                 },
-                []
+                init
             )
 
             const pluginOptions = [

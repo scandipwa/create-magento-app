@@ -4,13 +4,19 @@ const { configFileSchema } = require('./config-file-validator')
 const { deepmerge } = require('./deepmerge')
 const pathExists = require('./path-exists')
 
+/**
+ * @param {import('../../typings/index').CMAConfiguration} configuration
+ * @param {string} [projectPath]
+ */
 const resolveConfigurationWithOverrides = async (
     configuration,
-    baseConfig,
     projectPath = process.cwd()
 ) => {
     const configJSFilePath = path.join(projectPath, 'cma.js')
     if (await pathExists(configJSFilePath)) {
+        /**
+         * @type {import('../../typings/index').CMAConfiguration}
+         */
         const userConfiguration = require(configJSFilePath)
 
         try {

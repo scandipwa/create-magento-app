@@ -14,46 +14,46 @@ const packageManagers = Object.entries(dependenciesForPlatforms).map((d) => ({
 const osPlatform = async () => {
     const binPaths = process.env.PATH.split(':')
 
-    const platforms = await Promise.all(
-        binPaths.map(async (binPath) => {
-            if (!(await pathExists(binPath))) {
-                return null
-            }
-            const bins = await fs.promises.readdir(binPath)
+    const platforms = (
+        await Promise.all(
+            binPaths.map(async (binPath) => {
+                if (!(await pathExists(binPath))) {
+                    return null
+                }
+                const bins = await fs.promises.readdir(binPath)
 
-            for (const bin of bins) {
-                const possiblePlatforms = packageManagers.filter(
-                    (p) => p.packageManager === bin
-                )
+                for (const bin of bins) {
+                    const possiblePlatforms = packageManagers.filter(
+                        (p) => p.packageManager === bin
+                    )
 
-                if (possiblePlatforms.length > 0) {
-                    if (possiblePlatforms.length > 1) {
-                        const { distro } = await systeminformation.osInfo()
+                    if (possiblePlatforms.length > 0) {
+                        if (possiblePlatforms.length > 1) {
+                            const { distro } = await systeminformation.osInfo()
 
-                        const foundDistro = possiblePlatforms.find((p) =>
-                            p.platform
-                                .toLowerCase()
-                                .includes(distro.toLowerCase())
-                        )
+                            const foundDistro = possiblePlatforms.find((p) =>
+                                p.platform
+                                    .toLowerCase()
+                                    .includes(distro.toLowerCase())
+                            )
 
-                        if (foundDistro) {
-                            return foundDistro.platform
+                            if (foundDistro) {
+                                return foundDistro.platform
+                            }
+
+                            return possiblePlatforms[0].platform
                         }
 
                         return possiblePlatforms[0].platform
                     }
-
-                    return possiblePlatforms[0].platform
                 }
-            }
 
-            return null
-        })
-    )
+                return null
+            })
+        )
+    ).filter(Boolean)
 
-    const filteredPlatforms = platforms.filter(Boolean)
-
-    return filteredPlatforms.shift()
+    return platforms.shift()
 }
 
 module.exports = osPlatform

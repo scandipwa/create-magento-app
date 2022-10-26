@@ -4,7 +4,7 @@ const { execAsyncSpawn } = require('../../../../util/exec-async-command')
 const databaseDumpCommandWithOptions = require('./database-dump-command')
 const KnownError = require('../../../../errors/known-error')
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
  */
 const regularSSHServer = () => ({
     task: async (ctx, task) => {

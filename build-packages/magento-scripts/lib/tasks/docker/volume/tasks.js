@@ -4,7 +4,7 @@ const { containerApi } = require('../containers')
 const volumeApi = require('./volume-api')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const createVolumes = () => ({
     title: 'Creating volumes',
@@ -43,7 +43,7 @@ const createVolumes = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const removeVolumes = () => ({
     title: 'Removing volumes',
@@ -68,7 +68,7 @@ const removeVolumes = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const removeLocalVolumes = () => ({
     title: 'Removing local volumes',

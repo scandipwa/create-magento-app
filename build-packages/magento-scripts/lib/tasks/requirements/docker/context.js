@@ -18,7 +18,7 @@ const USE_DEFAULT_DOCKER_DESKTOP_CONTEXT_ANSWER =
     'useDefaultDockerDesktopContext'
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerDesktopContext = () => ({
     task: async (ctx, task) => {
@@ -65,7 +65,7 @@ const checkDockerDesktopContext = () => ({
                     },
                     {
                         name: 'skip',
-                        // eslint-disable-next-line max-len
+
                         message:
                             "I do know what this means and I DON'T want to change context for Docker. Also, save this answer to never ask again."
                     }

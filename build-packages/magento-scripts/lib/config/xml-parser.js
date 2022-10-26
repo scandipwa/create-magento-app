@@ -4,7 +4,7 @@ const path = require('path')
 const pathExists = require('../util/path-exists')
 
 /**
- * @type {import('fast-xml-parser').X2jOptions}
+ * @type {Partial<import('fast-xml-parser').X2jOptions>}
  */
 const xmlParserConfig = {
     ignoreAttributes: false,
@@ -18,7 +18,8 @@ const xmlParserConfig = {
  * @type {Partial<import('fast-xml-parser').XmlBuilderOptions>}
  */
 const xmlBuilderConfig = {
-    ...xmlParserConfig,
+    ignoreAttributes: false,
+    cdataPropName: '_cdata',
     format: true,
     suppressEmptyNode: true,
     suppressBooleanAttributes: false,

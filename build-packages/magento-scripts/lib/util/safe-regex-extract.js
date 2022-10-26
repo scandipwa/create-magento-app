@@ -3,7 +3,7 @@
  * @param {object} param0
  * @param {string} param0.string
  * @param {RegExp} param0.regex
- * @param {(result: RegExpMatchArray) => string} param0.onNoMatch
+ * @param {(result: RegExpMatchArray | null) => string} param0.onNoMatch
  */
 const safeRegexExtract = ({ string, regex, onNoMatch }) => {
     const result = string.match(regex)

@@ -32,8 +32,8 @@ const databaseConfiguration = {
 /**
  * Get link to data-source field, create fields if necessary
  *
- * @param {Object} data
- * @param {Object} defaultData Default data structure that will be used if original data is missing
+ * @param {*} data
+ * @param {*} defaultData Default data structure that will be used if original data is missing
  */
 const getToDataSource = (data, defaultData) => {
     if (!data.project) {
@@ -53,7 +53,7 @@ const getToDataSource = (data, defaultData) => {
 }
 // const mariadbVersion = await ctx.databaseConnection.query('SHOW VARIABLES LIKE "%version%";');
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupDataSourceLocalConfig = () => ({
     title: 'Set up datasource local configuration',
@@ -172,7 +172,7 @@ const setupDataSourceLocalConfig = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupDataSourceConfig = () => ({
     task: async (ctx, task) => {
@@ -286,7 +286,7 @@ const setupDataSourceConfig = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupDatabaseConfig = () => ({
     title: 'Set up database configuration',

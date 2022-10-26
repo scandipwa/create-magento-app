@@ -29,8 +29,6 @@ module.exports = (yargs) => {
         async (args) => {
             const tasks = new Listr(importDump(), {
                 exitOnError: true,
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 ctx: args,
                 concurrent: false,
                 rendererOptions: {

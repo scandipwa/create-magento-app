@@ -6,7 +6,7 @@ const readymageSSH = require('./readymage')
 const KnownError = require('../../../../errors/known-error')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
 const sshDb = () => ({
     task: async (ctx, task) => {

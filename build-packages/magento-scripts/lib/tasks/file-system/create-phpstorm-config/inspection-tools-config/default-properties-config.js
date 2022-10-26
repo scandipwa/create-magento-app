@@ -1,4 +1,10 @@
-/* eslint-disable no-param-reassign */
+/**
+ * @type {{
+ *  enabled: 'true' | 'false',
+ *  enabled_by_default: 'true' | 'false',
+ *  level: 'ERROR' | 'WEAK WARNING'
+ * }}
+ */
 const properties = {
     enabled: 'true',
     enabled_by_default: 'true',
@@ -6,7 +12,7 @@ const properties = {
 }
 
 /**
- * @param {Object} inspectionTool
+ * @param {Record<string, unknown>} inspectionTool
  * @param {{
  *  enabled: 'true' | 'false',
  *  enabled_by_default: 'true' | 'false',

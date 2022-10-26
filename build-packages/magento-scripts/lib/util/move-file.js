@@ -1,10 +1,19 @@
 const fs = require('fs')
 
+/**
+ * @param {{ from: string, to: string }} param0
+ */
 const moveFile = async ({ from, to }) => {
+    /**
+     * @returns {Promise<void>}
+     */
     const copy = () =>
         new Promise((resolve, reject) => {
             const readStream = fs.createReadStream(from)
             const writeStream = fs.createWriteStream(to)
+            /**
+             * @param {Error} e
+             */
             const onError = async (e) => {
                 await fs.promises.unlink(to)
                 reject(e)
@@ -17,7 +26,12 @@ const moveFile = async ({ from, to }) => {
                 try {
                     await fs.promises.unlink(from)
                 } catch (e) {
-                    onError(e)
+                    if (e instanceof Error) {
+                        onError(e)
+                        return
+                    } else if (typeof e === 'string') {
+                        onError(new Error(e))
+                    }
                 }
                 resolve()
             })

@@ -5,9 +5,7 @@ const { getArchSync } = require('./arch')
 const UnknownError = require('../errors/unknown-error')
 
 /**
- * @param {String} command
- * @param {import('./exec-async-command').ExecAsyncSpawnOptions} param1
- * @returns
+ * @type {typeof import('./exec-async-command')['execAsyncSpawn']}
  */
 const execAsyncSpawn = (
     command,
@@ -25,8 +23,6 @@ const execAsyncSpawn = (
      * @type {import('child_process').SpawnOptionsWithoutStdio}
      */
     const spawnOptions = {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
         cwd,
         env
@@ -43,7 +39,6 @@ const execAsyncSpawn = (
     ) {
         childProcess = spawn(
             'arch',
-            // eslint-disable-next-line max-len
             ['-x86_64', 'bash', '-c', command],
             spawnOptions
         )
@@ -94,6 +89,7 @@ const execAsyncSpawn = (
                 }
                 if (code > 0) {
                     reject(new UnknownError(result))
+                    return
                 }
             }
             resolve(result)
@@ -102,10 +98,7 @@ const execAsyncSpawn = (
 }
 
 /**
- *
- * @param {String} command
- * @param {import('./exec-async-command').ExecAsyncSpawnOptions} options
- * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {typeof import('./exec-async-command')['execCommandTask']}
  */
 const execCommandTask = (command, options = {}) => ({
     title: `Running command "${command}"`,

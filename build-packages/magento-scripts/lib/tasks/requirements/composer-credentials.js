@@ -19,7 +19,7 @@ const MISSING_COMPOSER_AUTH_ENV = 'missing composer auth environment variable'
 const MISSING_AUTH_JSON = 'missing auth.json file'
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const configureComposerCredentials = () => ({
     title: 'Configuring Composer Credentials',
@@ -176,7 +176,7 @@ Press ${logger.style.misc('Y')} to continue`
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkComposerCredentials = () => ({
     title: 'Checking Composer credentials',
@@ -261,7 +261,6 @@ Would you like to load them now?`
 
                 composerAuthContent = JSON.parse(composerAuthFileContent)
 
-                // eslint-disable-next-line max-len
                 const repoMagentoCredentials =
                     composerAuthContent &&
                     composerAuthContent['http-basic'] &&

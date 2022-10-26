@@ -6,13 +6,23 @@ const containerApi = require('./container-api')
 const { imageApi } = require('../image')
 const { execAsyncSpawn } = require('../../../util/exec-async-command')
 
+/**
+ * @param {string[]} containers
+ */
 const stopAndRemoveContainers = async (containers) => {
     await containerApi.stop(containers)
     await containerApi.rm(containers)
 }
 
+/**
+ * @param {string} image
+ */
 const pull = async (image) => execAsyncSpawn(`docker pull ${image}`)
 
+/**
+ * @param {string[]} acc
+ * @param {{ remoteImages?: string[], image: string }} val
+ */
 const remoteImageReducer = (acc, val) => {
     if (
         Array.isArray(val.remoteImages) &&
@@ -25,7 +35,7 @@ const remoteImageReducer = (acc, val) => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const pullImages = () => ({
     title: 'Pulling container images',
@@ -120,7 +130,7 @@ const pullImages = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const startContainers = () => ({
     title: 'Starting containers',
@@ -174,7 +184,7 @@ const startContainers = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const stopContainers = () => ({
     title: 'Stopping Docker containers',
@@ -206,6 +216,9 @@ const stopContainers = () => ({
     }
 })
 
+/**
+ * @param {string} containerName
+ */
 const getContainerStatus = async (containerName) => {
     try {
         return JSON.parse(
@@ -219,7 +232,7 @@ const getContainerStatus = async (containerName) => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkContainersAreRunning = () => ({
     title: 'Checking container statuses',
@@ -273,7 +286,7 @@ const checkContainersAreRunning = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const statusContainers = () => ({
     task: async (ctx) => {

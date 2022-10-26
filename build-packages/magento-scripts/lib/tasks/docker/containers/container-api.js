@@ -28,33 +28,37 @@ const runCommand = (options) => {
         user
     } = options
 
-    const detachArg = detach && '-d'
-    const rmArg = rm && '--rm'
-    const ttyArg = tty && '-it'
-    const exposeArg = expose && expose.map((e) => `--expose=${e}`)
-    const restartArg = !rm && restart && `--restart=${restart}`
-    const networkArg = network && `--network=${network}`
+    const detachArg = (detach && '-d') || ''
+    const rmArg = (rm && '--rm') || ''
+    const ttyArg = (tty && '-it') || ''
+    const exposeArg = (expose && expose.map((e) => `--expose=${e}`)) || ''
+    const restartArg = (!rm && restart && `--restart=${restart}`) || ''
+    const networkArg = (network && `--network=${network}`) || ''
     const portsArgs =
-        ports && ports.length > 0 && ports.map((port) => `-p=${port}`)
-    const mountsArgs = mounts && mounts.map((mount) => `--mount="${mount}"`)
+        (ports && ports.length > 0 && ports.map((port) => `-p=${port}`)) || ''
+    const mountsArgs =
+        (mounts && mounts.map((mount) => `--mount="${mount}"`)) || ''
     const mountVolumesArgs =
-        mountVolumes && mountVolumes.map((mount) => `-v="${mount}"`)
+        (mountVolumes && mountVolumes.map((mount) => `-v="${mount}"`)) || ''
     const envArgs = !env
         ? ''
         : Object.entries(env).map(([key, value]) => `--env=${key}='${value}'`)
-    const nameArg = name && `--name=${name}`
-    const entrypointArg = entrypoint && `--entrypoint="${entrypoint}"`
+    const nameArg = (name && `--name=${name}`) || ''
+    const entrypointArg = (entrypoint && `--entrypoint="${entrypoint}"`) || ''
     const healthCheckArg =
-        healthCheck &&
-        Object.entries(healthCheck).map(
-            ([key, value]) => `--health-${key}='${value}'`
-        )
+        (healthCheck &&
+            Object.entries(healthCheck).map(
+                ([key, value]) => `--health-${key}='${value}'`
+            )) ||
+        ''
     const securityArg =
-        securityOptions.length > 0 &&
-        securityOptions.map((opt) => `--security-opt=${opt}`)
-    const tmpfsArg = tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`)
-    const userArg = user && `--user=${user}`
-    const addHostArg = addHost && `--add-host=${addHost}`
+        (securityOptions.length > 0 &&
+            securityOptions.map((opt) => `--security-opt=${opt}`)) ||
+        ''
+    const tmpfsArg =
+        (tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`)) || ''
+    const userArg = (user && `--user=${user}`) || ''
+    const addHostArg = (addHost && `--add-host=${addHost}`) || ''
 
     const dockerCommand = [
         'docker',
@@ -80,8 +84,7 @@ const runCommand = (options) => {
         command
     ]
         .flat()
-        .filter(Boolean)
-        .filter((arg) => typeof arg === 'string')
+        .filter((arg) => !!arg && typeof arg === 'string')
 
     return dockerCommand
 }
@@ -128,8 +131,7 @@ const exec = (command, container, options = {}, execOptions = {}) => {
 }
 
 /**
- * @param {import('./container-api').ContainerLsOptions} options
- * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ * @type {typeof import('./container-api')['ls']}
  */
 const ls = async (options = {}, execOptions = {}) => {
     const {
@@ -178,10 +180,9 @@ const ls = async (options = {}, execOptions = {}) => {
 }
 
 /**
- * @param {import('./container-api').ContainerLogsOptions} options
- * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ * @type {typeof import('./container-api')['logs']}
  */
-const logs = async (options = {}, execOptions = {}) => {
+const logs = async (options, execOptions = {}) => {
     const {
         name,
         details = false,
@@ -223,9 +224,15 @@ const logs = async (options = {}, execOptions = {}) => {
     return execAsyncSpawn(logsCommand, execOptions)
 }
 
+/**
+ * @type {typeof import('./container-api')['stop']}
+ */
 const stop = (containers, execOptions = {}) =>
     execAsyncSpawn(`docker container stop ${containers.join(' ')}`, execOptions)
 
+/**
+ * @type {typeof import('./container-api')['rm']}
+ */
 const rm = (containers, execOptions = {}) =>
     execAsyncSpawn(`docker container rm ${containers.join(' ')}`, execOptions)
 

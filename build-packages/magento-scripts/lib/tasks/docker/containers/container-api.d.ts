@@ -59,11 +59,11 @@ export interface ContainerExecOptions {
     tty?: boolean
 }
 
-export function exec(
+export function exec<T>(
     command: string,
     container: string,
     options?: ContainerExecOptions,
-    execOptions?: ExecAsyncSpawnOptions<false>
+    execOptions?: ExecAsyncSpawnOptions<T>
 ): Promise<string>
 
 export interface ContainerRunOptions {
@@ -101,7 +101,7 @@ export interface ContainerRunOptions {
      * Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
      */
     env?: Record<string, unknown>
-    image?: string
+    image: string
     /**
      * Restart policies [docs](https://docs.docker.com/engine/reference/commandline/run/#restart-policies---restart)
      */
@@ -143,12 +143,14 @@ export interface ContainerRunOptions {
     user?: string
 
     network?: string
+
+    expose?: (string | number)[]
 }
 
-export function run(
+export function run<T>(
     containerOptions: ContainerRunOptions,
-    execOptions?: ExecAsyncSpawnOptions
-): Promise<false>
+    execOptions?: ExecAsyncSpawnOptions<T>
+): Promise<string>
 
 export function runCommand(options: ContainerRunOptions): string[]
 
@@ -164,11 +166,11 @@ export interface ContainerLogsOptions<T = never> {
 }
 
 export function logs(
-    options?: ContainerLogsOptions,
+    options: ContainerLogsOptions,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<string>
 export function logs<T>(
-    options?: ContainerLogsOptions<T>,
+    options: ContainerLogsOptions<T>,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<T[]>
 

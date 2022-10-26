@@ -8,7 +8,7 @@ const KnownError = require('../../errors/known-error')
 const authJsonPath = path.join(process.cwd(), 'auth.json')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const localAuthJson = () => ({
     task: async (ctx, task) => {

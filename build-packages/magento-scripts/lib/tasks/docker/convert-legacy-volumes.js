@@ -8,7 +8,7 @@ const { folderName, legacyFolderName } = require('../../util/prefix')
 const { volumeApi } = require('./volume')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const convertLegacyVolumes = () => ({
     task: async (ctx, task) => {

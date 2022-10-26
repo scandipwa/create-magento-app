@@ -2,7 +2,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command')
 const { getBrewCommand } = require('../../../util/get-brew-bin-path')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installDockerOnMac = () => ({
     title: 'Installing Docker on Mac OS',

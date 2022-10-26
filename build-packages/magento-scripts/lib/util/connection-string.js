@@ -15,7 +15,6 @@
  * @returns {ParsedConnection}
  */
 const connectionStringParser = (url) => {
-    // eslint-disable-next-line no-useless-escape
     const pattern =
         /^(?:([^:/?#\s]+):\/{2})?(?:([^@/?#\s]+)@)?([^/?#\s]+)?(?:\/([^?#\s]*))?(?:[?]([^#\s]+))?\S*$/
     const matches = url.match(pattern)
@@ -64,7 +63,6 @@ const connectionStringParser = (url) => {
 const connectionStringBuilder = (options) => {
     const { protocol, user, password, host, port, segments, params } = options
 
-    // eslint-disable-next-line max-len
     return `${protocol}://${
         user && password ? `${user}:${password}@` : ''
     }${host}${port ? `:${port}` : ''}/${

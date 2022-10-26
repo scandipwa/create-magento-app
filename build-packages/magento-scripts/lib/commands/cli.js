@@ -32,8 +32,6 @@ module.exports = (yargs) => {
                 {
                     concurrent: false,
                     exitOnError: true,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
                     ctx: {
                         throwMagentoVersionMissing: true
                     },

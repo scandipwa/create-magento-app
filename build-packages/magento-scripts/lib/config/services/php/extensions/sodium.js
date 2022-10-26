@@ -1,5 +1,5 @@
 /**
- * @type {import('../../../../typings/index').PHPExtensionInstallationInstruction}
+ * @type {import('../../../../../typings/index').PHPExtensionInstallationInstruction}
  */
 module.exports = {
     name: 'sodium',

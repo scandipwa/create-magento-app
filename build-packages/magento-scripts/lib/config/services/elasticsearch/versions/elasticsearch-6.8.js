@@ -5,7 +5,7 @@ const { repo } = require('../base-repo')
 const defaultEnv = require('../default-es-env')
 
 /**
- * @returns {import('../../../../../typings/index').ServiceWithImage}
+ * @returns {import('../../../../../typings/index').ElasticSearchConfiguration}
  */
 const elasticsearch68 = ({ image = `${repo}:elasticsearch-6.8` } = {}) => ({
     image,

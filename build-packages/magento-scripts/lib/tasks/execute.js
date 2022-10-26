@@ -15,7 +15,7 @@ const KnownError = require('../errors/known-error')
 
 /**
  *
- * @param {{ containername: string, commands?: string[] }} argv
+ * @param {{ containername: string, commands: string[] }} argv
  * @returns
  */
 const executeTask = async (argv) => {
@@ -50,19 +50,26 @@ const executeTask = async (argv) => {
         services.includes(argv.containername) ||
         services.some((service) => service.includes(argv.containername))
     ) {
-        /**
-         * @type {import('./docker/containers/container-api').ContainerRunOptions}
-         */
-        const container = containers[argv.containername]
+        const containerResult = containers[argv.containername]
             ? containers[argv.containername]
             : Object.entries(containers).find(([key]) =>
                   key.includes(argv.containername)
-              )[1]
+              )
+
+        if (!containerResult) {
+            logger.error(`No container found "${argv.containername}"`)
+
+            return
+        }
+
+        const container =
+            containerResult && Array.isArray(containerResult)
+                ? containerResult[1]
+                : containerResult
 
         if (argv.commands.length === 0) {
             // if we have default connect command then use it
             if (container.connectCommand) {
-                // eslint-disable-next-line no-param-reassign
                 argv.commands = container.connectCommand
             } else {
                 // otherwise fall back to bash (if it exists inside container)

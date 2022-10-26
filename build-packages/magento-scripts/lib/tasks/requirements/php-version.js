@@ -2,7 +2,7 @@ const UnknownError = require('../../errors/unknown-error')
 const { runContainerImage } = require('../../util/run-container-image')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkPHPVersion = () => ({
     title: 'Checking container PHP version',

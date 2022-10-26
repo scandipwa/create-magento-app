@@ -17,6 +17,9 @@ const cmaGaTrackingId = 'UA-127741417-7'
 
 googleAnalytics.setGaTrackingId(cmaGaTrackingId)
 
+/**
+ * @param {(import('listr2').ListrError | Error | import('../errors/known-error') | import('../errors/unknown-error') | string)[]} errors
+ */
 const reportErrors = async (errors) => {
     for (const error of errors) {
         const path = (error.path && ` Error path: ${error.path} `) || ''
@@ -94,7 +97,7 @@ module.exports = (yargs) => {
                     type: 'boolean',
                     default: false
                 })
-                .option('pull-images', {
+                .option('', {
                     describe: 'Pull Docker images',
                     type: 'boolean',
                     default: false
@@ -137,145 +140,139 @@ module.exports = (yargs) => {
                 )
             }
 
+            /**
+             * @type {import('../../typings/context').ListrContext}
+             */
+            let ctx
+
             try {
-                const ctx = await tasks.run()
-
-                const {
-                    systemConfiguration: { analytics }
-                } = ctx
-
-                const instanceMetadata = getInstanceMetadata(ctx)
-
-                const block = new ConsoleBlock()
-                block.addHeader('Magento 2').addEmptyLine()
-
-                block.addLine(logger.style.misc('Frontend'))
-                instanceMetadata.frontend.forEach(({ title, text }) => {
-                    block.addLine(`  ${title}: ${text}`)
-                })
-
-                block.addEmptyLine()
-
-                block.addLine(logger.style.misc('Admin'))
-                instanceMetadata.admin.forEach(({ title, text }) => {
-                    block.addLine(`  ${title}: ${text}`)
-                })
-
-                block.addEmptyLine()
-
-                block.addLine(logger.style.misc('MailDev'))
-                instanceMetadata.maildev.forEach(({ title, text }) => {
-                    block.addLine(`  ${title}: ${text}`)
-                })
-
-                const themes = await getCSAThemes()
-                if (themes.length > 0) {
-                    const theme = themes[0]
-                    block
-                        .addEmptyLine()
-                        .addSeparator('ScandiPWA')
-                        .addEmptyLine()
-                        .addLine(
-                            'To run ScandiPWA theme in Magento mode, run the following command:'
-                        )
-                        .addLine(
-                            `-> ${logger.style.command(
-                                `cd ${theme.themePath}`
-                            )}`
-                        )
-                        .addLine(
-                            `-> ${logger.style.command(
-                                `BUILD_MODE=magento ${
-                                    shouldUseYarn() ? 'yarn start' : 'npm start'
-                                }`
-                            )}`
-                        )
-                }
-
-                block.addEmptyLine()
-
-                if (process.isOutOfDateVersion) {
-                    block
-                        .addSeparator(logger.style.code('Warning'))
-                        .addEmptyLine()
-                    process.isOutOfDateVersionMessage.forEach((line) => {
-                        block.addLine(line)
-                    })
-
-                    block.addEmptyLine()
-                }
-
-                block.log()
-
-                logger.note(
-                    `MariaDB credentials, containers status and project information available in ${logger.style.code(
-                        'npm run status'
-                    )} command.
-      To access Magento CLI, Composer and PHP for this project use ${logger.style.code(
-          'npm run cli'
-      )} command.`
-                )
-                logger.log('')
-
-                if (tasks.err && tasks.err.length > 0) {
-                    logger.warn(
-                        'During the start, we encountered some errors that have not impacted the start-up process!'
-                    )
-                    logger.log('')
-                    for (const err of tasks.err) {
-                        logger.error(
-                            `Error path: ${err.path}\nError message: ${err.message}\n\nError stack: ${err.stack}`
-                        )
-                    }
-                }
-
-                if (!analytics) {
-                    process.exit(0)
-                }
-
-                try {
-                    await googleAnalytics.trackTiming(
-                        'CMA start time',
-                        Date.now() - timeStamp
-                    )
-                    if (!process.isFirstStart) {
-                        googleAnalytics.printAboutAnalytics()
-                        process.exit(0)
-                    }
-
-                    const { manufacturer, brand } =
-                        await systeminformation.cpu()
-                    const { platform, kernel } =
-                        await systeminformation.osInfo()
-                    const { total } = await systeminformation.mem()
-
-                    // Get ram amount in MB
-                    const totalRam = Math.round(total / 1024 / 1024)
-                    const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`
-
-                    await googleAnalytics.trackEvent(
-                        'Params',
-                        paramInfo,
-                        0,
-                        'OS'
-                    )
-                    googleAnalytics.printAboutAnalytics()
-                } catch (e) {
-                    await googleAnalytics.trackError(e.message || e)
-                }
-
-                if (tasks.err && tasks.err.length > 0) {
-                    for (const err of tasks.err) {
-                        console.log(err)
-                    }
-                    await reportErrors(tasks.err)
-                }
-
-                process.exit(0)
+                ctx = await tasks.run()
             } catch (e) {
                 await reportErrors([e])
                 process.exit(1)
             }
+
+            const {
+                systemConfiguration: { analytics }
+            } = ctx
+
+            const instanceMetadata = getInstanceMetadata(ctx)
+
+            const block = new ConsoleBlock()
+            block.addHeader('Magento 2').addEmptyLine()
+
+            block.addLine(logger.style.misc('Frontend'))
+            instanceMetadata.frontend.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            block.addEmptyLine()
+
+            block.addLine(logger.style.misc('Admin'))
+            instanceMetadata.admin.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            block.addEmptyLine()
+
+            block.addLine(logger.style.misc('MailDev'))
+            instanceMetadata.maildev.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            const themes = await getCSAThemes()
+            if (themes.length > 0) {
+                const theme = themes[0]
+                block
+                    .addEmptyLine()
+                    .addSeparator('ScandiPWA')
+                    .addEmptyLine()
+                    .addLine(
+                        'To run ScandiPWA theme in Magento mode, run the following command:'
+                    )
+                    .addLine(
+                        `-> ${logger.style.command(`cd ${theme.themePath}`)}`
+                    )
+                    .addLine(
+                        `-> ${logger.style.command(
+                            `BUILD_MODE=magento ${
+                                shouldUseYarn() ? 'yarn start' : 'npm start'
+                            }`
+                        )}`
+                    )
+            }
+
+            block.addEmptyLine()
+
+            if (process.isOutOfDateVersion) {
+                block.addSeparator(logger.style.code('Warning')).addEmptyLine()
+                process.isOutOfDateVersionMessage.forEach((line) => {
+                    block.addLine(line)
+                })
+
+                block.addEmptyLine()
+            }
+
+            block.log()
+
+            logger.note(
+                `MariaDB credentials, containers status and project information available in ${logger.style.code(
+                    'npm run status'
+                )} command.
+      To access Magento CLI, Composer and PHP for this project use ${logger.style.code(
+          'npm run cli'
+      )} command.`
+            )
+            logger.log('')
+
+            if (tasks.err && tasks.err.length > 0) {
+                logger.warn(
+                    'During the start, we encountered some errors that have not impacted the start-up process!'
+                )
+                logger.log('')
+                for (const err of tasks.err) {
+                    logger.error(
+                        `Error path: ${err.path}\nError message: ${err.message}\n\nError stack: ${err.stack}`
+                    )
+                }
+            }
+
+            if (!analytics) {
+                process.exit(0)
+            }
+
+            try {
+                await googleAnalytics.trackTiming(
+                    'CMA start time',
+                    Date.now() - timeStamp
+                )
+                if (!process.isFirstStart) {
+                    googleAnalytics.printAboutAnalytics()
+                    process.exit(0)
+                }
+
+                const { manufacturer, brand } = await systeminformation.cpu()
+                const { platform, kernel } = await systeminformation.osInfo()
+                const { total } = await systeminformation.mem()
+
+                // Get ram amount in MB
+                const totalRam = Math.round(total / 1024 / 1024)
+                const paramInfo = `Platform: ${platform} ${kernel}, CPU model: ${manufacturer} ${brand}, RAM amount: ${totalRam}MB`
+
+                await googleAnalytics.trackEvent('Params', paramInfo, 0, 'OS')
+                googleAnalytics.printAboutAnalytics()
+            } catch (e) {
+                await googleAnalytics.trackError(e.message || e)
+            }
+
+            if (tasks.err && tasks.err.length > 0) {
+                for (const err of tasks.err) {
+                    console.log(err)
+                }
+                await reportErrors(tasks.err)
+            }
+
+            process.exit(0)
         }
     )
 }

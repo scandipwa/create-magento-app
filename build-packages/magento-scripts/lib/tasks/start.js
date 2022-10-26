@@ -43,7 +43,7 @@ const {
 } = require('./docker/convert-composer-home-to-composer-cache-volume')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const resetCmaGlobalConfig = () => ({
     skip: (ctx) => !ctx.resetGlobalConfig,
@@ -53,7 +53,7 @@ const resetCmaGlobalConfig = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const retrieveProjectConfiguration = () => ({
     title: 'Retrieving project configuration',
@@ -80,7 +80,7 @@ const retrieveProjectConfiguration = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const stopProject = () => ({
     title: 'Stopping project',
@@ -92,7 +92,7 @@ const stopProject = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const retrieveFreshProjectConfiguration = () => ({
     title: 'Retrieving fresh project configuration',
@@ -117,7 +117,7 @@ const retrieveFreshProjectConfiguration = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const configureProject = () => ({
     title: 'Configuring project',
@@ -153,7 +153,7 @@ const configureProject = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
@@ -167,7 +167,7 @@ const finishProjectConfiguration = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const start = () => ({
     title: 'Starting project',

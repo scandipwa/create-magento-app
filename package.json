@@ -2,9 +2,9 @@
     "private": true,
     "name": "create-magento-app",
     "scripts": {
-        "check-types": "tsc --noemit",
-        "lint-eslint": "eslint ./build-pack,ages --resolve-plugins-relative-to . --cache --no-error-on-unmatched-pattern --ext .js,.ts,.tsx",
-        "lint": "npm run check-types && npm run lint-eslint",
+        "check-types": "tsc --noemit --project ./build-packages/magento-scripts",
+        "lint-eslint": "eslint ./build-packages --cache --no-error-on-unmatched-pattern --ext .js",
+        "lint": "npm run lint-eslint",
         "publish": "lerna publish --exact --no-private",
         "publish:alpha": "lerna publish --preid alpha --no-private --dist-tag alpha",
         "postinstall": "lerna bootstrap && husky install",
@@ -53,6 +53,9 @@
             "sourceType": "module"
         },
         "ignorePatterns": [
+            "./sample-packages/**",
+            "./container-images/**",
+            "./docker-actions/**",
             "**/node_modules/**",
             "build-packages/magento-scripts/lib/config/templates/**",
             "**/*.d.ts"

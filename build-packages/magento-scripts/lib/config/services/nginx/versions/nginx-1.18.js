@@ -1,10 +1,11 @@
 const path = require('path')
 
 /**
+ * @param {{ templateDir: string }} param0
  * @returns {import('../../../../../typings/index').NginxConfiguration}
  */
 const nginx118 = ({ templateDir }) => ({
-    version: '1.18.0',
+    image: 'nginx:1.18.0',
     configTemplate: path.join(templateDir || '', 'nginx.template.conf')
 })
 

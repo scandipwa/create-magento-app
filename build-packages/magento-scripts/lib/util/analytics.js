@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 const os = require('os')
 const { request } = require('smol-request')
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
@@ -9,6 +10,9 @@ const pkg = require('../../package.json')
 const GA_TRACKING_ID = process.env.GA_TRACKING_ID || 'UA-127741417-8'
 const UNKNOWN = 'unknown'
 
+/**
+ * @param {string} text
+ */
 const anonymizeError = (text) =>
     text.replace(
         new RegExp(`${os.homedir()}`, 'gi'),
@@ -43,7 +47,7 @@ const anonymizeError = (text) =>
  * @property {String} [hit.type]
  * @property {Object} [exception]
  * @property {String} [exception.description]
- * @property {Boolean} [exception.fatal]
+ * @property {String} [exception.fatal]
  * @property {Object} [event]
  * @property {String} event.category
  * @property {String} event.action
@@ -123,25 +127,31 @@ const getAppData = () => ({
  * @param {GAParameters} parameters
  */
 const collectAnalyticsParameters = (parameters) => {
+    /**
+     * @type {Record<string, string>}
+     */
     const parsedParameters = {}
 
-    for (const [firstLevelKey, firstLevelValue] of Object.entries(
-        gaParametersMapping
-    )) {
+    for (const entry of Object.entries(gaParametersMapping)) {
+        /**
+         * @type {[keyof GAParameters, GAParameters[keyof GAParameters]]}
+         */
+        const [firstLevelKey, firstLevelValue] = entry
+        const firstLevelParameter = parameters[firstLevelKey]
         if (typeof firstLevelValue === 'object' && firstLevelValue !== null) {
             for (const [secondLevelKey, secondLevelValue] of Object.entries(
                 firstLevelValue
             )) {
                 if (
-                    parameters[firstLevelKey] &&
-                    parameters[firstLevelKey][secondLevelKey]
+                    firstLevelParameter &&
+                    firstLevelParameter[secondLevelKey]
                 ) {
                     parsedParameters[secondLevelValue] =
-                        parameters[firstLevelKey][secondLevelKey]
+                        firstLevelParameter[secondLevelKey]
                 }
             }
-        } else if (parameters[firstLevelKey]) {
-            parsedParameters[firstLevelValue] = parameters[firstLevelKey]
+        } else if (firstLevelParameter) {
+            parsedParameters[firstLevelValue] = firstLevelParameter
         }
     }
 
@@ -159,22 +169,34 @@ class Analytics {
         try {
             this.setClientIdentifier(generateUUID())
         } catch (e) {
-            this.setClientIdentifier(Date.now())
+            this.setClientIdentifier(`${Date.now()}`)
         }
     }
 
+    /**
+     * @param {string} lang
+     */
     setLang(lang) {
         this.lang = lang
     }
 
+    /**
+     * @param {string} currentUrl
+     */
     setCurrentUrl(currentUrl) {
         this.currentUrl = currentUrl
     }
 
+    /**
+     * @param {string} id
+     */
     setClientIdentifier(id) {
         this.clientIdentifier = id
     }
 
+    /**
+     * @param {string} id
+     */
     setGaTrackingId(id) {
         this.gaTrackingId = id
     }
@@ -208,7 +230,7 @@ class Analytics {
         }
 
         try {
-            analyticsParameters.systemInfo = {
+            analyticsParameters.session = {
                 ipOverride: await getExternalIpAddress()
             }
         } catch (e) {
@@ -259,8 +281,6 @@ class Analytics {
 
             logger.log(analyticsParameters)
             logger.log(JSON.stringify(jsonResponse, null, 2))
-
-            // eslint-disable-next-line no-empty
         } catch (e) {
             console.log('Failed to report telemetry data')
             if (process.env.GA_DEBUG) {
@@ -269,6 +289,10 @@ class Analytics {
         }
     }
 
+    /**
+     * @param {string | Error} error
+     * @param {boolean} isFatal
+     */
     trackError(error, isFatal = true) {
         // return; // nothing
         return this._collect({
@@ -279,10 +303,16 @@ class Analytics {
                 description: anonymizeError(
                     typeof error === 'string' ? error : error.message
                 ),
+                // @ts-ignore
                 fatal: isFatal
             }
         })
     }
+    /**
+     * @param {string} label
+     * @param {number} time
+     * @param {string} category
+     */
 
     trackTiming(label, time, category = UNKNOWN) {
         return this._collect({
@@ -293,12 +323,14 @@ class Analytics {
                 userTimingCategory: category,
                 userTimingVariableName: label,
                 userTimingLabel: this.currentUrl,
+                // @ts-ignore
                 userTimingTime: Math.round(time)
             }
         })
     }
 
     trackPageView() {
+        // @ts-ignore
         return this._collect({
             hit: {
                 type: 'pageview'
@@ -306,7 +338,14 @@ class Analytics {
         })
     }
 
+    /**
+     * @param {*} action
+     * @param {*} label
+     * @param {*} value
+     * @param {*} category
+     */
     trackEvent(action, label, value, category = UNKNOWN) {
+        // @ts-ignore
         return this._collect({
             hit: {
                 type: 'event'

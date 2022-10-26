@@ -21,7 +21,9 @@ module.exports = (yargs) => {
             const tasks = new Listr(cleanup(), {
                 concurrent: false,
                 exitOnError: true,
-                ctx: { force: args.force },
+                ctx: {
+                    force: args.force
+                },
                 rendererOptions: { collapse: false }
             })
 

@@ -1,9 +1,9 @@
 const { execAsyncSpawn } = require('./exec-async-command')
 
 /**
- * @param {String} cmd
- * @param {String} serviceName
- * @param {{ now: boolean, user: boolean }} options
+ * @param {string} cmd
+ * @param {string} [serviceName]
+ * @param {{ now?: boolean, user?: boolean }} options
  */
 const run = (cmd, serviceName, options = {}) =>
     execAsyncSpawn(
@@ -19,21 +19,21 @@ const daemonReload = () => run('daemon-reload')
 
 /**
  * @param {String} serviceName
- * @param {{ now: boolean, user: boolean }} defaultOptions
+ * @param {{ now?: boolean, user?: boolean }} [defaultOptions]
  */
 const systemctlControl = (serviceName, defaultOptions = {}) => ({
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     disable: (options = {}) =>
         run('disable', serviceName, { ...defaultOptions, ...options }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     enable: (options = {}) =>
         run('enable', serviceName, { ...defaultOptions, ...options }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     enableAndStart: (options = {}) =>
         run('enable', serviceName, {
@@ -42,22 +42,22 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
             ...options
         }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     restart: (options = {}) =>
         run('restart', serviceName, { ...defaultOptions, ...options }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     start: (options = {}) =>
         run('start', serviceName, { ...defaultOptions, ...options }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     stop: (options = {}) =>
         run('stop', serviceName, { ...defaultOptions, ...options }),
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     isEnabled: async (options = {}) => {
         try {
@@ -71,7 +71,7 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
         }
     },
     /**
-     * @param {{ now: boolean, user: boolean }} options
+     * @param {{ now?: boolean, user?: boolean }} [options]
      */
     isRunning: async (options = {}) => {
         try {
@@ -86,12 +86,11 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
         }
     },
     /**
-     * @param {{ user: boolean }} options
+     * @param {{ user?: boolean }} [options]
      */
     exists: async (options = {}) => {
         const optionsToUse = { ...defaultOptions, ...options }
         try {
-            // eslint-disable-next-line max-len, no-useless-escape
             const command = `if [[ $(systemctl ${
                 optionsToUse.user ? '--user ' : ''
             }list-units --all -t service --full --no-legend "${serviceName}.service" | sed 's/^\\s*//g' | cut -f1 -d' ') == ${serviceName}.service ]]; then

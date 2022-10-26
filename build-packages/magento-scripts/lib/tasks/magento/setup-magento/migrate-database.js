@@ -12,7 +12,7 @@ const UnknownError = require('../../../errors/unknown-error')
 
 /**
  * @param {Object} [options]
- * @param {Boolean} options.onlyInstallMagento
+ * @param {Boolean} [options.onlyInstallMagento]
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const migrateDatabase = (options = {}) => ({

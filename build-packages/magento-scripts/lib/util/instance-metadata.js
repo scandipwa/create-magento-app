@@ -6,6 +6,9 @@ const WEB_ADMIN_LOCATION_TITLE = 'Panel location'
 const WEB_ADMIN_CREDENTIALS_TITLE = 'Panel credentials'
 const WEB_MAILDEV_LOCATION_TITLE = 'Panel location'
 
+/**
+ * @param {{ title: string, text: string }} param0
+ */
 const mapDataStyle = ({ title, text }) => ({
     title,
     text: logger.style.link(text),
@@ -14,7 +17,7 @@ const mapDataStyle = ({ title, text }) => ({
 
 /**
  * @param {import("../../typings/context").ListrContext} ctx
- * @return {{ frontend: { title: string, text: string }[], admin: { title: string, url: string }[], maildev: { title: string, text: string }[] }}
+ * @return {{ frontend: { title: string, text: string }[], admin: { title: string, text: string }[], maildev: { title: string, text: string }[] }}
  */
 const getInstanceMetadata = (ctx) => {
     const {

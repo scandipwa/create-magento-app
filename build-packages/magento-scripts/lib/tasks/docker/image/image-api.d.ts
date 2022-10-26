@@ -46,7 +46,6 @@ export interface ImagesInspectResult {
     Parent: string
     Comment: string
     Created: string
-    Container: string
     ContainerConfig: unknown
     DockerVersion: string
     Author: string

@@ -2,7 +2,7 @@ const { setProjectConfig } = require('../../config/config')
 const { setPrefix: setPrefixUtil } = require('../../util/prefix')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const setProjectConfigTask = () => ({
     title: 'Settings project config',

@@ -2,7 +2,7 @@ const UnknownError = require('../../../errors/unknown-error')
 const { version } = require('../../docker/api')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const getDockerVersion = () => ({
     task: async (ctx) => {

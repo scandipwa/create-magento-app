@@ -2,7 +2,7 @@ const UnknownError = require('../../../errors/unknown-error')
 const sshDb = require('./ssh')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const importRemoteDbSSH = () => ({
     skip: (ctx) => typeof ctx.remoteDb === 'undefined',

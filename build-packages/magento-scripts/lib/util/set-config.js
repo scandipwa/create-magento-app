@@ -3,6 +3,9 @@ const fs = require('fs')
 const path = require('path')
 const pathExists = require('./path-exists')
 
+/**
+ * @param {{ configPathname: string, template: string, overwrite?: boolean, templateArgs?: Record<string, unknown> }} param0
+ */
 const setConfigFile = async ({
     configPathname,
     template,
@@ -20,6 +23,10 @@ const setConfigFile = async ({
         date: new Date().toUTCString(),
         ...templateArgs
     })
+
+    if (!compliedConfig) {
+        return false
+    }
 
     const { dir } = path.parse(configPathname)
 

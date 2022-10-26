@@ -70,7 +70,7 @@ const setupESlintConfig = async (esLintConfigurationData) => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupESLintConfigTask = () => ({
     title: 'Set up ESLint configuration',

@@ -11,8 +11,8 @@ const {
 const defaultMagentoUser = require('../../database/default-magento-user')
 
 /**
- * @param {Object} [param0]
- * @param {Boolean} param0.isDbEmpty
+ * @param {Object} param0
+ * @param {Boolean} [param0.isDbEmpty]
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const installMagento = ({ isDbEmpty = false } = {}) => ({

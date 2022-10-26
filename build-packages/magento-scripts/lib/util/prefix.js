@@ -40,6 +40,9 @@ const getProjectCreatedAt = () => {
     return null
 }
 
+/**
+ * @param {boolean} usePrefix
+ */
 const setPrefix = (usePrefix) => {
     const projectInGlobalConfig = projectsConfig.get(projectKey)
     if (projectInGlobalConfig) {

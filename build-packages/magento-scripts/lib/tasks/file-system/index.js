@@ -9,7 +9,7 @@ const createVarnishConfig = require('./create-varnish-config')
 const createVSCodeConfig = require('./create-vscode-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const prepareFileSystem = () => ({
     title: 'Preparing file system',

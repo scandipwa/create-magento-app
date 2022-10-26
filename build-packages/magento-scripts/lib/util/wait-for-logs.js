@@ -14,7 +14,6 @@ const waitForLogs = ({ containerName, timeout = 30 * 1000, matchText }) =>
             (async () => {
                 // eslint-disable-next-line no-unmodified-loop-condition
                 while (!timeoutExceeded && !matched) {
-                    // eslint-disable-next-line no-await-in-loop
                     const { result } = await execAsyncSpawn(
                         `docker logs ${containerName}`,
                         {
@@ -25,7 +24,7 @@ const waitForLogs = ({ containerName, timeout = 30 * 1000, matchText }) =>
                     if (matched) {
                         return
                     }
-                    // eslint-disable-next-line no-loop-func
+
                     result.split('\n').forEach((line) => {
                         if (line.includes(matchText)) {
                             matched = true
@@ -33,7 +32,6 @@ const waitForLogs = ({ containerName, timeout = 30 * 1000, matchText }) =>
                         }
                     })
 
-                    // eslint-disable-next-line no-await-in-loop
                     await sleep(500)
                 }
             })(),

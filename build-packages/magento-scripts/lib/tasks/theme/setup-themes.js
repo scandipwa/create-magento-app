@@ -8,7 +8,7 @@ const buildTheme = require('./build-theme')
 const KnownError = require('../../errors/known-error')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const setupThemes = () => ({
     title: 'Setting up themes',

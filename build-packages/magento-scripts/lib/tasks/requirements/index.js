@@ -6,7 +6,7 @@ const checkNodeVersion = require('./node-version')
 const checkRosetta = require('./rosetta')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkRequirements = () => ({
     title: 'Checking requirements',

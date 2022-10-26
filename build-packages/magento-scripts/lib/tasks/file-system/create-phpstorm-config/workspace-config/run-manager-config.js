@@ -48,7 +48,6 @@ const setupRunManager = async (workspaceConfigs, workspaceConfig) => {
 
         const phpRemoteDebugRunConfiguration =
             runManagerComponent.configuration.find(
-                // eslint-disable-next-line max-len
                 (configuration) =>
                     configuration['@_type'] ===
                         PHP_REMOTE_DEBUG_RUN_CONFIGURATION_TYPE &&

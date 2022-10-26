@@ -1,4 +1,5 @@
 import { ListrContext } from './context'
+import './override'
 
 /* eslint-disable no-use-before-define */
 export interface ServiceWithImage {
@@ -7,7 +8,7 @@ export interface ServiceWithImage {
      *
      * @deprecated
      */
-    version: string
+    version?: string
 
     /**
      * Service Docker image
@@ -84,7 +85,7 @@ export interface ComposerConfiguration {
     /**
      *  Composer global plugins that will be added to Docker image
      */
-    plugins: Record<
+    plugins?: Record<
         string,
         {
             version?: string
@@ -200,7 +201,7 @@ export interface SSLConfiguration {
      * @example
      * `./ssl_certificate.pem`
      */
-    ssl_certificate: string
+    ssl_certificate?: string
 
     /**
      * SSL certificate key name
@@ -208,7 +209,7 @@ export interface SSLConfiguration {
      * @example
      * `./ssl_certificate-key.pem`
      */
-    ssl_certificate_key: string
+    ssl_certificate_key?: string
 }
 
 export interface CMAConfiguration {
@@ -260,6 +261,13 @@ export interface CMAConfiguration {
          * MailDev configuration
          */
         maildev: ServiceWithImage
+
+        /**
+         * @deprecated MySQL configuration
+         */
+        mysql: {
+            version: string
+        }
     }
     /**
      * Magento configuration
@@ -302,7 +310,7 @@ export interface CMAConfiguration {
     /**
      * SSL Configuration
      */
-    ssl: SSLConfiguration
+    ssl?: SSLConfiguration
 
     /**
      * Prefix config.
@@ -314,5 +322,5 @@ export interface CMAConfiguration {
      * interference between folders with similar names.
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
-    prefix: boolean
+    prefix?: boolean
 }

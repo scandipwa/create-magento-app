@@ -14,14 +14,13 @@ const { imageApi } = require('./image')
 const getEnabledExtensionsFromImage = async (imageWithTag) => {
     const output = await runContainerImage(
         imageWithTag,
-        // eslint-disable-next-line quotes
+
         `php -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
     )
 
     return output
         .split('\n')
         .map((m) => {
-            // eslint-disable-next-line no-unused-vars
             const [_, moduleName, moduleVersion] = m.match(/(.+):(.+)/i)
 
             return [moduleName, moduleVersion]
@@ -138,7 +137,7 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
             if (pluginOptions.enabled) {
                 dockerFileInstructions
                     .comment(`install ${pluginName} composer global package`)
-                    // eslint-disable-next-line max-len
+
                     .run(
                         `composer global require ${pluginName}${
                             pluginOptions.options
@@ -185,7 +184,7 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const buildProjectImage = () => ({
     title: 'Building Project Image',
@@ -223,7 +222,7 @@ EOF`,
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const buildDebugProjectImage = () => ({
     title: 'Building Debug Project Image',

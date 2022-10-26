@@ -8,7 +8,7 @@ const getProjectConfiguration = require('../config/get-project-configuration')
 const checkConfigurationFile = require('../config/check-configuration-file')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const cleanup = () => ({
     title: 'Cleanup project',

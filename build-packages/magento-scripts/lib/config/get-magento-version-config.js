@@ -22,7 +22,7 @@ const getMagentoVersionMessage = (version) => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getMagentoVersion = () => ({
     // title: 'Loading Magento version',
@@ -49,7 +49,6 @@ const getMagentoVersion = () => ({
                     let promptSkipper = false
                     const timer = async () => {
                         for (let i = 5 * 60; i !== 0; i--) {
-                            // eslint-disable-next-line no-await-in-loop
                             await sleep(1000)
                             if (promptSkipper) {
                                 return null

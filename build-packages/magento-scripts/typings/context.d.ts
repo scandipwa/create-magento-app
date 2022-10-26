@@ -7,6 +7,9 @@ import { CMAConfiguration, PHPExtensions } from './index'
 import { PHPStormConfig } from './phpstorm'
 
 export interface ListrContext {
+    magentoFirstInstall?: boolean
+    encryptionKey?: string
+    pullImages?: boolean
     throwMagentoVersionMissing: boolean
     projectPath: string
     systemDFData?: systemApi.SystemDFResult
@@ -16,7 +19,19 @@ export interface ListrContext {
     composerVersion: string
     phpVersion: string
     port?: number
-    ports?: {
+    ports: {
+        app: number
+        fpm: number
+        xdebug: number
+        mariadb: number
+        redis: number
+        elasticsearch: number
+        varnish: number
+        sslTerminator: number
+        maildevSMTP: number
+        maildevWeb: number
+    }
+    cachedPorts?: {
         app: number
         fpm: number
         xdebug: number
@@ -68,14 +83,7 @@ export interface ListrContext {
                     }
                 }
             >
-            getContainers(ports?: Record<string, number>): Record<
-                | 'php'
-                | 'sslTerminator'
-                | 'nginx'
-                | 'redis'
-                | 'mariadb'
-                | 'elasticsearch'
-                | 'varnish',
+            getContainers(ports?: Record<string, number>): Record<string,
                 {
                     _: string
                     ports: string[]
@@ -107,7 +115,7 @@ export interface ListrContext {
         overridenConfiguration: Omit<
             CMAConfiguration,
             'prefix' | 'useNonOverlappingPorts'
-        >
+        > & { magentoVersion: string }
         userConfiguration: Omit<
             CMAConfiguration,
             'prefix' | 'useNonOverlappingPorts'
@@ -118,6 +126,7 @@ export interface ListrContext {
         >
         phpStorm: PHPStormConfig
         projectConfig: ProjectConfig
+        magentoConfiguration?: CMAConfiguration['magento']
     }
     systemConfiguration: {
         analytics: boolean

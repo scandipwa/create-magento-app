@@ -37,9 +37,13 @@ const getSystemConfig = async ({ validate = true } = {}) => {
                     userSystemConfigParsed
                 )
             } catch (e) {
-                throw new KnownError(
-                    `Configuration file validation error!\n\n${e.message}`
-                )
+                if (e instanceof Error) {
+                    throw new KnownError(
+                        `Configuration file validation error!\n\n${e.message}`
+                    )
+                }
+
+                throw e
             }
         }
 
@@ -66,9 +70,13 @@ const getSystemConfigSync = ({ validate = true } = {}) => {
             try {
                 systemConfigurationSchema.validate(userSystemConfigParsed)
             } catch (e) {
-                throw new KnownError(
-                    `Configuration file validation error!\n\n${e.message}`
-                )
+                if (e instanceof Error) {
+                    throw new KnownError(
+                        `Configuration file validation error!\n\n${e.message}`
+                    )
+                }
+
+                throw e
             }
         }
 
@@ -80,7 +88,7 @@ const getSystemConfigSync = ({ validate = true } = {}) => {
 
 /**
  * Get system configuration from configuration file located in user root directory.
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getSystemConfigTask = () => ({
     task: async (ctx) => {

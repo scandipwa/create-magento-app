@@ -5,7 +5,7 @@ const deleteOrders = require('../magento/setup-magento/delete-orders')
 const varnishConfigSetup = require('../magento/setup-magento/varnish-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const enableForeignKeyCheck = () => ({
     task: ({ databaseConnection }) =>
@@ -13,7 +13,7 @@ const enableForeignKeyCheck = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const disableForeignKeyCheck = () => ({
     task: ({ databaseConnection }) =>
@@ -21,7 +21,7 @@ const disableForeignKeyCheck = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const fixDB = () => ({
     title: 'Fixing database',

@@ -13,11 +13,11 @@ const dockerSettingsJsonPath = path.join(
 )
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerPerformance = () => ({
     title: 'Checking Docker Performance',
-    // eslint-disable-next-line no-return-await
+
     skip: async (ctx) =>
         ctx.platform !== 'darwin' ||
         (ctx.platform === 'darwin' &&

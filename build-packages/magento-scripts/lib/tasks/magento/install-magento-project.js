@@ -14,13 +14,17 @@ const magentoProductCommunityEdition = 'magento/product-community-edition'
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
- * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext>} task
+ * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext, any>} task
+ * @param {{ magentoEdition: string, magentoProductSelectedEdition: string, magentoPackageVersion: string }} param2
  */
 const adjustComposerJson = async (
     ctx,
     task,
     { magentoEdition, magentoProductSelectedEdition, magentoPackageVersion }
 ) => {
+    /**
+     * @type {{ repositories?: { type: string, url: string }[] | Record<string, { type: string, url: string }>, require: Record<string, string> }}
+     */
     const composerData = await getJsonFileData(
         path.join(ctx.config.baseConfig.magentoDir, 'composer.json')
     )
@@ -92,7 +96,11 @@ Please choose only one edition an modify your composer.json manually!`)
     ].find((edition) => edition !== magentoProductSelectedEdition)
 
     // if opposite edition is installed than selected in config file, throw an error
-    if (composerData && composerData.require[oppositeEdition]) {
+    if (
+        oppositeEdition &&
+        composerData &&
+        composerData.require[oppositeEdition]
+    ) {
         throw new KnownError(`You have installed ${oppositeEdition} but selected magento.edition as ${magentoEdition} in config file!
 
 Change magento edition in config file or manually reinstall correct magento edition!`)
@@ -117,7 +125,8 @@ Change magento edition in config file or manually reinstall correct magento edit
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
- * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext>} task
+ * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext, any>} task
+ * @param {{ magentoProject: string, magentoPackageVersion: string }} param2
  */
 const createMagentoProject = async (
     ctx,
@@ -210,7 +219,10 @@ const installMagentoProject = () => ({
                       }
             })
         } catch (e) {
-            if (e.message.includes('man-in-the-middle attack')) {
+            if (
+                e instanceof UnknownError &&
+                e.message.includes('man-in-the-middle attack')
+            ) {
                 throw new KnownError(`Probably you haven't setup pubkeys in composer.
         Please run ${logger.style.command(
             'composer diagnose'

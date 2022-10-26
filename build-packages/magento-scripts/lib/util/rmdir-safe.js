@@ -3,6 +3,10 @@ const path = require('path')
 
 const pathExists = require('./path-exists')
 
+/**
+ * @param {string} dirPath
+ * @returns {Promise<boolean>}
+ */
 const rmdirSafe = async (dirPath) => {
     const dirExists = await pathExists(dirPath)
 

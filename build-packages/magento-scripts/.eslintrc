@@ -3,5 +3,8 @@
         "verbose":true,
         "NodeJS": true,
         "BufferEncoding": true
+    },
+    "env": {
+        "node": true
     }
 }

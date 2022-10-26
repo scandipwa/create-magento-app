@@ -17,8 +17,6 @@ module.exports = (yargs) => {
                 rendererOptions: {
                     collapse: false
                 },
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 ctx: {
                     throwMagentoVersionMissing: true,
                     projectPath: process.cwd()

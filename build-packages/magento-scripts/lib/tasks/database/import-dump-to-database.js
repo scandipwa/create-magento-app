@@ -11,7 +11,7 @@ const connectToDatabase = require('./connect-to-database')
 const defaultMagentoUser = require('./default-magento-user')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const copyDatabaseDumpIntoContainer = () => ({
     title: 'Copying database dump into container',
@@ -34,7 +34,7 @@ const copyDatabaseDumpIntoContainer = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const runSetGlobalLogBinTrustFunctionCreatorsCommand = () => ({
     task: async (ctx, task) => {
@@ -53,7 +53,7 @@ const runSetGlobalLogBinTrustFunctionCreatorsCommand = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const deleteDatabaseBeforeImportingDumpPrompt = () => ({
     title: 'Deleting magento database before importing dump',
@@ -89,7 +89,7 @@ Note that you will lose your existing database!`,
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const executeImportDumpSQL = () => ({
     task: async (ctx, task) => {
@@ -206,7 +206,7 @@ You can try replacing all occurrences of ${logger.style.misc(
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const importDumpToDatabase = () => ({
     title: 'Importing Database Dump',

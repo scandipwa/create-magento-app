@@ -140,7 +140,7 @@ const getIMLFilePath = async () => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupExcludedFoldersConfig = () => ({
     title: 'Set up excluded folders configuration',

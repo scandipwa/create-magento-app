@@ -8,6 +8,10 @@ const { getArchSync } = require('../../util/arch')
 const ConsoleBlock = require('../../util/console-block')
 const { getInstanceMetadata } = require('../../util/instance-metadata')
 
+/**
+ * @param {any} str
+ * @returns {str is string}
+ */
 const isJSON = (str) => {
     try {
         const result = JSON.parse(str)

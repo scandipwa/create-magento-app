@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * This is modified version of node-portscanner (https://github.com/baalexander/node-portscanner/blob/master/lib/portscanner.js)
  * with added option to ignore ports and reduced dependencies count
@@ -21,8 +22,15 @@ const checkPortStatus = (port, options = {}) =>
         let connectionRefused = false
 
         const socket = new Socket()
-        let status = null
-        let error = null
+        /**
+         * @type {string}
+         */
+        let status
+
+        /**
+         * @type {Error | null}
+         */
+        let error
 
         // Socket connection established, port is open
         socket.on('connect', () => {
@@ -43,6 +51,7 @@ const checkPortStatus = (port, options = {}) =>
         // Assuming the port is not open if an error. May need to refine based on
         // exception
         socket.on('error', (exception) => {
+            // @ts-ignore
             if (exception.code !== 'ECONNREFUSED') {
                 error = exception
             } else {
@@ -52,9 +61,9 @@ const checkPortStatus = (port, options = {}) =>
         })
 
         // Return after the socket has closed
-        socket.on('close', (exception) => {
-            if (exception && !connectionRefused) {
-                error = error || exception
+        socket.on('close', (hadError) => {
+            if (hadError && !connectionRefused) {
+                error = new Error('Socket closed with an error!')
             } else {
                 error = null
             }
@@ -72,15 +81,15 @@ const checkPortStatus = (port, options = {}) =>
  * Internal helper function used by {@link findAPortInUse} and {@link findAPortNotInUse}
  * to find a port from a range or a list with a specific status.
  * @param {String} status - Status to check.
- * @param {Object} [options]
+ * @param {Object} options
  * @param {Number} options.startPort Port to begin status check on (inclusive).
  * @param {Number} options.endPort Last port to check status on (inclusive).
- * @param {String} options.host Host of where to scan.
- * @param {Number[]} options.portList Array of ports to check status on.
- * @param {Number[]} options.portIgnoreList Array of ports to check status on.
- * @returns {Promise<number>}
+ * @param {String} [options.host] Host of where to scan.
+ * @param {Number[]} [options.portList] Array of ports to check status on.
+ * @param {Number[]} [options.portIgnoreList] Array of ports to check status on.
+ * @returns {Promise<number | false>}
  */
-async function findAPortWithStatus(status, options = {}) {
+async function findAPortWithStatus(status, options) {
     const {
         portList,
         startPort,
@@ -130,7 +139,7 @@ async function findAPortWithStatus(status, options = {}) {
 /**
  * Finds the first port with a status of 'open', implying the port is in use and
  * there is likely a service listening on it.
- * @param {Object} [options]
+ * @param {Object} options
  * @param {Number} options.startPort Port to begin status check on (inclusive).
  * @param {Number} options.endPort Last port to check status on (inclusive).
  * @param {String} options.host Host of where to scan.
@@ -141,11 +150,11 @@ const findAPortInUse = (options) => findAPortWithStatus('open', options)
 
 /**
  * Finds the first port with a status of 'closed', implying the port is not in
- * @param {Object} [options]
+ * @param {Object} options
  * @param {Number} options.startPort Port to begin status check on (inclusive).
  * @param {Number} options.endPort Last port to check status on (inclusive).
- * @param {String} options.host Host of where to scan.
- * @param {Number[]} options.portList Array of ports to check status on.
+ * @param {String} [options.host] Host of where to scan.
+ * @param {Number[]} [options.portList] Array of ports to check status on.
  * @param {Number[]} options.portIgnoreList Array of ports to check status on.
  */
 const findAPortNotInUse = (options) => findAPortWithStatus('closed', options)

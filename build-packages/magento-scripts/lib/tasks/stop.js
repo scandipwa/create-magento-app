@@ -5,7 +5,7 @@ const checkConfigurationFile = require('../config/check-configuration-file')
 const getDockerVersion = require('./requirements/docker/version')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const stop = () => ({
     title: 'Stopping project',

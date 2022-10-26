@@ -9,7 +9,7 @@ const dockerSocketPath = '/var/run/docker.sock'
 const fixCommand = `sudo chmod 666 ${dockerSocketPath}`
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerSocketPermissions = () => ({
     title: 'Checking Docker permissions',

@@ -28,6 +28,7 @@ const executeInContainer = ({ containerName, commands, user }) => {
 /**
  * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
  * @param {string[]} commands
+ * @returns {Promise<never>}
  */
 const runInContainer = (options, commands) => {
     if (!process.stdin.isTTY) {

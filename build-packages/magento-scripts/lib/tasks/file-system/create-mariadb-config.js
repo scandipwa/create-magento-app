@@ -3,7 +3,7 @@ const UnknownError = require('../../errors/unknown-error')
 const setConfigFile = require('../../util/set-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createMariaDBConfig = () => ({
     title: 'Setting MariaDB config',

@@ -7,6 +7,7 @@ const pathExists = require('./path-exists')
  * @typedef EnvPHPData
  *
  * @prop {Record<string, number>} cache_types
+ * @prop {{ key: string }} crypt
  */
 
 /**

@@ -5,12 +5,7 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container')
  *
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command magento command
- * @param {Object} options
- * @param {Boolean} [options.logOutput] Log output to console using logger
- * @param {Boolean} [options.withCode]
- * @param {String} [options.cwd]
- * @param {() => {}} [options.callback]
- * @param {Boolean} [options.throwNonZeroCode] Throw if command return non 0 code.
+ * @param {Parameters<typeof import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean }} options
  */
 const runMagentoCommand = async (ctx, command, options = {}) => {
     const { throwNonZeroCode = true } = options

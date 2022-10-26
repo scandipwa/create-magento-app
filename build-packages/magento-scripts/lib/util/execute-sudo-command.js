@@ -3,10 +3,9 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const { execCommandTask } = require('./exec-async-command')
 
 /**
- * @type {(
- *   command: string,
- *   options: Omit<import('../util/exec-async-command').ExecAsyncSpawnOptions<false>, 'callback' | 'pipeInput'>
- * ) => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @param {string} command
+ * @param {Omit<import('../util/exec-async-command').ExecAsyncSpawnOptions<false>, 'pipeInput'>} options
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const executeSudoCommand = (command, options = {}) => ({
     task: async (ctx, task) => {
@@ -17,9 +16,6 @@ const executeSudoCommand = (command, options = {}) => ({
 
         return task.newListr(
             execCommandTask(command, {
-                callback: (t) => {
-                    task.output = t
-                },
                 pipeInput: true,
                 ...options
             })

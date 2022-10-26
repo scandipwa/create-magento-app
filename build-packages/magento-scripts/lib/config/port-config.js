@@ -37,9 +37,9 @@ const getUsedByOtherCMAProjectsPorts = async () => {
 
 /**
  * @param {Number} port
- * @param {Object} options
- * @param {Number[]} options.portIgnoreList
- * @returns {Promise<Number>}
+ * @param {Object} [options]
+ * @param {Number[]} [options.portIgnoreList]
+ * @returns {Promise<number | false>}
  */
 const getPort = async (port, options = {}) => {
     const { portIgnoreList = [] } = options
@@ -55,6 +55,9 @@ const getPort = async (port, options = {}) => {
     return availablePort
 }
 
+/**
+ * @param {Record<string, number>} ports
+ */
 const savePortsConfig = async (ports) => {
     await fs.promises.writeFile(
         path.join(baseConfig.cacheDir, 'port-config.json'),
@@ -79,13 +82,16 @@ const defaultPorts = {
 /**
  * Get available port configuration
  * @param {Record<string, number>} ports
- * @param {Object} options
- * @param {boolean} options.useNonOverlappingPorts
+ * @param {Object} [options]
+ * @param {boolean} [options.useNonOverlappingPorts]
  * @returns {Promise<Record<string, number>>}
  */
 const getPortsConfig = async (ports, options = {}) => {
     const { useNonOverlappingPorts } = options
     const mergedPorts = deepmerge(defaultPorts, ports || {})
+    /**
+     * @type {number[]}
+     */
     let p = []
 
     if (useNonOverlappingPorts) {

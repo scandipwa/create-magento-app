@@ -1,3 +1,6 @@
+/**
+ * @type {Record<string, unknown>}
+ */
 module.exports = {
     'bootstrap.memory_lock': true,
     'xpack.security.enabled': false,

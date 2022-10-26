@@ -29,7 +29,7 @@ const sleep = require('../../util/sleep')
 const { setProjectConfigTask } = require('../project-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const convertMySQLDatabaseToMariaDB = () => ({
     task: async (ctx, task) => {
@@ -55,7 +55,6 @@ const convertMySQLDatabaseToMariaDB = () => ({
                             )
                             subTask.output = `Copying data from ${mysqlVolumeName} to ${subCtx.config.docker.volumes.mariadb.name}...`
                             await execAsyncSpawn(
-                                // eslint-disable-next-line max-len
                                 `docker run --rm -v ${mysqlVolumeName}:/from:ro -v ${subCtx.config.docker.volumes.mariadb.name}:/to alpine ash -c "cd /from; cp -av . /to"`,
                                 {
                                     callback: (t) => {

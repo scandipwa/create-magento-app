@@ -156,14 +156,15 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                           ]
                         : []
                 ),
-                env: {
-                    COMPOSER_AUTH:
-                        JSON.stringify(
-                            JSON.parse(process.env.COMPOSER_AUTH),
-                            null,
-                            0
-                        ) || ''
-                },
+                env: process.env.COMPOSER_AUTH
+                    ? {
+                          COMPOSER_AUTH: JSON.stringify(
+                              JSON.parse(process.env.COMPOSER_AUTH),
+                              null,
+                              0
+                          )
+                      }
+                    : {},
                 restart: 'on-failure:5',
                 image: `local-cma-project:${prefix}`,
                 debugImage: `local-cma-project:${prefix}.debug`,
@@ -398,9 +399,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             }
         }
 
-        if (ssl.enabled && isDockerDesktop) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
+        if (ssl && ssl.enabled && isDockerDesktop) {
             dockerConfig.sslTerminator.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             )
@@ -439,7 +438,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 },
                 restart: 'on-failure:30',
                 network: isDockerDesktop ? network.name : 'host',
-                // eslint-disable-next-line max-len
+
                 command: `/bin/bash -c "varnishd -a :${
                     isDockerDesktop ? 80 : ports.varnish
                 } -t 600 -f /etc/varnish/default.vcl -s Cache=malloc,2048m -s Transient=malloc,512m -p http_resp_hdr_len=70000 -p http_resp_size=100000 && varnishlog"`,

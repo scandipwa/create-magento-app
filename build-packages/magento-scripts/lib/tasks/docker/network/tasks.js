@@ -5,7 +5,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command')
 const networkApi = require('./network-api')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const pruneNetworks = () => ({
     title: 'Removing custom networks not used by at least one container',
@@ -13,7 +13,7 @@ const pruneNetworks = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const createNetwork = () => ({
     title: 'Deploying Docker network',
@@ -67,7 +67,7 @@ Use command ${logger.style.command('docker network prune')}`)
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const removeNetwork = () => ({
     title: 'Removing Docker network',

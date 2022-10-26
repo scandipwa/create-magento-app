@@ -163,7 +163,7 @@ ${logger.style.link(dockerInstallLink)}`
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDocker = () => ({
     title: 'Checking Docker',
@@ -253,7 +253,7 @@ Do you want to install it and use it's context together with Docker Desktop?
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
     task: (ctx, task) =>

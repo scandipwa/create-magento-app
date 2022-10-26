@@ -41,9 +41,17 @@ const commands = [
 
 process.title = 'magento-scripts'
 
+/**
+ * @param {string} latestVersion
+ * @param {string} currentVersion
+ */
 const newVersionIsAPatch = (latestVersion, currentVersion) => {
     const latestVersionParsed = semver.parse(latestVersion)
     const currentVersionParsed = semver.parse(currentVersion)
+
+    if (!latestVersionParsed || !currentVersionParsed) {
+        return false
+    }
 
     return (
         latestVersionParsed.major === currentVersionParsed.major &&

@@ -5,7 +5,7 @@ const { getPhpDockerSettingsConfig } = require('./php-docker-settings-config')
 const setupPHPDockerContainerSettingsConfig = require('./setup-php-docker-container-settings-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
 const setupPhpDockerSettingsConfig = () => ({
     title: 'Set up PHP Docker Settings configuration',

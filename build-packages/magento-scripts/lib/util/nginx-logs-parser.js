@@ -25,7 +25,6 @@ class NginxParser {
         let boundary
         let i = 1
 
-        // eslint-disable-next-line no-cond-assign
         while ((match = directive.exec(format))) {
             this.directives[match[1]] = i++
             if (match[2]) {
@@ -82,7 +81,6 @@ class NginxParser {
             ip_str: null
         }
 
-        // eslint-disable-next-line guard-for-in
         for (const key in this.directives) {
             row[key] = match[this.directives[key]]
             if (row[key] === '-') {

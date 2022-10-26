@@ -7,7 +7,7 @@ const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createSSLTerminatorConfig = () => ({
     title: 'Setting ssl terminator config',

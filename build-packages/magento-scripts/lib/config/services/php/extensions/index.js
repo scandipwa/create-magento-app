@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 /**
- * @type {Record<string, import('../../../../typings/index').PHPExtensionInstallationInstruction>}
+ * @type {Record<string, import('../../../../../typings/index').PHPExtensionInstallationInstruction>}
  */
 const phpExtensionInstallationInstructions = fs
     .readdirSync(__dirname, {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 const Conf = require('conf')
 
 const pkg = require('../../package.json')
@@ -12,6 +13,7 @@ const pkg = require('../../package.json')
 /**
  * @type {import('conf').default<Record<string, ProjectConfig>>}
  */
+// @ts-ignore
 const projectsConfig = new Conf({
     configName: 'projects',
     projectName: 'create-magento-app',
@@ -20,12 +22,21 @@ const projectsConfig = new Conf({
 })
 const projectKey = process.cwd()
 
+/**
+ * @param {string} key
+ * @param {any} value
+ */
 const setProjectConfig = (key, value) => {
     projectsConfig.set(`${projectKey}.${key}`, value)
 }
 
 const getProjectConfig = () => projectsConfig.get(projectKey)
 
+/**
+ * @param {string} path
+ * @param {ProjectConfig} project
+ * @returns {Record<string, ProjectConfig>}
+ */
 const getProjectsFromProjectKeys = (path, project) => {
     if (project.createdAt) {
         return { [path]: project }
@@ -45,6 +56,9 @@ const getProjectsFromProjectKeys = (path, project) => {
  * @returns {Record<string, ProjectConfig>}
  */
 const getProjects = () => {
+    /**
+     * @type {Record<string, ProjectConfig>}
+     */
     const projects = {}
     for (const [projectPath, projectValueWithProjects] of projectsConfig) {
         const projectList = getProjectsFromProjectKeys(

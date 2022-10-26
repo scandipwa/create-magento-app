@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "module": "CommonJS",
+        "lib": ["ES2022"],
+        "target": "ES2022",
+        "moduleResolution": "Node",
+        "types": [
+            "./typings"
+        ]
+    },
+    "exclude": [
+        "**/node_modules",
+        "./lib/config/templates/**"
+    ],
+    "include": [
+        "./"
+    ]
+}

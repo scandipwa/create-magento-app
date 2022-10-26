@@ -3,10 +3,7 @@ const { deepmerge } = require('../../util/deepmerge')
 const { containerApi } = require('../docker/containers')
 
 /**
- * @param {string} command
- * @param {import('../../../typings/context').ListrContext} ctx
- * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions & { useXDebugContainer?: boolean }} [options]
- * @returns {Promise<any>}
+ * @type {typeof import('./php-container')['runPHPContainerCommand']}
  */
 const runPHPContainerCommand = async (ctx, command, options = {}) => {
     const { php } = ctx.config.docker.getContainers(ctx.ports)
@@ -42,9 +39,7 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
 }
 
 /**
- * @param {string} command
- * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { useXDebugContainer?: boolean }} [options]
- * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @type {typeof import('./php-container')['runPHPContainerCommandTask']}
  */
 const runPHPContainerCommandTask = (command, options = {}) => ({
     title: `Running command "${command}"`,
@@ -63,10 +58,7 @@ const runPHPContainerCommandTask = (command, options = {}) => ({
 })
 
 /**
- *
- * @param {import('../../../typings/context').ListrContext} ctx
- * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { useXDebugContainer?: boolean }} [options]
- * @param {string} command
+ * @type {typeof import('./php-container')['execPHPContainerCommand']}
  */
 const execPHPContainerCommand = async (ctx, command, options = {}) => {
     const { php } = ctx.config.docker.getContainers(ctx.ports)

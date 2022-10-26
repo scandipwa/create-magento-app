@@ -3,15 +3,15 @@ import { ListrTask } from 'listr2'
 
 import { ListrContext } from '../../typings/context'
 
-interface ExecAsyncSpawnOptions<T extends boolean = false> {
+interface ExecAsyncSpawnOptions<T extends boolean> {
     callback?: (result: string) => void
     pipeInput?: boolean
     logOutput?: boolean
     cwd?: string
     withCode?: T
+    env?: Record<string, string> & NodeJS.ProcessEnv
     // only for mac
     useRosetta2?: boolean
-    env?: Record<string, string>
 }
 
 /**
@@ -19,7 +19,7 @@ interface ExecAsyncSpawnOptions<T extends boolean = false> {
  */
 export function execAsyncSpawn(
     command: string,
-    options?: ExecAsyncSpawnOptions
+    options?: ExecAsyncSpawnOptions<false>
 ): Promise<string>
 export function execAsyncSpawn(
     command: string,

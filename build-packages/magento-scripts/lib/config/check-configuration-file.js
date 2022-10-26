@@ -8,7 +8,7 @@ const setConfigFile = require('../util/set-config')
 const getJsonfileData = require('../util/get-jsonfile-data')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const checkConfigurationFile = () => ({
     title: 'Checking configuration file',

@@ -4,7 +4,7 @@ const volume = require('./volume')
 const dockerApi = require('./api')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const startServices = () => ({
     title: 'Starting Docker services',
@@ -22,7 +22,7 @@ const startServices = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const stopServices = () => ({
     title: 'Stopping Docker services',

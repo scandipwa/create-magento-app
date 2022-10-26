@@ -7,7 +7,7 @@ const { containerApi } = require('../docker/containers')
 const composerLockPath = path.join(process.cwd(), 'composer.lock')
 const envPhpPath = path.join(process.cwd(), 'app', 'etc', 'env.php')
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const updateEnvPHP = () => ({
     title: 'Updating env.php',
@@ -39,6 +39,9 @@ const updateEnvPHP = () => ({
         let SETUP_PQ = '1'
 
         if (await pathExists(composerLockPath)) {
+            /**
+             * @type {{ packages: { name: string }[] }}
+             */
             const composerLockData = await getJsonfileData(composerLockPath)
 
             if (

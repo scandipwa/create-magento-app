@@ -9,7 +9,7 @@ const setupPHPInterpreters = require('./php-interpreters-config')
 const setupPHPProjectSharedConfiguration = require('./php-project-shared-configuration-config')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
  */
 const setupPhpConfig = () => ({
     title: 'Set up PHP configuration',

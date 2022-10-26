@@ -39,9 +39,9 @@ const magento = {
 
 module.exports = {
     /**
-     * @param {import('../../typings/context')} ctx
+     * @param {import('../../typings/context').ListrContext} ctx
      * @param {Object} param1
-     * @param {String} [param1.magentoVersion]
+     * @param {String} param1.magentoVersion
      * @param {String} [param1.projectPath]
      * @param {String} [param1.prefix]
      */
@@ -61,7 +61,6 @@ module.exports = {
         const { overridenConfiguration, userConfiguration } =
             await resolveConfigurationWithOverrides(
                 configurations[magentoVersion],
-                newBaseConfig,
                 projectPath
             )
 

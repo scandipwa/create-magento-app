@@ -1,7 +1,7 @@
 const defaultEnv = require('../default-es-env')
 
 /**
- * @returns {import('../../../../../typings/index').ServiceWithImage}
+ * @returns {import('../../../../../typings/index').ElasticSearchConfiguration}
  */
 const elasticsearch712 = () => ({
     image: 'elasticsearch:7.12.1',

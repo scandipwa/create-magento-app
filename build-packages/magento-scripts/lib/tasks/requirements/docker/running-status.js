@@ -49,7 +49,7 @@ const getDockerEngineAndDesktopServiceStatus = async () => {
 }
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerStatusMacOS = () => ({
     title: 'Checking Docker status on MacOS',
@@ -110,7 +110,7 @@ const checkDockerStatusMacOS = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerStatusWSL = () => ({
     title: 'Checking Docker status on Windows WSL',
@@ -126,7 +126,7 @@ Please open Docker Desktop application for Windows and make sure that Docker is 
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerStatusLinux = () => ({
     title: 'Checking Docker status on Linux',
@@ -199,7 +199,7 @@ const checkDockerStatusLinux = () => ({
 })
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const checkDockerStatus = () => ({
     title: 'Checking Docker status',
