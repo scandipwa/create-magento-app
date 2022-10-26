@@ -1,0 +1,4 @@
+version: "3.7"
+services:
+  backend:
+    image: alpine:3.16
