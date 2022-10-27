@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const pathExists = require('../../util/path-exists');
+const fs = require('fs')
+const path = require('path')
+const pathExists = require('../../util/path-exists')
 
 const magentoFiles = [
     '.htaccess',
@@ -30,35 +30,41 @@ const magentoFiles = [
     'setup',
     'var',
     'vendor'
-];
+]
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const removeMagento = () => ({
     title: 'Remove magento application folder',
     skip: async (ctx) => {
-        const { config: { baseConfig } } = ctx;
-        const appPathExists = await pathExists(baseConfig.magentoDir);
+        const {
+            config: { baseConfig }
+        } = ctx
+        const appPathExists = await pathExists(baseConfig.magentoDir)
 
-        return !(appPathExists && ctx.force);
+        return !(appPathExists && ctx.force)
     },
     task: async (ctx) => {
-        const { config: { baseConfig } } = ctx;
-        await Promise.all(magentoFiles.map(async (fileName) => {
-            const filePath = path.join(baseConfig.magentoDir, fileName);
-            const fileExists = await pathExists(filePath);
-            if (!fileExists) {
-                return;
-            }
-            const file = await fs.promises.stat(filePath);
-            if (file.isFile()) {
-                await fs.promises.unlink(filePath);
-            } else if (file.isDirectory()) {
-                await fs.promises.rmdir(filePath, { recursive: true });
-            }
-        }));
+        const {
+            config: { baseConfig }
+        } = ctx
+        await Promise.all(
+            magentoFiles.map(async (fileName) => {
+                const filePath = path.join(baseConfig.magentoDir, fileName)
+                const fileExists = await pathExists(filePath)
+                if (!fileExists) {
+                    return
+                }
+                const file = await fs.promises.stat(filePath)
+                if (file.isFile()) {
+                    await fs.promises.unlink(filePath)
+                } else if (file.isDirectory()) {
+                    await fs.promises.rmdir(filePath, { recursive: true })
+                }
+            })
+        )
     }
-});
+})
 
-module.exports = removeMagento;
+module.exports = removeMagento

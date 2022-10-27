@@ -1,4 +1,4 @@
-import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command'
 
 export interface SystemDFOptions<T extends boolean = false> {
     format?: string
@@ -30,7 +30,7 @@ export interface SystemDFResult {
         Mounts: string
         Names: string
         Networks: string
-        Ports: StreamPipeOptions
+        Ports: string
         RunningFor: string
         Size: string
         State: string

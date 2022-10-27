@@ -1,5 +1,10 @@
 {
     "globals": {
-        "verbose":true
+        "verbose":true,
+        "NodeJS": true,
+        "BufferEncoding": true
+    },
+    "env": {
+        "node": true
     }
 }

@@ -1,61 +1,81 @@
-const path = require('path');
-const fs = require('fs');
-const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser');
-const pathExists = require('../../../util/path-exists');
-const { valueKey, nameKey } = require('./keys');
-const { setupXMLStructure } = require('./setup-xml-structure');
+const path = require('path')
+const fs = require('fs')
+const { loadXmlFile, buildXmlFile } = require('../../../config/xml-parser')
+const pathExists = require('../../../util/path-exists')
+const { valueKey, nameKey } = require('./keys')
+const { setupXMLStructure } = require('./setup-xml-structure')
 
-const STYLELINT_CONFIGURATION_COMPONENT_NAME = 'StylelintConfiguration';
+const STYLELINT_CONFIGURATION_COMPONENT_NAME = 'StylelintConfiguration'
 
-const pathToStylelintConfig = path.join(process.cwd(), '.idea', 'stylesheetLinters', 'stylelint.xml');
-const pathToStylelintConfigDir = path.parse(pathToStylelintConfig).dir;
+const pathToStylelintConfig = path.join(
+    process.cwd(),
+    '.idea',
+    'stylesheetLinters',
+    'stylelint.xml'
+)
+const pathToStylelintConfigDir = path.parse(pathToStylelintConfig).dir
 
-const DEFAULT_STYLE_PATTERN = '{**/*,*}.{css,scss}';
+const DEFAULT_STYLE_PATTERN = '{**/*,*}.{css,scss}'
 
 const defaultESLintComponentConfiguration = {
     [nameKey]: STYLELINT_CONFIGURATION_COMPONENT_NAME,
     'file-patterns': {
         [valueKey]: DEFAULT_STYLE_PATTERN
     }
-};
+}
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupStylelintConfig = () => ({
     title: 'Set up Stylelint configuration',
     task: async (ctx, task) => {
         if (await pathExists(pathToStylelintConfig)) {
-            let hasChanges = false;
-            const styleLintConfigurationData = setupXMLStructure(await loadXmlFile(pathToStylelintConfig));
+            let hasChanges = false
+            const styleLintConfigurationData = setupXMLStructure(
+                await loadXmlFile(pathToStylelintConfig)
+            )
 
-            if (styleLintConfigurationData.project.component && !Array.isArray(styleLintConfigurationData.project.component)) {
-                hasChanges = true;
-                styleLintConfigurationData.project.component = [styleLintConfigurationData.project.component];
+            if (
+                styleLintConfigurationData.project.component &&
+                !Array.isArray(styleLintConfigurationData.project.component)
+            ) {
+                hasChanges = true
+                styleLintConfigurationData.project.component = [
+                    styleLintConfigurationData.project.component
+                ]
             }
 
-            const styleLintConfigurationComponent = styleLintConfigurationData.project.component.find(
-                (component) => component[nameKey] === STYLELINT_CONFIGURATION_COMPONENT_NAME
-            );
+            const styleLintConfigurationComponent =
+                styleLintConfigurationData.project.component.find(
+                    (component) =>
+                        component[nameKey] ===
+                        STYLELINT_CONFIGURATION_COMPONENT_NAME
+                )
 
             if (!styleLintConfigurationComponent) {
-                hasChanges = true;
-                styleLintConfigurationData.project.component.push(defaultESLintComponentConfiguration);
+                hasChanges = true
+                styleLintConfigurationData.project.component.push(
+                    defaultESLintComponentConfiguration
+                )
             }
 
             if (hasChanges) {
-                await buildXmlFile(pathToStylelintConfig, styleLintConfigurationData);
+                await buildXmlFile(
+                    pathToStylelintConfig,
+                    styleLintConfigurationData
+                )
             } else {
-                task.skip();
+                task.skip()
             }
 
-            return;
+            return
         }
 
-        if (!await pathExists(pathToStylelintConfigDir)) {
+        if (!(await pathExists(pathToStylelintConfigDir))) {
             await fs.promises.mkdir(pathToStylelintConfigDir, {
                 recursive: true
-            });
+            })
         }
 
         const styleLintConfigurationData = {
@@ -65,14 +85,12 @@ const setupStylelintConfig = () => ({
             },
             project: {
                 '@_version': '4',
-                component: [
-                    defaultESLintComponentConfiguration
-                ]
+                component: [defaultESLintComponentConfiguration]
             }
-        };
+        }
 
-        await buildXmlFile(pathToStylelintConfig, styleLintConfigurationData);
+        await buildXmlFile(pathToStylelintConfig, styleLintConfigurationData)
     }
-});
+})
 
-module.exports = setupStylelintConfig;
+module.exports = setupStylelintConfig

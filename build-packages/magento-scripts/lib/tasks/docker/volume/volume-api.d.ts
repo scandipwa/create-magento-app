@@ -1,4 +1,4 @@
-import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command';
+import { ExecAsyncSpawnOptions } from '../../../util/exec-async-command'
 
 export interface VolumeLsOptions<T extends boolean = false> {
     filter?: string | string[]
@@ -63,10 +63,13 @@ export interface VolumeInspectResult {
     Options: unknown
     Scope: string
     CreatedTime: number
-    Containers: Record<string, {
-        Name: string
-        Destination: string
-    }>
+    Containers: Record<
+        string,
+        {
+            Name: string
+            Destination: string
+        }
+    >
 }
 
 export function inspect(

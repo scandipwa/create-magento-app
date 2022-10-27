@@ -2,7 +2,7 @@
  * @returns {import('../../../../../typings/index').ServiceWithImage}
  */
 const mariadb102 = () => ({
-    version: '10.2'
-});
+    image: 'mariadb:10.2'
+})
 
-module.exports = mariadb102;
+module.exports = mariadb102

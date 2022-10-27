@@ -1,22 +1,22 @@
-const fs = require('fs');
-const pathExists = require('../../util/path-exists');
+const fs = require('fs')
+const pathExists = require('../../util/path-exists')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const removeCacheFolder = () => ({
     title: 'Cleaning cache',
     task: async ({ config: { baseConfig } }, task) => {
-        const cacheExists = await pathExists(baseConfig.cacheDir);
+        const cacheExists = await pathExists(baseConfig.cacheDir)
         if (!cacheExists) {
-            task.skip();
-            return;
+            task.skip()
+            return
         }
 
         await fs.promises.rmdir(baseConfig.cacheDir, {
             recursive: true
-        });
+        })
     }
-});
+})
 
-module.exports = removeCacheFolder;
+module.exports = removeCacheFolder

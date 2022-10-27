@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs')
 
 /**
  * Check if provided path exists in filesystem
@@ -7,12 +7,12 @@ const fs = require('fs');
  */
 const pathExists = async (path) => {
     try {
-        await fs.promises.access(path, fs.constants.F_OK);
+        await fs.promises.access(path, fs.constants.F_OK)
     } catch (e) {
-        return false;
+        return false
     }
 
-    return true;
-};
+    return true
+}
 
-module.exports = pathExists;
+module.exports = pathExists

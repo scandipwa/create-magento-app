@@ -3,4 +3,4 @@ module.exports = {
     setupMagento: require('./setup-magento'),
     uninstallMagento: require('./uninstall-magento'),
     removeMagento: require('./remove-magento')
-};
+}

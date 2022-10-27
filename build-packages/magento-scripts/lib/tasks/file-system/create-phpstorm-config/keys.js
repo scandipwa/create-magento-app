@@ -1,19 +1,19 @@
 // xml property key names
-const classKey = '@_class';
-const nameKey = '@_name';
-const valueKey = '@_value';
-const toolPathKey = '@_tool_path';
-const standardsKey = '@_standards';
-const urlKey = '@_url';
-const typeKey = '@_type';
-const versionKey = '@_version';
+const classKey = '@_class'
+const nameKey = '@_name'
+const valueKey = '@_value'
+const toolPathKey = '@_tool_path'
+const standardsKey = '@_standards'
+const urlKey = '@_url'
+const typeKey = '@_type'
+const versionKey = '@_version'
 
 /**
  * Makes a xml property key
  * @param {string} key
  * @returns {string}
  */
-const propertyKey = (key) => `@_${key}`;
+const propertyKey = (key) => `@_${key}`
 
 module.exports = {
     classKey,
@@ -25,4 +25,4 @@ module.exports = {
     typeKey,
     versionKey,
     propertyKey
-};
+}

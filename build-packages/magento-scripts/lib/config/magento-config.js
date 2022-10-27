@@ -1,4 +1,4 @@
-const { deepmerge } = require('../util/deepmerge');
+const { deepmerge } = require('../util/deepmerge')
 
 /**
  * @type {import('../../typings/index').CMAConfiguration['magento']}
@@ -12,16 +12,16 @@ const defaultMagentoConfig = {
     adminuri: 'admin',
     mode: 'developer',
     edition: 'community'
-};
+}
 
 /**
  *
  * @param {import('../../typings/index').CMAConfiguration['magento']} magento
  * @returns {import('../../typings/index').CMAConfiguration['magento']}
  */
-const getMagentoConfig = (magento) => deepmerge(defaultMagentoConfig, magento);
+const getMagentoConfig = (magento) => deepmerge(defaultMagentoConfig, magento)
 
 module.exports = {
     defaultMagentoConfig,
     getMagentoConfig
-};
+}

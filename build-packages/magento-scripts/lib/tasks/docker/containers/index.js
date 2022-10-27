@@ -5,8 +5,8 @@ const {
     statusContainers,
     checkContainersAreRunning,
     getContainerStatus
-} = require('./tasks');
-const containerApi = require('./container-api');
+} = require('./tasks')
+const containerApi = require('./container-api')
 
 module.exports = {
     startContainers,
@@ -16,4 +16,4 @@ module.exports = {
     checkContainersAreRunning,
     getContainerStatus,
     containerApi
-};
+}

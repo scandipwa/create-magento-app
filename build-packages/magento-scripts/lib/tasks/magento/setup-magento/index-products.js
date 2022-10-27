@@ -1,13 +1,11 @@
-const magentoTask = require('../../../util/magento-task');
+const magentoTask = require('../../../util/magento-task')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const indexProducts = () => ({
-    task: (ctx, task) => task.newListr(
-        magentoTask('index:reindex')
-    ),
+    task: (ctx, task) => task.newListr(magentoTask('index:reindex')),
     retry: 2
-});
+})
 
-module.exports = indexProducts;
+module.exports = indexProducts

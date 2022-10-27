@@ -4,4 +4,4 @@ module.exports = {
     fixDB: require('./fix-db'),
     dumpThemeConfig: require('./dump-theme-config'),
     restoreThemeConfig: require('./restore-theme-config')
-};
+}

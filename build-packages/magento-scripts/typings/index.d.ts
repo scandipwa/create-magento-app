@@ -1,4 +1,5 @@
-import { ListrContext } from './context';
+import { ListrContext } from './context'
+import './override'
 
 /* eslint-disable no-use-before-define */
 export interface ServiceWithImage {
@@ -7,7 +8,7 @@ export interface ServiceWithImage {
      *
      * @deprecated
      */
-    version: string
+    version?: string
 
     /**
      * Service Docker image
@@ -84,14 +85,17 @@ export interface ComposerConfiguration {
     /**
      *  Composer global plugins that will be added to Docker image
      */
-    plugins: Record<string, {
-        version?: string
-        options?: string
-        /**
-         * Enable composer plugin
-         */
-        enabled?: boolean
-    }>
+    plugins?: Record<
+        string,
+        {
+            version?: string
+            options?: string
+            /**
+             * Enable composer plugin
+             */
+            enabled?: boolean
+        }
+    >
 }
 
 export interface PHPExtensionInstallationInstruction {
@@ -117,9 +121,18 @@ export interface PHPExtensionInstallationInstruction {
      * pecl install xdebug && docker-php-ext-enable xdebug
      * ```
      */
-    command: string |
-        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => string) |
-        ((arg0: (Omit<PHPExtensionInstallationInstruction, 'command'> & { ctx: ListrContext})) => Promise<string>)
+    command:
+        | string
+        | ((
+              arg0: Omit<PHPExtensionInstallationInstruction, 'command'> & {
+                  ctx: ListrContext
+              }
+          ) => string)
+        | ((
+              arg0: Omit<PHPExtensionInstallationInstruction, 'command'> & {
+                  ctx: ListrContext
+              }
+          ) => Promise<string>)
 
     /**
      * System dependencies required by the extension
@@ -144,12 +157,12 @@ export interface PHPConfiguration {
     /**
      * Base image with tag
      */
-    baseImage?: string
+    baseImage: string
 
     /**
      * Image with XDebug enabled
      */
-    debugImage?: string
+    debugImage: string
 
     /**
      * Configuration file template location
@@ -188,7 +201,7 @@ export interface SSLConfiguration {
      * @example
      * `./ssl_certificate.pem`
      */
-    ssl_certificate: string
+    ssl_certificate?: string
 
     /**
      * SSL certificate key name
@@ -196,7 +209,7 @@ export interface SSLConfiguration {
      * @example
      * `./ssl_certificate-key.pem`
      */
-    ssl_certificate_key: string
+    ssl_certificate_key?: string
 }
 
 export interface CMAConfiguration {
@@ -243,6 +256,18 @@ export interface CMAConfiguration {
          * SSL Terminator configuration
          */
         sslTerminator: SSLTerminatorConfiguration
+
+        /**
+         * MailDev configuration
+         */
+        maildev: ServiceWithImage
+
+        /**
+         * @deprecated MySQL configuration
+         */
+        mysql: {
+            version: string
+        }
     }
     /**
      * Magento configuration
@@ -285,7 +310,7 @@ export interface CMAConfiguration {
     /**
      * SSL Configuration
      */
-    ssl: SSLConfiguration
+    ssl?: SSLConfiguration
 
     /**
      * Prefix config.
@@ -297,5 +322,5 @@ export interface CMAConfiguration {
      * interference between folders with similar names.
      * If prefix is set to `false` docker container and volume names will only include folder name **which is not safe and not recommended**.
      */
-    prefix: boolean
+    prefix?: boolean
 }

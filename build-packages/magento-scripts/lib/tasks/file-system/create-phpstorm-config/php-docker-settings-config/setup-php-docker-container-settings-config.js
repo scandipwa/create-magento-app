@@ -1,17 +1,23 @@
-const { propertyKey } = require('../keys');
+const { propertyKey } = require('../keys')
 
-const PHP_DOCKER_CONTAINER_SETTINGS_COMPONENT_NAME = 'PhpDockerContainerSettings';
+const PHP_DOCKER_CONTAINER_SETTINGS_COMPONENT_NAME =
+    'PhpDockerContainerSettings'
 
 /**
  * @param {Array} phpDockerSettingsConfigs
  * @param {import('../../../../../typings/context').ListrContext} ctx
  * @returns {Promise<Boolean>}
  */
-const setupPHPDockerContainerSettingsConfig = async (phpDockerSettingsConfigs, ctx) => {
-    let hasChanges = false;
+const setupPHPDockerContainerSettingsConfig = async (
+    phpDockerSettingsConfigs,
+    ctx
+) => {
+    let hasChanges = false
     const phpDockerContainerSettingsComponent = phpDockerSettingsConfigs.find(
-        (phpDockerSettingsConfig) => phpDockerSettingsConfig[propertyKey('name')] === PHP_DOCKER_CONTAINER_SETTINGS_COMPONENT_NAME
-    );
+        (phpDockerSettingsConfig) =>
+            phpDockerSettingsConfig[propertyKey('name')] ===
+            PHP_DOCKER_CONTAINER_SETTINGS_COMPONENT_NAME
+    )
 
     const defaultList = {
         map: {
@@ -34,12 +40,17 @@ const setupPHPDockerContainerSettingsConfig = async (phpDockerSettingsConfigs, c
                                     DockerVolumeBindingImpl: {
                                         option: [
                                             {
-                                                [propertyKey('name')]: 'containerPath',
-                                                [propertyKey('value')]: ctx.config.baseConfig.containerMagentoDir
+                                                [propertyKey('name')]:
+                                                    'containerPath',
+                                                [propertyKey('value')]:
+                                                    ctx.config.baseConfig
+                                                        .containerMagentoDir
                                             },
                                             {
-                                                [propertyKey('name')]: 'hostPath',
-                                                [propertyKey('value')]: '$PROJECT_DIR$'
+                                                [propertyKey('name')]:
+                                                    'hostPath',
+                                                [propertyKey('value')]:
+                                                    '$PROJECT_DIR$'
                                             }
                                         ]
                                     }
@@ -50,17 +61,17 @@ const setupPHPDockerContainerSettingsConfig = async (phpDockerSettingsConfigs, c
                 }
             }
         }
-    };
+    }
 
     if (!phpDockerContainerSettingsComponent) {
-        hasChanges = true;
+        hasChanges = true
         phpDockerSettingsConfigs.push({
             [propertyKey('name')]: PHP_DOCKER_CONTAINER_SETTINGS_COMPONENT_NAME,
             list: defaultList
-        });
+        })
     }
 
-    return hasChanges;
-};
+    return hasChanges
+}
 
-module.exports = setupPHPDockerContainerSettingsConfig;
+module.exports = setupPHPDockerContainerSettingsConfig
