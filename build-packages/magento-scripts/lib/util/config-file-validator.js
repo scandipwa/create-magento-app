@@ -3,6 +3,9 @@ const semver = require('semver')
 const KnownError = require('../errors/known-error')
 const pathExistsSync = require('./path-exists-sync')
 
+/**
+ * @type {Joi.CustomValidator<string>}
+ */
 const fileExistsValidator = (value) => {
     const fileExists = pathExistsSync(value)
 
@@ -13,6 +16,9 @@ const fileExistsValidator = (value) => {
     return undefined
 }
 
+/**
+ * @type {Joi.CustomValidator<string>}
+ */
 const versionValidator = (value, helpers) => {
     const isValid = semver.valid(value)
 
@@ -116,12 +122,12 @@ const elasticsearchConfigurationSchema = Joi.object({
 const composerConfigurationSchema = Joi.object({
     version: Joi.string()
         .optional()
-        .custom((value) => {
+        .custom((value, helper) => {
             if (['1', '2'].includes(value)) {
                 return undefined
             }
 
-            return versionValidator(value)
+            return versionValidator(value, helper)
         }),
     plugins: Joi.object().pattern(
         Joi.string(),

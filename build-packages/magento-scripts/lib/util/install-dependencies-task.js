@@ -10,7 +10,7 @@ const KnownError = require('../errors/known-error')
  * @param {object} options
  * @param {keyof dependenciesForPlatforms} options.platform Platform
  * @param {string[]} options.dependenciesToInstall List of dependencies to install
- * @param {boolean} options.useMacNativeEnvironment Use Mac native environment
+ * @param {boolean} [options.useMacNativeEnvironment] Use Mac native environment
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const installDependenciesTask = (options) => ({
@@ -99,9 +99,6 @@ To install missing ${dependenciesWordFormatter} manually, run the following comm
 
             return task.newListr(
                 execCommandTask(cmd, {
-                    callback: (t) => {
-                        task.output = t
-                    },
                     pipeInput: true
                 })
             )

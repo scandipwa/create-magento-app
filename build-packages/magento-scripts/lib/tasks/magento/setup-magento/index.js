@@ -16,12 +16,12 @@ const setMailConfig = require('./set-mail-config')
 
 /**
  * @param {Object} [options]
- * @param {Boolean} options.onlyInstallMagento
+ * @param {Boolean} [options.onlyInstallMagento]
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupMagento = (options = {}) => ({
     title: 'Setting up Magento',
-    skip: ({ skipSetup }) => skipSetup,
+    skip: ({ skipSetup }) => Boolean(skipSetup),
     task: (ctx, task) => {
         if (options.onlyInstallMagento) {
             return task.newListr([

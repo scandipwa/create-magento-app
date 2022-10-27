@@ -13,7 +13,12 @@ const { maildev } = require('../services/maildev')
 const { redis50 } = require('../services/redis')
 const { mariadb102 } = require('../services/mariadb/versions')
 
-module.exports = ({ templateDir } = {}) => ({
+/**
+ * @param {Object} param0
+ * @param {string} param0.templateDir
+ * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ */
+module.exports = ({ templateDir }) => ({
     magentoVersion: '2.3.3-p1',
     configuration: {
         php: php73({

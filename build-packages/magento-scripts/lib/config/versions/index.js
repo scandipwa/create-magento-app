@@ -19,7 +19,7 @@ const getConfigurations = (config = {}) =>
     magentoVersions.reduce(
         (acc, val) => ({
             ...acc,
-            [val().magentoVersion]: deepmerge(defaultCMAConfig, {
+            [val({}).magentoVersion]: deepmerge(defaultCMAConfig, {
                 ...val(config)
             })
         }),

@@ -23,7 +23,7 @@ const adjustComposerJson = async (
     { magentoEdition, magentoProductSelectedEdition, magentoPackageVersion }
 ) => {
     /**
-     * @type {{ repositories?: { type: string, url: string }[] | Record<string, { type: string, url: string }>, require: Record<string, string> }}
+     * @type {{ repositories?: { type: string, url: string }[] | Record<string, { type: string, url: string }>, require: Record<string, string> } | null}
      */
     const composerData = await getJsonFileData(
         path.join(ctx.config.baseConfig.magentoDir, 'composer.json')

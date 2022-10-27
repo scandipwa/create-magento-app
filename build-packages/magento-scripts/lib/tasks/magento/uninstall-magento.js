@@ -6,14 +6,17 @@ const pathExists = require('../../util/path-exists')
  */
 const uninstallMagento = () => ({
     title: 'Uninstall Magento App',
-    task: async ({ config: { baseConfig } }, task) => {
+    task: async (ctx, task) => {
+        const {
+            config: { baseConfig }
+        } = ctx
         const appFolderExists = await pathExists(baseConfig.magentoDir)
         if (!appFolderExists) {
             task.skip()
             return
         }
 
-        const { code } = await runMagentoCommand('setup:db:status', {
+        const { code } = await runMagentoCommand(ctx, 'setup:db:status', {
             throwNonZeroCode: false
         })
 
@@ -22,7 +25,7 @@ const uninstallMagento = () => ({
             task.skip()
             return
         }
-        await runMagentoCommand('setup:uninstall', {
+        await runMagentoCommand(ctx, 'setup:uninstall', {
             callback: (t) => {
                 task.output = t
             }

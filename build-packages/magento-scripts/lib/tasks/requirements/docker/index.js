@@ -19,6 +19,10 @@ const getIsWsl = require('../../../util/is-wsl')
 const USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER =
     'useDockerEngineWithDockerDesktop'
 
+/**
+ * @param {import('listr2').ListrTaskWrapper<import('../../../../typings/context').ListrContext, any>} task
+ * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
+ */
 const setVersionInContextTask = (task) => ({
     task: (ctx) => {
         if (
@@ -34,6 +38,10 @@ const setVersionInContextTask = (task) => ({
     }
 })
 
+/**
+ * @param {import('listr2').ListrTaskWrapper<import('../../../../typings/context').ListrContext, any>} task
+ * @param {{ skipPrompt?: boolean }} param1
+ */
 const dockerInstallPromptLinux = async (task, { skipPrompt = false } = {}) => {
     const automaticallyInstallDocker = skipPrompt
         ? 'yes'
@@ -122,7 +130,7 @@ ${logger.style.link(
 }
 
 /**
- * @param {import('listr2').ListrTaskWrapper} task
+ * @param {import('listr2').ListrTaskWrapper<import('../../../../typings/context').ListrContext, any>} task
  */
 const dockerInstallPromptMacOS = async (task) => {
     const confirmationToInstallDocker = await task.prompt({

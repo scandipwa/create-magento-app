@@ -92,6 +92,7 @@ const execAsyncSpawn = (
                     return
                 }
             }
+
             resolve(result)
         })
     })

@@ -39,8 +39,9 @@ const getIsHealthCheckRequestBroken = async (ctx) => {
         parser: (line) => parser.parseLine(line)
     })
 
-    const healthCheckRequests = parsedLogs.filter((line) =>
-        line.request.includes('/health_check.php')
+    const healthCheckRequests = parsedLogs.filter(
+        (line) =>
+            line && line.request && line.request.includes('/health_check.php')
     )
 
     return healthCheckRequests.every(

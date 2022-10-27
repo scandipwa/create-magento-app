@@ -24,7 +24,7 @@ const installDockerOnMac = () => ({
             }
         )
 
-        if (!ctx.verbose) {
+        if (!ctx.verbose && interval) {
             clearInterval(interval)
         }
     },

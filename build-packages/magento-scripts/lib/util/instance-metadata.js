@@ -71,10 +71,12 @@ const getInstanceMetadata = (ctx) => {
 
     const webLocation = frontend.find((u) => u.title === WEB_LOCATION_TITLE)
 
-    admin.push({
-        title: WEB_ADMIN_LOCATION_TITLE,
-        text: logger.style.link(`${webLocation.text}admin`)
-    })
+    if (webLocation) {
+        admin.push({
+            title: WEB_ADMIN_LOCATION_TITLE,
+            text: logger.style.link(`${webLocation.text}admin`)
+        })
+    }
 
     admin.push({
         title: WEB_ADMIN_CREDENTIALS_TITLE,

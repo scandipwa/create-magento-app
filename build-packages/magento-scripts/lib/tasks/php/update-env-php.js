@@ -40,11 +40,12 @@ const updateEnvPHP = () => ({
 
         if (await pathExists(composerLockPath)) {
             /**
-             * @type {{ packages: { name: string }[] }}
+             * @type {{ packages: { name: string }[] } | null}
              */
             const composerLockData = await getJsonfileData(composerLockPath)
 
             if (
+                composerLockData &&
                 !composerLockData.packages.some(
                     ({ name }) => name === 'scandipwa/persisted-query'
                 )

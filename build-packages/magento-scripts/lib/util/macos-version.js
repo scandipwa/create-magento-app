@@ -11,7 +11,9 @@ const getMacOSVersion = async () => {
         return macosVersion()
     }
 
-    return semver.coerce(result).version
+    const { version } = semver.coerce(result) || {}
+
+    return version
 }
 
 module.exports = {

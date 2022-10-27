@@ -3,6 +3,10 @@ const path = require('path')
 const KnownError = require('../errors/known-error')
 const pathExists = require('./path-exists')
 
+/**
+ * @param {string} composerPath
+ * @returns {Promise<{ require: Record<string, string> } | null>}
+ */
 const getComposerData = async (composerPath) => {
     const composerExists = await pathExists(composerPath)
 

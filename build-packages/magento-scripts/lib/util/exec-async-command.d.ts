@@ -26,7 +26,7 @@ export function execAsyncSpawn(
     options?: ExecAsyncSpawnOptions<true>
 ): Promise<{ code: number; result: string }>
 
-export function execCommandTask(
+export function execCommandTask<T extends boolean>(
     command: string,
-    options?: Omit<ExecAsyncSpawnOptions<false>, 'callback'>
+    options?: Omit<ExecAsyncSpawnOptions<T>, 'callback'>
 ): ListrTask<ListrContext>

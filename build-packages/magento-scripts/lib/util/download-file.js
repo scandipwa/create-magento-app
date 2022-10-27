@@ -2,7 +2,13 @@ const https = require('https')
 const http = require('http')
 const fs = require('fs')
 
-const downloadFile = (url, { destination } = {}) =>
+/**
+ * @param {string} url
+ * @param {Object} param1
+ * @param {string} param1.destination
+ * @returns {Promise<void>}
+ */
+const downloadFile = (url, { destination }) =>
     new Promise((resolve, reject) => {
         const client = url.startsWith('https') ? https : http
 
@@ -10,6 +16,9 @@ const downloadFile = (url, { destination } = {}) =>
             encoding: 'utf-8'
         })
 
+        /**
+         * @param {Error} err
+         */
         const onError = (err) => {
             reject(err)
         }

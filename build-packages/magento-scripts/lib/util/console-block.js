@@ -41,7 +41,8 @@ class ConsoleBlock {
 
     addEmptyLine() {
         this.data.push({
-            type: 'empty-line'
+            type: 'empty-line',
+            data: ''
         })
 
         return this

@@ -4,7 +4,7 @@ const { execAsync } = require('./exec-async')
 
 /**
  * Get actual system arch
- * @returns {Promise<'arm64' | 'x64'>}
+ * @returns {Promise<NodeJS.Architecture>}
  */
 const getArch = async () => {
     if (macosVersion.isMacOS) {
@@ -28,7 +28,7 @@ const getArch = async () => {
 
 /**
  * Get actual system arch synchronously
- * @returns {'arm64' | 'x64'}
+ * @returns {NodeJS.Architecture}
  */
 const getArchSync = () => {
     if (macosVersion.isMacOS) {

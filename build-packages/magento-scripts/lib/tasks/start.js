@@ -157,7 +157,7 @@ const configureProject = () => ({
  */
 const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
-    skip: ({ skipSetup }) => skipSetup,
+    skip: ({ skipSetup }) => Boolean(skipSetup),
     task: (ctx, task) =>
         task.newListr([setupThemes(), waitingForVarnish()], {
             rendererOptions: {
@@ -205,8 +205,9 @@ const start = () => ({
                         const locationOnTheWeb = instanceMetadata.frontend.find(
                             ({ title }) => title === WEB_LOCATION_TITLE
                         )
-
-                        openBrowser(locationOnTheWeb.link)
+                        if (locationOnTheWeb) {
+                            openBrowser(locationOnTheWeb.text)
+                        }
                     },
                     options: {
                         showTimer: false

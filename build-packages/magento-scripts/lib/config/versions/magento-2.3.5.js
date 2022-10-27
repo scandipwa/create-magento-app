@@ -13,7 +13,17 @@ const { varnish66 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { elasticsearch76 } = require('../services/elasticsearch/versions')
 
-module.exports = ({ templateDir } = {}) => ({
+/**
+ * @param {Object} param0
+ * @param {string} param0.templateDir
+ * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ */
+/**
+ * @param {Object} param0
+ * @param {string} param0.templateDir
+ * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ */
+module.exports = ({ templateDir }) => ({
     magentoVersion: '2.3.5',
     configuration: {
         php: php73({

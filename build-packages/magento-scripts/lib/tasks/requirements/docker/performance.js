@@ -31,12 +31,15 @@ const checkDockerPerformance = () => ({
         }
 
         const dockerForMacVersionMatch =
+            ctx.dockerServerData &&
             ctx.dockerServerData.Platform.Name.match(/(\d+\.\d+\.\d+)/i)
 
         const dockerForMacVersion =
             dockerForMacVersionMatch && dockerForMacVersionMatch[1]
 
         if (
+            dockerForMacVersion &&
+            ctx.platformVersion &&
             ctx.arch === 'arm64' &&
             semver.gt('12.2.0', ctx.platformVersion) &&
             semver.gt(dockerForMacVersion, '4.6.0')
@@ -48,6 +51,8 @@ const checkDockerPerformance = () => ({
         }
 
         if (
+            dockerForMacVersion &&
+            ctx.platformVersion &&
             ctx.arch === 'x64' &&
             semver.gt('12.3.0', ctx.platformVersion) &&
             semver.gt(dockerForMacVersion, '4.6.0')

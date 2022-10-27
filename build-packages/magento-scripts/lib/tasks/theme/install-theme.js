@@ -9,12 +9,18 @@ const runComposerCommand = require('../../util/run-composer')
 const installTheme = (theme) => ({
     title: 'Installing theme in composer.json',
     task: async (ctx, task) => {
-        const { magentoVersion, verbose = false } = ctx
+        const { verbose = false } = ctx
+        /**
+         * @type {{ require: Record<string, string> } | null}
+         */
         const composerJsonData = await getJsonfileData(
             path.join(process.cwd(), 'composer.json')
         )
 
-        if (composerJsonData.require[theme.composerData.name]) {
+        if (
+            composerJsonData &&
+            composerJsonData.require[theme.composerData.name]
+        ) {
             task.skip()
             return
         }
@@ -24,7 +30,6 @@ const installTheme = (theme) => ({
                 ctx,
                 `require ${theme.composerData.name}`,
                 {
-                    magentoVersion,
                     callback: !verbose
                         ? undefined
                         : (t) => {

@@ -1,8 +1,6 @@
 /**
  * Merge object deeply
- * @param {object} target
- * @param  {...object} sources
- * @returns {object}
+ * @type {<T>(target: T, ...sources: Partial<T>[]) => T}
  */
 function deepmerge(target, ...sources) {
     const targetCopy = { ...target }

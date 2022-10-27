@@ -1,3 +1,4 @@
+const UnknownError = require('../errors/unknown-error')
 const runMagentoCommand = require('./run-magento')
 
 /**
@@ -19,9 +20,11 @@ const magentoTask = (command, options = {}) => ({
                 throwNonZeroCode: true
             })
         } catch (e) {
-            if (options.onError) {
+            if (e instanceof UnknownError && options.onError) {
                 options.onError(e)
             }
+
+            throw e
         }
     },
     options: {

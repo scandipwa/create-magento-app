@@ -7,6 +7,11 @@ import { CMAConfiguration, PHPExtensions } from './index'
 import { PHPStormConfig } from './phpstorm'
 
 export interface ListrContext {
+    noOpen?: boolean
+    skipSetup?: boolean
+    resetGlobalConfig?: boolean
+    withCustomersData?: boolean
+    force?: boolean
     magentoFirstInstall?: boolean
     encryptionKey?: string
     pullImages?: boolean
@@ -112,21 +117,21 @@ export interface ListrContext {
             cacheDir: string
             containerMagentoDir: string
         }
-        overridenConfiguration: Omit<
+        overridenConfiguration: Required<Omit<
             CMAConfiguration,
-            'prefix' | 'useNonOverlappingPorts'
-        > & { magentoVersion: string }
-        userConfiguration: Omit<
+            'useNonOverlappingPorts'
+        > & { magentoVersion: string }>
+        userConfiguration:  Omit<
             CMAConfiguration,
-            'prefix' | 'useNonOverlappingPorts'
+            'useNonOverlappingPorts'
         >
-        nonOverridenConfiguration: Omit<
+        nonOverridenConfiguration:  Required<Omit<
             CMAConfiguration,
-            'prefix' | 'useNonOverlappingPorts'
-        >
+            'useNonOverlappingPorts'
+        >>
         phpStorm: PHPStormConfig
         projectConfig: ProjectConfig
-        magentoConfiguration?: CMAConfiguration['magento']
+        magentoConfiguration: CMAConfiguration['magento']
     }
     systemConfiguration: {
         analytics: boolean

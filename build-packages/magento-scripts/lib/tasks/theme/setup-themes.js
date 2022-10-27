@@ -16,11 +16,14 @@ const setupThemes = () => ({
         const {
             config: { baseConfig }
         } = ctx
+        /**
+         * @type {{ require: Record<string, string>, repositories?: Record<string, { type: string, url: string }> | { type: string, url: string }[] } | null}
+         */
         const composerData = await getJsonfileData(
             path.join(baseConfig.magentoDir, 'composer.json')
         )
 
-        if (!composerData.repositories) {
+        if (!composerData || !composerData.repositories) {
             task.skip()
             return
         }

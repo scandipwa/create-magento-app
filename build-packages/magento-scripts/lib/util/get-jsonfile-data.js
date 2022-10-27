@@ -2,6 +2,9 @@ const fs = require('fs')
 const UnknownError = require('../errors/unknown-error')
 const pathExists = require('./path-exists')
 
+/**
+ * @type {<T>(fileData: string) => Promise<T | null>}
+ */
 const getJsonfileData = async (filePath) => {
     const fileExists = await pathExists(filePath)
 

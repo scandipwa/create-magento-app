@@ -21,10 +21,7 @@ const checkRosetta = () => ({
                 execCommandTask(
                     'softwareupdate --install-rosetta --agree-to-license',
                     {
-                        pipeInput: true,
-                        callback: (t) => {
-                            task.output = t
-                        }
+                        pipeInput: true
                     }
                 )
             )

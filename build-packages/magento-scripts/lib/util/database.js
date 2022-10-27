@@ -1,8 +1,8 @@
 /**
  * Update table in **magento** database
  * @param {String} table Table name
- * @param {{path: string, value: string}[]} values
- * @param {import('../../typings/context').ListrContext} param1
+ * @param {{ path: string, value: string | number | null }[]} values
+ * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'], task: import('listr2').ListrTaskWrapper<import('../../typings/context').ListrContext, any> }} param2
  */
 const updateTableValues = async (
     table,
@@ -46,6 +46,9 @@ const updateTableValues = async (
         return
     }
 
+    /**
+     * @param {{ path: string, value: unknown }} param0
+     */
     const checkIfValueIsCorrect = ({ path, value }) => {
         const val = values.find((p) => p.path === path)
 

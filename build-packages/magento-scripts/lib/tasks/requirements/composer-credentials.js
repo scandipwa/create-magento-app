@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-nested-ternary */
 const path = require('path')
 const fs = require('fs')
@@ -232,6 +233,8 @@ Would you like to load them now?`
                         )
                         process.env.COMPOSER_AUTH = JSON.stringify(
                             JSON.parse(
+                                // credentialsLine does exists, we know it from check above
+                                // @ts-ignore
                                 credentialsLine
                                     .replace('export COMPOSER_AUTH=', '')
                                     .replace(/'/gi, '')

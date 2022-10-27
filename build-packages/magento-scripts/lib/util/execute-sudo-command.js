@@ -3,9 +3,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const { execCommandTask } = require('./exec-async-command')
 
 /**
- * @param {string} command
- * @param {Omit<import('../util/exec-async-command').ExecAsyncSpawnOptions<false>, 'pipeInput'>} options
- * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
+ * @type {<T extends boolean>(command: string, options?: Omit<import('../util/exec-async-command').ExecAsyncSpawnOptions<T>, 'pipeInput'>) => import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const executeSudoCommand = (command, options = {}) => ({
     task: async (ctx, task) => {

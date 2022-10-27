@@ -40,6 +40,7 @@ const checkPlatform = () => ({
         }
 
         if (
+            ctx.platformVersion &&
             currentPlatform === 'darwin' &&
             !semver.gt(
                 ctx.platformVersion,

@@ -13,7 +13,12 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish66 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 
-module.exports = ({ templateDir } = {}) => ({
+/**
+ * @param {Object} param0
+ * @param {string} param0.templateDir
+ * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ */
+module.exports = ({ templateDir }) => ({
     magentoVersion: '2.2.10',
     configuration: {
         php: php72({

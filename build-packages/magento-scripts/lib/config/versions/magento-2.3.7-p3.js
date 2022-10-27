@@ -13,7 +13,12 @@ const { varnish66 } = require('../services/varnish')
 const { mariadb103 } = require('../services/mariadb/versions')
 const { elasticsearch716 } = require('../services/elasticsearch/versions')
 
-module.exports = ({ templateDir } = {}) => ({
+/**
+ * @param {Object} param0
+ * @param {string} param0.templateDir
+ * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ */
+module.exports = ({ templateDir }) => ({
     magentoVersion: '2.3.7-p3',
     configuration: {
         php: php74({

@@ -39,6 +39,10 @@ const getBrewCommand = async ({ native } = { native: false }) => {
     return BREW_BIN_PATH_INTEL
 }
 
+/**
+ * @param {{ native?: boolean }} param0
+ * @returns
+ */
 const getBrewCommandSync = ({ native } = { native: false }) => {
     const arch = getArchSync()
 

@@ -12,7 +12,7 @@ const phpTask = (command, options = {}) => ({
             callback: (t) => {
                 task.output = t
             },
-            throwNonZeroCode: true
+            withCode: true
         })
 })
 

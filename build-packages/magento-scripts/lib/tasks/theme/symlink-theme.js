@@ -10,19 +10,26 @@ const symlinkTheme = (theme) => ({
     title: 'Setting symbolic link for theme in composer.json',
     task: async (ctx, task) => {
         const { verbose = false } = ctx
+        /**
+         * @type {{ require: Record<string, string>, repositories?: Record<string, { type: string, url: string }> | { type: string, url: string }[] } | null}
+         */
         const composerJsonData = await getJsonfileData(
             path.join(process.cwd(), 'composer.json')
         )
 
-        if (!composerJsonData.repositories) {
+        if (!composerJsonData || !composerJsonData.repositories) {
             task.skip()
             return
         }
 
+        /**
+         * @type {Record<string, { type: string, url: string }>}
+         */
+        const init = {}
         const repositories = Array.isArray(composerJsonData.repositories)
             ? composerJsonData.repositories.reduce(
                   (acc, repo, index) => ({ ...acc, [`${index}`]: repo }),
-                  {}
+                  init
               )
             : composerJsonData.repositories
 
