@@ -58,8 +58,7 @@ const executeTask = async (argv) => {
 
         if (!containerResult) {
             logger.error(`No container found "${argv.containername}"`)
-
-            return
+            process.exit(1)
         }
 
         const container =
@@ -84,11 +83,16 @@ const executeTask = async (argv) => {
         })
 
         if (containerList.length > 0) {
-            logger.logN(
-                `Executing container ${logger.style.misc(
-                    container._
-                )} (command: ${logger.style.command(argv.commands.join(' '))})`
-            )
+            if (process.stdout.isTTY) {
+                logger.logN(
+                    `Executing container ${logger.style.misc(
+                        container._
+                    )} (command: ${logger.style.command(
+                        argv.commands.join(' ')
+                    )})`
+                )
+            }
+
             const result = await executeInContainer({
                 containerName: container.name,
                 commands: argv.commands,
@@ -99,13 +103,16 @@ const executeTask = async (argv) => {
         }
 
         if (container.name.endsWith('php')) {
-            logger.logN(
-                `Starting container ${logger.style.misc(
-                    container._
-                )} with command: ${logger.style.command(
-                    argv.commands.join(' ')
-                )}`
-            )
+            if (process.stdout.isTTY) {
+                logger.logN(
+                    `Starting container ${logger.style.misc(
+                        container._
+                    )} with command: ${logger.style.command(
+                        argv.commands.join(' ')
+                    )}`
+                )
+            }
+
             const result = await runInContainer(
                 {
                     ...container,
@@ -121,6 +128,7 @@ const executeTask = async (argv) => {
     }
 
     logger.error(`No container found "${argv.containername}"`)
+    process.exit(1)
 }
 
 module.exports = {
