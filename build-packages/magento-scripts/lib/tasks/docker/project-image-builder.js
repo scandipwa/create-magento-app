@@ -9,7 +9,7 @@ const { imageApi } = require('./image')
 /**
  * Get enabled extensions list with versions
  * @param {string} imageWithTag
- * @returns {Promise<{[key: string]: string}}>}
+ * @returns {Promise<{[key: string]: string}>}>}
  */
 const getEnabledExtensionsFromImage = async (imageWithTag) => {
     const output = await runContainerImage(
@@ -21,13 +21,23 @@ const getEnabledExtensionsFromImage = async (imageWithTag) => {
     return output
         .split('\n')
         .map((m) => {
-            const [_, moduleName, moduleVersion] = m.match(/(.+):(.+)/i)
+            const moduleMatch = m.match(/(.+):(.+)/i)
 
-            return [moduleName, moduleVersion]
+            if (moduleMatch) {
+                const [_, moduleName, moduleVersion] = moduleMatch
+
+                return [moduleName, moduleVersion]
+            }
+
+            return []
         })
+        .filter((a) => a.length > 0)
         .reduce((acc, [name, version]) => ({ ...acc, [name]: version }), {})
 }
 
+/**
+ * @type {(builder: DockerFileBuilder, ctx: import('../../../typings/context').ListrContext) => ([extensionName, extensionInstructions]: [string, import('../../../typings').PHPExtensionInstallationInstruction]) => Promise<void>}
+ */
 const addExtensionToBuilder =
     (builder, ctx) =>
     async ([extensionName, extensionInstructions]) => {
@@ -36,10 +46,7 @@ const addExtensionToBuilder =
         let runCommand = ''
         if (typeof command === 'string') {
             runCommand += ` ${command}`
-        } else if (
-            typeof command === 'function' ||
-            command instanceof Promise
-        ) {
+        } else if (command instanceof Promise) {
             runCommand += ` ${await Promise.resolve(
                 command({ ...extensionInstructionsWithoutCommand, ctx })
             )}`
@@ -174,11 +181,13 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         'bin'
     )
 
-    dockerFileInstructions.env({
-        PATH: `${imagePathEnv
-            .split('=')
-            .pop()}:${magentoBinDir}:${vendorBinDir}`
-    })
+    if (imagePathEnv) {
+        dockerFileInstructions.env({
+            PATH: `${imagePathEnv
+                .split('=')
+                .pop()}:${magentoBinDir}:${vendorBinDir}`
+        })
+    }
 
     return dockerFileInstructions
 }
