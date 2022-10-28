@@ -1,22 +1,22 @@
-const fs = require('fs');
-const pathExists = require('../../util/path-exists');
+const fs = require('fs')
+const pathExists = require('../../util/path-exists')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const createCacheFolder = () => ({
     task: async ({ config: { baseConfig } }, task) => {
-        const cacheFolderExists = await pathExists(baseConfig.cacheDir);
+        const cacheFolderExists = await pathExists(baseConfig.cacheDir)
 
         if (cacheFolderExists) {
-            task.skip();
-            return;
+            task.skip()
+            return
         }
 
-        task.title = 'Creating cache folder';
+        task.title = 'Creating cache folder'
 
-        await fs.promises.mkdir(baseConfig.cacheDir);
+        await fs.promises.mkdir(baseConfig.cacheDir)
     }
-});
+})
 
-module.exports = createCacheFolder;
+module.exports = createCacheFolder

@@ -1,6 +1,11 @@
-const { execAsyncSpawn } = require('./exec-async-command');
+const { execAsyncSpawn } = require('./exec-async-command')
 
-const runContainerImage = async (imageWithTag, command) => execAsyncSpawn(`docker run --rm ${imageWithTag} ${command}`);
+/**
+ * @param {string} imageWithTag
+ * @param {string} command
+ */
+const runContainerImage = async (imageWithTag, command) =>
+    execAsyncSpawn(`docker run --rm ${imageWithTag} ${command}`)
 
 /**
  * @param {string} imageWithTag
@@ -9,9 +14,9 @@ const runContainerImage = async (imageWithTag, command) => execAsyncSpawn(`docke
  */
 const runContainerImageTask = (imageWithTag, command) => ({
     task: () => runContainerImage(imageWithTag, command)
-});
+})
 
 module.exports = {
     runContainerImage,
     runContainerImageTask
-};
+}

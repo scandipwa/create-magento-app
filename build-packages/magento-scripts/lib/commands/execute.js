@@ -1,4 +1,4 @@
-const { executeTask } = require('../tasks/execute');
+const { executeTask } = require('../tasks/execute')
 
 /**
  * @param {import('yargs')} yargs
@@ -16,10 +16,10 @@ Available containers:
 - redis
 - elasticsearch
 - varnish (if enabled)
-- sslTerminator`);
+- sslTerminator`)
         },
         async (argv) => {
-            await executeTask(argv);
+            await executeTask(argv)
         }
-    );
-};
+    )
+}

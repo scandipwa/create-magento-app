@@ -3,6 +3,6 @@
  */
 const redis60 = () => ({
     image: 'redis:6.0-alpine'
-});
+})
 
-module.exports = redis60;
+module.exports = redis60

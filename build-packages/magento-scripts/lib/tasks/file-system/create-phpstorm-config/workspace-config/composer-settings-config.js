@@ -1,21 +1,21 @@
-const path = require('path');
-const pathExists = require('../../../../util/path-exists');
-const { nameKey } = require('../keys');
-const { formatPathForPHPStormConfig } = require('../xml-utils');
+const path = require('path')
+const pathExists = require('../../../../util/path-exists')
+const { nameKey } = require('../keys')
+const { formatPathForPHPStormConfig } = require('../xml-utils')
 
-const COMPOSER_SETTINGS_COMPONENT_NAME = 'ComposerSettings';
+const COMPOSER_SETTINGS_COMPONENT_NAME = 'ComposerSettings'
 
-const composerKey = '@_composer';
-const doNotAskKey = '@_doNotAsk';
-const synchronizationStateKey = '@_synchronizationState';
+const composerKey = '@_composer'
+const doNotAskKey = '@_doNotAsk'
+const synchronizationStateKey = '@_synchronizationState'
 
-const composerJsonPath = path.join(process.cwd(), 'composer.json');
-const composerJsonFormattedPath = formatPathForPHPStormConfig(composerJsonPath);
+const composerJsonPath = path.join(process.cwd(), 'composer.json')
+const composerJsonFormattedPath = formatPathForPHPStormConfig(composerJsonPath)
 
 const defaultComposerSettingsProperties = {
     [doNotAskKey]: 'true',
     [synchronizationStateKey]: 'SYNCHRONIZE'
-};
+}
 
 /**
  * @param {Array} workspaceConfigs
@@ -23,39 +23,47 @@ const defaultComposerSettingsProperties = {
  * @returns {Promise<Boolean>}
  */
 const setupComposerSettings = async (workspaceConfigs, ctx) => {
-    let hasChanges = false;
+    let hasChanges = false
     const composerSettingsComponent = workspaceConfigs.find(
-        (workspaceConfig) => workspaceConfig[nameKey] === COMPOSER_SETTINGS_COMPONENT_NAME
-    );
+        (workspaceConfig) =>
+            workspaceConfig[nameKey] === COMPOSER_SETTINGS_COMPONENT_NAME
+    )
 
-    const isComposerJsonExists = await pathExists(composerJsonPath);
-    const { php } = ctx.config.docker.getContainers(ctx.ports);
+    const isComposerJsonExists = await pathExists(composerJsonPath)
+    const { php } = ctx.config.docker.getContainers(ctx.ports)
     const defaultInterpreterConfig = {
         [nameKey]: ctx.debug ? php.debugImage : php.image,
         [composerKey]: 'composer'
-    };
+    }
 
     if (composerSettingsComponent) {
         if (
-            composerSettingsComponent.pharConfigPath === undefined
-            && isComposerJsonExists
+            composerSettingsComponent.pharConfigPath === undefined &&
+            isComposerJsonExists
         ) {
-            hasChanges = true;
-            composerSettingsComponent.pharConfigPath = composerJsonFormattedPath;
+            hasChanges = true
+            composerSettingsComponent.pharConfigPath = composerJsonFormattedPath
         }
 
-        const interpreterConfig = composerSettingsComponent.execution && composerSettingsComponent.execution.interpreter;
+        const interpreterConfig =
+            composerSettingsComponent.execution &&
+            composerSettingsComponent.execution.interpreter
 
         if (!interpreterConfig) {
-            hasChanges = true;
-            composerSettingsComponent.execution = composerSettingsComponent.execution || {};
-            composerSettingsComponent.execution.interpreter = defaultInterpreterConfig;
-        } else if (interpreterConfig[nameKey] !== defaultInterpreterConfig[nameKey]) {
-            hasChanges = true;
-            composerSettingsComponent.execution.interpreter[nameKey] = defaultInterpreterConfig[nameKey];
+            hasChanges = true
+            composerSettingsComponent.execution =
+                composerSettingsComponent.execution || {}
+            composerSettingsComponent.execution.interpreter =
+                defaultInterpreterConfig
+        } else if (
+            interpreterConfig[nameKey] !== defaultInterpreterConfig[nameKey]
+        ) {
+            hasChanges = true
+            composerSettingsComponent.execution.interpreter[nameKey] =
+                defaultInterpreterConfig[nameKey]
         }
     } else {
-        hasChanges = true;
+        hasChanges = true
         workspaceConfigs.push({
             [nameKey]: COMPOSER_SETTINGS_COMPONENT_NAME,
             ...defaultComposerSettingsProperties,
@@ -63,10 +71,10 @@ const setupComposerSettings = async (workspaceConfigs, ctx) => {
             execution: {
                 interpreter: defaultInterpreterConfig
             }
-        });
+        })
     }
 
-    return hasChanges;
-};
+    return hasChanges
+}
 
-module.exports = setupComposerSettings;
+module.exports = setupComposerSettings

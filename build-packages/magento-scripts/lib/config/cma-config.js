@@ -1,6 +1,6 @@
-const Conf = require('conf');
+const Conf = require('conf')
 
-const pkg = require('../../package.json');
+const pkg = require('../../package.json')
 /**
  * @type {import('conf/dist/source').default}
  */
@@ -9,8 +9,8 @@ const cmaGlobalConfig = new Conf({
     projectName: 'create-magento-app',
     projectVersion: pkg.version,
     defaults: {}
-});
+})
 
 module.exports = {
     cmaGlobalConfig
-};
+}

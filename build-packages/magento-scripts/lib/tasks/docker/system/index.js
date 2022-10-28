@@ -1,5 +1,5 @@
-const systemApi = require('./system-api');
+const systemApi = require('./system-api')
 
 module.exports = {
     systemApi
-};
+}

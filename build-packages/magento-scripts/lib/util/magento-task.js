@@ -1,4 +1,5 @@
-const runMagentoCommand = require('./run-magento');
+const UnknownError = require('../errors/unknown-error')
+const runMagentoCommand = require('./run-magento')
 
 /**
  * @param {String} command
@@ -11,20 +12,24 @@ const magentoTask = (command, options = {}) => ({
     task: async (ctx, task) => {
         try {
             await runMagentoCommand(ctx, command, {
-                callback: !ctx.verbose ? undefined : (t) => {
-                    task.output = t;
-                },
+                callback: !ctx.verbose
+                    ? undefined
+                    : (t) => {
+                          task.output = t
+                      },
                 throwNonZeroCode: true
-            });
+            })
         } catch (e) {
-            if (options.onError) {
-                options.onError(e);
+            if (e instanceof UnknownError && options.onError) {
+                options.onError(e)
             }
+
+            throw e
         }
     },
     options: {
         bottomBar: 10
     }
-});
+})
 
-module.exports = magentoTask;
+module.exports = magentoTask

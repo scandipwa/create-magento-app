@@ -24,6 +24,6 @@ const magento24RequiredPHPExtensions = [
     'zip',
     'libxml',
     'openssl'
-];
+]
 
-module.exports = magento24RequiredPHPExtensions;
+module.exports = magento24RequiredPHPExtensions

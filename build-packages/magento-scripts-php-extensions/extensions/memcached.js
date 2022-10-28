@@ -4,9 +4,5 @@ module.exports = {
     && pecl install memcached \
     && docker-php-ext-enable memcached \
     && apk del -f .build-deps`,
-    dependencies: [
-        'libevent-dev',
-        'libmemcached-dev',
-        'zlib-dev'
-    ]
-};
+    dependencies: ['libevent-dev', 'libmemcached-dev', 'zlib-dev']
+}

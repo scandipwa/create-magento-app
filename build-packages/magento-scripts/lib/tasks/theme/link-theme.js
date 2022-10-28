@@ -1,14 +1,14 @@
-const symlinkTheme = require('./symlink-theme');
-const installTheme = require('./install-theme');
-const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-cache');
-const disablePageBuilder = require('../magento/setup-magento/disable-page-builder');
-const buildTheme = require('./build-theme');
-const upgradeMagento = require('../magento/setup-magento/upgrade-magento');
-const updateEnvPHP = require('../php/update-env-php');
-const semver = require('semver');
+const symlinkTheme = require('./symlink-theme')
+const installTheme = require('./install-theme')
+const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-cache')
+const disablePageBuilder = require('../magento/setup-magento/disable-page-builder')
+const buildTheme = require('./build-theme')
+const upgradeMagento = require('../magento/setup-magento/upgrade-magento')
+const updateEnvPHP = require('../php/update-env-php')
+const semver = require('semver')
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const linkTheme = () => ({
     title: 'Linking theme',
@@ -19,21 +19,25 @@ const linkTheme = () => ({
             themePath,
             composerData,
             databaseConnection
-        } = ctx;
+        } = ctx
         const {
             magento: { edition: magentoEdition },
             magentoVersion
-        } = overridenConfiguration;
+        } = overridenConfiguration
 
-        const isEnterprise = magentoEdition === 'enterprise';
-        const isPageBuilderInstalled = isEnterprise && semver.satisfies(semver.coerce(magentoVersion), '^2.4');
+        const isEnterprise = magentoEdition === 'enterprise'
+        const isPageBuilderInstalled =
+            isEnterprise &&
+            semver.satisfies(semver.coerce(magentoVersion), '^2.4')
         const [queryResult] = await databaseConnection.query(`
                 SELECT value AS isPagebuilderEnabled
                 FROM core_config_data
                 WHERE path = 'cms/pagebuilder/enabled'
-            `);
+            `)
 
-        const [{ isPagebuilderEnabled = 1 }] = queryResult.length ? queryResult : [{}];
+        const [{ isPagebuilderEnabled = 1 }] = queryResult.length
+            ? queryResult
+            : [{}]
 
         /**
          * @type {import('../../../typings/theme').Theme}
@@ -42,9 +46,9 @@ const linkTheme = () => ({
             themePath,
             absoluteThemePath,
             composerData
-        };
+        }
 
-        task.title = `Linking theme from ${themePath}`;
+        task.title = `Linking theme from ${themePath}`
 
         return task.newListr([
             symlinkTheme(theme),
@@ -52,13 +56,15 @@ const linkTheme = () => ({
             updateEnvPHP(),
             upgradeMagento(),
             adjustFullPageCache(),
-            ...(isPageBuilderInstalled && Number(isPagebuilderEnabled) ? [disablePageBuilder()] : []),
+            ...(isPageBuilderInstalled && Number(isPagebuilderEnabled)
+                ? [disablePageBuilder()]
+                : []),
             buildTheme(theme)
-        ]);
+        ])
     },
     options: {
         bottomBar: 5
     }
-});
+})
 
-module.exports = linkTheme;
+module.exports = linkTheme

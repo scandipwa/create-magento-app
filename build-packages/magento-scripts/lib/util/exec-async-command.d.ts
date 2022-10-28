@@ -1,7 +1,7 @@
-/* eslint-disable max-len */
-import { ListrTask } from 'listr2';
+/* eslint-disable no-redeclare */
+import { ListrTask } from 'listr2'
 
-import { ListrContext } from '../../typings/context';
+import { ListrContext } from '../../typings/context'
 
 interface ExecAsyncSpawnOptions<T extends boolean> {
     callback?: (result: string) => void
@@ -9,9 +9,9 @@ interface ExecAsyncSpawnOptions<T extends boolean> {
     logOutput?: boolean
     cwd?: string
     withCode?: T
+    env?: Record<string, string> & NodeJS.ProcessEnv
     // only for mac
     useRosetta2?: boolean
-    env: NodeJS.ProcessEnv
 }
 
 /**
@@ -20,13 +20,13 @@ interface ExecAsyncSpawnOptions<T extends boolean> {
 export function execAsyncSpawn(
     command: string,
     options?: ExecAsyncSpawnOptions<false>
-): Promise<string>;
-export function execAsyncSpawn (
+): Promise<string>
+export function execAsyncSpawn(
     command: string,
     options?: ExecAsyncSpawnOptions<true>
-): Promise<{ code: number, result: string }>;
+): Promise<{ code: number; result: string }>
 
-export function execCommandTask(
+export function execCommandTask<T extends boolean>(
     command: string,
-    options?: Omit<ExecAsyncSpawnOptions<false>, 'callback'>
+    options?: Omit<ExecAsyncSpawnOptions<T>, 'callback'>
 ): ListrTask<ListrContext>

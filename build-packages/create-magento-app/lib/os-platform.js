@@ -1,51 +1,59 @@
-const fs = require('fs');
-const systeminformation = require('systeminformation');
-const pathExists = require('./path-exists');
-const dependenciesForPlatforms = require('./dependency/dependencies-for-platforms');
+const fs = require('fs')
+const systeminformation = require('systeminformation')
+const pathExists = require('./path-exists')
+const dependenciesForPlatforms = require('./dependency/dependencies-for-platforms')
 
 const packageManagers = Object.entries(dependenciesForPlatforms).map((d) => ({
     platform: d[0],
     packageManager: d[1].packageManager
-}));
+}))
 /**
  *
  * @returns {Promise<keyof typeof dependenciesForPlatforms>}
  */
 const osPlatform = async () => {
-    const binPaths = process.env.PATH.split(':');
+    const binPaths = process.env.PATH.split(':')
 
-    const platforms = await Promise.all(binPaths.map(async (binPath) => {
-        if (!await pathExists(binPath)) {
-            return null;
-        }
-        const bins = await fs.promises.readdir(binPath);
+    const platforms = await Promise.all(
+        binPaths.map(async (binPath) => {
+            if (!(await pathExists(binPath))) {
+                return null
+            }
+            const bins = await fs.promises.readdir(binPath)
 
-        for (const bin of bins) {
-            const possiblePlatforms = packageManagers.filter((p) => p.packageManager === bin);
+            for (const bin of bins) {
+                const possiblePlatforms = packageManagers.filter(
+                    (p) => p.packageManager === bin
+                )
 
-            if (possiblePlatforms.length > 0) {
-                if (possiblePlatforms.length > 1) {
-                    const { distro } = await systeminformation.osInfo();
+                if (possiblePlatforms.length > 0) {
+                    if (possiblePlatforms.length > 1) {
+                        const { distro } = await systeminformation.osInfo()
 
-                    const foundDistro = possiblePlatforms.find((p) => p.platform.toLowerCase().includes(distro.toLowerCase()));
+                        const foundDistro = possiblePlatforms.find((p) =>
+                            p.platform
+                                .toLowerCase()
+                                .includes(distro.toLowerCase())
+                        )
 
-                    if (foundDistro) {
-                        return foundDistro.platform;
+                        if (foundDistro) {
+                            return foundDistro.platform
+                        }
+
+                        return possiblePlatforms[0].platform
                     }
 
-                    return possiblePlatforms[0].platform;
+                    return possiblePlatforms[0].platform
                 }
-
-                return possiblePlatforms[0].platform;
             }
-        }
 
-        return null;
-    }));
+            return null
+        })
+    )
 
-    const filteredPlatforms = platforms.filter(Boolean);
+    const filteredPlatforms = platforms.filter(Boolean)
 
-    return filteredPlatforms.shift();
-};
+    return filteredPlatforms.shift()
+}
 
-module.exports = osPlatform;
+module.exports = osPlatform

@@ -1,6 +1,6 @@
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const { Listr } = require('listr2');
-const importDump = require('../tasks/import-dump');
+const logger = require('@scandipwa/scandipwa-dev-utils/logger')
+const { Listr } = require('listr2')
+const importDump = require('../tasks/import-dump')
 
 /**
  * @param {import('yargs')} yargs
@@ -14,40 +14,37 @@ module.exports = (yargs) => {
                 alias: 'r',
                 describe: 'Import database from remote ssh server',
                 type: 'string'
-            });
+            })
             yargs.option('with-customers-data', {
                 describe: 'Include orders and customers data in database dump',
                 type: 'boolean',
                 default: false
-            });
+            })
             yargs.option('no-compress', {
                 describe: 'Do not compress remote dump files',
                 type: 'boolean',
                 default: false
-            });
+            })
         },
-        async (args = {}) => {
-            const tasks = new Listr(
-                importDump(),
-                {
-                    exitOnError: true,
-                    ctx: args,
-                    concurrent: false,
-                    rendererOptions: {
-                        showErrorMessage: false,
-                        showTimer: true
-                    }
+        async (args) => {
+            const tasks = new Listr(importDump(), {
+                exitOnError: true,
+                ctx: args,
+                concurrent: false,
+                rendererOptions: {
+                    showErrorMessage: false,
+                    showTimer: true
                 }
-            );
+            })
 
             try {
-                await tasks.run();
+                await tasks.run()
 
-                process.exit(0);
+                process.exit(0)
             } catch (e) {
-                logger.error(e.message || e);
-                process.exit(1);
+                logger.error(e.message || e)
+                process.exit(1)
             }
         }
-    );
-};
+    )
+}

@@ -1,5 +1,5 @@
-const os = require('os');
-const fs = require('fs');
+const os = require('os')
+const fs = require('fs')
 
 /**
  * Checks if process is running in wsl mode
@@ -7,24 +7,24 @@ const fs = require('fs');
  */
 const getIsWsl = async () => {
     if (process.platform !== 'linux') {
-        return false;
+        return false
     }
 
     if (typeof process.env.WSL_DISTRO_NAME === 'string') {
-        return true;
+        return true
     }
 
     if (os.release().toLowerCase().includes('microsoft')) {
-        return true;
+        return true
     }
 
     try {
-        const procVersion = await fs.promises.readFile('/proc/version', 'utf8');
+        const procVersion = await fs.promises.readFile('/proc/version', 'utf8')
 
-        return procVersion.toLowerCase().includes('microsoft');
+        return procVersion.toLowerCase().includes('microsoft')
     } catch (e) {
-        return false;
+        return false
     }
-};
+}
 
-module.exports = getIsWsl;
+module.exports = getIsWsl

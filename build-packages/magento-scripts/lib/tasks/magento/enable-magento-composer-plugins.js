@@ -1,12 +1,12 @@
-const path = require('path');
-const fs = require('fs');
-const logger = require('@scandipwa/scandipwa-dev-utils/logger');
-const semver = require('semver');
-const pathExists = require('../../util/path-exists');
-const getJsonfileData = require('../../util/get-jsonfile-data');
+const path = require('path')
+const fs = require('fs')
+const logger = require('@scandipwa/scandipwa-dev-utils/logger')
+const semver = require('semver')
+const pathExists = require('../../util/path-exists')
+const getJsonfileData = require('../../util/get-jsonfile-data')
 
-const vendorPath = path.join(process.cwd(), 'vendor');
-const composerJsonPath = path.join(process.cwd(), 'composer.json');
+const vendorPath = path.join(process.cwd(), 'vendor')
+const composerJsonPath = path.join(process.cwd(), 'composer.json')
 
 /**
  * @returns {Promise<string[]}
@@ -15,109 +15,146 @@ const getInstalledComposerPlugins = async () => {
     const rootVendorFolders = await fs.promises.readdir(vendorPath, {
         encoding: 'utf-8',
         withFileTypes: true
-    });
+    })
 
-    const composerPlugins = (await Promise.all(
-        rootVendorFolders.map(async (f) => {
-            if (f.isDirectory()) {
-                const vendorDirectoryPath = path.join(vendorPath, f.name);
+    /** @type {string[]} */
+    const init = []
+    const composerPlugins = (
+        await Promise.all(
+            rootVendorFolders.map(async (f) => {
+                if (f.isDirectory()) {
+                    const vendorDirectoryPath = path.join(vendorPath, f.name)
 
-                const vendorPackages = await fs.promises.readdir(vendorDirectoryPath, {
-                    encoding: 'utf-8',
-                    withFileTypes: true
-                });
+                    const vendorPackages = await fs.promises.readdir(
+                        vendorDirectoryPath,
+                        {
+                            encoding: 'utf-8',
+                            withFileTypes: true
+                        }
+                    )
 
-                const vendorPackagesComposerPlugins = (await Promise.all(
-                    vendorPackages.map(async (p) => {
-                        if (p.isDirectory()) {
-                            const vendorPackageComposerJsonPath = path.join(vendorDirectoryPath, p.name, 'composer.json');
+                    /**
+                     * @type {string[]}
+                     */
+                    const vendorPackagesComposerPlugins = (
+                        await Promise.all(
+                            vendorPackages.map(async (p) => {
+                                if (p.isDirectory()) {
+                                    const vendorPackageComposerJsonPath =
+                                        path.join(
+                                            vendorDirectoryPath,
+                                            p.name,
+                                            'composer.json'
+                                        )
 
-                            if (await pathExists(vendorPackageComposerJsonPath)) {
-                                const {
-                                    name: vendorPackageName,
-                                    type: vendorPackageType
-                                } = JSON.parse(await fs.promises.readFile(vendorPackageComposerJsonPath, {
-                                    encoding: 'utf-8'
-                                }));
+                                    if (
+                                        await pathExists(
+                                            vendorPackageComposerJsonPath
+                                        )
+                                    ) {
+                                        /**
+                                         *
+                                         */
+                                        const {
+                                            name: vendorPackageName,
+                                            type: vendorPackageType
+                                        } = JSON.parse(
+                                            await fs.promises.readFile(
+                                                vendorPackageComposerJsonPath,
+                                                {
+                                                    encoding: 'utf-8'
+                                                }
+                                            )
+                                        )
 
-                                if (vendorPackageType === 'composer-plugin') {
-                                    return vendorPackageName;
+                                        if (
+                                            vendorPackageType ===
+                                            'composer-plugin'
+                                        ) {
+                                            return vendorPackageName
+                                        }
+
+                                        return null
+                                    }
                                 }
 
-                                return null;
-                            }
-                        }
+                                return null
+                            })
+                        )
+                    ).filter((p) => typeof p === 'string')
 
-                        return null;
-                    })
-                )).filter((p) => typeof p === 'string');
+                    return vendorPackagesComposerPlugins
+                }
 
-                return vendorPackagesComposerPlugins;
-            }
+                return null
+            })
+        )
+    )
+        .reduce((acc, val) => (val ? acc.concat(val) : acc), init) // flattens the array
+        .filter((p) => typeof p === 'string')
 
-            return null;
-        })
-    ))
-        .reduce((acc, val) => acc.concat(val), []) // flattens the array
-        .filter((p) => typeof p === 'string');
-
-    return composerPlugins;
-};
+    return composerPlugins
+}
 
 /**
- * @type {() => import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const enableMagentoComposerPlugins = () => ({
     task: async (ctx, task) => {
         if (!semver.satisfies(ctx.composerVersion, '^2.2.0')) {
-            task.skip();
-            return;
+            task.skip()
+            return
         }
 
-        task.title = 'Checking allowed Composer plugins...';
+        task.title = 'Checking allowed Composer plugins...'
 
-        const composerPlugins = await getInstalledComposerPlugins();
-        const composerJsonData = await getJsonfileData(composerJsonPath);
-        const {
-            config: {
-                'allow-plugins': allowPlugins = {}
-            } = {}
-        } = composerJsonData;
-        const allowPluginsKeys = Object.keys(allowPlugins);
+        const composerPlugins = await getInstalledComposerPlugins()
+        const composerJsonData = await getJsonfileData(composerJsonPath)
+        const { config: { 'allow-plugins': allowPlugins = {} } = {} } =
+            composerJsonData
+        const allowPluginsKeys = Object.keys(allowPlugins)
 
-        const missingPluginsFromAllowPlugins = composerPlugins.filter((plugin) => {
-            const [pluginVendor, pluginName] = plugin.split('/');
-            return !allowPluginsKeys.some((allowedPlugin) => {
-                const [allowedPluginVendor, allowedPluginName] = allowedPlugin.split('/');
-                if (allowedPluginVendor === pluginVendor) {
-                    if (allowedPluginName === '*') {
-                        return true;
+        const missingPluginsFromAllowPlugins = composerPlugins.filter(
+            (plugin) => {
+                const [pluginVendor, pluginName] = plugin.split('/')
+                return !allowPluginsKeys.some((allowedPlugin) => {
+                    const [allowedPluginVendor, allowedPluginName] =
+                        allowedPlugin.split('/')
+                    if (allowedPluginVendor === pluginVendor) {
+                        if (allowedPluginName === '*') {
+                            return true
+                        }
+
+                        return allowedPluginName === pluginName
                     }
 
-                    return allowedPluginName === pluginName;
-                }
-
-                return false;
-            });
-        });
+                    return false
+                })
+            }
+        )
 
         if (
-            allowPluginsKeys.length === 0
-            || missingPluginsFromAllowPlugins.length > 0
+            allowPluginsKeys.length === 0 ||
+            missingPluginsFromAllowPlugins.length > 0
         ) {
-            const missingVendors = missingPluginsFromAllowPlugins.reduce((acc, val) => {
-                const [pluginVendor] = val.split('/');
+            /** @type {string[]} */
+            const init = []
+            const missingVendors = missingPluginsFromAllowPlugins.reduce(
+                (acc, val) => {
+                    const [pluginVendor] = val.split('/')
 
-                if (acc.length === 0) {
-                    return [pluginVendor];
-                }
+                    if (acc.length === 0) {
+                        return [pluginVendor]
+                    }
 
-                if (!acc.includes(pluginVendor)) {
-                    return [...acc, pluginVendor];
-                }
+                    if (!acc.includes(pluginVendor)) {
+                        return [...acc, pluginVendor]
+                    }
 
-                return acc;
-            }, []);
+                    return acc
+                },
+                init
+            )
 
             const pluginOptions = [
                 {
@@ -132,13 +169,15 @@ const enableMagentoComposerPlugins = () => ({
                     name: 'skip',
                     message: 'Skip this step'
                 }
-            ];
+            ]
 
             if (missingVendors.length === 1) {
                 pluginOptions.unshift({
                     name: 'all',
-                    message: `Enable all (${logger.style.code(`"${missingVendors[0]}/*"`)})`
-                });
+                    message: `Enable all (${logger.style.code(
+                        `"${missingVendors[0]}/*"`
+                    )})`
+                })
             }
 
             const answerForEnablingPlugins = await task.prompt({
@@ -150,71 +189,96 @@ ${missingPluginsFromAllowPlugins.map((p) => logger.style.code(p)).join('\n')}
 
 Do you want to enable them all or disable some of them?`,
                 choices: pluginOptions
-            });
+            })
 
             switch (answerForEnablingPlugins.toLowerCase()) {
-            case 'all': {
-                composerJsonData.config = {
-                    ...(composerJsonData.config || {}),
-                    'allow-plugins': {
-                        ...allowPlugins,
-                        [`${missingVendors[0]}/*`]: true
+                case 'all': {
+                    composerJsonData.config = {
+                        ...(composerJsonData.config || {}),
+                        'allow-plugins': {
+                            ...allowPlugins,
+                            [`${missingVendors[0]}/*`]: true
+                        }
                     }
-                };
 
-                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
-                    encoding: 'utf-8'
-                });
-                break;
-            }
-            case 'all-individual': {
-                composerJsonData.config = {
-                    ...(composerJsonData.config || {}),
-                    'allow-plugins': {
-                        ...allowPlugins,
-                        ...missingPluginsFromAllowPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                    await fs.promises.writeFile(
+                        composerJsonPath,
+                        JSON.stringify(composerJsonData, null, 4),
+                        {
+                            encoding: 'utf-8'
+                        }
+                    )
+                    break
+                }
+                case 'all-individual': {
+                    composerJsonData.config = {
+                        ...(composerJsonData.config || {}),
+                        'allow-plugins': {
+                            ...allowPlugins,
+                            ...missingPluginsFromAllowPlugins.reduce(
+                                (acc, val) => ({ ...acc, [val]: true }),
+                                {}
+                            )
+                        }
                     }
-                };
 
-                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
-                    encoding: 'utf-8'
-                });
-                break;
-            }
-            case 'manual': {
-                const userEnabledPlugins = await task.prompt({
-                    type: 'MultiSelect',
-                    message: 'Please pick plugins you want to enable!',
-                    choices: missingPluginsFromAllowPlugins.map((p) => ({ name: p }))
-                });
+                    await fs.promises.writeFile(
+                        composerJsonPath,
+                        JSON.stringify(composerJsonData, null, 4),
+                        {
+                            encoding: 'utf-8'
+                        }
+                    )
+                    break
+                }
+                case 'manual': {
+                    const userEnabledPlugins = await task.prompt({
+                        type: 'MultiSelect',
+                        message: 'Please pick plugins you want to enable!',
+                        choices: missingPluginsFromAllowPlugins.map((p) => ({
+                            name: p
+                        }))
+                    })
 
-                const disabledPlugins = composerPlugins.filter((p) => !userEnabledPlugins.includes(p));
+                    const disabledPlugins = composerPlugins.filter(
+                        (p) => !userEnabledPlugins.includes(p)
+                    )
 
-                composerJsonData.config = {
-                    ...(composerJsonData.config || {}),
-                    'allow-plugins': {
-                        ...allowPlugins,
-                        ...disabledPlugins.reduce((acc, val) => ({ ...acc, [val]: false }), {}),
-                        ...userEnabledPlugins.reduce((acc, val) => ({ ...acc, [val]: true }), {})
+                    composerJsonData.config = {
+                        ...(composerJsonData.config || {}),
+                        'allow-plugins': {
+                            ...allowPlugins,
+                            ...disabledPlugins.reduce(
+                                (acc, val) => ({ ...acc, [val]: false }),
+                                {}
+                            ),
+                            ...userEnabledPlugins.reduce(
+                                (acc, val) => ({ ...acc, [val]: true }),
+                                {}
+                            )
+                        }
                     }
-                };
 
-                await fs.promises.writeFile(composerJsonPath, JSON.stringify(composerJsonData, null, 4), {
-                    encoding: 'utf-8'
-                });
+                    await fs.promises.writeFile(
+                        composerJsonPath,
+                        JSON.stringify(composerJsonData, null, 4),
+                        {
+                            encoding: 'utf-8'
+                        }
+                    )
 
-                break;
-            }
-            case 'skip this step': {
-                task.skip();
-                break;
-            }
-            default: {
-                //
-            }
+                    break
+                }
+                case 'skip this step': {
+                    task.skip()
+                    break
+                }
+                default: {
+                    //
+                }
             }
         }
     }
-});
+})
 
-module.exports = enableMagentoComposerPlugins;
+module.exports = enableMagentoComposerPlugins

@@ -1,5 +1,5 @@
-const path = require('path');
-const pathExists = require('./path-exists');
+const path = require('path')
+const pathExists = require('./path-exists')
 
 /**
  * Check file system structure to detect possible unfinished installation
@@ -9,25 +9,31 @@ const pathExists = require('./path-exists');
  */
 const matchFilesystem = async (cwd, structure) => {
     if (Array.isArray(structure)) {
-        const ok = (await Promise.all(structure.map((str) => pathExists(path.join(cwd, str)))))
-            .every((value) => value === true);
+        const ok = (
+            await Promise.all(
+                structure.map((str) => pathExists(path.join(cwd, str)))
+            )
+        ).every((value) => value === true)
 
-        return ok;
+        return ok
     }
     if (typeof structure === 'object') {
-        const ok = (await Promise.all(Object.entries(structure).map(([key, value]) => {
-            if (typeof value === 'boolean') {
-                return pathExists(path.join(cwd, key));
-            }
+        const ok = (
+            await Promise.all(
+                Object.entries(structure).map(([key, value]) => {
+                    if (typeof value === 'boolean') {
+                        return pathExists(path.join(cwd, key))
+                    }
 
-            return matchFilesystem(path.join(cwd, key), value);
-        })))
-            .every((value) => value === true);
+                    return matchFilesystem(path.join(cwd, key), value)
+                })
+            )
+        ).every((value) => value === true)
 
-        return ok;
+        return ok
     }
 
-    return pathExists(path.join(cwd, structure));
-};
+    return pathExists(path.join(cwd, structure))
+}
 
-module.exports = matchFilesystem;
+module.exports = matchFilesystem
