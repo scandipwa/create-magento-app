@@ -187,5 +187,7 @@ key_buffer              = 16M
 [mariadb]
 skip-host-cache
 skip-name-resolve
+optimizer_switch='rowid_filter=off'
+optimizer_use_condition_selectivity=1
 
 !includedir /etc/mysql/conf.d/
