@@ -46,10 +46,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             name: `${prefix}_maildev-data`
         },
         composer_cache: {
-            name: 'composer_cache-data',
-            opt: {
-                mode: 'z'
-            }
+            name: 'composer_cache-data'
         }
     }
 
