@@ -17,7 +17,6 @@ const dockerSettingsJsonPath = path.join(
  */
 const checkDockerPerformance = () => ({
     title: 'Checking Docker Performance',
-
     skip: async (ctx) =>
         ctx.platform !== 'darwin' ||
         (ctx.platform === 'darwin' &&
