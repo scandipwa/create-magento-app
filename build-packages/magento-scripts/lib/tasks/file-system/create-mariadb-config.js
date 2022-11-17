@@ -18,7 +18,14 @@ const createMariaDBConfig = () => ({
                     ctx.config.baseConfig.templateDir,
                     'mariadb.template.cnf'
                 ),
-                overwrite: true
+                overwrite: true,
+                templateArgs: {
+                    config: {
+                        useOptimizerSwitch:
+                            ctx.config.overridenConfiguration.configuration
+                                .mariadb.useOptimizerSwitch
+                    }
+                }
             })
         } catch (e) {
             throw new UnknownError(

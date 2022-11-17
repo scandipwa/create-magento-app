@@ -187,7 +187,13 @@ key_buffer              = 16M
 [mariadb]
 skip-host-cache
 skip-name-resolve
+<% if (it.config.useOptimizerSwitch) { %>
+<% if (typeof it.config.useOptimizerSwitch === 'string') { %>
+optimizer_switch='<%= it.config.useOptimizerSwitch %>'
+<% } else { %>
 optimizer_switch='rowid_filter=off'
+<% } %>
+<% } %>
 optimizer_use_condition_selectivity=1
 
 !includedir /etc/mysql/conf.d/

@@ -16,6 +16,15 @@ export interface ServiceWithImage {
     image: string
 }
 
+export interface MariaDBConfiguration extends ServiceWithImage {
+    /**
+     * Use MariaDB [optimizer-switch](https://mariadb.com/kb/en/optimizer-switch/) configuration.
+     *
+     * Allows to be boolean or custom value that will be set in the template
+     */
+    useOptimizerSwitch?: boolean | string
+}
+
 export interface SSLTerminatorConfiguration extends ServiceWithImage {
     /**
      * Configuration file location
@@ -230,7 +239,7 @@ export interface CMAConfiguration {
         /**
          * MariaDB configuration
          */
-        mariadb: ServiceWithImage
+        mariadb: MariaDBConfiguration
 
         /**
          * ElasticSearch configuration
