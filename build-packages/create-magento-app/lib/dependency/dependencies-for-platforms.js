@@ -11,8 +11,8 @@ const dependenciesForPlatforms = {
     },
     Fedora: {
         dependencies: ['cmake'],
-        installCommand: (deps) => `sudo yum install ${deps} -y`,
-        packageManager: 'yum'
+        installCommand: (deps) => `sudo dnf install ${deps} -y`,
+        packageManager: 'dnf'
     },
     CentOS: {
         dependencies: ['cmake'],

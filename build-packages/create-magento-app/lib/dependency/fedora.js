@@ -3,7 +3,7 @@ const execAsync = require('../exec-async')
 const installDependencies = require('./install-dependencies')
 
 const fedoraDependenciesCheck = async () => {
-    const installedDependencies = (await execAsync('yum list installed'))
+    const installedDependencies = (await execAsync('dnf list installed'))
         .split('\n')
         .filter((pkg) => !pkg.toLowerCase().includes('installed packages'))
         .map((pkg) => pkg.match(/^(\S+)/i))
