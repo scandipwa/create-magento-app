@@ -5,7 +5,7 @@ const {
 } = require('../magento/required-php-extensions')
 const { php81 } = require('../services/php/versions')
 const { sslTerminator } = require('../services/ssl-terminator')
-const { varnish71, varnish70 } = require('../services/varnish')
+const { varnish71 } = require('../services/varnish')
 const { repo } = require('../services/php/base-repo')
 const { nginx118 } = require('../services/nginx/versions')
 const { composer2 } = require('../services/composer/versions')
@@ -35,7 +35,7 @@ module.exports = ({ templateDir }) => ({
         mariadb: mariadb106(),
         elasticsearch: elasticsearch840(),
         composer: composer2(),
-        varnish: varnish70({ templateDir }),
+        varnish: varnish71({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
     },
