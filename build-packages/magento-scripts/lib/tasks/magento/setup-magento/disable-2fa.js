@@ -13,6 +13,7 @@ module.exports = () => ({
             modules.Magento_TwoFactorAuth !== undefined &&
             modules.Magento_TwoFactorAuth !== 0
         ) {
+            await runMagentoCommand(ctx, 'module:disable Magento_AdminAdobeImsTwoFactorAuth')
             await runMagentoCommand(ctx, 'module:disable Magento_TwoFactorAuth')
 
             return
