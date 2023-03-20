@@ -3,7 +3,7 @@
     "name": "create-magento-app",
     "scripts": {
         "check-types": "tsc --noemit --project ./build-packages/magento-scripts",
-        "lint-eslint": "eslint ./build-packages --cache --no-error-on-unmatched-pattern --ext .js",
+        "lint-eslint": "eslint ./build-packages --cache --no-error-on-unmatched-pattern --ext .js --fix",
         "lint": "npm run lint-eslint",
         "publish": "lerna publish --exact --no-private",
         "publish:alpha": "lerna publish --preid alpha --no-private --dist-tag alpha",
