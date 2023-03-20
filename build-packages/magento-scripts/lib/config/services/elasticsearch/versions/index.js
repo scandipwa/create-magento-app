@@ -6,6 +6,7 @@ const elasticsearch710 = require('./elasticsearch-7.10')
 const elasticsearch712 = require('./elasticsearch-7.12')
 const elasticsearch716 = require('./elasticsearch-7.16')
 const elasticsearch717 = require('./elasticsearch-7.17')
+const elasticsearch840 = require('./elasticsearch-8.40')
 
 module.exports = {
     elasticsearch68,
@@ -15,5 +16,6 @@ module.exports = {
     elasticsearch710,
     elasticsearch712,
     elasticsearch716,
-    elasticsearch717
+    elasticsearch717,
+    elasticsearch840
 }
