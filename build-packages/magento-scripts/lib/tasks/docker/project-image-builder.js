@@ -14,7 +14,6 @@ const { imageApi } = require('./image')
 const getEnabledExtensionsFromImage = async (imageWithTag) => {
     const output = await runContainerImage(
         imageWithTag,
-
         `php -r 'foreach (get_loaded_extensions() as $extension) echo "$extension:" . phpversion($extension) . "\n";'`
     )
 

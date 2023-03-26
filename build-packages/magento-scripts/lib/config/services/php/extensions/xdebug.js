@@ -10,5 +10,5 @@ module.exports = {
 && pecl install xdebug${version ? `-${version}` : ''} \
 && docker-php-ext-enable xdebug \
 && apk del -f .build-deps`,
-    version: '3.1.5'
+    version: '3.1.6'
 }

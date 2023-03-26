@@ -49,10 +49,34 @@ const importDump = () => ({
 
                         return tableCount !== 0 || !isFsMatching
                     },
-                    task: (subCtx, subTask) =>
-                        subTask.newListr(
+                    task: async (subCtx, subTask) => {
+                        const doYouWantToRunSetupOnEmptyDB =
+                            await subTask.prompt({
+                                type: 'Select',
+                                message: `We detected that Magento is not installed in database. Do you want to install Magento in database BEFORE importing database dump?`,
+                                choices: [
+                                    {
+                                        name: 'try-install',
+                                        message:
+                                            'Try installing Magento before importing database'
+                                    },
+                                    {
+                                        name: 'skip',
+                                        message:
+                                            'Skip installing Magento and import database dump right away!'
+                                    }
+                                ]
+                            })
+
+                        if (doYouWantToRunSetupOnEmptyDB === 'skip') {
+                            subTask.skip()
+                            return
+                        }
+
+                        return subTask.newListr(
                             setupMagento({ onlyInstallMagento: true })
                         )
+                    }
                 },
                 dumpThemeConfig(),
                 importDumpToDatabase(),
