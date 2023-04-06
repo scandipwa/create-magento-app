@@ -3,12 +3,9 @@
         "!json"
     ],
     "cSpell.words": [
-        "CRACO",
-        "Listr",
-        "Magento",
-        "REBEM",
-        "Scandiweb",
+        "buildx",
         "bzip",
+        "CRACO",
         "freetype",
         "gtid",
         "libiconv",
@@ -16,11 +13,16 @@
         "libsodium",
         "libxml",
         "libzip",
+        "Listr",
+        "Magento",
         "mysqldump",
         "overriden",
         "portscanner",
+        "REBEM",
         "scandipwa",
-        "tablespaces"
+        "Scandiweb",
+        "tablespaces",
+        "xdebug"
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true

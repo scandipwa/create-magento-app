@@ -274,9 +274,7 @@ export interface CMAConfiguration {
         /**
          * @deprecated MySQL configuration
          */
-        mysql: {
-            version: string
-        }
+        mysql: ServiceWithImage
     }
     /**
      * Magento configuration

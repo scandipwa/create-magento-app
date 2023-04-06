@@ -4,6 +4,7 @@ const magento24RequiredPHPExtensions = [
     'curl',
     'dom',
     'fileinfo',
+    'filter',
     'gd',
     'hash',
     'iconv',
@@ -22,6 +23,7 @@ const magento24RequiredPHPExtensions = [
     'xmlwriter',
     'xsl',
     'zip',
+    'zlib',
     'libxml',
     'openssl'
 ]

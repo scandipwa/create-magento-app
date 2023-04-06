@@ -3,8 +3,9 @@
 This folder contains images used for `magento-scripts` V2 projects.
 
 ### Requirements
+[Docker Desktop](https://docs.docker.com/desktop/) is installed and running. On Linux set the docker context to use Docker Desktop (`docker context use desktop-linux`).
 
-[Docker Desktop](https://docs.docker.com/desktop/) installed and running. On linux set docker context to use Docker Desktop (`docker context use desktop-linux`).
+For MacOS: Run command to create a builder for docker: `docker buildx create --platform linux/arm64,linux/arm/v8`
 
 ### Pulling Images
 
@@ -34,9 +35,43 @@ To also pull PHP images with XDebug run the following command:
 make pull-all-php-debug
 ```
 
+##### 8.2 version
+
+To pull PHP 8.2 images with and without XDebug run the following command:
+```bash
+make pull-php-82-all
+```
+
+To pull PHP 8.2 image without XDebug run the following command:
+```bash
+make pull-php-82 && make pull-php-82-magento-24
+```
+
+To also pull PHP 8.2 image with XDebug run the following command:
+```bash
+make pull-php-82-debug && make pull-php-82-magento-24-debug
+```
+
+##### 8.2 version with extensions for Magento 2.4
+
+To pull PHP 8.2 image with extensions for Magento 2.4 with and without XDebug run the following command:
+```bash
+make pull-php-82-magento-24 && make pull-php-82-magento-24-debug
+```
+
+To pull PHP 8.2 image with extensions for Magento 2.4 without XDebug run the following command:
+```bash
+make pull-php-82-magento-24
+```
+
+To also pull PHP 8.2 image with extensions for Magento 2.4 with XDebug run the following command:
+```bash
+make pull-php-82-magento-24-debug
+```
+
 ##### 8.1 version
 
-To pull PHP 8.1 image with and without XDebug run the following command:
+To pull PHP 8.1 images with and without XDebug run the following command:
 ```bash
 make pull-php-81-all
 ```
@@ -70,7 +105,7 @@ make pull-php-81-magento-24-debug
 
 ##### 7.4 version
 
-To pull PHP 7.4 image with and without XDebug run the following command:
+To pull PHP 7.4 images with and without XDebug run the following command:
 ```bash
 make pull-php-74-all
 ```
@@ -121,7 +156,7 @@ make pull-php-74-magento-23-debug
 
 ##### 7.3 version
 
-To pull PHP 7.3 image with and without XDebug run the following command:
+To pull PHP 7.3 images with and without XDebug run the following command:
 ```bash
 make pull-php-73-all
 ```
@@ -155,7 +190,7 @@ make pull-php-73-magento-23-debug
 
 ##### 7.2 version
 
-To pull PHP 7.2 image with and without XDebug run the following command:
+To pull PHP 7.2 images with and without XDebug run the following command:
 ```bash
 make pull-php-72-all
 ```
@@ -198,7 +233,7 @@ make pull-elasticsearch
 
 #### All Images
 
-To build all images (ElasticSearch, PHP, PHP with XDebug, PHP with magento extensions) run the following command:
+To build all images (ElasticSearch, PHP, PHP with XDebug, PHP with Magento extensions) run the following command:
 ```bash
 make build-all
 ```
@@ -220,6 +255,40 @@ make build-all-php
 To also build PHP images with XDebug run the following command:
 ```bash
 make build-all-php-debug
+```
+
+##### 8.2 version
+
+To build PHP 8.2 image with and without XDebug run the following command:
+```bash
+make build-php-82-all
+```
+
+To build PHP 8.2 image without XDebug run the following command:
+```bash
+make build-php-82 && make build-php-82-magento-24
+```
+
+To also build PHP 8.2 image with XDebug run the following command:
+```bash
+make build-php-82-debug && make build-php-82-magento-24-debug
+```
+
+##### 8.2 version with extensions for Magento 2.4
+
+To build PHP 8.2 image with extensions for Magento 2.4 with and without XDebug run the following command:
+```bash
+make build-php-82-magento-24 && make build-php-82-magento-24-debug
+```
+
+To build PHP 8.2 image with extensions for Magento 2.4 without XDebug run the following command:
+```bash
+make build-php-82-magento-24
+```
+
+To also build PHP 8.2 image with extensions for Magento 2.4 with XDebug run the following command:
+```bash
+make build-php-82-magento-24-debug
 ```
 
 ##### 8.1 version
@@ -403,6 +472,40 @@ To also build PHP images with XDebug run the following command:
 make buildx-all-php-debug
 ```
 
+##### 8.2 version
+
+To build PHP 8.2 image with and without XDebug run the following command:
+```bash
+make buildx-php-82-all
+```
+
+To build PHP 8.2 image without XDebug run the following command:
+```bash
+make buildx-php-82 && make buildx-php-82-magento-24
+```
+
+To also build PHP 8.2 image with XDebug run the following command:
+```bash
+make buildx-php-82-debug && make buildx-php-82-magento-24-debug
+```
+
+##### 8.2 version with extensions for Magento 2.4
+
+To build PHP 8.2 image with extensions for Magento 2.4 with and without XDebug run the following command:
+```bash
+make buildx-php-82-magento-24 && make buildx-php-82-magento-24-debug
+```
+
+To build PHP 8.2 image with extensions for Magento 2.4 without XDebug run the following command:
+```bash
+make buildx-php-82-magento-24
+```
+
+To also build PHP 8.2 image with extensions for Magento 2.4 with XDebug run the following command:
+```bash
+make buildx-php-82-magento-24-debug
+```
+
 ##### 8.1 version
 
 To build PHP 8.1 image with and without XDebug run the following command:
@@ -556,7 +659,7 @@ To also build PHP 7.2 image with extensions for Magento 2.3 with XDebug run the 
 make buildx-php-72-magento-23-debug
 ```
 
-### Build images for multiple CPU architectures (amd64, arm64) and push to GitHub Docker registry
+### Build images for multiple CPU architectures (amd64, arm64) and push them to the GitHub Docker registry
 
 #### All Images
 
@@ -582,6 +685,40 @@ make buildxpush-all-php
 To also build PHP images with XDebug run the following command:
 ```bash
 make buildxpush-all-php-debug
+```
+
+##### 8.2 version
+
+To build PHP 8.2 image with and without XDebug run the following command:
+```bash
+make buildxpush-php-82-all
+```
+
+To build PHP 8.2 image without XDebug run the following command:
+```bash
+make buildxpush-php-82 && make buildxpush-php-82-magento-24
+```
+
+To also build PHP 8.2 image with XDebug run the following command:
+```bash
+make buildxpush-php-82-debug && make buildxpush-php-82-magento-24-debug
+```
+
+##### 8.2 version with extensions for Magento 2.4
+
+To build PHP 8.2 image with extensions for Magento 2.4 with and without XDebug run the following command:
+```bash
+make buildxpush-php-82-magento-24 && make buildxpush-php-82-magento-24-debug
+```
+
+To build PHP 8.2 image with extensions for Magento 2.4 without XDebug run the following command:
+```bash
+make buildxpush-php-82-magento-24
+```
+
+To also build PHP 8.2 image with extensions for Magento 2.4 with XDebug run the following command:
+```bash
+make buildxpush-php-82-magento-24-debug
 ```
 
 ##### 8.1 version

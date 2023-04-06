@@ -9,12 +9,25 @@ module.exports = () => ({
     task: async (ctx, task) => {
         const { modules } = await configPhpToJson(ctx)
 
-        if (
+        const isMagentoTFAEnabled =
             modules.Magento_TwoFactorAuth !== undefined &&
             modules.Magento_TwoFactorAuth !== 0
-        ) {
-            await runMagentoCommand(ctx, 'module:disable Magento_TwoFactorAuth')
 
+        const isMagentoAdminAdobeImsTwoFactorAuthEnabled =
+            modules.Magento_AdminAdobeImsTwoFactorAuth !== undefined &&
+            modules.Magento_AdminAdobeImsTwoFactorAuth !== 0
+
+        if (isMagentoAdminAdobeImsTwoFactorAuthEnabled) {
+            await runMagentoCommand(
+                ctx,
+                'module:disable Magento_AdminAdobeImsTwoFactorAuth'
+            )
+        }
+        if (isMagentoTFAEnabled) {
+            await runMagentoCommand(ctx, 'module:disable Magento_TwoFactorAuth')
+        }
+
+        if (isMagentoAdminAdobeImsTwoFactorAuthEnabled || isMagentoTFAEnabled) {
             return
         }
 

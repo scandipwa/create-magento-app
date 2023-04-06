@@ -439,7 +439,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 command: `/bin/bash -c "varnishd -a :${
                     isDockerDesktop ? 80 : ports.varnish
                 } -t 600 -f /etc/varnish/default.vcl -s Cache=malloc,2048m -s Transient=malloc,512m -p http_resp_hdr_len=70000 -p http_resp_size=100000 && varnishlog"`,
-                tmpfs: ['/var/lib/varnish:exec'],
+                tmpfs: ['/var/lib/varnish/varnishd:exec'],
                 description: `Varnish HealthCheck status: ${logger.style.command(
                     varnish.healthCheck ? 'enabled' : 'disabled'
                 )}`
