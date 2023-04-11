@@ -49,6 +49,11 @@ const addExtensionToBuilder =
             runCommand += ` ${await Promise.resolve(
                 command({ ...extensionInstructionsWithoutCommand, ctx })
             )}`
+        } else if (typeof command === 'function') {
+            runCommand += ` ${command({
+                ...extensionInstructionsWithoutCommand,
+                ctx
+            })}`
         } else {
             runCommand += ` docker-php-ext-install ${
                 extensionInstructionsWithoutCommand.name || extensionName
