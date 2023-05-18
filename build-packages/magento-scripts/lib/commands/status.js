@@ -9,6 +9,7 @@ const { statusContainers } = require('../tasks/docker/containers')
 const getProjectConfiguration = require('../config/get-project-configuration')
 const checkConfigurationFile = require('../config/check-configuration-file')
 const checkPHPVersion = require('../tasks/requirements/php-version')
+const checkElasticSearchVersion = require('../tasks/requirements/elasticsearch-version')
 const { getComposerVersionTask } = require('../tasks/composer')
 const { systemApi } = require('../tasks/docker/system')
 
@@ -35,6 +36,7 @@ module.exports = (yargs) => {
                                 [
                                     checkPHPVersion(),
                                     getComposerVersionTask(),
+                                    checkElasticSearchVersion(),
                                     {
                                         title: 'Retrieving Docker System data',
                                         task: async (ctx) => {

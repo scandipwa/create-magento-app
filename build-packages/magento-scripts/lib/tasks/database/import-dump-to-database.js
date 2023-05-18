@@ -68,11 +68,12 @@ Note that you will lose your existing database!`,
             choices: [
                 {
                     name: 'delete',
-                    message: 'YES I AM SURE I WANT TO DELETE magento DATABASE!'
+                    message: 'YES I WANT TO DELETE magento DATABASE!'
                 },
                 {
                     name: 'skip',
-                    message: 'Skip this step'
+                    message:
+                        "NO I DON'T wANT TO DELETE magento DATABASE! (Skip this step)"
                 }
             ]
         })

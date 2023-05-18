@@ -23,6 +23,7 @@ export interface ListrContext {
     magentoVersion: string
     composerVersion: string
     phpVersion: string
+    elasticSearchVersion: string
     port?: number
     ports: {
         app: number

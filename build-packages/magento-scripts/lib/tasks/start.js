@@ -34,6 +34,7 @@ const {
 } = require('../util/instance-metadata')
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish')
 const checkPHPVersion = require('./requirements/php-version')
+const checkElasticSearchVersion = require('./requirements/elasticsearch-version')
 const volumes = require('./docker/volume/tasks')
 const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb')
 const { cmaGlobalConfig } = require('../config/cma-config')
@@ -125,16 +126,24 @@ const configureProject = () => ({
         task.newListr([
             convertMySQLDatabaseToMariaDB(),
             {
-                task: (ctx, task) =>
-                    task.newListr(
+                task: (ctx, subTask) =>
+                    subTask.newListr(
                         [pullImages(), dockerNetwork.tasks.createNetwork()],
                         { concurrent: true }
                     )
             },
-            checkPHPVersion(),
             {
-                task: (ctx, task) =>
-                    task.newListr(
+                task: (ctx, subTask) =>
+                    subTask.newListr(
+                        [checkPHPVersion(), checkElasticSearchVersion()],
+                        {
+                            concurrent: true
+                        }
+                    )
+            },
+            {
+                task: (ctx, subTask) =>
+                    subTask.newListr(
                         [buildProjectImage(), buildDebugProjectImage()],
                         {
                             concurrent: true
