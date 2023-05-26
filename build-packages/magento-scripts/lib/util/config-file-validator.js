@@ -55,7 +55,7 @@ const sslSchema = Joi.object({
     enabled: Joi.bool().optional(),
     ssl_certificate: Joi.string().optional(),
     ssl_certificate_key: Joi.string().optional(),
-    forwardedProto: Joi.bool().optional
+    forwardedProto: Joi.bool().optional()
 })
 
 /**
