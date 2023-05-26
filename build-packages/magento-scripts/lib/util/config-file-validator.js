@@ -52,9 +52,10 @@ const magentoSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').SSLConfiguration>}
  */
 const sslSchema = Joi.object({
-    enabled: Joi.bool().required(),
-    ssl_certificate: Joi.string().required(),
-    ssl_certificate_key: Joi.string().required()
+    enabled: Joi.bool().optional(),
+    ssl_certificate: Joi.string().optional(),
+    ssl_certificate_key: Joi.string().optional(),
+    forwardedProto: Joi.bool().optional
 })
 
 /**

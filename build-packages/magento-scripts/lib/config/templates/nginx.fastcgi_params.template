@@ -10,7 +10,7 @@ fastcgi_param  DOCUMENT_URI       $document_uri;
 fastcgi_param  DOCUMENT_ROOT      $document_root;
 fastcgi_param  SERVER_PROTOCOL    $server_protocol;
 fastcgi_param  REQUEST_SCHEME     $scheme;
-<% if (it.isNgrok) { %>
+<% if (it.isForwardedProto) { %>
 fastcgi_param  HTTPS              on;
 <% } else { %>
 fastcgi_param  HTTPS              $https if_not_empty;

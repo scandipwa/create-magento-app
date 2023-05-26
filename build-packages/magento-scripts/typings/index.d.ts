@@ -219,6 +219,11 @@ export interface SSLConfiguration {
      * `./ssl_certificate-key.pem`
      */
     ssl_certificate_key?: string
+
+    /**
+     * Enables fast-cgi_param HTTPS in nginx.conf for local-instance share outside local network
+     */
+    forwardedProto: boolean
 }
 
 export interface CMAConfiguration {

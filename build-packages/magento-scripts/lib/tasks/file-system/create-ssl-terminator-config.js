@@ -111,7 +111,7 @@ const createSSLTerminatorConfig = () => ({
                 ),
                 overwrite: true,
                 templateArgs: {
-                    isNgrok: host.endsWith('ngrok.io')
+                    isForwardedProto: ssl.forwardedProto
                 }
             })
         } catch (e) {
