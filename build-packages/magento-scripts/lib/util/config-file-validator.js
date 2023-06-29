@@ -1,5 +1,4 @@
 const Joi = require('joi')
-const semver = require('semver')
 const KnownError = require('../errors/known-error')
 const pathExistsSync = require('./path-exists-sync')
 
@@ -16,14 +15,27 @@ const fileExistsValidator = (value) => {
     return undefined
 }
 
+const composerVersionRegex =
+    /^latest-(\d+\.\d+\.?(x|\d)+?)$|^latest-stable$|^latest-preview$|^latest-(\d+\.x)$|^(\d+\.\d+\.\d+?)$/gi
+
 /**
  * @type {Joi.CustomValidator<string>}
  */
 const versionValidator = (value, helpers) => {
-    const isValid = semver.valid(value)
+    const isValidComposerVersion = composerVersionRegex.test(value)
 
-    if (!isValid) {
-        return helpers.error('any.invalid')
+    if (!isValidComposerVersion) {
+        return helpers.error('any.invalid', {
+            label: `Not a valid composer version!
+Allowed patterns:
+- latest-stable
+- latest-preview
+- latest-2.2.x
+- latest-2.x
+- latest-1.x
+- 2.2.21
+`
+        })
     }
 
     return undefined
