@@ -89,7 +89,12 @@ export interface ComposerConfiguration {
      *
      * @url https://getcomposer.org/download/
      */
-    version: string
+    version: 'latest-stable'
+    | 'latest-preview'
+    | 'latest-1.x'
+    | 'latest-2.x'
+    | 'latest-2.2.x'
+    | ''
 
     /**
      *  Composer global plugins that will be added to Docker image
