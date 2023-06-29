@@ -987,6 +987,11 @@
   dependencies:
     "@octokit/openapi-types" "^12.11.0"
 
+"@scandipwa/magento-scripts-php-extensions@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@scandipwa/magento-scripts-php-extensions/-/magento-scripts-php-extensions-1.0.3.tgz#ca1d5f3ef2a6a08ce75664b4ee71bac60db8d8ff"
+  integrity sha512-2hj8lblMunx7UiFBWuxj4Iix9TorqOv3K7bnlPi0lyDSqD0t8z21e/dOW7KgQpVHYtWGmicXZmMajMrnka47wA==
+
 "@scandipwa/scandipwa-dev-utils@0.1.16":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@scandipwa/scandipwa-dev-utils/-/scandipwa-dev-utils-0.1.16.tgz#fe8ee987edb4f7c28146b4d5a5b3beadceae86e8"
