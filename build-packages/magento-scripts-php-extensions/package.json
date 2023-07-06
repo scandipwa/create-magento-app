@@ -5,7 +5,7 @@
     "repository": "github:scandipwa/create-magento-app",
     "main": "./index.js",
     "license": "OSL-3.0",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "os": [
         "darwin",
         "linux"
