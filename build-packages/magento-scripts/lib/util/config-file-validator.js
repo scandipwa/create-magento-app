@@ -16,7 +16,7 @@ const fileExistsValidator = (value) => {
 }
 
 const composerVersionRegex =
-    /^latest-(\d+\.\d+\.?(x|\d)+?)$|^latest-stable$|^latest-preview$|^latest-(\d+\.x)$|^(\d+\.\d+\.\d+?)$/gi
+    /^latest-(\d+\.\d+\.?(x|\d)+?)$|^latest-stable$|^latest-preview$|^latest-(\d+\.x)$|^(\d+\.\d+\.\d+?)$/i
 
 /**
  * @type {Joi.CustomValidator<string>}
