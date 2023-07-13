@@ -162,6 +162,23 @@ const composerConfigurationSchema = Joi.object({
 })
 
 /**
+ * @type {Joi.ObjectSchema<import('../../typings').NewRelicConfiguration>}
+ */
+const newRelicConfigurationSchema = Joi.object({
+    enabled: Joi.boolean().optional(),
+    agentVersion: Joi.string().optional(),
+    licenseKey: Joi.string().optional()
+}).custom((d, helpers) => {
+    if (d.enabled && !d.licenseKey) {
+        return helpers.error(
+            'when newRelic is enabled license key is required!'
+        )
+    }
+
+    return true
+})
+
+/**
  * @type {Joi.ObjectSchema<import('../../typings').CMAConfiguration['configuration']>}
  */
 const configurationSchema = Joi.object({
@@ -173,7 +190,8 @@ const configurationSchema = Joi.object({
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),
     sslTerminator: nginxConfigurationSchema.optional(),
-    maildev: serviceConfigurationSchema.optional()
+    maildev: serviceConfigurationSchema.optional(),
+    newRelic: newRelicConfigurationSchema.optional()
 })
 
 /**

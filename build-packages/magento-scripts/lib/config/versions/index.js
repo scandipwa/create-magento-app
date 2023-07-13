@@ -4,7 +4,13 @@ const semver = require('semver')
 const { deepmerge } = require('../../util/deepmerge')
 
 const defaultCMAConfig = {
-    prefix: true
+    prefix: true,
+    configuration: {
+        newRelic: {
+            enabled: false,
+            agentVersion: '10.2.0.314'
+        }
+    }
 }
 
 const magentoVersions = fs

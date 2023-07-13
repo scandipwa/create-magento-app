@@ -226,6 +226,23 @@ export interface SSLConfiguration {
     ssl_certificate_key?: string
 }
 
+export interface NewRelicConfiguration {
+    /**
+     * Enables or disables New Relic in application
+     */
+    enabled: boolean
+
+    /**
+     * New Relic Agent version
+     */
+    agentVersion?: string
+
+    /**
+     * New Relic license key
+     */
+    licenseKey?: string
+}
+
 export interface CMAConfiguration {
     /**
      * Services configuration
@@ -270,6 +287,11 @@ export interface CMAConfiguration {
          * SSL Terminator configuration
          */
         sslTerminator: SSLTerminatorConfiguration
+
+        /**
+         * New Relic configuration
+         */
+        newRelic: NewRelicConfiguration
 
         /**
          * MailDev configuration

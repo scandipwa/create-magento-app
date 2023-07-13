@@ -17,7 +17,7 @@ const defaultMagentoUser = require('../tasks/database/default-magento-user')
  */
 module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const { configuration, ssl, host } = overridenConfiguration
-    const { nginx, redis, elasticsearch, mariadb, varnish, maildev } =
+    const { nginx, redis, elasticsearch, mariadb, varnish, maildev, newRelic } =
         configuration
 
     const php = getPhpConfig(overridenConfiguration, baseConfig)
@@ -443,6 +443,16 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 description: `Varnish HealthCheck status: ${logger.style.command(
                     varnish.healthCheck ? 'enabled' : 'disabled'
                 )}`
+            }
+        }
+
+        if (newRelic.enabled) {
+            dockerConfig.newRelicPHPDaemon = {
+                _: 'New Relic PHP daemon',
+                ports: [],
+                name: `${prefix}_newrelic-php-daemon`,
+                network: isDockerDesktop ? network.name : 'host',
+                image: 'newrelic/php-daemon'
             }
         }
 
