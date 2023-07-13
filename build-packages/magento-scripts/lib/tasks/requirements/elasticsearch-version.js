@@ -7,10 +7,19 @@ const { runContainerImage } = require('../../util/run-container-image')
 const checkElasticSearchVersion = () => ({
     title: 'Checking container ElasticSearch version',
     task: async (ctx, task) => {
-        const elasticSearchVersionResponse = await runContainerImage(
-            ctx.config.overridenConfiguration.configuration.elasticsearch.image,
-            'elasticsearch --version'
-        )
+        const { elasticsearch } =
+            ctx.config.overridenConfiguration.configuration
+
+        let elasticSearchVersionResponse
+
+        try {
+            elasticSearchVersionResponse = await runContainerImage(
+                elasticsearch.image,
+                'elasticsearch --version'
+            )
+        } catch (e) {
+            elasticSearchVersionResponse = e.message
+        }
 
         const elasticSearchVersionResponseResult =
             elasticSearchVersionResponse.match(/Version:\s(\d+\.\d+\.\d+)/i)
@@ -28,7 +37,8 @@ const checkElasticSearchVersion = () => ({
                 `Cannot retrieve ElasticSearch Version!\n\n${elasticSearchVersionResponse}`
             )
         }
-    }
+    },
+    exitOnError: false
 })
 
 module.exports = checkElasticSearchVersion
