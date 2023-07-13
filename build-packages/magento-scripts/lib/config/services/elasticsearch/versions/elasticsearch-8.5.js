@@ -5,7 +5,10 @@ const defaultEnv = require('../default-es-env')
  */
 const elasticsearch85 = () => ({
     image: 'elasticsearch:8.5.3',
-    env: defaultEnv
+    env: {
+        ...defaultEnv,
+        'indices.id_field_data.enabled': true
+    }
 })
 
 module.exports = elasticsearch85
