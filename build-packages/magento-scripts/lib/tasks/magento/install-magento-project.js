@@ -195,7 +195,7 @@ const installMagentoProject = () => ({
         }
 
         task.title = `Installing Magento ${magentoPackageVersion}`
-        task.output = 'Creating Magento project'
+        task.output = `Creating Magento ${magentoPackageVersion} project`
 
         if (!(await pathExists(path.join(process.cwd(), 'composer.json')))) {
             await createMagentoProject(ctx, task, {
