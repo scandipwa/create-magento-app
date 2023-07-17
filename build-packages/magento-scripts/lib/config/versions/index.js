@@ -8,7 +8,7 @@ const defaultCMAConfig = {
     configuration: {
         newRelic: {
             enabled: false,
-            agentVersion: '10.2.0.314'
+            agentVersion: '10.11.0.3'
         }
     }
 }
