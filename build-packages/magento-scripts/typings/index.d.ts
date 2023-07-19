@@ -224,6 +224,15 @@ export interface SSLConfiguration {
      * `./ssl_certificate-key.pem`
      */
     ssl_certificate_key?: string
+
+    /**
+     * SSL external provider configuration
+     *
+     * Set to `true` if you don't need locally provided SSL certificates
+     *
+     * @default false
+     */
+    ssl_external_provider?: boolean
 }
 
 export interface NewRelicConfiguration {

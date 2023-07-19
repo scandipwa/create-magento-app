@@ -25,7 +25,7 @@ const createSSLTerminatorConfig = () => ({
             host
         } = overridenConfiguration
 
-        if (ssl.enabled) {
+        if (ssl.enabled && !ssl.ssl_external_provider) {
             if (!(await pathExists(ssl.ssl_certificate))) {
                 throw new KnownError('ssl.ssl_certificate file does not exist!')
             }
@@ -111,7 +111,7 @@ const createSSLTerminatorConfig = () => ({
                 ),
                 overwrite: true,
                 templateArgs: {
-                    isNgrok: host.endsWith('ngrok.io')
+                    sslEnabled: ssl.enabled
                 }
             })
         } catch (e) {
