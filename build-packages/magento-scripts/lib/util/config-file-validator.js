@@ -98,7 +98,10 @@ const phpConfigurationSchema = Joi.object({
     fpmConfigTemplate: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
     debugTemplate: Joi.string().optional().custom(fileExistsValidator),
-    extensions: phpExtensionConfiguration.optional()
+    extensions: phpExtensionConfiguration.optional(),
+    env: Joi.object()
+        .pattern(Joi.string(), [Joi.string(), Joi.number()])
+        .optional()
 })
 
 /**

@@ -202,6 +202,11 @@ export interface PHPConfiguration {
      * Extensions for PHP
      */
     extensions: PHPExtensions
+
+    /**
+     * Environmental variables used for PHP container
+     */
+    env: Record<string, unknown>
 }
 export interface SSLConfiguration {
     /**
