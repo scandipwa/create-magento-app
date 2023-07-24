@@ -145,6 +145,11 @@ export interface ContainerRunOptions {
     network?: string
 
     expose?: (string | number)[]
+
+    /**
+     * Memory option [docs](https://docs.docker.com/engine/reference/commandline/run/#memory)
+     */
+    memory?: string
 }
 
 export function run<T>(

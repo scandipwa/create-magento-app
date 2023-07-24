@@ -25,7 +25,8 @@ const runCommand = (options) => {
         detach = true,
         rm = false,
         tty = false,
-        user
+        user,
+        memory
     } = options
 
     const detachArg = (detach && '-d') || ''
@@ -59,6 +60,7 @@ const runCommand = (options) => {
         (tmpfs.length > 0 && tmpfs.map((t) => `--tmpfs=${t}`)) || ''
     const userArg = (user && `--user=${user}`) || ''
     const addHostArg = (addHost && `--add-host=${addHost}`) || ''
+    const memoryArg = (memory && `--memory=${memory}`) || ''
 
     const dockerCommand = [
         'docker',
@@ -80,6 +82,7 @@ const runCommand = (options) => {
         tmpfsArg,
         userArg,
         addHostArg,
+        memoryArg,
         image,
         command
     ]
