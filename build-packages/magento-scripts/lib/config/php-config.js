@@ -18,7 +18,8 @@ module.exports = (overridenConfiguration, baseConfig) => {
         debugTemplatePath: php.debugTemplate,
         fpmTemplatePath: php.fpmConfigTemplate,
         fpmConfPath: path.join(cacheDir, 'php-fpm.conf'),
-        extensions: php.extensions
+        extensions: php.extensions,
+        env: php.env
     }
 
     return phpConfiguration

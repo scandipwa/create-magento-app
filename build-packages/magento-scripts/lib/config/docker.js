@@ -120,6 +120,16 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
      * @param {Record<string, number>} ports
      */
     const getContainers = (ports = {}) => {
+        const composerAuthEnv = process.env.COMPOSER_AUTH
+            ? {
+                  COMPOSER_AUTH: JSON.stringify(
+                      JSON.parse(process.env.COMPOSER_AUTH),
+                      null,
+                      0
+                  )
+              }
+            : {}
+
         /**
          * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], debugImage?: string, remoteImages?: string[], connectCommand?: string[], description?: string }>}
          */
@@ -153,15 +163,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                           ]
                         : []
                 ),
-                env: process.env.COMPOSER_AUTH
-                    ? {
-                          COMPOSER_AUTH: JSON.stringify(
-                              JSON.parse(process.env.COMPOSER_AUTH),
-                              null,
-                              0
-                          )
-                      }
-                    : {},
+                env: deepmerge(composerAuthEnv, php.env || {}),
                 restart: 'on-failure:5',
                 image: `local-cma-project:${prefix}`,
                 debugImage: `local-cma-project:${prefix}.debug`,
@@ -397,6 +399,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         }
 
         if (ssl && ssl.enabled && isDockerDesktop) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             dockerConfig.sslTerminator.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             )

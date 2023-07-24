@@ -1,6 +1,7 @@
 const path = require('path')
 const { repo } = require('../base-repo')
 const xdebug = require('../extensions/xdebug')
+const defaultPhpEnv = require('../default-php-env')
 
 /**
  * @param {Object} param0
@@ -25,7 +26,8 @@ const php82 = ({
             version: '3.2.1'
         },
         ...extensions
-    }
+    },
+    env: defaultPhpEnv
 })
 
 module.exports = php82
