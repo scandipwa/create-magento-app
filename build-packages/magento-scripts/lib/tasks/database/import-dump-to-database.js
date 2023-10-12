@@ -73,7 +73,7 @@ Note that you will lose your existing database!`,
                 {
                     name: 'skip',
                     message:
-                        "NO I DON'T wANT TO DELETE magento DATABASE! (Skip this step)"
+                        "NO I DON'T WANT TO DELETE magento DATABASE! (Skip this step)"
                 }
             ]
         })
