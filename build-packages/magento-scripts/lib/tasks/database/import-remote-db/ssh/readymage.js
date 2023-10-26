@@ -21,36 +21,37 @@ const readymageSSH = () => ({
                 task.output =
                     'Making remote database dump files without customers data...'
 
+                const firstCommand = [
+                    ...databaseDumpCommandWithOptions,
+                    ...[...orderTables, ...customerTables].map(
+                        (table) => `--ignore-table=magento.${table}`
+                    ),
+                    '--result-file=dump-0.sql'
+                ].join(' ')
+
                 /**
                  * create dump without customers and orders
                  */
-                await ssh.execCommand(
-                    [
-                        ...databaseDumpCommandWithOptions,
-                        ...[...orderTables, ...customerTables].map(
-                            (table) => `--ignore-table=magento.${table}`
-                        ),
-                        '--result-file=dump-0.sql'
-                    ].join(' ')
-                )
+                await ssh.execCommand(firstCommand)
 
-                await ssh.execCommand(
-                    [
-                        ...databaseDumpCommandWithOptions,
-                        '--no-data',
-                        '--result-file=dump-1.sql',
-                        ...[...orderTables, ...customerTables]
-                    ].join(' ')
-                )
+                const secondCommand = [
+                    ...databaseDumpCommandWithOptions,
+                    '--no-data',
+                    '--result-file=dump-1.sql',
+                    ...[...orderTables, ...customerTables]
+                ].join(' ')
+
+                await ssh.execCommand(secondCommand)
             } else {
                 task.output =
                     'Making remote database dump file with customers data...'
-                await ssh.execCommand(
-                    [
-                        ...databaseDumpCommandWithOptions,
-                        '--result-file=dump.sql'
-                    ].join(' ')
-                )
+
+                const command = [
+                    ...databaseDumpCommandWithOptions,
+                    '--result-file=dump.sql'
+                ].join(' ')
+
+                await ssh.execCommand(command)
             }
 
             if (!noCompress) {
@@ -73,14 +74,14 @@ const readymageSSH = () => ({
             task.output = 'Downloading dump files...'
             if (noCompress) {
                 await execAsyncSpawn(
-                    `scp ${sshConnectString}:${remotePwd}/dump-0.sql .`
+                    `scp -O ${sshConnectString}:${remotePwd}/dump-0.sql .`
                 )
                 await execAsyncSpawn(
-                    `scp ${sshConnectString}:${remotePwd}/dump-1.sql .`
+                    `scp -O ${sshConnectString}:${remotePwd}/dump-1.sql .`
                 )
             } else {
                 await execAsyncSpawn(
-                    `scp ${sshConnectString}:${remotePwd}/dump.sql.gz .`
+                    `scp -O ${sshConnectString}:${remotePwd}/dump.sql.gz .`
                 )
 
                 task.output = 'Extracting dump files...'
@@ -93,11 +94,11 @@ const readymageSSH = () => ({
             task.output = 'Downloading dump file...'
             if (noCompress) {
                 await execAsyncSpawn(
-                    `scp ${sshConnectString}:${remotePwd}/dump.sql .`
+                    `scp -o StrictHostKeyChecking=no -O ${sshConnectString}:${remotePwd}/dump.sql .`
                 )
             } else {
                 await execAsyncSpawn(
-                    `scp ${sshConnectString}:${remotePwd}/dump.sql.gz .`
+                    `scp -o StrictHostKeyChecking=no -O ${sshConnectString}:${remotePwd}/dump.sql.gz .`
                 )
 
                 task.output = 'Extracting dump file...'
