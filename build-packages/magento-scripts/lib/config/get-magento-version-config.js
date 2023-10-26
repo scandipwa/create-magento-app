@@ -7,6 +7,10 @@ const longestMagentoName = allVersions
     .map(({ name }) => name)
     .reduce((acc, val) => (val.length > acc ? val.length : acc), 0)
 
+/**
+ * @param {{ name: string }} version
+ * @returns {string}
+ */
 const getMagentoVersionMessage = (version) => {
     const pureMagentoVersion = version.name.replace(/-p[0-9]+$/i, '')
     if (scandipwaMagentoVersionMapping[pureMagentoVersion]) {
@@ -25,7 +29,6 @@ const getMagentoVersionMessage = (version) => {
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
  */
 const getMagentoVersion = () => ({
-    // title: 'Loading Magento version',
     task: async (ctx, task) => {
         const {
             throwMagentoVersionMissing = false,
