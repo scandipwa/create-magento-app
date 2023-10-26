@@ -2,7 +2,7 @@
  * @returns {import('../../../../../typings/index').ComposerConfiguration}
  */
 const composer1 = () => ({
-    version: '1',
+    version: 'latest-1.x',
     plugins: {
         'hirak/prestissimo': {
             enabled: true
