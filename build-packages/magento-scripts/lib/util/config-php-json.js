@@ -5,6 +5,8 @@ const pathExists = require('./path-exists')
 
 /**
  * @param {import('../../typings/context').ListrContext} ctx
+ *
+ * @returns {Promise<import('../../typings/common').ConfigPHPType | null>}
  */
 const configPhpToJson = async (ctx) => {
     const configPhpOnSystemPath = path.join(

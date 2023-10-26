@@ -15,13 +15,16 @@ const createNginxConfig = () => ({
         } = ctx
 
         const {
-            configuration: { nginx }
+            configuration: { nginx },
+            storeDomains
         } = overridenConfiguration
 
         const hostMachine = !isDockerDesktop
             ? '127.0.0.1'
             : 'host.docker.internal'
         const hostPort = !isDockerDesktop ? ports.app : 80
+        const useStoreDomainMapping =
+            storeDomains && Object.keys(storeDomains).length > 1
 
         try {
             await setConfigFile({
@@ -38,7 +41,9 @@ const createNginxConfig = () => ({
                     mageRoot: baseConfig.containerMagentoDir,
                     hostMachine,
                     hostPort,
-                    config: overridenConfiguration
+                    config: overridenConfiguration,
+                    storeDomains,
+                    useStoreDomainMapping
                 }
             })
         } catch (e) {

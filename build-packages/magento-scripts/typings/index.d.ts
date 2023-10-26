@@ -237,7 +237,7 @@ export interface SSLConfiguration {
      *
      * @default false
      */
-    ssl_external_provider?: boolean
+    external_provider?: boolean
 }
 
 export interface NewRelicConfiguration {
@@ -305,7 +305,7 @@ export interface CMAConfiguration {
         /**
          * New Relic configuration
          */
-        newRelic: NewRelicConfiguration
+        newRelic?: NewRelicConfiguration
 
         /**
          * MailDev configuration
@@ -352,8 +352,27 @@ export interface CMAConfiguration {
     /**
      *  Custom host for website base url
      *  @default 'localhost'
+     *
+     * @deprecated Use `storeDomains` instead, as follows: `storeDomains: { admin: 'localhost' }`
      */
     host: string
+
+    /**
+     * Custom domains for magento stores by store code
+     *
+     * Note: you can look up **scope_id** in `app/etc/config.php` in `scopes` section.
+     *
+     * @default { admin: 'localhost' }
+     *
+     * @example ```js
+     *  storeDomains: {
+     *   admin: 'localhost',
+     *   custom_store_code: 'scandipwa.local',
+     *   another_store_code: 'another-store.local'
+     * }
+     * ```
+     */
+    storeDomains: { admin: string } & Record<string, string>
 
     /**
      * SSL Configuration

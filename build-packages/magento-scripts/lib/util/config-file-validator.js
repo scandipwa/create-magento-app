@@ -57,17 +57,17 @@ const sslSchema = Joi.object({
     enabled: Joi.boolean().required(),
     ssl_certificate: Joi.string().optional(),
     ssl_certificate_key: Joi.string().optional(),
-    ssl_external_provider: Joi.boolean().optional()
+    external_provider: Joi.boolean().optional()
 }).custom((d, helpers) => {
     if (d.enabled) {
-        if (!d.ssl_certificate && !d.ssl_external_provider) {
+        if (!d.ssl_certificate && !d.external_provider) {
             return helpers.error(
-                'ssl_certificate must be provided! or set ssl.ssl_external_provider to true!'
+                'ssl_certificate must be provided! or set ssl.external_provider to true!'
             )
         }
-        if (!d.ssl_certificate_key && !d.ssl_external_provider) {
+        if (!d.ssl_certificate_key && !d.external_provider) {
             return helpers.error(
-                'ssl_certificate_key must be provided! or set ssl.ssl_external_provider to true!'
+                'ssl_certificate_key must be provided! or set ssl.external_provider to true!'
             )
         }
     }
@@ -222,6 +222,7 @@ const configurationSchema = Joi.object({
 const configFileSchema = Joi.object({
     magento: magentoSchema.required(),
     host: Joi.string().optional(),
+    storeDomains: Joi.object().pattern(Joi.string(), Joi.string()).optional(),
     ssl: sslSchema.optional(),
     prefix: Joi.boolean().optional(),
     configuration: configurationSchema.required()

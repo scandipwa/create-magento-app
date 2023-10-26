@@ -1,4 +1,3 @@
-const { defaultMagentoConfig } = require('../magento-config')
 const sodium = require('../services/php/extensions/sodium')
 const {
     magento24PHPExtensionList
@@ -15,13 +14,11 @@ const { mariadb104 } = require('../services/mariadb/versions')
 const { elasticsearch716 } = require('../services/elasticsearch/versions')
 
 /**
- * @param {Object} param0
- * @param {string} param0.templateDir
- * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.3-p3',
-    isDefault: true,
+    isDefault: false,
     configuration: {
         php: php74({
             templateDir,
@@ -39,10 +36,5 @@ module.exports = ({ templateDir }) => ({
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
-    },
-    magento: defaultMagentoConfig,
-    host: 'localhost',
-    ssl: {
-        enabled: false
     }
 })

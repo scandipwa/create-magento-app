@@ -17,6 +17,7 @@ const matchFilesystem = async (cwd, structure) => {
 
         return ok
     }
+
     if (typeof structure === 'object') {
         const ok = (
             await Promise.all(

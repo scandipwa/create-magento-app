@@ -12,7 +12,8 @@
         "moduleResolution": "Node",
         "types": [
             "./typings"
-        ]
+        ],
+        "noEmit": true
     },
     "exclude": [
         "**/node_modules",

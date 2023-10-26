@@ -2,7 +2,6 @@ const path = require('path')
 const fs = require('fs')
 const setConfigFile = require('../../util/set-config')
 const pathExists = require('../../util/path-exists')
-const { isIpAddress } = require('../../util/ip')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 
@@ -21,13 +20,18 @@ const createSSLTerminatorConfig = () => ({
 
         const {
             configuration: { sslTerminator },
-            ssl,
-            host
+            ssl
         } = overridenConfiguration
 
-        if (ssl.enabled && !ssl.ssl_external_provider) {
+        if (ssl.enabled && !ssl.external_provider) {
+            if (!ssl.ssl_certificate) {
+                throw new KnownError('ssl.ssl_certificate is not defined!')
+            }
             if (!(await pathExists(ssl.ssl_certificate))) {
                 throw new KnownError('ssl.ssl_certificate file does not exist!')
+            }
+            if (!ssl.ssl_certificate_key) {
+                throw new KnownError('ssl.ssl_certificate_key is not defined!')
             }
             if (!(await pathExists(ssl.ssl_certificate_key))) {
                 throw new KnownError(
@@ -66,7 +70,6 @@ const createSSLTerminatorConfig = () => ({
             )
         }
 
-        const networkToBindTo = isIpAddress(host) ? host : '127.0.0.1'
         const hostMachine = !isDockerDesktop
             ? '127.0.0.1'
             : 'host.docker.internal'
@@ -87,7 +90,6 @@ const createSSLTerminatorConfig = () => ({
                     hostMachine,
                     hostPort,
                     config: overridenConfiguration,
-                    networkToBindTo,
                     debug
                 }
             })

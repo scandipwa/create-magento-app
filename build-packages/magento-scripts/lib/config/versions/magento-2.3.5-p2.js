@@ -1,4 +1,3 @@
-const { defaultMagentoConfig } = require('../magento-config')
 const {
     magento23PHPExtensionList
 } = require('../magento/required-php-extensions')
@@ -14,9 +13,7 @@ const { mariadb102 } = require('../services/mariadb/versions')
 const { elasticsearch76 } = require('../services/elasticsearch/versions')
 
 /**
- * @param {Object} param0
- * @param {string} param0.templateDir
- * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.3.5-p2',
@@ -37,10 +34,5 @@ module.exports = ({ templateDir }) => ({
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
-    },
-    magento: defaultMagentoConfig,
-    host: 'localhost',
-    ssl: {
-        enabled: false
     }
 })

@@ -48,7 +48,10 @@ const setupMagento = (options = {}) => ({
                                 increaseAdminSessionLifetime()
                             ],
                             {
-                                concurrent: true
+                                concurrent: true,
+                                rendererOptions: {
+                                    collapse: false
+                                }
                             }
                         )
                 },
