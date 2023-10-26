@@ -10,9 +10,12 @@ module.exports = {
         mode: 'developer',
         edition: 'community'
     },
-    configuration: {
-        composer: {
-            version: 'latest-2.2.x'
-        }
+    configuration: {},
+    ssl: {
+        enabled: true,
+        external_provider: true
+    },
+    storeDomains: {
+        admin: '4448-195-13-221-74.ngrok-free.app'
     }
 }

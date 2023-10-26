@@ -10,9 +10,5 @@ module.exports = {
         mode: 'developer',
         edition: 'community'
     },
-    configuration: {
-        composer: {
-            version: 'latest-2.2.x'
-        }
-    }
+    configuration: {}
 }

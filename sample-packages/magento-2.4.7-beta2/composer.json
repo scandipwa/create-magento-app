@@ -16,13 +16,12 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "version": "2.4.6-p1",
+    "version": "2.4.7-beta2",
     "require": {
         "magento/composer-dependency-version-audit-plugin": "~0.1",
         "magento/composer-root-update-plugin": "~2.0",
         "magento/module-elasticsearch-8": "^100.4",
-        "magento/product-community-edition": "2.4.6-p1",
-        "readymage/better-newrelic": "^1.0"
+        "magento/product-community-edition": "2.4.7-beta2"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -47,12 +46,12 @@
     },
     "require-dev": {
         "allure-framework/allure-phpunit": "^2",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "dg/bypass-finals": "^1.4",
-        "friendsofphp/php-cs-fixer": "^3.8",
+        "friendsofphp/php-cs-fixer": "^3.22",
         "lusitanian/oauth": "^0.8",
         "magento/magento-coding-standard": "*",
-        "magento/magento2-functional-testing-framework": "^4.2.1",
+        "magento/magento2-functional-testing-framework": "^4.4.2",
         "pdepend/pdepend": "^2.10",
         "phpmd/phpmd": "^2.12",
         "phpstan/phpstan": "^1.9",
@@ -73,14 +72,14 @@
             "Magento\\Tools\\Sanity\\": "dev/build/publication/sanity/Magento/Tools/Sanity/"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "beta",
     "prefer-stable": true,
-    "repositories": {
-        "composer": {
+    "repositories": [
+        {
             "type": "composer",
-            "url": "https://repo.magento.com"
+            "url": "https://repo.magento.com/"
         }
-    },
+    ],
     "extra": {
         "magento-force": "override",
         "magento-deploy-ignore": {
