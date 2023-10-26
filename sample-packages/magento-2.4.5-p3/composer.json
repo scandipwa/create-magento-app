@@ -79,7 +79,12 @@
         }
     ],
     "extra": {
-        "magento-force": "override"
+        "magento-force": "override",
+        "magento-deploy-ignore": {
+            "*": [
+                "/.gitignore"
+            ]
+        }
     }
 }
 
