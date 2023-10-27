@@ -1,6 +1,7 @@
 FROM ghcr.io/scandipwa/create-magento-app:php-8.1
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && apk add --no-cache linux-headers \
     && pecl install xdebug-3.2.2 \
     && docker-php-ext-enable xdebug \
     && apk del -f .build-deps
