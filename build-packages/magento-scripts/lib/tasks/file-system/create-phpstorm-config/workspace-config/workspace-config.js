@@ -5,7 +5,7 @@ const { baseConfig } = require('../../../../config')
  * @param {import('../../../../../typings/index').CMAConfiguration} app
  */
 const getWorkspaceConfig = (app) => ({
-    debugServerAddress: `http://${app.host}`,
+    debugServerAddress: `http://${app.storeDomains.admin}`,
     serverName: 'create-magento-app',
     runManagerName: 'create-magento-app',
     sessionId: 'PHPSTORM',

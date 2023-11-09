@@ -10,13 +10,16 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const defaultMagentoUser = require('../tasks/database/default-magento-user')
 
 /**
- *
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} overridenConfiguration
  * @param {import('../../typings/context').ListrContext['config']['baseConfig']} baseConfig
  */
 module.exports = async (ctx, overridenConfiguration, baseConfig) => {
-    const { configuration, ssl, host } = overridenConfiguration
+    const {
+        configuration,
+        ssl,
+        storeDomains: { admin: host }
+    } = overridenConfiguration
     const { nginx, redis, elasticsearch, mariadb, varnish, maildev, newRelic } =
         configuration
 
