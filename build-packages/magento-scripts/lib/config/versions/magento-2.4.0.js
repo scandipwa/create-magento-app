@@ -11,6 +11,7 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish60 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { elasticsearch712 } = require('../services/elasticsearch/versions')
+const { mysql80 } = require('../services/mysql/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
@@ -25,9 +26,7 @@ module.exports = ({ templateDir }) => ({
         }),
         nginx: nginx118({ templateDir }),
         redis: redis50(),
-        mysql: {
-            version: '8.0'
-        },
+        mysql: mysql80(),
         mariadb: mariadb102(),
         elasticsearch: elasticsearch712(),
         composer: composer1(),

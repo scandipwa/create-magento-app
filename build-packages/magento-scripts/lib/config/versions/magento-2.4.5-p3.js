@@ -19,7 +19,6 @@ const { mysql80 } = require('../services/mysql/versions')
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.5-p3',
-    isDefault: false,
     configuration: {
         php: php81({
             templateDir,

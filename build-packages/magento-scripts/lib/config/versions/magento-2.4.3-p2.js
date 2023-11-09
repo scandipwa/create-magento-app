@@ -12,13 +12,13 @@ const { maildev } = require('../services/maildev')
 const { redis60 } = require('../services/redis')
 const { mariadb104 } = require('../services/mariadb/versions')
 const { elasticsearch716 } = require('../services/elasticsearch/versions')
+const { mysql80 } = require('../services/mysql/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.3-p2',
-    isDefault: false,
     configuration: {
         php: php74({
             templateDir,
@@ -27,9 +27,7 @@ module.exports = ({ templateDir }) => ({
         }),
         nginx: nginx118({ templateDir }),
         redis: redis60(),
-        mysql: {
-            version: '8.0'
-        },
+        mysql: mysql80(),
         mariadb: mariadb104(),
         elasticsearch: elasticsearch716(),
         composer: composer2(),
