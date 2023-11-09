@@ -10,12 +10,5 @@ module.exports = {
         mode: 'developer',
         edition: 'community'
     },
-    configuration: {},
-    ssl: {
-        enabled: true,
-        external_provider: true
-    },
-    storeDomains: {
-        admin: '4448-195-13-221-74.ngrok-free.app'
-    }
+    configuration: {}
 }
