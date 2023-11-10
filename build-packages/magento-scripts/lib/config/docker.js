@@ -10,14 +10,17 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const defaultMagentoUser = require('../tasks/database/default-magento-user')
 
 /**
- *
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} overridenConfiguration
  * @param {import('../../typings/context').ListrContext['config']['baseConfig']} baseConfig
  */
 module.exports = async (ctx, overridenConfiguration, baseConfig) => {
-    const { configuration, ssl, host } = overridenConfiguration
-    const { nginx, redis, elasticsearch, mariadb, varnish, maildev } =
+    const {
+        configuration,
+        ssl,
+        storeDomains: { admin: host }
+    } = overridenConfiguration
+    const { nginx, redis, elasticsearch, mariadb, varnish, maildev, newRelic } =
         configuration
 
     const php = getPhpConfig(overridenConfiguration, baseConfig)
@@ -120,6 +123,16 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
      * @param {Record<string, number>} ports
      */
     const getContainers = (ports = {}) => {
+        const composerAuthEnv = process.env.COMPOSER_AUTH
+            ? {
+                  COMPOSER_AUTH: JSON.stringify(
+                      JSON.parse(process.env.COMPOSER_AUTH),
+                      null,
+                      0
+                  )
+              }
+            : {}
+
         /**
          * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], debugImage?: string, remoteImages?: string[], connectCommand?: string[], description?: string }>}
          */
@@ -153,15 +166,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                           ]
                         : []
                 ),
-                env: process.env.COMPOSER_AUTH
-                    ? {
-                          COMPOSER_AUTH: JSON.stringify(
-                              JSON.parse(process.env.COMPOSER_AUTH),
-                              null,
-                              0
-                          )
-                      }
-                    : {},
+                env: deepmerge(composerAuthEnv, php.env || {}),
                 restart: 'on-failure:5',
                 image: `local-cma-project:${prefix}`,
                 debugImage: `local-cma-project:${prefix}.debug`,
@@ -397,6 +402,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         }
 
         if (ssl && ssl.enabled && isDockerDesktop) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             dockerConfig.sslTerminator.ports.push(
                 `${isIpAddress(host) ? host : '127.0.0.1'}:443:443`
             )
@@ -443,6 +450,16 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 description: `Varnish HealthCheck status: ${logger.style.command(
                     varnish.healthCheck ? 'enabled' : 'disabled'
                 )}`
+            }
+        }
+
+        if (newRelic.enabled) {
+            dockerConfig.newRelicPHPDaemon = {
+                _: 'New Relic PHP daemon',
+                ports: [],
+                name: `${prefix}_newrelic-php-daemon`,
+                network: isDockerDesktop ? network.name : 'host',
+                image: 'newrelic/php-daemon'
             }
         }
 

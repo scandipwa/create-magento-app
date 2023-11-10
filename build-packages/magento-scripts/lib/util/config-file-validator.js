@@ -25,17 +25,7 @@ const versionValidator = (value, helpers) => {
     const isValidComposerVersion = composerVersionRegex.test(value)
 
     if (!isValidComposerVersion) {
-        return helpers.error('any.invalid', {
-            label: `Not a valid composer version!
-Allowed patterns:
-- latest-stable
-- latest-preview
-- latest-2.2.x
-- latest-2.x
-- latest-1.x
-- 2.2.21
-`
-        })
+        return helpers.error('any.invalid')
     }
 
     return undefined
@@ -64,9 +54,25 @@ const magentoSchema = Joi.object({
  * @type {Joi.ObjectSchema<import('../../typings').SSLConfiguration>}
  */
 const sslSchema = Joi.object({
-    enabled: Joi.bool().required(),
-    ssl_certificate: Joi.string().required(),
-    ssl_certificate_key: Joi.string().required()
+    enabled: Joi.boolean().required(),
+    ssl_certificate: Joi.string().optional(),
+    ssl_certificate_key: Joi.string().optional(),
+    external_provider: Joi.boolean().optional()
+}).custom((d, helpers) => {
+    if (d.enabled) {
+        if (!d.ssl_certificate && !d.external_provider) {
+            return helpers.error(
+                'ssl_certificate must be provided! or set ssl.external_provider to true!'
+            )
+        }
+        if (!d.ssl_certificate_key && !d.external_provider) {
+            return helpers.error(
+                'ssl_certificate_key must be provided! or set ssl.external_provider to true!'
+            )
+        }
+    }
+
+    return true
 })
 
 /**
@@ -92,7 +98,10 @@ const phpConfigurationSchema = Joi.object({
     fpmConfigTemplate: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
     debugTemplate: Joi.string().optional().custom(fileExistsValidator),
-    extensions: phpExtensionConfiguration.optional()
+    extensions: phpExtensionConfiguration.optional(),
+    env: Joi.object()
+        .pattern(Joi.string(), [Joi.string(), Joi.number()])
+        .optional()
 })
 
 /**
@@ -150,6 +159,19 @@ const composerConfigurationSchema = Joi.object({
             }
 
             return versionValidator(value, helper)
+        })
+        .messages({
+            'any.invalid': `Composer version is not valid!
+Allowed patterns:
+- latest-stable
+- latest-preview
+- latest-2.2.x
+- latest-2.x
+- latest-1.x
+- 2.2.21
+
+Please check you composer configuration in cma.js!
+`
         }),
     plugins: Joi.object().pattern(
         Joi.string(),
@@ -159,6 +181,23 @@ const composerConfigurationSchema = Joi.object({
             enabled: Joi.boolean().optional()
         }).unknown()
     )
+})
+
+/**
+ * @type {Joi.ObjectSchema<import('../../typings').NewRelicConfiguration>}
+ */
+const newRelicConfigurationSchema = Joi.object({
+    enabled: Joi.boolean().optional(),
+    agentVersion: Joi.string().optional(),
+    licenseKey: Joi.string().optional()
+}).custom((d, helpers) => {
+    if (d.enabled && !d.licenseKey) {
+        return helpers.error(
+            'when newRelic is enabled license key is required!'
+        )
+    }
+
+    return true
 })
 
 /**
@@ -173,7 +212,8 @@ const configurationSchema = Joi.object({
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),
     sslTerminator: nginxConfigurationSchema.optional(),
-    maildev: serviceConfigurationSchema.optional()
+    maildev: serviceConfigurationSchema.optional(),
+    newRelic: newRelicConfigurationSchema.optional()
 })
 
 /**
@@ -182,8 +222,9 @@ const configurationSchema = Joi.object({
 const configFileSchema = Joi.object({
     magento: magentoSchema.required(),
     host: Joi.string().optional(),
+    storeDomains: Joi.object().pattern(Joi.string(), Joi.string()).optional(),
     ssl: sslSchema.optional(),
-    prefix: Joi.bool().optional(),
+    prefix: Joi.boolean().optional(),
     configuration: configurationSchema.required()
 })
 
@@ -191,8 +232,8 @@ const configFileSchema = Joi.object({
  * @type {Joi.ObjectSchema<{ useNonOverlappingPorts:boolean, analytics:boolean }>}
  */
 const systemConfigurationSchema = Joi.object({
-    useNonOverlappingPorts: Joi.bool().optional(),
-    analytics: Joi.bool().optional()
+    useNonOverlappingPorts: Joi.boolean().optional(),
+    analytics: Joi.boolean().optional()
 })
 
 module.exports = {

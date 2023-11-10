@@ -24,7 +24,7 @@ const getInstanceMetadata = (ctx) => {
         ports,
         config: {
             magentoConfiguration,
-            overridenConfiguration: { host, ssl }
+            overridenConfiguration: { ssl, storeDomains }
         }
     } = ctx
 
@@ -43,25 +43,22 @@ const getInstanceMetadata = (ctx) => {
      */
     const maildev = []
 
-    const isNgrok = host.endsWith('ngrok.io')
+    frontend.push({
+        title: WEB_LOCATION_TITLE,
+        text: `${ssl.enabled ? 'https' : 'http'}://${storeDomains.admin}${
+            ssl.enabled || ports.sslTerminator === 80
+                ? ''
+                : `:${ports.sslTerminator}`
+        }/`
+    })
 
-    if (isNgrok) {
+    for (const [storeCode, domain] of Object.entries(storeDomains)) {
+        if (storeCode === 'admin') {
+            continue
+        }
         frontend.push({
-            title: WEB_LOCAL_LOCATION_TITLE,
-            text: `${ssl.enabled ? 'https' : 'http'}://localhost${
-                ssl.enabled || ports.sslTerminator === 80
-                    ? ''
-                    : `:${ports.sslTerminator}`
-            }/`
-        })
-        frontend.push({
-            title: WEB_LOCATION_TITLE,
-            text: `${ssl.enabled ? 'https' : 'http'}://${host}/`
-        })
-    } else {
-        frontend.push({
-            title: WEB_LOCATION_TITLE,
-            text: `${ssl.enabled ? 'https' : 'http'}://${host}${
+            title: `Frontend store ${logger.style.file(storeCode)} location`,
+            text: `${ssl.enabled ? 'https' : 'http'}://${domain}${
                 ssl.enabled || ports.sslTerminator === 80
                     ? ''
                     : `:${ports.sslTerminator}`
@@ -87,7 +84,7 @@ const getInstanceMetadata = (ctx) => {
 
     maildev.push({
         title: WEB_MAILDEV_LOCATION_TITLE,
-        text: `http://${host}:${ports.maildevWeb}/`
+        text: `http://localhost:${ports.maildevWeb}/`
     })
 
     return {

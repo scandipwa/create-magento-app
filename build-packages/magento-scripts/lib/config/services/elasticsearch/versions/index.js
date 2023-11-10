@@ -8,6 +8,7 @@ const elasticsearch716 = require('./elasticsearch-7.16')
 const elasticsearch717 = require('./elasticsearch-7.17')
 const elasticsearch84 = require('./elasticsearch-8.4')
 const elasticsearch85 = require('./elasticsearch-8.5')
+const elasticsearch87 = require('./elasticsearch-8.7')
 
 module.exports = {
     elasticsearch68,
@@ -19,5 +20,6 @@ module.exports = {
     elasticsearch716,
     elasticsearch717,
     elasticsearch84,
-    elasticsearch85
+    elasticsearch85,
+    elasticsearch87
 }

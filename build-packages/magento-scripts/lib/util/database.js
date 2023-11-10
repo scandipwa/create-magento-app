@@ -99,7 +99,89 @@ const isTableExists = async (database, tableName, { databaseConnection }) => {
     return tableCount > 0
 }
 
+/**
+ * @param {TemplateStringsArray} sqlString
+ * @param  {...any} variables
+ * @returns {string}
+ */
+const sql = (sqlString, ...variables) => {
+    return sqlString.reduce(
+        (acc, val, i) =>
+            `${acc}${
+                typeof variables[i] === 'undefined'
+                    ? ''
+                    : typeof variables[i] === 'string'
+                    ? `'${variables[i]}'`
+                    : String(variables[i])
+            }${val}`,
+        ''
+    )
+}
+
+/**
+ * @param {Object} param0
+ * @param {string} param0.table
+ * @param {[string, string, any][]} param0.where
+ * @param {Record<string, any>} param0.data
+ * @param {import('../../typings/context').ListrContext} param1
+ */
+const databaseQuery = async (
+    { table, where, data },
+    { databaseConnection }
+) => {
+    const values = Object.entries(data).map(([key, val]) => ({
+        path: key,
+        value: val
+    }))
+
+    const whereInQuery = where
+        .map(([key, operator, val]) => `${key} ${operator} ${sql`${val}`}`)
+        .join(' AND ')
+
+    const query = `
+        SELECT * FROM ${table}
+        WHERE ${whereInQuery};`
+
+    const [rows] = await databaseConnection.query(query)
+
+    if (rows.length === 0) {
+        const query2 = `INSERT INTO ${table}
+        (${[...where.map(([key]) => key), ...values.map((p) => p.path)].join(
+            ', '
+        )})
+        VALUES (${[
+            ...where.map(([, , val]) => sql`${val}`),
+            ...values.map((p) => sql`${p.value}`)
+        ].join(', ')});`
+
+        await databaseConnection.query(query2)
+
+        return true
+    }
+
+    const [row] = rows
+
+    const incorrectData = Object.entries(data).filter(
+        ([key, val]) => row[key] !== val
+    )
+
+    if (incorrectData.length > 0) {
+        await databaseConnection.query(
+            `UPDATE ${table}
+            SET ${incorrectData
+                .map(([key, val]) => `${key} = ${sql`${val}`}`)
+                .join(', ')}
+            WHERE ${whereInQuery};`
+        )
+
+        return true
+    }
+
+    return false
+}
+
 module.exports = {
     updateTableValues,
-    isTableExists
+    isTableExists,
+    databaseQuery
 }

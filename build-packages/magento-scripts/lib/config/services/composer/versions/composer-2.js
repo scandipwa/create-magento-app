@@ -2,7 +2,7 @@
  * @returns {import('../../../../../typings/index').ComposerConfiguration}
  */
 const composer2 = () => ({
-    version: '2'
+    version: 'latest-2.x'
 })
 
 module.exports = composer2

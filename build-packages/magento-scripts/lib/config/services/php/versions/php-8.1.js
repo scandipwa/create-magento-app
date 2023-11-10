@@ -1,6 +1,7 @@
 const path = require('path')
 const { repo } = require('../base-repo')
 const xdebug = require('../extensions/xdebug')
+const defaultPhpEnv = require('../default-php-env')
 
 /**
  * @param {Object} param0
@@ -22,7 +23,8 @@ const php81 = ({
     extensions: {
         xdebug,
         ...extensions
-    }
+    },
+    env: defaultPhpEnv
 })
 
 module.exports = php81

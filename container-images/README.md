@@ -5,7 +5,7 @@ This folder contains images used for `magento-scripts` V2 projects.
 ### Requirements
 [Docker Desktop](https://docs.docker.com/desktop/) is installed and running. On Linux set the docker context to use Docker Desktop (`docker context use desktop-linux`).
 
-For MacOS: Run command to create a builder for docker: `docker buildx create --platform linux/arm64,linux/arm/v8`
+For MacOS: Run command to create a builder for docker: `docker buildx create --platform linux/arm64,linux/arm/v8 --use`
 
 ### Pulling Images
 

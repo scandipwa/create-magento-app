@@ -1,5 +1,5 @@
 const UnknownError = require('../../errors/unknown-error')
-const { runContainerImage } = require('../../util/run-container-image')
+const { containerApi } = require('../docker/containers')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -7,10 +7,24 @@ const { runContainerImage } = require('../../util/run-container-image')
 const checkElasticSearchVersion = () => ({
     title: 'Checking container ElasticSearch version',
     task: async (ctx, task) => {
-        const elasticSearchVersionResponse = await runContainerImage(
-            ctx.config.overridenConfiguration.configuration.elasticsearch.image,
-            'elasticsearch --version'
-        )
+        const { elasticsearch } =
+            ctx.config.overridenConfiguration.configuration
+        const { ports } = ctx
+
+        let elasticSearchVersionResponse
+
+        try {
+            elasticSearchVersionResponse = await containerApi.run({
+                ...elasticsearch,
+                command: 'elasticsearch --version',
+                detach: false,
+                rm: true,
+                ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
+                memory: '512mb'
+            })
+        } catch (e) {
+            elasticSearchVersionResponse = e.message
+        }
 
         const elasticSearchVersionResponseResult =
             elasticSearchVersionResponse.match(/Version:\s(\d+\.\d+\.\d+)/i)
@@ -28,7 +42,8 @@ const checkElasticSearchVersion = () => ({
                 `Cannot retrieve ElasticSearch Version!\n\n${elasticSearchVersionResponse}`
             )
         }
-    }
+    },
+    exitOnError: false
 })
 
 module.exports = checkElasticSearchVersion

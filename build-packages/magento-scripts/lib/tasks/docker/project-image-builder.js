@@ -193,6 +193,27 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         })
     }
 
+    if (ctx.config.overridenConfiguration.configuration.newRelic.enabled) {
+        const { agentVersion, licenseKey } =
+            ctx.config.overridenConfiguration.configuration.newRelic
+
+        // eslint-disable-next-line max-len
+        dockerFileInstructions.run('apk add --no-cache gcompat')
+            .run(`curl -L https://download.newrelic.com/php_agent/archive/${agentVersion}/newrelic-php5-${agentVersion}-linux.tar.gz | tar -C /tmp -zx \
+&& export NR_INSTALL_USE_CP_NOT_LN=1 \
+&& export NR_INSTALL_SILENT=1 \
+&& /tmp/newrelic-php5-${agentVersion}-linux/newrelic-install install \
+&& rm -rf /tmp/newrelic-php5-* /tmp/nrinstall*`)
+            .run(`sed -i -e "s/REPLACE_WITH_REAL_KEY/${licenseKey}/" \
+-e "s/newrelic.appname[[:space:]]=[[:space:]].*/newrelic.appname=\\"${
+            ctx.config.baseConfig.prefix
+        }\\"/" \
+-e '\\$anewrelic.daemon.address="${
+            ctx.isDockerDesktop ? 'host.docker.internal' : 'localhost'
+        }:31339"' \
+\\$PHP_INI_DIR/conf.d/newrelic.ini`)
+    }
+
     return dockerFileInstructions
 }
 

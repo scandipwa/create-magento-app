@@ -1,10 +1,23 @@
 const path = require('path')
 const fs = require('fs')
-const semver = require('semver')
 const { deepmerge } = require('../../util/deepmerge')
+const { defaultMagentoConfig } = require('../magento-config')
 
 const defaultCMAConfig = {
-    prefix: true
+    prefix: true,
+    configuration: {
+        newRelic: {
+            enabled: false,
+            agentVersion: '10.11.0.3'
+        }
+    },
+    magento: defaultMagentoConfig,
+    ssl: {
+        enabled: false
+    },
+    storeDomains: {
+        admin: 'localhost'
+    }
 }
 
 const magentoVersions = fs
@@ -28,37 +41,7 @@ const getConfigurations = (config = {}) =>
 
 const allVersions = Object.entries(getConfigurations())
     .map(([name, magentoConfig]) => ({ ...magentoConfig, name }))
-    .sort((a, b) => {
-        if (
-            a.magentoVersion.replace(/-p[0-9]+$/i, '') ===
-            b.magentoVersion.replace(/-p[0-9]+$/i, '')
-        ) {
-            if (
-                a.magentoVersion.includes('-p') &&
-                !b.magentoVersion.includes('-p')
-            ) {
-                return 1
-            }
-            const aPatchVersion =
-                (a.magentoVersion.includes('-p') &&
-                    Number.parseInt(
-                        a.magentoVersion.match(/-p([0-9]+)$/i)[1],
-                        10
-                    )) ||
-                0
-            const bPatchVersion =
-                (b.magentoVersion.includes('-p') &&
-                    Number.parseInt(
-                        b.magentoVersion.match(/-p([0-9]+)$/i)[1],
-                        10
-                    )) ||
-                0
-
-            return aPatchVersion - bPatchVersion
-        }
-
-        return semver.gt(a.magentoVersion, b.magentoVersion) ? 1 : -1
-    })
+    .sort((a, b) => a.magentoVersion.localeCompare(b.magentoVersion))
     .reverse()
 
 module.exports = {

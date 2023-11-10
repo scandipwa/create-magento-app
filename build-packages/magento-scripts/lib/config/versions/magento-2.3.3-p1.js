@@ -1,5 +1,4 @@
 const { elasticsearch68 } = require('../services/elasticsearch/versions')
-const { defaultMagentoConfig } = require('../magento-config')
 const {
     magento23PHPExtensionList
 } = require('../magento/required-php-extensions')
@@ -12,11 +11,10 @@ const { composer1 } = require('../services/composer/versions')
 const { maildev } = require('../services/maildev')
 const { redis50 } = require('../services/redis')
 const { mariadb102 } = require('../services/mariadb/versions')
+const { mysql57 } = require('../services/mysql/versions')
 
 /**
- * @param {Object} param0
- * @param {string} param0.templateDir
- * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.3.3-p1',
@@ -28,19 +26,12 @@ module.exports = ({ templateDir }) => ({
         }),
         nginx: nginx118({ templateDir }),
         redis: redis50(),
-        mysql: {
-            version: '5.7'
-        },
+        mysql: mysql57(),
         mariadb: mariadb102(),
         elasticsearch: elasticsearch68(),
         composer: composer1(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
-    },
-    magento: defaultMagentoConfig,
-    host: 'localhost',
-    ssl: {
-        enabled: false
     }
 })

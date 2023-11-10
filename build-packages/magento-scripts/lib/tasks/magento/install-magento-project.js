@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const semver = require('semver')
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const runComposerCommand = require('../../util/run-composer')
 const matchFilesystem = require('../../util/match-filesystem')
@@ -11,6 +12,8 @@ const { runPHPContainerCommand } = require('../php/php-container')
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition'
 const magentoProductCommunityEdition = 'magento/product-community-edition'
+
+const magentoRootUpdatePlugin = 'magento/composer-root-update-plugin'
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
@@ -61,15 +64,15 @@ const adjustComposerJson = async (
         )
     }
 
+    const isPHP7 = semver.satisfies(ctx.phpVersion, '^7.x.x')
+    const rootUpdatePluginVersion = isPHP7 ? '^1' : '^2'
+
     // if composer-root-update-plugin is not installed in composer, install it.
-    if (
-        composerData &&
-        !composerData.require['magento/composer-root-update-plugin']
-    ) {
-        task.output = 'Installing magento/composer-root-update-plugin!'
+    if (composerData && !composerData.require[magentoRootUpdatePlugin]) {
+        task.output = `Installing ${magentoRootUpdatePlugin}:${rootUpdatePluginVersion}!`
         await runComposerCommand(
             ctx,
-            'require magento/composer-root-update-plugin:^1',
+            `require ${magentoRootUpdatePlugin}:${rootUpdatePluginVersion}`,
             {
                 callback: !ctx.verbose
                     ? undefined
@@ -195,7 +198,7 @@ const installMagentoProject = () => ({
         }
 
         task.title = `Installing Magento ${magentoPackageVersion}`
-        task.output = 'Creating Magento project'
+        task.output = `Creating Magento ${magentoPackageVersion} project`
 
         if (!(await pathExists(path.join(process.cwd(), 'composer.json')))) {
             await createMagentoProject(ctx, task, {

@@ -202,6 +202,11 @@ export interface PHPConfiguration {
      * Extensions for PHP
      */
     extensions: PHPExtensions
+
+    /**
+     * Environmental variables used for PHP container
+     */
+    env: Record<string, unknown>
 }
 export interface SSLConfiguration {
     /**
@@ -224,6 +229,32 @@ export interface SSLConfiguration {
      * `./ssl_certificate-key.pem`
      */
     ssl_certificate_key?: string
+
+    /**
+     * SSL external provider configuration
+     *
+     * Set to `true` if you don't need locally provided SSL certificates
+     *
+     * @default false
+     */
+    external_provider?: boolean
+}
+
+export interface NewRelicConfiguration {
+    /**
+     * Enables or disables New Relic in application
+     */
+    enabled: boolean
+
+    /**
+     * New Relic Agent version
+     */
+    agentVersion?: string
+
+    /**
+     * New Relic license key
+     */
+    licenseKey?: string
 }
 
 export interface CMAConfiguration {
@@ -272,6 +303,11 @@ export interface CMAConfiguration {
         sslTerminator: SSLTerminatorConfiguration
 
         /**
+         * New Relic configuration
+         */
+        newRelic?: NewRelicConfiguration
+
+        /**
          * MailDev configuration
          */
         maildev: ServiceWithImage
@@ -316,8 +352,27 @@ export interface CMAConfiguration {
     /**
      *  Custom host for website base url
      *  @default 'localhost'
+     *
+     * @deprecated Use `storeDomains` instead, as follows: `storeDomains: { admin: 'localhost' }`
      */
     host: string
+
+    /**
+     * Custom domains for magento stores by store code
+     *
+     * Note: you can look up **scope_id** in `app/etc/config.php` in `scopes` section.
+     *
+     * @default { admin: 'localhost' }
+     *
+     * @example ```js
+     *  storeDomains: {
+     *   admin: 'localhost',
+     *   custom_store_code: 'scandipwa.local',
+     *   another_store_code: 'another-store.local'
+     * }
+     * ```
+     */
+    storeDomains: { admin: string } & Record<string, string>
 
     /**
      * SSL Configuration

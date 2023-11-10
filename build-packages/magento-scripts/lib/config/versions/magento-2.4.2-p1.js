@@ -1,4 +1,3 @@
-const { defaultMagentoConfig } = require('../magento-config')
 const sodium = require('../services/php/extensions/sodium')
 const {
     magento24PHPExtensionList
@@ -13,15 +12,13 @@ const { maildev } = require('../services/maildev')
 const { redis60 } = require('../services/redis')
 const { mariadb104 } = require('../services/mariadb/versions')
 const { elasticsearch712 } = require('../services/elasticsearch/versions')
+const { mysql80 } = require('../services/mysql/versions')
 
 /**
- * @param {Object} param0
- * @param {string} param0.templateDir
- * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.2-p1',
-    isDefault: true,
     configuration: {
         php: php74({
             templateDir,
@@ -30,19 +27,12 @@ module.exports = ({ templateDir }) => ({
         }),
         nginx: nginx118({ templateDir }),
         redis: redis60(),
-        mysql: {
-            version: '8.0'
-        },
+        mysql: mysql80(),
         mariadb: mariadb104(),
         elasticsearch: elasticsearch712(),
         composer: composer2(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
-    },
-    magento: defaultMagentoConfig,
-    host: 'localhost',
-    ssl: {
-        enabled: false
     }
 })

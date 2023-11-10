@@ -24,7 +24,8 @@ RUN apk add --no-cache \
 		xz \
 # https://github.com/docker-library/php/issues/494
 		openssl \
-		sudo
+		sudo \
+		openssh
 
 # ensure www-data user exists
 RUN set -eux; \
@@ -55,9 +56,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -pie"
 
 ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544 E60913E4DF209907D8E30D96659A97C9CF2A795A
 
-ENV PHP_VERSION 8.2.4
-ENV PHP_URL="https://www.php.net/distributions/php-8.2.4.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.2.4.tar.xz.asc"
-ENV PHP_SHA256="bc7bf4ca7ed0dd17647e3ea870b6f062fcb56b243bfdef3f59ff7f94e96176a8"
+ENV PHP_VERSION 8.2.11
+ENV PHP_URL="https://www.php.net/distributions/php-8.2.11.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.2.11.tar.xz.asc"
+ENV PHP_SHA256="29af82e4f7509831490552918aad502697453f0869a579ee1b80b08f9112c5b8"
 
 RUN set -eux; \
 	\

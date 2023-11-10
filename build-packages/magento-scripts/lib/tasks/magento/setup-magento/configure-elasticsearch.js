@@ -92,7 +92,7 @@ const installElasticSearch8Module = () => ({
     task: async (ctx, task) => {
         await runComposerCommand(
             ctx,
-            `require ${magentoModuleElasticSearch8} --with-all-dependencies`,
+            `require ${magentoModuleElasticSearch8} --update-with-all-dependencies`,
             {
                 callback: !ctx.verbose
                     ? undefined

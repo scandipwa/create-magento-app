@@ -1,4 +1,3 @@
-const { defaultMagentoConfig } = require('../magento-config')
 const {
     magento24PHPExtensionList
 } = require('../magento/required-php-extensions')
@@ -12,11 +11,10 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish60 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { elasticsearch712 } = require('../services/elasticsearch/versions')
+const { mysql80 } = require('../services/mysql/versions')
 
 /**
- * @param {Object} param0
- * @param {string} param0.templateDir
- * @returns {import('../../../typings/index').CMAConfiguration & { magentoVersion: string, isDefault?: boolean }}
+ * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.0',
@@ -28,19 +26,12 @@ module.exports = ({ templateDir }) => ({
         }),
         nginx: nginx118({ templateDir }),
         redis: redis50(),
-        mysql: {
-            version: '8.0'
-        },
+        mysql: mysql80(),
         mariadb: mariadb102(),
         elasticsearch: elasticsearch712(),
         composer: composer1(),
         varnish: varnish60({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev()
-    },
-    magento: defaultMagentoConfig,
-    host: 'localhost',
-    ssl: {
-        enabled: false
     }
 })
