@@ -29,7 +29,7 @@ const createMariaDBConfig = () => ({
             })
         } catch (e) {
             throw new UnknownError(
-                `Unexpected error accrued during php-fpm config creation\n\n${e}`
+                `Unexpected error accrued during mariadb config creation\n\n${e}`
             )
         }
     }
