@@ -25,7 +25,8 @@ RUN apk add --no-cache \
 # https://github.com/docker-library/php/issues/494
 		openssl \
 		sudo \
-		openssh
+		openssh \
+		patch
 
 # ensure www-data user exists
 RUN set -eux; \
