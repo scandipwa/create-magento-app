@@ -1,4 +1,8 @@
-# https://github.com/docker-library/php/blob/master/8.1/alpine3.16/fpm/Dockerfile
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
 
 FROM alpine:3.17
 
@@ -24,8 +28,8 @@ RUN apk add --no-cache \
 		xz \
 # https://github.com/docker-library/php/issues/494
 		openssl \
-		sudo \
 		openssh \
+		sudo \
 		patch
 
 # ensure www-data user exists
@@ -43,7 +47,7 @@ RUN set -eux; \
 	[ ! -d /var/www/html ]; \
 	mkdir -p /var/www/html; \
 	chown www-data:www-data /var/www/html; \
-	chmod 777 /var/www/html
+	chmod 1777 /var/www/html
 
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -55,11 +59,11 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -pie"
 
-ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544 E60913E4DF209907D8E30D96659A97C9CF2A795A
+ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC C28D937575603EB4ABB725861C0779DC5C0A9DE4 AFD8691FDAEDF03BDF6E460563F15A9B715376CA
 
-ENV PHP_VERSION 8.2.13
-ENV PHP_URL="https://www.php.net/distributions/php-8.2.13.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.2.13.tar.xz.asc"
-ENV PHP_SHA256="2629bba10117bf78912068a230c68a8fd09b7740267bd8ebd3cfce91515d454b"
+ENV PHP_VERSION 8.3.0
+ENV PHP_URL="https://www.php.net/distributions/php-8.3.0.tar.xz" PHP_ASC_URL="https://www.php.net/distributions/php-8.3.0.tar.xz.asc"
+ENV PHP_SHA256="1db84fec57125aa93638b51bb2b15103e12ac196e2f960f0d124275b2687ea54"
 
 RUN set -eux; \
 	\
@@ -89,8 +93,6 @@ RUN set -eux; \
 
 COPY docker-php-source /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/docker-php-source
-
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
@@ -100,7 +102,6 @@ RUN set -eux; \
 		gnu-libiconv-dev \
 		libsodium-dev \
 		libxml2-dev \
-		linux-headers \
 		oniguruma-dev \
 		openssl-dev \
 		readline-dev \
@@ -206,7 +207,6 @@ RUN set -eux; \
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/docker-php-*
 # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
 RUN docker-php-ext-enable sodium
 
@@ -234,7 +234,8 @@ RUN set -eux; \
 		echo; echo '; https://github.com/docker-library/php/pull/725#issuecomment-443540114'; echo 'log_limit = 8192'; \
 		echo; \
 		echo '[www]'; \
-		echo '; if we send this to /proc/self/fd/1, it never appears'; \
+		echo '; php-fpm closes STDOUT on startup, so sending logs to /proc/self/fd/1 does not work.'; \
+		echo '; https://bugs.php.net/bug.php?id=73886'; \
 		echo 'access.log = /proc/self/fd/2'; \
 		echo; \
 		echo 'clear_env = no'; \
@@ -249,7 +250,12 @@ RUN set -eux; \
 		echo; \
 		echo '[www]'; \
 		echo 'listen = 9000'; \
-	} | tee php-fpm.d/zz-docker.conf
+	} | tee php-fpm.d/zz-docker.conf; \
+	mkdir -p "$PHP_INI_DIR/conf.d"; \
+	{ \
+		echo '; https://github.com/docker-library/php/issues/878#issuecomment-938595965'; \
+		echo 'fastcgi.logging = Off'; \
+	} > "$PHP_INI_DIR/conf.d/docker-fpm.ini"
 
 # Override stop signal to stop process gracefully
 # https://github.com/php/php-src/blob/17baa87faddc2550def3ae7314236826bc1b1398/sapi/fpm/php-fpm.8.in#L163
