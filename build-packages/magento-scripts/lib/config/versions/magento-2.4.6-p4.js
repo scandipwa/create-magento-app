@@ -18,7 +18,8 @@ const { mysql80 } = require('../services/mysql/versions')
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
-    magentoVersion: '2.4.6-p3',
+    magentoVersion: '2.4.6-p4',
+    isDefault: true,
     configuration: {
         php: php81({
             templateDir,
