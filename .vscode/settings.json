@@ -25,7 +25,7 @@
         "xdebug"
     ],
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     "debug.javascript.autoAttachFilter": "onlyWithFlag",
     "debug.javascript.terminalOptions": {

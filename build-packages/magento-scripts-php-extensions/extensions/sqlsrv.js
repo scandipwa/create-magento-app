@@ -13,6 +13,9 @@ const installCommand = ({ ctx, version }) => {
         if (semver.gte(ctx.phpVersion, '8.1.0')) {
             sqlsrvVersion = '5.11.0'
         }
+        if (semver.gte(ctx.phpVersion, '8.3.0')) {
+            sqlsrvVersion = '5.12.0'
+        }
     }
 
     return `apk add --no-cache --virtual .build-deps \\$PHPIZE_DEPS \

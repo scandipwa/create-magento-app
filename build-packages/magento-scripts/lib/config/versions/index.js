@@ -3,6 +3,9 @@ const fs = require('fs')
 const { deepmerge } = require('../../util/deepmerge')
 const { defaultMagentoConfig } = require('../magento-config')
 
+/**
+ * @type {Partial<Omit<import('../../../typings').CMAConfiguration, 'configuration'>> & { configuration: Partial<import('../../../typings').CMAConfiguration['configuration']> }}}
+ */
 const defaultCMAConfig = {
     prefix: true,
     configuration: {
@@ -13,7 +16,8 @@ const defaultCMAConfig = {
     },
     magento: defaultMagentoConfig,
     ssl: {
-        enabled: false
+        enabled: false,
+        external_provider: false
     },
     storeDomains: {
         admin: 'localhost'
