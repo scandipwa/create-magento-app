@@ -144,7 +144,24 @@ const mariadbConfigurationSchema = Joi.object({
  */
 const elasticsearchConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
-    env: Joi.object().optional()
+    env: Joi.object().optional(),
+})
+
+const opensearchConfigurationSchema = Joi.object({
+    image: Joi.string().optional(),
+    env: Joi.object().optional(),
+})
+
+const searchEngineConfiguration = Joi.object({
+    engine: Joi.string().valid('elasticsearch', 'opensearch').required()
+}).when('elasticsearch', {
+    is: Joi.exist(),
+    then: Joi.required(),
+    otherwise: Joi.optional()
+}).when('opensearch', {
+    is: Joi.exist(),
+    then: Joi.required(),
+    otherwise: Joi.optional()
 })
 
 /**
@@ -208,6 +225,8 @@ const configurationSchema = Joi.object({
     nginx: nginxConfigurationSchema.optional(),
     mariadb: mariadbConfigurationSchema.optional(),
     elasticsearch: elasticsearchConfigurationSchema.optional(),
+    opensearch: opensearchConfigurationSchema.optional(),
+    searchengine: searchEngineConfiguration,
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),

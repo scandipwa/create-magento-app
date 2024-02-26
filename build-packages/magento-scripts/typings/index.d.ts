@@ -47,7 +47,21 @@ export interface ElasticSearchConfiguration extends ServiceWithImage {
     /**
      * Environmental variables used for Elasticsearch container
      */
-    env: Record<string, unknown>
+    env: Record<string, unknown>   
+}
+
+export interface OpenSearchSearchConfiguration extends ServiceWithImage {
+    /**
+     * Environmental variables used for Opensearch container
+     */
+    env: Record<string, unknown>   
+}
+
+export interface SearchEngineConfiguration {
+    /**
+    * Choose either opensearch or elasticsearch
+    */
+    engine: 'elasticsearch' | 'opensearch'
 }
 
 export interface VarnishConfiguration extends ServiceWithImage {
