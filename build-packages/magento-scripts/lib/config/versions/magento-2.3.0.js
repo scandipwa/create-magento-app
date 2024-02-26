@@ -12,6 +12,7 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish66 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { mysql57 } = require('../services/mysql/versions')
+const { searchenginePre247 } = require('../services/searchengine/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
@@ -32,6 +33,7 @@ module.exports = ({ templateDir }) => ({
         composer: composer1(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
-        maildev: maildev()
+        maildev: maildev(),
+        searchengine: searchenginePre247()
     }
 })

@@ -297,6 +297,16 @@ export interface CMAConfiguration {
         elasticsearch: ElasticSearchConfiguration
 
         /**
+         * OpenSearch configuration
+         */
+        opensearch?: OpenSearchSearchConfiguration
+
+        /**
+         * Search engine configuration
+         */
+        searchengine: SearchEngineConfiguration
+
+        /**
          * Redis configuration
          */
         redis: ServiceWithImage
