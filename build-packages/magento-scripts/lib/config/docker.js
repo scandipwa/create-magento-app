@@ -20,8 +20,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         ssl,
         storeDomains: { admin: host }
     } = overridenConfiguration
-    const { nginx, redis, elasticsearch, mariadb, varnish, maildev, newRelic } =
-        configuration
+    const { nginx, redis, elasticsearch, searchengine, mariadb, varnish, maildev, newRelic } =
+        configuration    
 
     const php = getPhpConfig(overridenConfiguration, baseConfig)
     const { prefix, magentoDir, containerMagentoDir, cacheDir } = baseConfig
@@ -351,13 +351,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                             (sse42Flag) => cpuSupportedFlags.includes(sse42Flag)
                         )
                     },
-                    elasticsearch.env || defaultEsEnv
+                    searchengine.env || defaultEsEnv
                 ),
                 network: network.name,
                 image: `${
-                    elasticsearch.version
-                        ? `elasticsearch:${elasticsearch.version}`
-                        : elasticsearch.image
+                    searchengine.version
+                        ? `elasticsearch:${searchengine.version}`
+                        : searchengine.image
                 }`,
                 name: `${prefix}_elasticsearch`
             },

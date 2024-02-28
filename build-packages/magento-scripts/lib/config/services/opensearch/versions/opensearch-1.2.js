@@ -3,7 +3,7 @@ const defaultEnv = require('../default-os-env')
 /**
  * @returns {import('../../../../../typings/index').OpenSearchSearchConfiguration}
  */
-const opensearch25 = () => ({
+const opensearch12 = () => ({
     image: 'opensearchproject/opensearch:1.2.0',
     env: {
         ...defaultEnv,
@@ -11,4 +11,4 @@ const opensearch25 = () => ({
     }
 })
 
-module.exports = opensearch25
+module.exports = opensearch12
