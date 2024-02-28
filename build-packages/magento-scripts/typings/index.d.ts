@@ -299,7 +299,7 @@ export interface CMAConfiguration {
         /**
          * OpenSearch configuration
          */
-        opensearch?: OpenSearchSearchConfiguration
+        opensearch: OpenSearchSearchConfiguration
 
         /**
          * Search engine configuration

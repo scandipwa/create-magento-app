@@ -15,7 +15,7 @@ const checkOpenSearchVersion = () => ({
 
         try {
             openSearchVersionResponse = await containerApi.run({
-                ...elasticsearch,
+                ...opensearch,
                 command: 'opensearch --version',
                 detach: false,
                 rm: true,
