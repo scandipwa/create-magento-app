@@ -1,8 +1,7 @@
-const searchengine247 = require('./searchengine-magento-2.4.7');
-const searchenginePre247 = require('./searchengine-pre-magento-2.4.7');
-
+const mysql57 = require('./mysql-5.7')
+const mysql80 = require('./mysql-8.0')
+const mysql8028 = require('./mysql-8.0.28')
 
 module.exports = {
-    searchenginePre247,
-    searchengine247,
-}
+    mysql57,
+    mysql80,}
