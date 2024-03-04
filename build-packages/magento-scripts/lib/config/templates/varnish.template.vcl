@@ -22,9 +22,9 @@ probe healthcheck {
 <% } %>
 
 backend default {
-    .host = "<%= it.hostMachine %>";
+    .host = "<%= it.appBackendHost %>";
     .host_header = "Host: localhost";
-    .port = "<%= it.nginxPort %>";
+    .port = "<%= it.appBackendPort %>";
     .first_byte_timeout = 600s;
     .connect_timeout = 10s;
     <% if (it.healthCheck) { %>

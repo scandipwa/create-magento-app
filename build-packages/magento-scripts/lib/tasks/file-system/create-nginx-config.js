@@ -19,10 +19,10 @@ const createNginxConfig = () => ({
             storeDomains
         } = overridenConfiguration
 
-        const hostMachine = !isDockerDesktop
-            ? '127.0.0.1'
-            : 'host.docker.internal'
-        const hostPort = !isDockerDesktop ? ports.app : 80
+        const containers = ctx.config.docker.getContainers(ctx.ports)
+
+        const hostMachine = isDockerDesktop ? containers.php.name : '127.0.0.1'
+        const hostPort = isDockerDesktop ? 80 : ports.app
         const useStoreDomainMapping =
             storeDomains && Object.keys(storeDomains).length > 1
 

@@ -23,16 +23,25 @@ const createVarnishConfig = () => ({
             configuration: { varnish }
         } = overridenConfiguration
 
+        const appBackendHost = isDockerDesktop
+            ? ctx.config.docker.getContainers(ports).nginx.name
+            : '127.0.0.1'
+
+        const appBackendPort = isDockerDesktop ? 80 : ports.app
+
+        const hostMachine = isDockerDesktop
+            ? 'host.docker.internal'
+            : '127.0.0.1'
+
         try {
             await setConfigFile({
                 configPathname: path.join(cacheDir, 'varnish', 'default.vcl'),
                 template: varnish.configTemplate,
                 overwrite: true,
                 templateArgs: {
-                    hostMachine: !isDockerDesktop
-                        ? '127.0.0.1'
-                        : 'host.docker.internal',
-                    nginxPort: ports.app,
+                    hostMachine,
+                    appBackendHost,
+                    appBackendPort,
                     healthCheck: varnish.healthCheck
                 }
             })

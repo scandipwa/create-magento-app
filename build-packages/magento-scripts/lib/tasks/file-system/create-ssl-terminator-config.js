@@ -70,10 +70,28 @@ const createSSLTerminatorConfig = () => ({
             )
         }
 
-        const hostMachine = !isDockerDesktop
-            ? '127.0.0.1'
-            : 'host.docker.internal'
-        const hostPort = !isDockerDesktop ? ports.sslTerminator : 80
+        const containers = ctx.config.docker.getContainers(ports)
+
+        const enableVarnish =
+            !debug && overridenConfiguration.configuration.varnish.enabled
+
+        let appBackendHost = '127.0.0.1'
+        let appBackendPort = ports.app
+
+        if (isDockerDesktop) {
+            if (enableVarnish) {
+                appBackendHost = containers.varnish.name
+            } else {
+                appBackendHost = containers.nginx.name
+            }
+            appBackendPort = 80
+        } else {
+            if (enableVarnish) {
+                appBackendPort = ports.varnish
+            }
+        }
+
+        const sslTerminatorPort = isDockerDesktop ? 80 : ports.sslTerminator
 
         try {
             await setConfigFile({
@@ -86,9 +104,10 @@ const createSSLTerminatorConfig = () => ({
                 template: sslTerminator.configTemplate,
                 overwrite: true,
                 templateArgs: {
+                    appBackendHost,
+                    appBackendPort,
                     ports,
-                    hostMachine,
-                    hostPort,
+                    sslTerminatorPort,
                     config: overridenConfiguration,
                     debug
                 }
