@@ -94,7 +94,7 @@ export interface ComposerConfiguration {
     | 'latest-1.x'
     | 'latest-2.x'
     | 'latest-2.2.x'
-    | ''
+    | `${number}.${number}.${number}`
 
     /**
      *  Composer global plugins that will be added to Docker image
