@@ -12,6 +12,8 @@ const { maildev } = require('../services/maildev')
 const { redis50 } = require('../services/redis')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { mysql57 } = require('../services/mysql/versions')
+const { searchenginePre247 } = require('../services/searchengine/versions')
+const { opensearch12 } = require('../services/opensearch/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
@@ -32,6 +34,8 @@ module.exports = ({ templateDir }) => ({
         composer: composer1(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
-        maildev: maildev()
+        maildev: maildev(),
+        searchengine: searchenginePre247(),
+        opensearch: opensearch12()
     }
 })

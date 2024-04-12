@@ -47,6 +47,25 @@ export interface ElasticSearchConfiguration extends ServiceWithImage {
     /**
      * Environmental variables used for Elasticsearch container
      */
+    env: Record<string, unknown>   
+}
+
+export interface OpenSearchSearchConfiguration extends ServiceWithImage {
+    /**
+     * Environmental variables used for Opensearch container
+     */
+    env: Record<string, unknown>   
+}
+
+export interface SearchEngineConfiguration extends ServiceWithImage {
+    /**
+    * Choose either opensearch or elasticsearch
+    */
+    engine: 'elasticsearch' | 'opensearch'
+
+    /**
+     * Environmental variables used for Opensearch container
+     */
     env: Record<string, unknown>
 }
 
@@ -281,6 +300,16 @@ export interface CMAConfiguration {
          * ElasticSearch configuration
          */
         elasticsearch: ElasticSearchConfiguration
+
+        /**
+         * OpenSearch configuration
+         */
+        opensearch: OpenSearchSearchConfiguration
+
+        /**
+         * Search engine configuration
+         */
+        searchengine: SearchEngineConfiguration
 
         /**
          * Redis configuration

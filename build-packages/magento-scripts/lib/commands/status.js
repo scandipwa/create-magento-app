@@ -9,7 +9,7 @@ const { statusContainers } = require('../tasks/docker/containers')
 const getProjectConfiguration = require('../config/get-project-configuration')
 const checkConfigurationFile = require('../config/check-configuration-file')
 const checkPHPVersion = require('../tasks/requirements/php-version')
-const checkElasticSearchVersion = require('../tasks/requirements/elasticsearch-version')
+const checkSearchEngineVersion = require('../tasks/requirements/searchengine-version')
 const { getComposerVersionTask } = require('../tasks/composer')
 const { systemApi } = require('../tasks/docker/system')
 
@@ -36,7 +36,7 @@ module.exports = (yargs) => {
                                 [
                                     checkPHPVersion(),
                                     getComposerVersionTask(),
-                                    checkElasticSearchVersion(),
+                                    checkSearchEngineVersion(),
                                     {
                                         title: 'Retrieving Docker System data',
                                         task: async (ctx) => {
@@ -57,9 +57,9 @@ module.exports = (yargs) => {
                 ],
                 {
                     concurrent: false,
-                    exitOnError: true,
+                    exitOnError: false,
                     ctx: { throwMagentoVersionMissing: true, ...args },
-                    rendererOptions: { collapse: false, clearOutput: true }
+                    rendererOptions: { collapse: false, clearOutput: false }
                 }
             )
 
