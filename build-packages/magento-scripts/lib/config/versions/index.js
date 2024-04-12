@@ -12,7 +12,8 @@ const defaultCMAConfig = {
         newRelic: {
             enabled: false,
             agentVersion: '10.11.0.3'
-        }
+        },
+        searchengine: 'elasticsearch'
     },
     magento: defaultMagentoConfig,
     ssl: {

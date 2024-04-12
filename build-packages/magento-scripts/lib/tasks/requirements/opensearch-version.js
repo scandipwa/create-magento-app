@@ -7,8 +7,7 @@ const { containerApi } = require('../docker/containers')
 const checkOpenSearchVersion = () => ({
     title: 'Checking container OpenSearch version',
     task: async (ctx, task) => {
-        const { opensearch, elasticsearch } =
-            ctx.config.overridenConfiguration.configuration
+        const { opensearch } = ctx.config.overridenConfiguration.configuration
         const { ports } = ctx
 
         let openSearchVersionResponse
@@ -19,15 +18,16 @@ const checkOpenSearchVersion = () => ({
                 command: 'opensearch --version',
                 detach: false,
                 rm: true,
-                ports: [`127.0.0.1:${ports.opensearch}:9200`],
+                ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 memory: '512mb'
             })
         } catch (e) {
             openSearchVersionResponse = e.message
         }
 
-        const openSearchVersionResponseResult =
-            openSearchVersionResponse.match(/Version:\s(\d+\.\d+\.\d+)/i)
+        const openSearchVersionResponseResult = openSearchVersionResponse.match(
+            /Version:\s(\d+\.\d+\.\d+)/i
+        )
 
         if (
             openSearchVersionResponseResult &&

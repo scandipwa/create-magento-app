@@ -13,7 +13,6 @@ const { redis70 } = require('../services/redis')
 const { mariadb106 } = require('../services/mariadb/versions')
 const { elasticsearch87 } = require('../services/elasticsearch/versions')
 const { mysql80 } = require('../services/mysql/versions')
-const { searchengine247 } = require('../services/searchengine/versions')
 const { opensearch25 } = require('../services/opensearch/versions')
 
 /**
@@ -36,7 +35,6 @@ module.exports = ({ templateDir }) => ({
         varnish: varnish73({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev(),
-        searchengine: searchengine247(),
         opensearch: opensearch25()
     }
 })

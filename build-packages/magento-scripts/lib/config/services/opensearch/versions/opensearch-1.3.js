@@ -3,8 +3,8 @@ const defaultEnv = require('../default-os-env')
 /**
  * @returns {import('../../../../../typings/index').OpenSearchSearchConfiguration}
  */
-const opensearch25 = () => ({
-    image: 'opensearchproject/opensearch:2.5.0',
+const opensearch13 = () => ({
+    image: 'opensearchproject/opensearch:1.3.15',
     env: {
         ...defaultEnv,
         'indices.id_field_data.enabled': true,
@@ -12,4 +12,4 @@ const opensearch25 = () => ({
     }
 })
 
-module.exports = opensearch25
+module.exports = opensearch13

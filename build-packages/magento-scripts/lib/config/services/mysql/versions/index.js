@@ -4,4 +4,6 @@ const mysql8028 = require('./mysql-8.0.28')
 
 module.exports = {
     mysql57,
-    mysql80,}
+    mysql80,
+    mysql8028
+}

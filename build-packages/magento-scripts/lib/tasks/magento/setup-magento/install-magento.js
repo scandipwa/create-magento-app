@@ -23,7 +23,12 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
         }
         const {
             magentoVersion,
-            config: { magentoConfiguration },
+            config: {
+                magentoConfiguration,
+                overridenConfiguration: {
+                    configuration: { searchengine = 'elasticsearch' }
+                }
+            },
             ports,
             databaseConnection,
             isDockerDesktop
@@ -108,10 +113,23 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
 
         const isMagento23 = semver.satisfies(pureMagentoVersion, '<2.4')
 
-        const elasticsearchConfiguration = ` \
---search-engine='elasticsearch7' \
+        let searchEngineConfiguration
+
+        if (searchengine === 'opensearch') {
+            searchEngineConfiguration = ` \
+            --search-engine='opensearch' \
+            --opensearch-host='${hostMachine}' \
+            --opensearch-port='${ports.elasticsearch}'`
+        } else {
+            const { major: parsedESMajorVersion } = semver.parse(
+                ctx.elasticSearchVersion
+            ) || { major: 7 }
+
+            searchEngineConfiguration = ` \
+--search-engine=elasticsearch${parsedESMajorVersion} \
 --elasticsearch-host='${hostMachine}' \
 --elasticsearch-port='${ports.elasticsearch}'`
+        }
 
         /**
          * @type {Array<Error>}
@@ -126,7 +144,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --admin-email='${magentoConfiguration.email}' \
                 --admin-user='${magentoConfiguration.user}' \
                 --admin-password='${magentoConfiguration.password}' \
-                ${!isMagento23 ? elasticsearchConfiguration : ''} \
+                ${!isMagento23 ? searchEngineConfiguration : ''} \
                 ${encryptionKeyOption || ''} \
                 --session-save=redis \
                 --session-save-redis-host='${hostMachine}' \

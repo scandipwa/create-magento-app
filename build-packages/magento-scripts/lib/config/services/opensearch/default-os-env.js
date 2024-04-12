@@ -3,7 +3,8 @@
  */
 module.exports = {
     'bootstrap.memory_lock': true,
-    'xpack.security.enabled': false,
     'discovery.type': 'single-node',
-    ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+    OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx2048m',
+    DISABLE_SECURITY_PLUGIN: true,
+    DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI: true
 }

@@ -1,4 +1,4 @@
-const configureElasticsearch = require('../magento/setup-magento/configure-elasticsearch')
+const configureElasticsearch = require('../magento/setup-magento/configure-searchengine')
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users')
 const deleteCustomers = require('../magento/setup-magento/delete-customers')
 const deleteOrders = require('../magento/setup-magento/delete-orders')

@@ -13,6 +13,7 @@ const { redis62 } = require('../services/redis')
 const { mariadb104 } = require('../services/mariadb/versions')
 const { elasticsearch717 } = require('../services/elasticsearch/versions')
 const { mysql80 } = require('../services/mysql/versions')
+const { opensearch13 } = require('../services/opensearch/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
@@ -33,6 +34,7 @@ module.exports = ({ templateDir }) => ({
         composer: composer22(),
         varnish: varnish73({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
-        maildev: maildev()
+        maildev: maildev(),
+        opensearch: opensearch13()
     }
 })
