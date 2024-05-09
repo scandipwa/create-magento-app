@@ -1,10 +1,41 @@
 const semver = require('semver')
 const path = require('path')
-const { updateTableValues, isTableExists } = require('../../../util/database')
+const {
+    updateTableValues,
+    isTableExists,
+    insertTableValues
+} = require('../../../util/database')
 const getJsonfileData = require('../../../util/get-jsonfile-data')
 const runComposerCommand = require('../../../util/run-composer')
 
 const magentoModuleElasticSearch8 = 'magento/module-elasticsearch-8'
+
+const searchEngineConfigurationInCoreConfigDataKeys = (
+    searchEngineEdition = 'elasticsearch7'
+) => ({
+    catalogSearchEngine: 'catalog/search/engine',
+    catalogSearchSearchEngineServerHostname: `catalog/search/${searchEngineEdition}_server_hostname`,
+    catalogSearchSearchEngineServerPort: `catalog/search/${searchEngineEdition}_server_port`,
+    catalogSearchSearchEngineIndexPrefix: `catalog/search/${searchEngineEdition}_index_prefix`,
+    catalogSearchSearchEngineEnableAuth: `catalog/search/${searchEngineEdition}_enable_auth`,
+    catalogSearchSearchEngineServerTimeout: `catalog/search/${searchEngineEdition}_server_timeout`
+})
+
+/**
+ * @param {string} openSearchVersion
+ * @returns {number}
+ */
+const mapOpenSearchVersionToElasticSearchVersion = (openSearchVersion) => {
+    const { major: parsedOSMajorVersion } = semver.parse(openSearchVersion) || {
+        major: 1
+    }
+
+    if (parsedOSMajorVersion === 2) {
+        return 8
+    }
+
+    return 7
+}
 
 /**
  * @param {import('../../../../typings/context').ListrContext} ctx
@@ -32,29 +63,56 @@ const isNeedToInstallElasticSearch8Module = async (ctx) => {
 const configureElasticSearchInDatabase = () => ({
     title: 'Configuring Elasticsearch',
     skip: async (ctx) => {
+        const { ports, isDockerDesktop } = ctx
+        const hostMachine = !isDockerDesktop
+            ? '127.0.0.1'
+            : 'host.docker.internal'
+
+        const { major: parsedESMajorVersion } = semver.parse(
+            ctx.elasticSearchVersion
+        ) || { major: 7 }
+
+        const coreConfigDataSearchEngineKeys =
+            searchEngineConfigurationInCoreConfigDataKeys(
+                `elasticsearch${parsedESMajorVersion}`
+            )
+
         const isCoreConfigDataExists = await isTableExists(
             'magento',
             'core_config_data',
             ctx
         )
+
         if (isCoreConfigDataExists) {
             const elasticsearchConfig = await ctx.databaseConnection.query(
-                `SELECT path,value FROM core_config_data WHERE path='catalog/search/engine';`
+                `SELECT path,value
+                FROM core_config_data
+                WHERE path='${coreConfigDataSearchEngineKeys.catalogSearchEngine}'
+                OR path='${coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerHostname}'
+                OR path='${coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerPort}';`
             )
 
-            if (elasticsearchConfig.length > 0) {
-                const { major: parsedESMajorVersion } = semver.parse(
-                    ctx.elasticSearchVersion
-                ) || { major: 7 }
-                const elasticsearchSearchEngine = `elasticsearch${parsedESMajorVersion}`
+            const mappedElasticSearchConfig = elasticsearchConfig.reduce(
+                (acc, { path, value }) => ({ ...acc, [path]: value }),
+                {}
+            )
 
-                return (
-                    elasticsearchConfig[0].value === elasticsearchSearchEngine
-                )
-            }
+            return ![
+                mappedElasticSearchConfig[
+                    coreConfigDataSearchEngineKeys.catalogSearchEngine
+                ] === `elasticsearch${parsedESMajorVersion}`,
+                mappedElasticSearchConfig[
+                    coreConfigDataSearchEngineKeys
+                        .catalogSearchSearchEngineServerHostname
+                ] === hostMachine,
+                mappedElasticSearchConfig[
+                    coreConfigDataSearchEngineKeys
+                        .catalogSearchSearchEngineServerPort
+                ] === `${ports.elasticsearch}`
+            ].includes(false)
         }
 
-        return false
+        return true
     },
     task: async (ctx, task) => {
         const { ports, databaseConnection, isDockerDesktop } = ctx
@@ -66,20 +124,48 @@ const configureElasticSearchInDatabase = () => ({
             ctx.elasticSearchVersion
         ) || { major: 7 }
 
+        const coreConfigDataSearchEngineKeys =
+            searchEngineConfigurationInCoreConfigDataKeys(
+                `elasticsearch${parsedESMajorVersion}`
+            )
+
         const elasticsearchConfig = {
-            'catalog/search/engine': `elasticsearch${parsedESMajorVersion}`,
-            [`catalog/search/elasticsearch${parsedESMajorVersion}_server_hostname`]:
+            [coreConfigDataSearchEngineKeys.catalogSearchEngine]: `elasticsearch${parsedESMajorVersion}`,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerHostname]:
                 hostMachine,
-            [`catalog/search/elasticsearch${parsedESMajorVersion}_server_port`]: `${ports.elasticsearch}`
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerPort]: `${ports.elasticsearch}`
         }
 
-        await updateTableValues(
+        const elasticsearchDynamicConfig = {
+            [coreConfigDataSearchEngineKeys.catalogSearchEngine]: `elasticsearch${parsedESMajorVersion}`,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerHostname]:
+                hostMachine,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerPort]: `${ports.elasticsearch}`
+        }
+
+        await insertTableValues(
             'core_config_data',
             Object.entries(elasticsearchConfig).map(([path, value]) => ({
                 path,
                 value
             })),
-            { databaseConnection, task }
+            { databaseConnection }
+        )
+
+        await updateTableValues(
+            'core_config_data',
+            Object.entries(elasticsearchDynamicConfig).map(([path, value]) => ({
+                path,
+                value
+            })),
+            {
+                databaseConnection,
+                task: {
+                    skip() {
+                        // do nothing
+                    }
+                }
+            }
         )
     }
 })
@@ -113,45 +199,162 @@ const installElasticSearch8Module = () => ({
 const configureOpenSearchInDatabase = () => ({
     title: 'Configuring OpenSearch',
     skip: async (ctx) => {
+        const { ports, isDockerDesktop, magentoVersion } = ctx
+        const hostMachine = !isDockerDesktop
+            ? '127.0.0.1'
+            : 'host.docker.internal'
+
+        const pureMagentoVersion = magentoVersion.match(
+            /^([0-9]+\.[0-9]+\.[0-9]+)/
+        )[1]
+
+        // required to determine if OpenSearch can be used
+        // OpenSearch is supported in setup:install starting from Magento 2.4.6
+        // OpenSearch 1 based Magento should use ES 7 compatible setup
+        const isAtLeastMagento246 = semver.satisfies(
+            pureMagentoVersion,
+            '>=2.4.6'
+        )
+
+        const useElasticSearch6Configuration = semver.satisfies(
+            pureMagentoVersion,
+            '<=2.3.4'
+        )
+
+        let searchEngineMode = 'opensearch'
+
+        if (!isAtLeastMagento246) {
+            if (useElasticSearch6Configuration) {
+                searchEngineMode = 'elasticsearch6'
+            } else {
+                searchEngineMode = `elasticsearch${mapOpenSearchVersionToElasticSearchVersion(
+                    ctx.openSearchVersion
+                )}`
+            }
+        }
+
+        const coreConfigDataSearchEngineKeys =
+            searchEngineConfigurationInCoreConfigDataKeys(searchEngineMode)
+
         const isCoreConfigDataExists = await isTableExists(
             'magento',
             'core_config_data',
             ctx
         )
+
         if (isCoreConfigDataExists) {
             const openSearchConfig = await ctx.databaseConnection.query(
-                `SELECT path,value FROM core_config_data WHERE path='catalog/search/engine';`
+                `SELECT path,value
+                FROM core_config_data
+                WHERE path='${coreConfigDataSearchEngineKeys.catalogSearchEngine}'
+                OR path='${coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerHostname}'
+                OR path='${coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerPort}';`
             )
 
-            if (openSearchConfig.length > 0) {
-                return openSearchConfig[0].value === 'opensearch'
-            }
+            const mappedOpenSearchConfig = openSearchConfig.reduce(
+                (acc, { path, value }) => ({ ...acc, [path]: value }),
+                {}
+            )
+
+            return ![
+                mappedOpenSearchConfig[
+                    coreConfigDataSearchEngineKeys.catalogSearchEngine
+                ] === searchEngineMode,
+                mappedOpenSearchConfig[
+                    coreConfigDataSearchEngineKeys
+                        .catalogSearchSearchEngineServerHostname
+                ] === hostMachine,
+                mappedOpenSearchConfig[
+                    coreConfigDataSearchEngineKeys
+                        .catalogSearchSearchEngineServerPort
+                ] === `${ports.elasticsearch}`
+            ].includes(false)
         }
 
-        return false
+        return true
     },
     task: async (ctx, task) => {
-        const { ports, databaseConnection, isDockerDesktop } = ctx
+        const { ports, databaseConnection, isDockerDesktop, magentoVersion } =
+            ctx
         const hostMachine = !isDockerDesktop
             ? '127.0.0.1'
             : 'host.docker.internal'
 
-        const opensearchConfig = {
-            'catalog/search/engine': 'opensearch',
-            'catalog/search/opensearch_server_hostname': hostMachine,
-            'catalog/search/opensearch_server_port': `${ports.elasticsearch}`,
-            'catalog/search/opensearch_index_prefix': 'magento2',
-            'catalog/search/opensearch_enable_auth': 0,
-            'catalog/search/opensearch_server_timeout': 15
+        const pureMagentoVersion = magentoVersion.match(
+            /^([0-9]+\.[0-9]+\.[0-9]+)/
+        )[1]
+
+        // required to determine if OpenSearch can be used
+        // OpenSearch is supported in setup:install starting from Magento 2.4.6
+        // OpenSearch 1 based Magento should use ES 7 compatible setup
+        const isAtLeastMagento246 = semver.satisfies(
+            pureMagentoVersion,
+            '>=2.4.6'
+        )
+
+        const compatibleElasticSearchVersion =
+            mapOpenSearchVersionToElasticSearchVersion(ctx.openSearchVersion)
+
+        const useElasticSearch6Configuration = semver.satisfies(
+            pureMagentoVersion,
+            '<=2.3.4'
+        )
+
+        let searchEngineMode = 'opensearch'
+
+        if (!isAtLeastMagento246) {
+            if (useElasticSearch6Configuration) {
+                searchEngineMode = 'elasticsearch6'
+            } else {
+                searchEngineMode = `elasticsearch${compatibleElasticSearchVersion}`
+            }
         }
 
-        await updateTableValues(
+        if (searchEngineMode !== 'opensearch') {
+            task.title = `Configuring OpenSearch (using Elasticsearch ${compatibleElasticSearchVersion} compatible configuration)`
+        }
+
+        const coreConfigDataSearchEngineKeys =
+            searchEngineConfigurationInCoreConfigDataKeys(searchEngineMode)
+
+        const opensearchConfig = {
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineIndexPrefix]:
+                'magento2',
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineEnableAuth]: 0,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerTimeout]: 15
+        }
+
+        const openSearchDynamicConfig = {
+            [coreConfigDataSearchEngineKeys.catalogSearchEngine]:
+                searchEngineMode,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerHostname]:
+                hostMachine,
+            [coreConfigDataSearchEngineKeys.catalogSearchSearchEngineServerPort]: `${ports.elasticsearch}`
+        }
+
+        await insertTableValues(
             'core_config_data',
             Object.entries(opensearchConfig).map(([path, value]) => ({
                 path,
                 value
             })),
-            { databaseConnection, task }
+            { databaseConnection }
+        )
+
+        await updateTableValues(
+            'core_config_data',
+            Object.entries(openSearchDynamicConfig).map(([path, value]) => ({
+                path,
+                value
+            })),
+            {
+                databaseConnection,
+                task: {
+                    skip() {
+                        // do nothing
+                    }
+                }
+            }
         )
     }
 })

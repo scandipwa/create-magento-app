@@ -2,7 +2,7 @@
  * Update table in **magento** database
  * @param {String} table Table name
  * @param {{ path: string, value: string | number | null }[]} values
- * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'], task: import('listr2').ListrTaskWrapper<import('../../typings/context').ListrContext, any> }} param2
+ * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'], task: { skip(): void } }} param2
  */
 const updateTableValues = async (
     table,
@@ -75,6 +75,36 @@ const updateTableValues = async (
         `,
             [config.value, config.path]
         )
+    }
+}
+
+/**
+ * Insert values into table in **magento** database
+ * @description Will not insert values that already exist in the table
+ * @param {string} table Table name
+ * @param {{ path: string, value: string | number | null }[]} values
+ * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'] }} param2
+ */
+const insertTableValues = async (table, values, { databaseConnection }) => {
+    const [rows] = await databaseConnection.query(`
+        SELECT * FROM ${table}
+        WHERE ${values.map((p) => `path = '${p.path}'`).join(' OR ')};
+    `)
+
+    if (rows.filter(Boolean).length !== values.length) {
+        const lostConfigs = values.filter(
+            (p) => !rows.some((row) => row.path === p.path)
+        )
+        for (const config of lostConfigs) {
+            await databaseConnection.query(
+                `
+                INSERT INTO ${table}
+                (scope, path, value)
+                VALUES ('default', ?, ?);
+            `,
+                [config.path, config.value]
+            )
+        }
     }
 }
 
@@ -182,6 +212,7 @@ const databaseQuery = async (
 
 module.exports = {
     updateTableValues,
+    insertTableValues,
     isTableExists,
     databaseQuery
 }
