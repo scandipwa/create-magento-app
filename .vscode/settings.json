@@ -16,11 +16,13 @@
         "Listr",
         "Magento",
         "mysqldump",
+        "opensearch",
         "overriden",
         "portscanner",
         "REBEM",
         "scandipwa",
         "Scandiweb",
+        "searchengine",
         "tablespaces",
         "xdebug"
     ],
@@ -53,5 +55,17 @@
     ],
     "githubPullRequests.remotes": [
         "origin"
-    ]
+    ],
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules": true,
+        "**/node_modules/**": true,
+        "**/node_modules/*/**": true,
+        "**/tmp/**": true,
+        "**/dist/**": true,
+        "**/vendor": true,
+        "**/vendor/**": true,
+        "**/vendor/*/**": true
+    }
 }
