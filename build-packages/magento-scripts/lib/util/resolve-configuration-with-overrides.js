@@ -31,6 +31,12 @@ const resolveConfigurationWithOverrides = async (
             configuration,
             userConfiguration
         )
+        // let chosenEngine = overridenConfiguration.configuration.searchengine.engine
+        // const newSearchEngineConfiguration = {
+        //     ...overridenConfiguration.configuration.searchengine,
+        //     ...overridenConfiguration.configuration[chosenEngine]
+        // }
+        // overridenConfiguration.configuration.searchengine = newSearchEngineConfiguration
 
         return {
             userConfiguration,

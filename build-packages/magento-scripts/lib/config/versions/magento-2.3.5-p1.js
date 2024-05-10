@@ -12,6 +12,7 @@ const { varnish66 } = require('../services/varnish')
 const { mariadb102 } = require('../services/mariadb/versions')
 const { elasticsearch76 } = require('../services/elasticsearch/versions')
 const { mysql57 } = require('../services/mysql/versions')
+const { opensearch12 } = require('../services/opensearch/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
@@ -32,6 +33,7 @@ module.exports = ({ templateDir }) => ({
         composer: composer1(),
         varnish: varnish66({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
-        maildev: maildev()
+        maildev: maildev(),
+        opensearch: opensearch12()
     }
 })

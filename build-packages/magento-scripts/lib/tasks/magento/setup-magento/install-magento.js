@@ -23,7 +23,12 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
         }
         const {
             magentoVersion,
-            config: { magentoConfiguration },
+            config: {
+                magentoConfiguration,
+                overridenConfiguration: {
+                    configuration: { searchengine = 'elasticsearch' }
+                }
+            },
             ports,
             databaseConnection,
             isDockerDesktop
@@ -108,10 +113,50 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
 
         const isMagento23 = semver.satisfies(pureMagentoVersion, '<2.4')
 
-        const elasticsearchConfiguration = ` \
---search-engine='elasticsearch7' \
+        // required to determine if OpenSearch can be used
+        // OpenSearch is supported in setup:install starting from Magento 2.4.6
+        // OpenSearch 1 based Magento should use ES 7 compatible setup
+        const isAtLeastMagento246 = semver.satisfies(
+            pureMagentoVersion,
+            '>=2.4.6'
+        )
+
+        let searchEngineConfiguration
+
+        if (isAtLeastMagento246 && searchengine === 'opensearch') {
+            searchEngineConfiguration = ` \
+            --search-engine='opensearch' \
+            --opensearch-host='${hostMachine}' \
+            --opensearch-port='${ports.elasticsearch}'`
+        } else {
+            let parsedESMajorVersion = 7
+
+            if (searchengine === 'opensearch') {
+                // OpenSearch 1 is a fork of ES 7, so should be compatible
+                // OpenSearch 2 is based on ES 8, should work in theory
+                const parsedOSVersion = semver.parse(ctx.openSearchVersion) || {
+                    major: 1
+                }
+
+                if (parsedOSVersion.major === 2) {
+                    parsedESMajorVersion = 8
+                }
+
+                // when OpenSearch version 3 comes out this should be replaced
+            } else {
+                // we only expect to have ES 5, 6, 7 and 8 here
+                const parsedESVersion = semver.parse(
+                    ctx.elasticSearchVersion
+                ) || { major: 7 }
+
+                parsedESMajorVersion = parsedESVersion.major
+            }
+
+            searchEngineConfiguration = ` \
+--search-engine=elasticsearch${parsedESMajorVersion} \
 --elasticsearch-host='${hostMachine}' \
 --elasticsearch-port='${ports.elasticsearch}'`
+        }
 
         /**
          * @type {Array<Error>}
@@ -126,7 +171,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --admin-email='${magentoConfiguration.email}' \
                 --admin-user='${magentoConfiguration.user}' \
                 --admin-password='${magentoConfiguration.password}' \
-                ${!isMagento23 ? elasticsearchConfiguration : ''} \
+                ${!isMagento23 ? searchEngineConfiguration : ''} \
                 ${encryptionKeyOption || ''} \
                 --session-save=redis \
                 --session-save-redis-host='${hostMachine}' \

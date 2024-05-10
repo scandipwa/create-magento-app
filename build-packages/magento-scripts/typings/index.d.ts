@@ -16,6 +16,13 @@ export interface ServiceWithImage {
     image: string
 }
 
+export interface ServiceWithoutImage {
+    /**
+     * Service Docker image
+     */
+    image: string
+}
+
 export interface MariaDBConfiguration extends ServiceWithImage {
     /**
      * Use MariaDB [optimizer-switch](https://mariadb.com/kb/en/optimizer-switch/) configuration.
@@ -49,6 +56,15 @@ export interface ElasticSearchConfiguration extends ServiceWithImage {
      */
     env: Record<string, unknown>
 }
+
+export interface OpenSearchSearchConfiguration extends ServiceWithoutImage {
+    /**
+     * Environmental variables used for OpenSearch container
+     */
+    env: Record<string, unknown>
+}
+
+export type SearchEngineConfiguration = 'elasticsearch' | 'opensearch'
 
 export interface VarnishConfiguration extends ServiceWithImage {
     /**
@@ -281,6 +297,16 @@ export interface CMAConfiguration {
          * ElasticSearch configuration
          */
         elasticsearch: ElasticSearchConfiguration
+
+        /**
+         * OpenSearch configuration
+         */
+        opensearch: OpenSearchSearchConfiguration
+
+        /**
+         * Search engine configuration
+         */
+        searchengine?: SearchEngineConfiguration
 
         /**
          * Redis configuration

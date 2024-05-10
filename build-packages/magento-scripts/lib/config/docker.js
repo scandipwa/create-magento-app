@@ -8,6 +8,7 @@ const { deepmerge } = require('../util/deepmerge')
 const defaultEsEnv = require('./services/elasticsearch/default-es-env')
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const defaultMagentoUser = require('../tasks/database/default-magento-user')
+const defaultOsEnv = require('./services/opensearch/default-os-env')
 
 /**
  * @param {import('../../typings/context').ListrContext} ctx
@@ -20,8 +21,17 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         ssl,
         storeDomains: { admin: host }
     } = overridenConfiguration
-    const { nginx, redis, elasticsearch, mariadb, varnish, maildev, newRelic } =
-        configuration
+    const {
+        nginx,
+        redis,
+        elasticsearch,
+        opensearch,
+        searchengine = 'elasticsearch',
+        mariadb,
+        varnish,
+        maildev,
+        newRelic
+    } = configuration
 
     const php = getPhpConfig(overridenConfiguration, baseConfig)
     const { prefix, magentoDir, containerMagentoDir, cacheDir } = baseConfig
@@ -44,6 +54,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         },
         elasticsearch: {
             name: `${prefix}_elasticsearch-data`
+        },
+        opensearch: {
+            name: `${prefix}_opensearch-data`
         },
         maildev: {
             name: `${prefix}_maildev-data`
@@ -335,31 +348,42 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 )}`
             },
             elasticsearch: {
-                _: 'ElasticSearch',
+                _:
+                    searchengine === 'elasticsearch'
+                        ? 'ElasticSearch'
+                        : 'OpenSearch',
                 healthCheck: {
                     cmd: 'curl --silent --fail localhost:9200/_cluster/health || exit 1'
                 },
                 ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 forwardedPorts: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 mounts: [
-                    `source=${volumes.elasticsearch.name},target=/usr/share/elasticsearch/data`
+                    searchengine === 'elasticsearch'
+                        ? `source=${volumes.elasticsearch.name},target=/usr/share/elasticsearch/data`
+                        : `source=${volumes.opensearch.name},target=/usr/share/opensearch/data`
                 ],
-                env: deepmerge(
-                    {
-                        // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
-                        'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some(
-                            (sse42Flag) => cpuSupportedFlags.includes(sse42Flag)
-                        )
-                    },
-                    elasticsearch.env || defaultEsEnv
-                ),
+                env:
+                    searchengine === 'elasticsearch'
+                        ? deepmerge(
+                              {
+                                  // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
+                                  'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some(
+                                      (sse42Flag) =>
+                                          cpuSupportedFlags.includes(sse42Flag)
+                                  )
+                              },
+                              elasticsearch.env || defaultEsEnv
+                          )
+                        : deepmerge({}, opensearch.env || defaultOsEnv),
                 network: network.name,
                 image: `${
-                    elasticsearch.version
-                        ? `elasticsearch:${elasticsearch.version}`
-                        : elasticsearch.image
+                    searchengine === 'elasticsearch'
+                        ? elasticsearch.version
+                            ? `elasticsearch:${elasticsearch.version}`
+                            : elasticsearch.image
+                        : opensearch.image
                 }`,
-                name: `${prefix}_elasticsearch`
+                name: `${prefix}_${searchengine}`
             },
             maildev: {
                 _: 'MailDev',

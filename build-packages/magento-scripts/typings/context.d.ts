@@ -24,6 +24,7 @@ export interface ListrContext {
     composerVersion: string
     phpVersion: string
     elasticSearchVersion: string
+    openSearchVersion: string
     port?: number
     ports: {
         app: number
@@ -32,6 +33,7 @@ export interface ListrContext {
         mariadb: number
         redis: number
         elasticsearch: number
+        opensearch: number
         varnish: number
         sslTerminator: number
         maildevSMTP: number

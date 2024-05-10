@@ -2,7 +2,7 @@ const path = require('path')
 const installMagentoProject = require('../install-magento-project')
 const magentoTask = require('../../../util/magento-task')
 const runMagentoCommand = require('../../../util/run-magento')
-const configureElasticsearch = require('./configure-elasticsearch')
+const configureSearchEngine = require('./configure-searchengine')
 const installMagento = require('./install-magento')
 const upgradeMagento = require('./upgrade-magento')
 const varnishConfigSetup = require('./varnish-config')
@@ -47,7 +47,7 @@ const migrateDatabase = (options = {}) => ({
                     installMagento({ isDbEmpty: true }),
                     updateEnvPHP(),
                     varnishConfigSetup(),
-                    configureElasticsearch(),
+                    configureSearchEngine(),
                     upgradeMagento(),
                     magentoTask('cache:enable')
                 ],
@@ -75,7 +75,7 @@ const migrateDatabase = (options = {}) => ({
                 ctx.isSetupUpgradeNeeded = false
                 // no setup is needed, but still to be sure configure ES
                 return task.newListr(
-                    [varnishConfigSetup(), configureElasticsearch()],
+                    [varnishConfigSetup(), configureSearchEngine()],
                     {
                         concurrent: false,
                         exitOnError: true,
@@ -101,7 +101,7 @@ const migrateDatabase = (options = {}) => ({
                         installMagento(),
                         updateEnvPHP(),
                         varnishConfigSetup(),
-                        configureElasticsearch(),
+                        configureSearchEngine(),
                         upgradeMagento(),
                         magentoTask('cache:enable')
                     ],
@@ -119,7 +119,7 @@ const migrateDatabase = (options = {}) => ({
                 return task.newListr(
                     [
                         varnishConfigSetup(),
-                        configureElasticsearch(),
+                        configureSearchEngine(),
                         upgradeMagento()
                     ],
                     {

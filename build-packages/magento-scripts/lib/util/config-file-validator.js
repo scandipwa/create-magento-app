@@ -147,6 +147,15 @@ const elasticsearchConfigurationSchema = Joi.object({
     env: Joi.object().optional()
 })
 
+const opensearchConfigurationSchema = Joi.object({
+    image: Joi.string().optional(),
+    env: Joi.object().optional()
+})
+
+const searchEngineConfiguration = Joi.string().valid(
+    'elasticsearch',
+    'opensearch'
+)
 /**
  * @type {Joi.ObjectSchema<import('../../typings').ComposerConfiguration>}
  */
@@ -208,6 +217,8 @@ const configurationSchema = Joi.object({
     nginx: nginxConfigurationSchema.optional(),
     mariadb: mariadbConfigurationSchema.optional(),
     elasticsearch: elasticsearchConfigurationSchema.optional(),
+    opensearch: opensearchConfigurationSchema.optional(),
+    searchengine: searchEngineConfiguration.optional(),
     redis: serviceConfigurationSchema.optional(),
     composer: composerConfigurationSchema.optional(),
     varnish: varnishConfigurationSchema.optional(),

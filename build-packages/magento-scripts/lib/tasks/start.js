@@ -34,7 +34,6 @@ const {
 } = require('../util/instance-metadata')
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish')
 const checkPHPVersion = require('./requirements/php-version')
-const checkElasticSearchVersion = require('./requirements/elasticsearch-version')
 const volumes = require('./docker/volume/tasks')
 const convertMySQLDatabaseToMariaDB = require('./docker/convert-mysql-to-mariadb')
 const { cmaGlobalConfig } = require('../config/cma-config')
@@ -42,6 +41,7 @@ const { setProjectConfigTask } = require('./project-config')
 const {
     convertComposerHomeToComposerCacheVolume
 } = require('./docker/convert-composer-home-to-composer-cache-volume')
+const checkSearchEngineVersion = require('./requirements/searchengine-version')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -135,7 +135,7 @@ const configureProject = () => ({
             {
                 task: (ctx, subTask) =>
                     subTask.newListr(
-                        [checkPHPVersion(), checkElasticSearchVersion()],
+                        [checkPHPVersion(), checkSearchEngineVersion()],
                         {
                             concurrent: true
                         }
