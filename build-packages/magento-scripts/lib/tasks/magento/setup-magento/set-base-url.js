@@ -31,6 +31,7 @@ const setBaseUrlForScope = (scopeId, code, host) => ({
         const secureLocation = `${host}/` // SSL will work only on port 443, so you cannot run multiple projects with SSL at the same time.
         const httpUrl = `http://${location}`
         const httpsUrl = `https://${secureLocation}`
+        const scope = scopeId === 0 ? 'default' : 'websites'
         const table = 'core_config_data'
         const values = [
             {
@@ -63,7 +64,8 @@ const setBaseUrlForScope = (scopeId, code, host) => ({
                             ['path', '=', path]
                         ],
                         data: {
-                            value
+                            value,
+                            scope
                         }
                     },
                     ctx
