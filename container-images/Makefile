@@ -36,7 +36,7 @@ buildx-php-debug: buildx-php-72-debug buildx-php-73-debug buildx-php-74-debug bu
 buildxpush-php: buildxpush-php-72 buildxpush-php-73 buildxpush-php-74 buildxpush-php-81 buildxpush-php-82 buildxpush-php-83
 buildxpush-php-debug: buildxpush-php-72-debug buildxpush-php-73-debug buildxpush-php-74-debug buildxpush-php-81-debug buildxpush-php-82-debug buildxpush-php-83-debug
 
-buildxpush-php-8-all: buildxpush-php-81 buildxpush-php-82 buildxpush-php-83
+buildxpush-php-8-all: buildxpush-php-81-all buildxpush-php-82-all buildxpush-php-83-all
 
 buildxpush-php-81-all: buildxpush-php-81 buildxpush-php-81-debug buildxpush-php-81-magento-24 buildxpush-php-81-magento-24-debug
 buildxpush-php-82-all: buildxpush-php-82 buildxpush-php-82-debug buildxpush-php-82-magento-24 buildxpush-php-82-magento-24-debug
