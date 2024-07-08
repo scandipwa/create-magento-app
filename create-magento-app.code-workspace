@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "./build-packages",
+			"name": "Build Packages"
+		},
+		{
+			"path": "./container-images",
+			"name": "Container Images"
+		},
+		{
+			"path": "./sample-packages",
+			"name": "Sample Packages"
+		},
+		{
+			"path": ".",
+			"name": "root"
+		}
+	],
+	"settings": {
+		"debug.javascript.autoAttachFilter": "onlyWithFlag",
+		"debug.javascript.terminalOptions": {
+			"skipFiles": [
+				"<node_internals>/**"
+			]
+		},
+		"githubPullRequests.remotes": [
+			"origin"
+		]
+	}
+}
