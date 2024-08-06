@@ -105,12 +105,17 @@ const prettyStatus = async (ctx) => {
         if (
             container.status &&
             container.status.State &&
-            container.status.State.Health
+            container.status.State.Health &&
+            container.status.State.Status === 'running'
         ) {
             containerStatus = `✓ ${logger.style.file(
                 container.status.State.Health.Status
             )} and ${logger.style.file('running')}`
-        } else if (container.status && container.status.State) {
+        } else if (
+            container.status &&
+            container.status.State &&
+            container.status.State.Status !== 'exited'
+        ) {
             containerStatus = logger.style.file(container.status.State.Status)
         } else {
             containerStatus = '✖ Not running'
