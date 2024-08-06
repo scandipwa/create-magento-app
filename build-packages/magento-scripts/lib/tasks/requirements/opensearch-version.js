@@ -1,3 +1,4 @@
+const { getPort } = require('../../config/port-config')
 const UnknownError = require('../../errors/unknown-error')
 const { containerApi } = require('../docker/containers')
 
@@ -10,19 +11,40 @@ const checkOpenSearchVersion = () => ({
         const { opensearch } = ctx.config.overridenConfiguration.configuration
         const { ports } = ctx
 
+        const { elasticsearch: openSearchContainer } =
+            ctx.config.docker.getContainers(ports)
+
         let openSearchVersionResponse
 
-        try {
-            openSearchVersionResponse = await containerApi.run({
-                ...opensearch,
-                command: 'opensearch --version',
-                detach: false,
-                rm: true,
-                ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
-                memory: '512mb'
-            })
-        } catch (e) {
-            openSearchVersionResponse = e.message
+        const openSearchContainerRunning = await containerApi.ls({
+            filter: `name=${openSearchContainer.name}`,
+            formatToJSON: true
+        })
+
+        if (
+            openSearchContainerRunning.length !== 0 &&
+            openSearchContainerRunning[0].State === 'running'
+        ) {
+            openSearchVersionResponse = await containerApi.exec(
+                'opensearch --version',
+                openSearchContainer.name
+            )
+        } else {
+            try {
+                const availableOpenSearchPort = await getPort(
+                    ports.elasticsearch
+                )
+                openSearchVersionResponse = await containerApi.run({
+                    ...opensearch,
+                    command: 'opensearch --version',
+                    detach: false,
+                    rm: true,
+                    ports: [`127.0.0.1:${availableOpenSearchPort}:9200`],
+                    memory: '512mb'
+                })
+            } catch (e) {
+                openSearchVersionResponse = e.message
+            }
         }
 
         const openSearchVersionResponseResult = openSearchVersionResponse.match(

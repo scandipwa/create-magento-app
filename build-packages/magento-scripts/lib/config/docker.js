@@ -365,6 +365,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 env:
                     searchengine === 'elasticsearch'
                         ? deepmerge(
+                              defaultEsEnv,
                               {
                                   // https://www.elastic.co/guide/en/elasticsearch/reference/master/ml-settings.html
                                   'xpack.ml.enabled': ['sse4.2', 'sse4_2'].some(
@@ -372,9 +373,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                                           cpuSupportedFlags.includes(sse42Flag)
                                   )
                               },
-                              elasticsearch.env || defaultEsEnv
+                              elasticsearch.env || {}
                           )
-                        : deepmerge({}, opensearch.env || defaultOsEnv),
+                        : deepmerge(defaultOsEnv, opensearch.env || {}),
                 network: network.name,
                 image: `${
                     searchengine === 'elasticsearch'

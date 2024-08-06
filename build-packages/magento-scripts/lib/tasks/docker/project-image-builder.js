@@ -45,15 +45,10 @@ const addExtensionToBuilder =
         let runCommand = ''
         if (typeof command === 'string') {
             runCommand += ` ${command}`
-        } else if (command instanceof Promise) {
+        } else if (typeof command === 'function') {
             runCommand += ` ${await Promise.resolve(
                 command({ ...extensionInstructionsWithoutCommand, ctx })
             )}`
-        } else if (typeof command === 'function') {
-            runCommand += ` ${command({
-                ...extensionInstructionsWithoutCommand,
-                ctx
-            })}`
         } else {
             runCommand += ` docker-php-ext-install ${
                 extensionInstructionsWithoutCommand.name || extensionName
@@ -146,14 +141,17 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
             composer.plugins
         )) {
             if (pluginOptions.enabled) {
+                const pluginVersion = pluginOptions.version
                 dockerFileInstructions
-                    .comment(`install ${pluginName} composer global package`)
+                    .comment(
+                        `install ${pluginName}${
+                            pluginVersion ? ` (version ${pluginVersion})` : ''
+                        } composer global package`
+                    )
 
                     .run(
                         `composer global require ${pluginName}${
-                            pluginOptions.options
-                                ? ` ${pluginOptions.options}`
-                                : ''
+                            pluginVersion ? `:${pluginVersion}` : ''
                         }${
                             pluginOptions.options
                                 ? ` ${pluginOptions.options}`

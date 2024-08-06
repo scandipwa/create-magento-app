@@ -91,7 +91,7 @@ export interface ListrContext {
                     }
                 }
             >
-            getContainers(ports?: Record<string, number>): Record<string,
+            getContainers(ports?: ListrContext['ports']): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'maildev' | 'varnish',
                 {
                     _: string
                     ports: string[]
