@@ -1,3 +1,4 @@
+const { getPort } = require('../../config/port-config')
 const UnknownError = require('../../errors/unknown-error')
 const { containerApi } = require('../docker/containers')
 
@@ -11,19 +12,40 @@ const checkElasticSearchVersion = () => ({
             ctx.config.overridenConfiguration.configuration
         const { ports } = ctx
 
+        const { elasticsearch: elasticSearchContainer } =
+            ctx.config.docker.getContainers(ports)
+
         let elasticSearchVersionResponse
 
-        try {
-            elasticSearchVersionResponse = await containerApi.run({
-                ...elasticsearch,
-                command: 'elasticsearch --version',
-                detach: false,
-                rm: true,
-                ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
-                memory: '512mb'
-            })
-        } catch (e) {
-            elasticSearchVersionResponse = e.message
+        const elasticSearchContainerRunning = await containerApi.ls({
+            filter: `name=${elasticSearchContainer.name}`,
+            formatToJSON: true
+        })
+
+        if (
+            elasticSearchContainerRunning.length !== 0 &&
+            elasticSearchContainerRunning[0].State === 'running'
+        ) {
+            elasticSearchVersionResponse = await containerApi.exec(
+                'elasticsearch --version',
+                elasticSearchContainer.name
+            )
+        } else {
+            try {
+                const availableElasticSearchPort = await getPort(
+                    ports.elasticsearch
+                )
+                elasticSearchVersionResponse = await containerApi.run({
+                    ...elasticsearch,
+                    command: 'elasticsearch --version',
+                    detach: false,
+                    rm: true,
+                    ports: [`127.0.0.1:${availableElasticSearchPort}:9200`],
+                    memory: '512mb'
+                })
+            } catch (e) {
+                elasticSearchVersionResponse = e.message
+            }
         }
 
         const elasticSearchVersionResponseResult =
