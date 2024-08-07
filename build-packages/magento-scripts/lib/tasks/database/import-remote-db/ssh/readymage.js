@@ -4,7 +4,7 @@ const { execAsyncSpawn } = require('../../../../util/exec-async-command')
 const databaseDumpCommandWithOptions = require('./database-dump-command')
 
 /**
- * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh').NodeSSH }>}
+ * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh-no-cpu-features').NodeSSH }>}
  */
 const readymageSSH = () => ({
     task: async (ctx, task) => {

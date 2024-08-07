@@ -23,24 +23,24 @@
         "arm64"
     ],
     "dependencies": {
-        "@scandipwa/scandipwa-dev-utils": "0.1.16",
-        "@tilework/mosaic-dev-utils": "^0.2.3",
-        "conf": "10.1.2",
-        "enquirer": "2.3.6",
-        "eta": "1.12.3",
-        "fast-xml-parser": "^4.0.9",
+        "@scandipwa/scandipwa-dev-utils": "0.1.17",
+        "@tilework/mosaic-dev-utils": "^0.2.4",
+        "conf": "10.2.0",
+        "enquirer": "2.4.1",
+        "eta": "3.4.0",
+        "fast-xml-parser": "^4.4.0",
         "hjson": "^3.2.2",
         "is-installed-globally": "0.4.0",
-        "joi": "17.6.0",
+        "joi": "17.13.3",
         "listr2": "4.0.5",
         "macos-version": "5.2.1",
         "merge-files": "0.1.2",
-        "mysql2": "2.3.3",
-        "node-ssh": "12.0.5",
-        "semver": "7.3.7",
+        "mysql2": "3.10.3",
+        "node-ssh-no-cpu-features": "^2.0.0",
+        "semver": "7.6.3",
         "smol-request": "^2.1.2",
-        "systeminformation": "5.12.1",
-        "yargs": "17.5.1"
+        "systeminformation": "5.22.11",
+        "yargs": "17.7.2"
     },
     "publishConfig": {
         "access": "public"
@@ -56,7 +56,7 @@
         "scandipwa"
     ],
     "devDependencies": {
-        "@types/node": "^20.10.4",
-        "@types/yargs": "^17.0.13"
+        "@types/node": "^20.14.11",
+        "@types/yargs": "^17.0.32"
     }
 }
