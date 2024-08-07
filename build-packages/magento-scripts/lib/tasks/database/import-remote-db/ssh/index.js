@@ -1,5 +1,5 @@
 const os = require('os')
-const { NodeSSH } = require('node-ssh')
+const { NodeSSH } = require('node-ssh-no-cpu-features')
 const pathExists = require('../../../../util/path-exists')
 const regularSSHServer = require('./regular-server')
 const readymageSSH = require('./readymage')
