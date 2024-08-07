@@ -1,7 +1,9 @@
-const eta = require('eta')
+const { Eta } = require('eta')
 const fs = require('fs')
 const path = require('path')
 const pathExists = require('./path-exists')
+
+const eta = new Eta()
 
 /**
  * @param {{ configPathname: string, template: string, overwrite?: boolean, templateArgs?: Record<string, unknown> }} param0
@@ -19,7 +21,7 @@ const setConfigFile = async ({
     }
 
     const configTemplate = await fs.promises.readFile(template, 'utf-8')
-    const compliedConfig = await eta.render(configTemplate, {
+    const compliedConfig = await eta.renderStringAsync(configTemplate, {
         date: new Date().toUTCString(),
         ...templateArgs
     })
