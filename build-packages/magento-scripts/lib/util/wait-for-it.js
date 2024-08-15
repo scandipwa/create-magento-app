@@ -2,13 +2,16 @@ const net = require('net')
 const UnknownError = require('../errors/unknown-error')
 const sleep = require('./sleep')
 
+// 15 seconds
+const timeout = 15 * 1000
+
 /**
  * @param {{ host: string, port: number}} param0
  * @returns {Promise<void>}
  */
 const connectToHostPort = ({ host, port }) =>
     new Promise((resolve, reject) => {
-        const socket = net.createConnection({ host, port, timeout: 15 * 1000 })
+        const socket = net.createConnection({ host, port, timeout })
 
         socket.on('connect', () => {
             socket.end()
@@ -34,7 +37,7 @@ const waitForIt = async ({ name, host, port, output }) => {
     while (!connected) {
         try {
             await Promise.race([
-                sleep(300).then(() => {
+                sleep(timeout).then(() => {
                     throw new UnknownError('Connection timeout')
                 }),
                 connectToHostPort({ host, port })
