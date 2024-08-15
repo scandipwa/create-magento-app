@@ -18,6 +18,9 @@
 		}
 	],
 	"settings": {
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": "explicit"
+		},
 		"debug.javascript.autoAttachFilter": "onlyWithFlag",
 		"debug.javascript.terminalOptions": {
 			"skipFiles": [
@@ -26,6 +29,12 @@
 		},
 		"githubPullRequests.remotes": [
 			"origin"
+		],
+		"cSpell.words": [
+			"deepmerge",
+			"magento",
+			"scandipwa",
+			"tilework"
 		]
 	}
 }
