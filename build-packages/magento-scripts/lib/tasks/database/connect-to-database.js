@@ -20,7 +20,9 @@ const waitForDatabaseInitialization = () => ({
             const databaseOutput = await execAsyncSpawn(
                 `docker logs ${mariadb.name}`
             )
-            if (databaseOutput.includes('ready for connections')) {
+            // we can't rely on ready for connections message because it's written 1 or 2 times depending if data is already there or not
+            // changed to rely on server socket created message
+            if (databaseOutput.includes('Server socket created on IP')) {
                 databaseReadyForConnections = true
                 break
             } else if (databaseOutput.includes('Initializing database files')) {
