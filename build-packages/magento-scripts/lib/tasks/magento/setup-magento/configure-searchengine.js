@@ -366,17 +366,27 @@ const configureSearchEngine = () => ({
     task: async (ctx, task) => {
         const { searchengine = 'elasticsearch' } =
             ctx.config.overridenConfiguration.configuration
+        const pureMagentoVersion = ctx.magentoVersion.match(
+            /^([0-9]+\.[0-9]+\.[0-9]+)/
+        )[1]
 
         if (searchengine === 'opensearch') {
             return task.newListr(configureOpenSearchInDatabase())
         }
 
-        const { major: parsedESMajorVersion } = semver.parse(
-            ctx.elasticSearchVersion
-        ) || { major: 7 }
+        const isMagento246 = semver.eq(pureMagentoVersion, '2.4.6')
+
+        const getParsedESMajorVersion = () => {
+            const { major: parsedESMajorVersion } = semver.parse(
+                ctx.elasticSearchVersion
+            ) || { major: 7 }
+
+            return parsedESMajorVersion
+        }
 
         if (
-            parsedESMajorVersion === 8 &&
+            isMagento246 &&
+            getParsedESMajorVersion() === 8 &&
             (await isNeedToInstallElasticSearch8Module(ctx))
         ) {
             return task.newListr([
