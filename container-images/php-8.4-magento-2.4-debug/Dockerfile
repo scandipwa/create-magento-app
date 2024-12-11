@@ -1,4 +1,4 @@
-FROM ghcr.io/scandipwa/create-magento-app:php-8.2
+FROM ghcr.io/scandipwa/create-magento-app:php-8.4-debug
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && pecl install apcu \

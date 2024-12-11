@@ -1,6 +1,6 @@
-FROM ghcr.io/scandipwa/create-magento-app:php-8.3
+FROM ghcr.io/scandipwa/create-magento-app:php-8.4
 
-LABEL org.opencontainers.image.description="Create Magento App PHP 8.3 container image with XDebug extension"
+LABEL org.opencontainers.image.description="Create Magento App PHP 8.4 container image with XDebug extension"
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && apk add --no-cache linux-headers \
