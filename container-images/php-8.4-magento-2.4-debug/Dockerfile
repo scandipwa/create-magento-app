@@ -1,14 +1,6 @@
-FROM ghcr.io/scandipwa/create-magento-app:php-8.4-debug
+FROM ghcr.io/scandipwa/create-magento-app:php-8.4-magento-2.4
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install apcu \
-    && docker-php-ext-enable apcu \
+    && pecl install xdebug-3.4.0 \
+    && docker-php-ext-enable xdebug \
     && apk del -f .build-deps
-
-RUN apk add --no-cache libxml2-dev libzip-dev libxslt-dev icu-dev icu-data-full freetype-dev libjpeg-turbo-dev libpng-dev zlib-dev libwebp-dev
-
-RUN docker-php-ext-install soap zip xsl intl bcmath opcache sockets
-
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && docker-php-ext-install gd
-
-RUN apk add --no-cache patch bash git

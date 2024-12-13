@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm-alpine3.20
 
 LABEL org.opencontainers.image.source=https://github.com/scandipwa/create-magento-app
 LABEL org.opencontainers.image.description="Create Magento App PHP 8.4 container image"

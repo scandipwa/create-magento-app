@@ -461,19 +461,6 @@ buildxpush-php-84:
 pull-php-84:
 	cd ./php-8.4 && $(MAKE) pull;
 
-# php 8.4 with xdebug
-build-php-84-debug:
-	cd ./php-8.4-debug && $(MAKE) build;
-
-buildx-php-84-debug:
-	cd ./php-8.4-debug && $(MAKE) buildx;
-
-buildxpush-php-84-debug:
-	cd ./php-8.4-debug && $(MAKE) buildxpush && $(MAKE) pull;
-
-pull-php-84-debug:
-	cd ./php-8.4-debug && $(MAKE) pull;
-
 # php 8.4 magento 2.4
 build-php-84-magento-24:
 	cd ./php-8.4-magento-2.4 && $(MAKE) build;
@@ -501,7 +488,7 @@ pull-php-84-magento-24-debug:
 	cd ./php-8.4-magento-2.4-debug && $(MAKE) pull;
 
 # php 8.4 all
-pull-php-84-all: pull-php-84 pull-php-84-debug pull-php-84-magento-24 pull-php-84-magento-24-debug
-build-php-84-all: build-php-84 build-php-84-debug build-php-84-magento-24 build-php-84-magento-24-debug
-buildx-php-84-all: buildx-php-84 buildx-php-84-debug buildx-php-84-magento-24 buildx-php-84-magento-24-debug
-buildxpush-php-84-all: buildxpush-php-84 buildxpush-php-84-debug buildxpush-php-84-magento-24 buildxpush-php-84-magento-24-debug
+pull-php-84-all: pull-php-84 pull-php-84-magento-24 pull-php-84-magento-24-debug
+build-php-84-all: build-php-84 build-php-84-magento-24 build-php-84-magento-24-debug
+buildx-php-84-all: buildx-php-84 buildx-php-84-magento-24 buildx-php-84-magento-24-debug
+buildxpush-php-84-all: buildxpush-php-84 buildxpush-php-84-magento-24 buildxpush-php-84-magento-24-debug
