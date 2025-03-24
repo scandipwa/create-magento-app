@@ -38,6 +38,12 @@ export function ls(
 ): Promise<ContainerLsResult[]>
 
 export interface ContainerExecOptions {
+    command: string
+
+    /**
+     * container id or name
+     */
+    container: string
     /**
      * Set environment variables [docs](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file)
      */
@@ -60,11 +66,11 @@ export interface ContainerExecOptions {
 }
 
 export function exec<T>(
-    command: string,
-    container: string,
-    options?: ContainerExecOptions,
+    options: ContainerExecOptions,
     execOptions?: ExecAsyncSpawnOptions<T>
 ): Promise<string>
+
+export function execCommand(options: ContainerExecOptions): string[]
 
 export interface ContainerRunOptions {
     /**

@@ -100,13 +100,10 @@ const run = (options, execOptions = {}) =>
     execAsyncSpawn(runCommand(options).join(' '), execOptions)
 
 /**
- * @param {string} command
- * @param {string} container container id or name
  * @param {import('./container-api').ContainerExecOptions} options
- * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
  */
-const exec = (command, container, options = {}, execOptions = {}) => {
-    const { env, tty, user, workdir } = options
+const execCommand = (options) => {
+    const { command, container, env, tty, user, workdir } = options
     const envArgs = !env
         ? ''
         : Object.entries(env)
@@ -116,7 +113,7 @@ const exec = (command, container, options = {}, execOptions = {}) => {
     const userArg = user ? `--user=${user}` : ''
     const workdirArg = workdir ? `--workdir=${workdir}` : ''
 
-    const execCommand = [
+    const dockerCommand = [
         'docker',
         'container',
         'exec',
@@ -127,11 +124,18 @@ const exec = (command, container, options = {}, execOptions = {}) => {
         container,
         command
     ]
-        .filter(Boolean)
-        .join(' ')
+        .flat()
+        .filter((arg) => !!arg && typeof arg === 'string')
 
-    return execAsyncSpawn(execCommand, execOptions)
+    return dockerCommand
 }
+
+/**
+ * @param {import('./container-api').ContainerExecOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions<false>} execOptions
+ */
+const exec = (options, execOptions = {}) =>
+    execAsyncSpawn(execCommand(options).join(' '), execOptions)
 
 /**
  * @type {typeof import('./container-api')['ls']}
@@ -243,6 +247,7 @@ module.exports = {
     run,
     runCommand,
     exec,
+    execCommand,
     ls,
     logs,
     stop,

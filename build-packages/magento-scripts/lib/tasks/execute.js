@@ -95,7 +95,7 @@ const executeTask = async (argv) => {
 
             const result = await executeInContainer({
                 containerName: container.name,
-                commands: argv.commands,
+                command: argv.commands.join(' '),
                 user: container.user
             })
 
