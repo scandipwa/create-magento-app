@@ -121,6 +121,7 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
     }
 
     yargs.scriptName('magento-scripts')
+    yargs.version(false)
 
     // Initialize program commands
     commands.forEach((command) => command(yargs))

@@ -190,15 +190,18 @@ Please wait, this will take some time and do not restart the MySQL container unt
                 task.output = 'Dumping MySQL database to dump file...'
 
                 await containerApi.exec(
-                    [
-                        'mysqldump',
-                        '--user=root',
-                        '--password=scandipwa',
-                        'magento',
-                        `--result-file=${path.parse(pathToMySQLDumpFile).base}`
-                    ].join(' '),
-                    containerName,
-                    {},
+                    {
+                        container: containerName,
+                        command: [
+                            'mysqldump',
+                            '--user=root',
+                            '--password=scandipwa',
+                            'magento',
+                            `--result-file=${
+                                path.parse(pathToMySQLDumpFile).base
+                            }`
+                        ].join(' ')
+                    },
                     {
                         callback: (t) => {
                             task.output = t
