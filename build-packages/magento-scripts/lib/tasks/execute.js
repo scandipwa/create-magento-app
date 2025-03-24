@@ -15,7 +15,7 @@ const KnownError = require('../errors/known-error')
 
 /**
  *
- * @param {{ containername: string, commands: string[] }} argv
+ * @param {{ containerName: string, commands: string[] }} argv
  * @returns
  */
 const executeTask = async (argv) => {
@@ -47,17 +47,17 @@ const executeTask = async (argv) => {
     const services = Object.keys(containers)
 
     if (
-        services.includes(argv.containername) ||
-        services.some((service) => service.includes(argv.containername))
+        services.includes(argv.containerName) ||
+        services.some((service) => service.includes(argv.containerName))
     ) {
-        const containerResult = containers[argv.containername]
-            ? containers[argv.containername]
+        const containerResult = containers[argv.containerName]
+            ? containers[argv.containerName]
             : Object.entries(containers).find(([key]) =>
-                  key.includes(argv.containername)
+                  key.includes(argv.containerName)
               )
 
         if (!containerResult) {
-            logger.error(`No container found "${argv.containername}"`)
+            logger.error(`No container found "${argv.containerName}"`)
             process.exit(1)
         }
 
@@ -127,7 +127,7 @@ const executeTask = async (argv) => {
         throw new KnownError(`Container ${container.name} is not running!`)
     }
 
-    logger.error(`No container found "${argv.containername}"`)
+    logger.error(`No container found "${argv.containerName}"`)
     process.exit(1)
 }
 
