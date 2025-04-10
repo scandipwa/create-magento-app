@@ -68,70 +68,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
 
     const { isDockerDesktop } = ctx
 
-    if (isDockerDesktop) {
-        /**
-         * When CMA is running with Docker Desktop,
-         * we need create named volumes to avoid performance penalty
-         */
-        volumes.php = {
-            name: `${prefix}_project-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(magentoDir),
-                o: 'bind'
-            }
-        }
-        volumes.nginx = {
-            name: `${prefix}_nginx-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(cacheDir, 'nginx', 'conf.d'),
-                o: 'bind'
-            }
-        }
-        volumes.appPub = {
-            name: `${prefix}_pub-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(magentoDir, 'pub'),
-                o: 'bind'
-            }
-        }
-        volumes.appSetup = {
-            name: `${prefix}_setup-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(magentoDir, 'setup'),
-                o: 'bind'
-            }
-        }
-        volumes.sslTerminator = {
-            name: `${prefix}_ssl-terminator-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
-                o: 'bind'
-            }
-        }
-
-        if (varnish.enabled) {
-            volumes.varnish = {
-                name: `${prefix}_varnish-data`,
-                driver: 'local',
-                opt: {
-                    type: 'none',
-                    device: path.join(cacheDir, 'varnish'),
-                    o: 'bind'
-                }
-            }
-        }
-    }
-
     /**
      * @param {Record<string, number>} ports
      */
@@ -166,16 +102,26 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop ? magentoDir : volumes.php.name
-                    }:${containerMagentoDir}`,
+                    `${magentoDir}:${containerMagentoDir}${
+                        isDockerDesktop ? ':cached' : ''
+                    }`,
                     `${volumes.composer_cache.name}:/composer/home/cache`,
-                    `${php.iniPath}:/usr/local/etc/php/php.ini`,
-                    `${php.fpmConfPath}:/usr/local/etc/php-fpm.d/zz-docker.conf`
+                    `${php.iniPath}:/usr/local/etc/php/php.ini${
+                        isDockerDesktop ? ':cached' : ''
+                    }`,
+                    `${
+                        php.fpmConfPath
+                    }:/usr/local/etc/php-fpm.d/zz-docker.conf${
+                        isDockerDesktop ? ':cached' : ''
+                    }`
                 ].concat(
                     ctx.debug
                         ? [
-                              `${php.debugIniPath}:/usr/local/etc/php/conf.d/00-xdebug.ini`
+                              `${
+                                  php.debugIniPath
+                              }:/usr/local/etc/php/conf.d/00-xdebug.ini${
+                                  isDockerDesktop ? ':cached' : ''
+                              }`
                           ]
                         : []
                 ),
@@ -216,16 +162,18 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                  * Mount volumes directly on linux
                  */
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop
-                            ? path.join(cacheDir, 'ssl-terminator', 'conf.d')
-                            : volumes.sslTerminator.name
-                    }:/etc/nginx/conf.d`,
+                    `${path.join(
+                        cacheDir,
+                        'ssl-terminator',
+                        'conf.d'
+                    )}:/etc/nginx/conf.d${isDockerDesktop ? ':cached' : ''}`,
                     `${path.join(
                         cacheDir,
                         'ssl-terminator',
                         'fastcgi_params'
-                    )}:/etc/nginx/fastcgi_params`
+                    )}:/etc/nginx/fastcgi_params${
+                        isDockerDesktop ? ':cached' : ''
+                    }`
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
@@ -255,39 +203,23 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 /**
                  * Mount volumes directly on linux
                  */
-                mountVolumes: !isDockerDesktop
-                    ? [
-                          `${cacheDir}/nginx/conf.d:/etc/nginx/conf.d`,
-                          `${path.join(magentoDir, 'pub')}:${path.join(
-                              containerMagentoDir,
-                              'pub'
-                          )}`,
-                          `${path.join(magentoDir, 'setup')}:${path.join(
-                              containerMagentoDir,
-                              'setup'
-                          )}`,
-                          `${path.join(
-                              cacheDir,
-                              'ssl-terminator',
-                              'fastcgi_params'
-                          )}:/etc/nginx/fastcgi_params`
-                      ]
-                    : [
-                          `${volumes.nginx.name}:/etc/nginx/conf.d`,
-                          `${volumes.appPub.name}:${path.join(
-                              containerMagentoDir,
-                              'pub'
-                          )}`,
-                          `${volumes.appSetup.name}:${path.join(
-                              containerMagentoDir,
-                              'setup'
-                          )}`,
-                          `${path.join(
-                              cacheDir,
-                              'ssl-terminator',
-                              'fastcgi_params'
-                          )}:/etc/nginx/fastcgi_params`
-                      ],
+                mountVolumes: [
+                    `${path.join(
+                        cacheDir,
+                        'nginx',
+                        'conf.d'
+                    )}:/etc/nginx/conf.d${isDockerDesktop ? ':cached' : ''}`,
+                    `${magentoDir}:${containerMagentoDir}${
+                        isDockerDesktop ? ':cached' : ''
+                    }`,
+                    `${path.join(
+                        cacheDir,
+                        'ssl-terminator',
+                        'fastcgi_params'
+                    )}:/etc/nginx/fastcgi_params${
+                        isDockerDesktop ? ':cached' : ''
+                    }`
+                ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
                 image: `${
@@ -323,7 +255,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${path.join(
                         baseConfig.cacheDir,
                         'mariadb.cnf'
-                    )}:/etc/mysql/my.cnf`
+                    )}:/etc/mysql/my.cnf${isDockerDesktop ? ':cached' : ''}`
                 ],
                 env: {
                     MARIADB_ROOT_PASSWORD: 'scandipwa'
@@ -444,11 +376,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_varnish`,
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop
-                            ? path.join(cacheDir, 'varnish')
-                            : volumes.varnish.name
-                    }:/etc/varnish`
+                    `${path.join(cacheDir, 'varnish')}:/etc/varnish${
+                        isDockerDesktop ? ':cached' : ''
+                    }`
                 ],
                 ports: isDockerDesktop
                     ? [
