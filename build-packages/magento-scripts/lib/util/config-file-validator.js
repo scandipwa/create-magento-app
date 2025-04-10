@@ -244,7 +244,8 @@ const configFileSchema = Joi.object({
  */
 const systemConfigurationSchema = Joi.object({
     useNonOverlappingPorts: Joi.boolean().optional(),
-    analytics: Joi.boolean().optional()
+    analytics: Joi.boolean().optional(),
+    useExperimentalFileSyncing: Joi.boolean().optional()
 })
 
 module.exports = {

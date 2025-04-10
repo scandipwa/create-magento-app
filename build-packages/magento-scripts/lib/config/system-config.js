@@ -9,7 +9,8 @@ const KnownError = require('../errors/known-error')
 
 const defaultSystemConfig = {
     analytics: true,
-    useNonOverlappingPorts: false
+    useNonOverlappingPorts: false,
+    useExperimentalFileSyncing: false
 }
 const systemConfigPath = path.join(os.homedir(), '.cmarc')
 

@@ -139,6 +139,7 @@ export interface ListrContext {
     systemConfiguration: {
         analytics: boolean
         useNonOverlappingPorts: boolean
+        useExperimentalFileSyncing: boolean
     }
     databaseConnection: mysql2.Connection
     isSetupUpgradeNeeded?: boolean

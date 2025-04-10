@@ -36,6 +36,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const php = getPhpConfig(overridenConfiguration, baseConfig)
     const { prefix, magentoDir, containerMagentoDir, cacheDir } = baseConfig
 
+    const {
+        systemConfiguration: { useExperimentalFileSyncing }
+    } = ctx
+
     const cpuSupportedFlags = (await systeminformation.cpuFlags()).split(' ')
 
     const network = {
@@ -132,6 +136,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         }
     }
 
+    if (useExperimentalFileSyncing) {
+        volumes.php = {
+            name: `${prefix}_project-data`
+        }
+    }
+
     /**
      * @param {Record<string, number>} ports
      */
@@ -150,6 +160,31 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
          * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], debugImage?: string, remoteImages?: string[], connectCommand?: string[], description?: string }>}
          */
         const dockerConfig = {
+            ...(useExperimentalFileSyncing
+                ? {
+                      fsSync: {
+                          _: 'File Sync',
+                          name: `${prefix}_fs-sync`,
+                          ports: [],
+                          forwardedPorts: [],
+                          mountVolumes: [
+                              `${volumes.php.name}:${containerMagentoDir}`,
+                              `${magentoDir}:/var/www/html:ro`
+                          ],
+                          env: {
+                              SYNC_FROM_DIR: `/var/www/html`,
+                              SYNC_TO_DIR: containerMagentoDir
+                          },
+                          restart: 'unless-stopped',
+                          image: `ghcr.io/scandipwa/create-magento-app:file-sync`,
+                          user:
+                              (ctx.platform === 'linux' && isDockerDesktop) ||
+                              !isDockerDesktop
+                                  ? `${os.userInfo().uid}:${os.userInfo().gid}`
+                                  : ''
+                      }
+                  }
+                : {}),
             php: {
                 _: 'PHP',
                 ports: isDockerDesktop
@@ -167,7 +202,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
                     `${
-                        !isDockerDesktop ? magentoDir : volumes.php.name
+                        useExperimentalFileSyncing || isDockerDesktop
+                            ? volumes.php.name
+                            : magentoDir
                     }:${containerMagentoDir}`,
                     `${volumes.composer_cache.name}:/composer/home/cache`,
                     `${php.iniPath}:/usr/local/etc/php/php.ini`,
