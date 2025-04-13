@@ -16,7 +16,6 @@ const php72 = ({
     baseImage = `${repo}:php-7.2`
 }) => ({
     baseImage,
-    debugImage: `${baseImage}-debug`,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     fpmConfigTemplate: path.join(templateDir || '', 'php-fpm.template.conf'),
     debugTemplate: path.join(templateDir || '', 'php-debug.template.ini'),

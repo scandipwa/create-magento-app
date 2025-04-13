@@ -68,6 +68,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
 
     const { isDockerDesktop } = ctx
 
+    const volumeDirective = isDockerDesktop ? ':cached' : ''
+
     /**
      * @param {Record<string, number>} ports
      */
@@ -83,7 +85,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], debugImage?: string, remoteImages?: string[], connectCommand?: string[], description?: string }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean }>}
          */
         const dockerConfig = {
             php: {
@@ -102,38 +104,50 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
-                    `${magentoDir}:${containerMagentoDir}${
-                        isDockerDesktop ? ':cached' : ''
-                    }`,
+                    `${magentoDir}:${containerMagentoDir}${volumeDirective}`,
                     `${volumes.composer_cache.name}:/composer/home/cache`,
-                    `${php.iniPath}:/usr/local/etc/php/php.ini${
-                        isDockerDesktop ? ':cached' : ''
-                    }`,
-                    `${
-                        php.fpmConfPath
-                    }:/usr/local/etc/php-fpm.d/zz-docker.conf${
-                        isDockerDesktop ? ':cached' : ''
-                    }`
-                ].concat(
-                    ctx.debug
-                        ? [
-                              `${
-                                  php.debugIniPath
-                              }:/usr/local/etc/php/conf.d/00-xdebug.ini${
-                                  isDockerDesktop ? ':cached' : ''
-                              }`
-                          ]
-                        : []
-                ),
+                    `${php.iniPath}:/usr/local/etc/php/php.ini${volumeDirective}`,
+                    `${php.fpmConfPath}:/usr/local/etc/php-fpm.d/zz-docker.conf${volumeDirective}`
+                ],
                 env: deepmerge(composerAuthEnv, php.env || {}),
                 restart: 'on-failure:5',
                 image: `local-cma-project:${prefix}`,
-                debugImage: `local-cma-project:${prefix}.debug`,
-                remoteImages: [
-                    configuration.php.baseImage,
-                    configuration.php.debugImage
-                ],
+                remoteImages: [configuration.php.baseImage],
                 name: `${prefix}_php`,
+                connectCommand: ['/bin/sh'],
+                user:
+                    (ctx.platform === 'linux' && isDockerDesktop) ||
+                    !isDockerDesktop
+                        ? `${os.userInfo().uid}:${os.userInfo().gid}`
+                        : ''
+            },
+            phpWithXdebug: {
+                _: 'PHP with Xdebug',
+                ports: isDockerDesktop
+                    ? [
+                          `${isIpAddress(host) ? host : '127.0.0.1'}:${
+                              ports.fpmXdebug
+                          }:9000`
+                      ]
+                    : [],
+                forwardedPorts: [
+                    isDockerDesktop
+                        ? `127.0.0.1:${ports.fpmXdebug}:9000`
+                        : `127.0.0.1:${ports.fpmXdebug}`
+                ],
+                network: isDockerDesktop ? network.name : 'host',
+                mountVolumes: [
+                    `${magentoDir}:${containerMagentoDir}${volumeDirective}`,
+                    `${volumes.composer_cache.name}:/composer/home/cache`,
+                    `${php.iniPath}:/usr/local/etc/php/php.ini${volumeDirective}`,
+                    `${php.debugFpmConfPath}:/usr/local/etc/php-fpm.d/zz-docker.conf${volumeDirective}`,
+                    `${php.debugIniPath}:/usr/local/etc/php/conf.d/00-xdebug.ini${volumeDirective}`
+                ],
+                env: deepmerge(composerAuthEnv, php.env || {}),
+                restart: 'on-failure:5',
+                image: `local-cma-project:${prefix}.debug`,
+                pullImage: false,
+                name: `${prefix}_php_with_xdebug`,
                 connectCommand: ['/bin/sh'],
                 user:
                     (ctx.platform === 'linux' && isDockerDesktop) ||
@@ -166,14 +180,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                         cacheDir,
                         'ssl-terminator',
                         'conf.d'
-                    )}:/etc/nginx/conf.d${isDockerDesktop ? ':cached' : ''}`,
+                    )}:/etc/nginx/conf.d${volumeDirective}`,
                     `${path.join(
                         cacheDir,
                         'ssl-terminator',
                         'fastcgi_params'
-                    )}:/etc/nginx/fastcgi_params${
-                        isDockerDesktop ? ':cached' : ''
-                    }`
+                    )}:/etc/nginx/fastcgi_params${volumeDirective}`
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
@@ -208,17 +220,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                         cacheDir,
                         'nginx',
                         'conf.d'
-                    )}:/etc/nginx/conf.d${isDockerDesktop ? ':cached' : ''}`,
-                    `${magentoDir}:${containerMagentoDir}${
-                        isDockerDesktop ? ':cached' : ''
-                    }`,
+                    )}:/etc/nginx/conf.d${volumeDirective}`,
+                    `${magentoDir}:${containerMagentoDir}${volumeDirective}`,
                     `${path.join(
                         cacheDir,
                         'ssl-terminator',
                         'fastcgi_params'
-                    )}:/etc/nginx/fastcgi_params${
-                        isDockerDesktop ? ':cached' : ''
-                    }`
+                    )}:/etc/nginx/fastcgi_params${volumeDirective}`
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
@@ -255,7 +263,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     `${path.join(
                         baseConfig.cacheDir,
                         'mariadb.cnf'
-                    )}:/etc/mysql/my.cnf${isDockerDesktop ? ':cached' : ''}`
+                    )}:/etc/mysql/my.cnf${volumeDirective}`
                 ],
                 env: {
                     MARIADB_ROOT_PASSWORD: 'scandipwa'
@@ -366,7 +374,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             )
         }
 
-        if (!ctx.debug && varnish.enabled) {
+        if (varnish.enabled) {
             dockerConfig.varnish = {
                 _: 'Varnish',
                 image: `${
@@ -376,9 +384,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_varnish`,
                 mountVolumes: [
-                    `${path.join(cacheDir, 'varnish')}:/etc/varnish${
-                        isDockerDesktop ? ':cached' : ''
-                    }`
+                    `${path.join(
+                        cacheDir,
+                        'varnish'
+                    )}:/etc/varnish${volumeDirective}`
                 ],
                 ports: isDockerDesktop
                     ? [

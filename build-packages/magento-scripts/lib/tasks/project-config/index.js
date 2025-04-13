@@ -1,4 +1,3 @@
-const { setProjectConfig } = require('../../config/config')
 const { setPrefix: setPrefixUtil } = require('../../util/prefix')
 
 /**
@@ -14,8 +13,6 @@ const setProjectConfigTask = () => ({
         } = ctx
 
         setPrefixUtil(prefix)
-
-        setProjectConfig('debug', ctx.debug)
     },
     options: {
         showTimer: false

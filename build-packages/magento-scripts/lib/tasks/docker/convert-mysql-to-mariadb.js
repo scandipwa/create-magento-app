@@ -11,10 +11,7 @@ const {
     getCachedPorts
 } = require('../../config/get-port-config')
 const { saveConfiguration } = require('../../config/save-config')
-const {
-    buildProjectImage,
-    buildDebugProjectImage
-} = require('./project-image-builder')
+const { buildProjectImage } = require('./project-image-builder')
 const checkPHPVersion = require('../requirements/php-version')
 const { getComposerVersionTask } = require('../composer')
 const { prepareFileSystem } = require('../file-system')
@@ -234,15 +231,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
                     pullImages(),
                     dockerNetwork.tasks.createNetwork(),
                     createVolumes(),
-                    {
-                        task: (ctx, task) =>
-                            task.newListr(
-                                [buildProjectImage(), buildDebugProjectImage()],
-                                {
-                                    concurrent: true
-                                }
-                            )
-                    },
+                    buildProjectImage(),
                     {
                         task: (ctx, subTask) =>
                             subTask.newListr(

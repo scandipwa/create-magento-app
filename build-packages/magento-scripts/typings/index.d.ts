@@ -190,11 +190,6 @@ export interface PHPConfiguration {
     baseImage: string
 
     /**
-     * Image with XDebug enabled
-     */
-    debugImage: string
-
-    /**
      * Configuration file template location
      *
      * @example ./my-php-template.ini

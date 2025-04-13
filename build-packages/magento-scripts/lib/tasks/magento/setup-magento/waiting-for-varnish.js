@@ -55,7 +55,6 @@ const getIsHealthCheckRequestBroken = async (ctx) => {
 const waitingForVarnish = () => ({
     title: 'Waiting for Varnish to return code 200',
     skip: (ctx) =>
-        ctx.debug ||
         !ctx.config.overridenConfiguration.configuration.varnish.enabled ||
         ctx.config.overridenConfiguration.ssl.enabled ||
         !ctx.config.overridenConfiguration.configuration.varnish.healthCheck,

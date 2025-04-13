@@ -25,11 +25,10 @@ const updateEnvPHP = () => ({
             ? '127.0.0.1'
             : 'host.docker.internal'
 
-        const useVarnish =
-            !ctx.debug &&
-            ctx.config.overridenConfiguration.configuration.varnish.enabled
-                ? '1'
-                : ''
+        const useVarnish = ctx.config.overridenConfiguration.configuration
+            .varnish.enabled
+            ? '1'
+            : ''
         const varnishHost = hostMachine
         const varnishPort = ctx.ports.varnish
         const previousVarnishPort = ctx.cachedPorts

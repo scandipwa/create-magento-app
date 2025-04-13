@@ -70,12 +70,6 @@ module.exports = (yargs) => {
                     type: 'boolean',
                     default: false
                 })
-                .option('debug', {
-                    alias: 'd',
-                    describe: 'Enable PHP xdebug.',
-                    type: 'boolean',
-                    default: false
-                })
                 .option('skip-setup', {
                     alias: 's',
                     describe: 'Skip Magento setup',

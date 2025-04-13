@@ -4,16 +4,16 @@ import { ExecAsyncSpawnOptions } from "../../util/exec-async-command";
 export function runPHPContainerCommand<T>(
     ctx: ListrContext,
     command: string,
-    options?: ExecAsyncSpawnOptions<T> & { useXDebugContainer?: boolean }
+    options?: ExecAsyncSpawnOptions<T>
 ): Promise<any>
 
 export function runPHPContainerCommandTask<T>(
     command: string,
-    options?: ExecAsyncSpawnOptions<T> & { useXDebugContainer?: boolean }
+    options?: ExecAsyncSpawnOptions<T>
 ): import('listr2').ListrTask<import('../../../typings/context').ListrContext>
 
 export function execPHPContainerCommand<T>(
     ctx: ListrContext,
     command: string,
-    options?: ExecAsyncSpawnOptions<T> & { useXDebugContainer?: boolean }
+    options?: ExecAsyncSpawnOptions<T>
 ): Promise<any>

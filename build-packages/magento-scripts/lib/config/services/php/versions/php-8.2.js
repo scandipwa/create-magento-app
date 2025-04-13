@@ -16,14 +16,13 @@ const php82 = ({
     baseImage = `${repo}:php-8.2`
 }) => ({
     baseImage,
-    debugImage: `${baseImage}-debug`,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
     fpmConfigTemplate: path.join(templateDir || '', 'php-fpm.template.conf'),
     debugTemplate: path.join(templateDir || '', 'php-debug.template.ini'),
     extensions: {
         xdebug: {
             ...xdebug,
-            version: '3.2.1'
+            version: '3.4.2'
         },
         ...extensions
     },

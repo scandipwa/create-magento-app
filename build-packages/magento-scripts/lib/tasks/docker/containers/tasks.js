@@ -35,6 +35,17 @@ const remoteImageReducer = (acc, val) => {
 }
 
 /**
+ * @param {{ pullImage?: boolean }} param0
+ */
+const filterNonPullableImages = ({ pullImage }) => {
+    if (typeof pullImage === 'boolean' && !pullImage) {
+        return false
+    }
+
+    return true
+}
+
+/**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const pullImages = () => ({
@@ -45,6 +56,7 @@ const pullImages = () => ({
         if (pullImages) {
             return task.newListr(
                 containers
+                    .filter(filterNonPullableImages)
                     .reduce(remoteImageReducer, [])
                     .map((image) => {
                         const [repo, tag = 'latest'] = image.split(':')
@@ -77,6 +89,7 @@ const pullImages = () => ({
         }
 
         const imagesFilter = containers
+            .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
             .map((image) => `reference='${image}'`)
 
@@ -86,6 +99,7 @@ const pullImages = () => ({
         })
 
         const missingContainerImages = containers
+            .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
             .map((image) => {
                 const [repo, tag = 'latest'] = image.split(':')
@@ -151,19 +165,11 @@ const startContainers = () => ({
 
         if (debug) {
             await Promise.all(
-                missingContainers
-                    .map((container) => {
-                        if (container.debugImage) {
-                            container.image = container.debugImage
-                        }
-
-                        return container
+                missingContainers.map((container) =>
+                    containerApi.run(container).then((out) => {
+                        task.output = `From ${container._}: ${out}`
                     })
-                    .map((container) =>
-                        containerApi.run(container).then((out) => {
-                            task.output = `From ${container._}: ${out}`
-                        })
-                    )
+                )
             )
 
             return

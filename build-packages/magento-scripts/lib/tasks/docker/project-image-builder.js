@@ -35,36 +35,41 @@ const getEnabledExtensionsFromImage = async (imageWithTag) => {
 }
 
 /**
- * @type {(builder: DockerFileBuilder, ctx: import('../../../typings/context').ListrContext) => ([extensionName, extensionInstructions]: [string, import('../../../typings').PHPExtensionInstallationInstruction]) => Promise<void>}
+ * @type {(builder: DockerFileBuilder, ctx: import('../../../typings/context').ListrContext, [extensionName, extensionInstructions]: [string, import('../../../typings').PHPExtensionInstallationInstruction]) => Promise<void>}
  */
-const addExtensionToBuilder =
-    (builder, ctx) =>
-    async ([extensionName, extensionInstructions]) => {
-        const { command, ...extensionInstructionsWithoutCommand } =
-            extensionInstructions
-        let runCommand = ''
-        if (typeof command === 'string') {
-            runCommand += ` ${command}`
-        } else if (typeof command === 'function') {
-            runCommand += ` ${await Promise.resolve(
-                command({ ...extensionInstructionsWithoutCommand, ctx })
-            )}`
-        } else {
-            runCommand += ` docker-php-ext-install ${
-                extensionInstructionsWithoutCommand.name || extensionName
-            }`
-        }
-        builder
-            .comment(`extension ${extensionName} installation command`)
-            .run(runCommand.trim())
+const addExtensionToBuilder = async (
+    builder,
+    ctx,
+    [extensionName, extensionInstructions]
+) => {
+    const { command, ...extensionInstructionsWithoutCommand } =
+        extensionInstructions
+    let runCommand = ''
+    if (typeof command === 'string') {
+        runCommand += ` ${command}`
+    } else if (typeof command === 'function') {
+        runCommand += ` ${await Promise.resolve(
+            command({ ...extensionInstructionsWithoutCommand, ctx })
+        )}`
+    } else {
+        runCommand += ` docker-php-ext-install ${
+            extensionInstructionsWithoutCommand.name || extensionName
+        }`
     }
+    builder
+        .comment(`extension ${extensionName} installation command`)
+        .run(runCommand.trim())
+}
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
- * @param {{ image: string, tag: string}} param1
+ * @param {{ image: string, tag: string, ignorePHPExtensions?: string[] }} param1
  */
-const buildDockerFileInstructions = async (ctx, { image, tag }) => {
-    const { composer } = ctx.config.overridenConfiguration.configuration
+const buildDockerFileInstructions = async (
+    ctx,
+    { image, tag, ignorePHPExtensions = [] }
+) => {
+    const { composer, php } = ctx.config.overridenConfiguration.configuration
     const existingPHPExtensions = await getEnabledExtensionsFromImage(
         `${image}:${tag}`
     )
@@ -73,9 +78,11 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         formatToJSON: true
     })
 
-    const missingExtensions = Object.entries(
-        ctx.config.overridenConfiguration.configuration.php.extensions
-    )
+    const missingExtensions = Object.entries(php.extensions)
+        .filter(
+            ([extensionName]) =>
+                !ignorePHPExtensions.includes(extensionName.toLowerCase())
+        )
         .filter(
             ([extensionName, extensionInstructions]) =>
                 !Object.entries(existingPHPExtensions)
@@ -89,7 +96,6 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
                                     .includes(n))
                     )
         )
-        .filter(([extensionName]) => extensionName.toLowerCase() !== 'xdebug')
 
     const dockerFileInstructions = new DockerFileBuilder()
         .comment('project image')
@@ -112,8 +118,9 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         for (const missingExtensionInstructions of missingExtensions) {
             await addExtensionToBuilder(
                 dockerFileInstructions,
-                ctx
-            )(missingExtensionInstructions)
+                ctx,
+                missingExtensionInstructions
+            )
         }
     }
 
@@ -191,9 +198,10 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
         })
     }
 
-    if (ctx.config.overridenConfiguration.configuration.newRelic.enabled) {
-        const { agentVersion, licenseKey } =
-            ctx.config.overridenConfiguration.configuration.newRelic
+    const { newRelic } = ctx.config.overridenConfiguration.configuration
+
+    if (newRelic && newRelic.enabled) {
+        const { agentVersion, licenseKey } = newRelic
 
         // eslint-disable-next-line max-len
         dockerFileInstructions.run('apk add --no-cache gcompat')
@@ -212,14 +220,70 @@ const buildDockerFileInstructions = async (ctx, { image, tag }) => {
 \\$PHP_INI_DIR/conf.d/newrelic.ini`)
     }
 
-    return dockerFileInstructions
+    return dockerFileInstructions.build()
+}
+
+/**
+ * @param {import('../../../typings/context').ListrContext} ctx
+ * @param {{ image: string, tag: string }} param1
+ */
+const buildDebugDockerFileInstructions = async (ctx, { image, tag }) => {
+    const { php } = ctx.config.overridenConfiguration.configuration
+    const existingPHPExtensions = await getEnabledExtensionsFromImage(
+        `${image}:${tag}`
+    )
+
+    const missingExtensions = Object.entries(php.extensions)
+        .filter(([extensionName]) => extensionName.toLowerCase() === 'xdebug')
+        .filter(
+            ([extensionName, extensionInstructions]) =>
+                !Object.entries(existingPHPExtensions)
+                    .map(([n, i]) => [n.toLowerCase(), i])
+                    .some(
+                        ([n]) =>
+                            extensionName === n ||
+                            (extensionInstructions.alternativeName &&
+                                extensionInstructions.alternativeName
+                                    .map((s) => s.toLowerCase())
+                                    .includes(n))
+                    )
+        )
+
+    const dockerFileInstructions = new DockerFileBuilder()
+        .comment('project image')
+        .from({ image, tag })
+
+    if (missingExtensions.length > 0) {
+        const allDependencies = missingExtensions
+            .map(
+                ([_extensionName, extensionInstructions]) =>
+                    extensionInstructions.dependencies || []
+            )
+            .reduce(
+                (acc, val) => acc.concat(val.filter((ex) => !acc.includes(ex))),
+                []
+            )
+
+        dockerFileInstructions.run(
+            `apk add --no-cache ${allDependencies.join(' ')}`
+        )
+        for (const missingExtensionInstructions of missingExtensions) {
+            await addExtensionToBuilder(
+                dockerFileInstructions,
+                ctx,
+                missingExtensionInstructions
+            )
+        }
+    }
+
+    return dockerFileInstructions.build()
 }
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const buildProjectImage = () => ({
-    title: 'Building Project Image',
+    title: 'Building Project Images',
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports)
         const [image, tag = 'latest'] =
@@ -228,13 +292,40 @@ const buildProjectImage = () => ({
             )
         const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
             image,
-            tag
+            tag,
+            ignorePHPExtensions: ['xdebug']
         })
 
         try {
             await execAsyncSpawn(
                 `docker build -t ${containers.php.image} -<<EOF
-${dockerFileInstructions.build()}
+${dockerFileInstructions}
+EOF`,
+                {
+                    callback: (r) => {
+                        task.output = r
+                    }
+                }
+            )
+        } catch (e) {
+            throw new KnownError(
+                `Unexpected error during project image building!\n\n${e}`
+            )
+        }
+
+        const [phpImage, phpTag] = containers.php.image.split(':')
+        const debugImageInstructions = await buildDebugDockerFileInstructions(
+            ctx,
+            {
+                image: phpImage,
+                tag: phpTag
+            }
+        )
+
+        try {
+            await execAsyncSpawn(
+                `docker build -t ${containers.phpWithXdebug.image} -<<EOF
+${debugImageInstructions}
 EOF`,
                 {
                     callback: (r) => {
@@ -253,46 +344,7 @@ EOF`,
     }
 })
 
-/**
- * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
- */
-const buildDebugProjectImage = () => ({
-    title: 'Building Debug Project Image',
-    task: async (ctx, task) => {
-        const containers = ctx.config.docker.getContainers(ctx.ports)
-        const [image, tag = 'latest'] =
-            ctx.config.overridenConfiguration.configuration.php.debugImage.split(
-                ':'
-            )
-        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
-            image,
-            tag
-        })
-
-        try {
-            await execAsyncSpawn(
-                `docker build -t ${containers.php.debugImage} -<<EOF
-${dockerFileInstructions.build()}
-EOF`,
-                {
-                    callback: (r) => {
-                        task.output = r
-                    }
-                }
-            )
-        } catch (e) {
-            throw new KnownError(
-                `Unexpected error during debug project image building!\n\n${e}`
-            )
-        }
-    },
-    options: {
-        bottomBar: 10
-    }
-})
-
 module.exports = {
     buildProjectImage,
-    buildDebugProjectImage,
     getEnabledExtensionsFromImage
 }

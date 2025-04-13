@@ -25,11 +25,6 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
                 detach: false,
                 rm: true
             },
-            options.useXDebugContainer
-                ? {
-                      image: php.debugImage
-                  }
-                : {},
             {
                 command
             }
@@ -86,7 +81,7 @@ const execPHPContainerCommand = async (ctx, command, options = {}) => {
 
 /**
  * @param {string} command
- * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { useXDebugContainer?: boolean, title?: string }} [options]
+ * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { title?: string }} [options]
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const execPHPContainerCommandTask = (command, options = {}) => ({

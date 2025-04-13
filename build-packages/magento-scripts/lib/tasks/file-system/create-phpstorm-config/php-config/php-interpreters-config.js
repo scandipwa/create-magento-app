@@ -3,7 +3,7 @@ const { nameKey, propertyKey } = require('../keys')
 const PHP_INTERPRETERS_COMPONENT_NAME = 'PhpInterpreters'
 
 /**
- * @param {Array} phpConfigs
+ * @param {Array<Record<string, any>>} phpConfigs
  * @param {import('../../../../../typings/context').ListrContext} ctx
  * @returns {Promise<Boolean>}
  */
@@ -13,8 +13,9 @@ const setupPHPInterpreters = async (phpConfigs, ctx) => {
         (phpConfig) => phpConfig[nameKey] === PHP_INTERPRETERS_COMPONENT_NAME
     )
 
-    const { php } = ctx.config.docker.getContainers(ctx.ports)
-    const currentInterpreterImage = ctx.debug ? php.debugImage : php.image
+    const {
+        phpWithXdebug: { image: currentInterpreterImage }
+    } = ctx.config.docker.getContainers(ctx.ports)
 
     const defaultPhpInterpreterConfiguration = {
         [nameKey]: currentInterpreterImage,
@@ -49,8 +50,7 @@ const setupPHPInterpreters = async (phpConfigs, ctx) => {
         const phpInterpreterConfiguration =
             phpInterpretersComponent.interpreters.interpreter.find(
                 (interpreter) =>
-                    interpreter[nameKey] === php.image ||
-                    interpreter[nameKey] === php.debugImage
+                    interpreter[nameKey] === currentInterpreterImage
             )
 
         if (!phpInterpreterConfiguration) {

@@ -10,7 +10,6 @@ const {
  */
 const createPhpDebugConfig = () => ({
     title: 'Setting PHP XDebug config',
-    skip: (ctx) => !ctx.debug,
     task: async (ctx) => {
         const {
             config: { php, baseConfig },
@@ -19,7 +18,7 @@ const createPhpDebugConfig = () => ({
         } = ctx
         const containers = ctx.config.docker.getContainers(ctx.ports)
         const phpExtensions = await getEnabledExtensionsFromImage(
-            containers.php.debugImage
+            containers.phpWithXdebug.image
         )
         const isXDebug2 = semver.satisfies(phpExtensions.xdebug, '2')
 
