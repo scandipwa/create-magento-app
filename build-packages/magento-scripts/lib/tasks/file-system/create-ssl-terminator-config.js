@@ -1,9 +1,11 @@
 const path = require('path')
 const fs = require('fs')
+const semver = require('semver')
 const setConfigFile = require('../../util/set-config')
 const pathExists = require('../../util/path-exists')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
+const { run } = require('../docker/containers/container-api')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -75,6 +77,29 @@ const createSSLTerminatorConfig = () => ({
             : 'host.docker.internal'
         const hostPort = !isDockerDesktop ? ports.sslTerminator : 80
 
+        const nginxVersionOutput = await run({
+            image: sslTerminator.image,
+            command: 'nginx -v',
+            detach: false,
+            rm: true
+        })
+
+        const nginxVersionMatch = nginxVersionOutput.match(
+            /nginx version: nginx\/(\d+\.\d+\.\d+)/
+        )
+        if (!nginxVersionMatch) {
+            throw new UnknownError(
+                `Unexpected error appeared during ssl terminator config creation\n\n${nginxVersionOutput}`
+            )
+        }
+
+        const nginxVersion = nginxVersionMatch[1]
+
+        const isSSLDirectiveDeprecated = semver.satisfies(
+            nginxVersion,
+            '>=1.25.0'
+        )
+
         try {
             await setConfigFile({
                 configPathname: path.join(
@@ -90,7 +115,8 @@ const createSSLTerminatorConfig = () => ({
                     hostMachine,
                     hostPort,
                     config: overridenConfiguration,
-                    debug
+                    debug,
+                    isSSLDirectiveDeprecated
                 }
             })
         } catch (e) {
