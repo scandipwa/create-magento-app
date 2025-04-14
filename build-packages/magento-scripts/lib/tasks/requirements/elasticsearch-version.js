@@ -26,10 +26,10 @@ const checkElasticSearchVersion = () => ({
             elasticSearchContainerRunning.length !== 0 &&
             elasticSearchContainerRunning[0].State === 'running'
         ) {
-            elasticSearchVersionResponse = await containerApi.exec(
-                'elasticsearch --version',
-                elasticSearchContainer.name
-            )
+            elasticSearchVersionResponse = await containerApi.exec({
+                command: 'elasticsearch --version',
+                container: elasticSearchContainer.name
+            })
         } else {
             try {
                 const availableElasticSearchPort = await getPort(

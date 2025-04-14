@@ -65,16 +65,11 @@ const execPHPContainerCommand = async (ctx, command, options = {}) => {
     }
 
     return containerApi.exec(
-        command,
-        php.name,
-        deepmerge(
-            php,
-            options.env
-                ? {
-                      env: options.env
-                  }
-                : {}
-        ),
+        {
+            container: php.name,
+            ...deepmerge(php, options.env ? { env: options.env } : {}),
+            command
+        },
         options
     )
 }

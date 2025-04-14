@@ -98,10 +98,10 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
         logger.log() // add empty line
     }
 
-    const [containername, ...commands] = process.argv.slice(2)
+    const [containerName, ...commands] = process.argv.slice(2)
 
     return executeTask({
-        containername,
+        containerName,
         commands
     })
 })()
