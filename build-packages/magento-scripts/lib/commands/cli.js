@@ -98,7 +98,7 @@ module.exports = (yargs) => {
 
             block
                 .addLine(
-                    `Clear Magento cache: ${logger.style.command('m c:c')}`
+                    `Clear Magento cache: ${logger.style.command('m c:f')}`
                 )
                 .addLine(
                     `Magento setup upgrade: ${logger.style.command('m se:up')}`
