@@ -24,7 +24,7 @@ buildxpush-elasticsearch: buildxpush-elasticsearch-68
 
 pull-elasticsearch: pull-elasticsearch-68
 
-pull-php: pull-php-72 pull-php-73 pull-php-74 pull-php-81 pull-php-82 pull-php-83
+pull-php: pull-php-72 pull-php-73 pull-php-74 pull-php-81 pull-php-82 pull-php-83 pull-php-84
 pull-php-debug: pull-php-72-debug pull-php-73-debug pull-php-74-debug pull-php-81-debug  pull-php-82-debug pull-php-83-debug
 
 build-php: build-php-72 build-php-73 build-php-74 build-php-81 build-php-82 build-php-83
@@ -33,25 +33,26 @@ build-php-debug: build-php-72-debug build-php-73-debug build-php-74-debug build-
 buildx-php: buildx-php-72 buildx-php-73 buildx-php-74 buildx-php-81 buildx-php-82 buildx-php-83
 buildx-php-debug: buildx-php-72-debug buildx-php-73-debug buildx-php-74-debug buildx-php-81-debug buildx-php-82-debug buildx-php-83-debug
 
-buildxpush-php: buildxpush-php-72 buildxpush-php-73 buildxpush-php-74 buildxpush-php-81 buildxpush-php-82 buildxpush-php-83
+buildxpush-php: buildxpush-php-72 buildxpush-php-73 buildxpush-php-74 buildxpush-php-81 buildxpush-php-82 buildxpush-php-83 buildxpush-php-84
 buildxpush-php-debug: buildxpush-php-72-debug buildxpush-php-73-debug buildxpush-php-74-debug buildxpush-php-81-debug buildxpush-php-82-debug buildxpush-php-83-debug
 
-buildxpush-php-8-all: buildxpush-php-81-all buildxpush-php-82-all buildxpush-php-83-all
+buildxpush-php-8-all: buildxpush-php-81-all buildxpush-php-82-all buildxpush-php-83-all buildxpush-php-84-all
 
 buildxpush-php-81-all: buildxpush-php-81 buildxpush-php-81-debug buildxpush-php-81-magento-24 buildxpush-php-81-magento-24-debug
 buildxpush-php-82-all: buildxpush-php-82 buildxpush-php-82-debug buildxpush-php-82-magento-24 buildxpush-php-82-magento-24-debug
 buildxpush-php-83-all: buildxpush-php-83 buildxpush-php-83-debug buildxpush-php-83-magento-24 buildxpush-php-83-magento-24-debug
+buildxpush-php-84-all: buildxpush-php-84-magento-24
 
-pull-php-with-magento-extensions: pull-php-72-magento-23 pull-php-73-magento-23 pull-php-74-magento-23 pull-php-74-magento-24 pull-php-81-magento-24 pull-php-82-magento-24 pull-php-83-magento-24
+pull-php-with-magento-extensions: pull-php-72-magento-23 pull-php-73-magento-23 pull-php-74-magento-23 pull-php-74-magento-24 pull-php-81-magento-24 pull-php-82-magento-24 pull-php-83-magento-24 pull-php-84-magento-24
 pull-php-debug-with-magento-extensions: pull-php-72-magento-23-debug pull-php-73-magento-23-debug pull-php-74-magento-23-debug pull-php-74-magento-24-debug pull-php-81-magento-24-debug pull-php-82-magento-24-debug pull-php-83-magento-24-debug
 
-build-php-with-magento-extensions: build-php-72-magento-23 build-php-73-magento-23 build-php-74-magento-23 build-php-74-magento-24 build-php-81-magento-24 build-php-82-magento-24 build-php-83-magento-24
+build-php-with-magento-extensions: build-php-72-magento-23 build-php-73-magento-23 build-php-74-magento-23 build-php-74-magento-24 build-php-81-magento-24 build-php-82-magento-24 build-php-83-magento-24 build-php-84-magento-24
 build-php-debug-with-magento-extensions: build-php-72-magento-23-debug build-php-73-magento-23-debug build-php-74-magento-23-debug build-php-74-magento-24-debug build-php-81-magento-24-debug build-php-82-magento-24-debug build-php-83-magento-24-debug
 
-buildx-php-with-magento-extensions: buildx-php-72-magento-23 buildx-php-73-magento-23 buildx-php-74-magento-23 buildx-php-74-magento-24 buildx-php-81-magento-24 buildx-php-82-magento-24 buildx-php-83-magento-24
+buildx-php-with-magento-extensions: buildx-php-72-magento-23 buildx-php-73-magento-23 buildx-php-74-magento-23 buildx-php-74-magento-24 buildx-php-81-magento-24 buildx-php-82-magento-24 buildx-php-83-magento-24 buildx-php-84-magento-24
 buildx-php-debug-with-magento-extensions: buildx-php-72-magento-23-debug buildx-php-73-magento-23-debug buildx-php-74-magento-23-debug buildx-php-74-magento-24-debug buildx-php-81-magento-24-debug buildx-php-82-magento-24-debug buildx-php-83-magento-24-debug
 
-buildxpush-php-with-magento-extensions: buildxpush-php-72-magento-23 buildxpush-php-73-magento-23 buildxpush-php-74-magento-23 buildxpush-php-74-magento-24 buildxpush-php-81-magento-24 buildxpush-php-82-magento-24 buildxpush-php-83-magento-24
+buildxpush-php-with-magento-extensions: buildxpush-php-72-magento-23 buildxpush-php-73-magento-23 buildxpush-php-74-magento-23 buildxpush-php-74-magento-24 buildxpush-php-81-magento-24 buildxpush-php-82-magento-24 buildxpush-php-83-magento-24 buildxpush-php-84-magento-24
 buildxpush-php-debug-with-magento-extensions: buildxpush-php-72-magento-23-debug buildxpush-php-73-magento-23-debug buildxpush-php-74-magento-23-debug buildxpush-php-74-magento-24-debug buildxpush-php-81-magento-24-debug buildxpush-php-82-magento-24-debug buildxpush-php-83-magento-24-debug
 
 ### ELASTICSEARCH
@@ -444,3 +445,22 @@ pull-php-83-all: pull-php-83 pull-php-83-debug pull-php-83-magento-24 pull-php-8
 build-php-83-all: build-php-83 build-php-83-debug build-php-83-magento-24 build-php-83-magento-24-debug
 buildx-php-83-all: buildx-php-83 buildx-php-83-debug buildx-php-83-magento-24 buildx-php-83-magento-24-debug
 buildxpush-php-83-all: buildxpush-php-83 buildxpush-php-83-debug buildxpush-php-83-magento-24 buildxpush-php-83-magento-24-debug
+
+# php 8.4 magento 2.4
+build-php-84-magento-24:
+	cd ./php-8.4-magento-2.4 && $(MAKE) build;
+
+buildx-php-84-magento-24:
+	cd ./php-8.4-magento-2.4 && $(MAKE) buildx;
+
+buildxpush-php-84-magento-24:
+	cd ./php-8.4-magento-2.4 && $(MAKE) buildxpush && $(MAKE) pull;
+
+pull-php-84-magento-24:
+	cd ./php-8.4-magento-2.4 && $(MAKE) pull;
+
+# php 8.4 all
+pull-php-84-all: pull-php-84-magento-24
+build-php-84-all: uild-php-84-magento-24
+buildx-php-84-all: buildx-php-84-magento-24
+buildxpush-php-84-all: buildxpush-php-84-magento-24
