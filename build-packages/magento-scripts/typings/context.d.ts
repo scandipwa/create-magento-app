@@ -116,6 +116,7 @@ export interface ListrContext {
                     name: string
                     command: string
                     connectCommand: string[]
+                    dependsOn?: string[]
                 }
             >
         }

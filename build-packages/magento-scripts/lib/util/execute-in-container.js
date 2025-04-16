@@ -17,7 +17,9 @@ const executeInContainer = ({ containerName, command, user }) => {
     const execArgs = execCommand({
         container: containerName,
         command,
-        user
+        user,
+        tty: true,
+        interactive: true
     })
 
     spawn('bash', ['-c', execArgs.join(' ')], {

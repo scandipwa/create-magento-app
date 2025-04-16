@@ -13,6 +13,7 @@ const urnHighlighter = require('./urn-highlighter')
 const adjustFullPageCache = require('./adjust-full-page-cache')
 const updateEnvPHP = require('../../php/update-env-php')
 const setMailConfig = require('./set-mail-config')
+const { setupMagentoFilePermissions } = require('./setup-file-permissions')
 
 /**
  * @param {Object} [options]
@@ -34,6 +35,7 @@ const setupMagento = (options = {}) => ({
         return task.newListr(
             [
                 waitingForRedis(),
+                setupMagentoFilePermissions(),
                 updateEnvPHP(),
                 migrateDatabase(),
                 flushRedisConfig(),

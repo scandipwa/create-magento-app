@@ -23,11 +23,10 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
             php,
             {
                 detach: false,
-                rm: true
-            },
-            {
+                rm: true,
                 command
-            }
+            },
+            options.user ? { user: options.user } : {}
         ),
         options
     )
@@ -68,7 +67,8 @@ const execPHPContainerCommand = async (ctx, command, options = {}) => {
         {
             container: php.name,
             ...deepmerge(php, options.env ? { env: options.env } : {}),
-            command
+            command,
+            ...(options.user ? { user: options.user } : {})
         },
         options
     )

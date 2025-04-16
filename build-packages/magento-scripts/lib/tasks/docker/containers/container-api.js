@@ -103,7 +103,7 @@ const run = (options, execOptions = {}) =>
  * @param {import('./container-api').ContainerExecOptions} options
  */
 const execCommand = (options) => {
-    const { command, container, env, tty, user, workdir } = options
+    const { command, container, env, tty, user, workdir, interactive } = options
     const envArgs = !env
         ? ''
         : Object.entries(env)
@@ -112,6 +112,7 @@ const execCommand = (options) => {
     const ttyArg = tty ? '--tty' : ''
     const userArg = user ? `--user=${user}` : ''
     const workdirArg = workdir ? `--workdir=${workdir}` : ''
+    const interactiveArg = interactive ? '--interactive' : ''
 
     const dockerCommand = [
         'docker',
@@ -119,6 +120,7 @@ const execCommand = (options) => {
         'exec',
         envArgs,
         ttyArg,
+        interactiveArg,
         userArg,
         workdirArg,
         container,

@@ -42,7 +42,7 @@ export interface AddInstruction {
 
 export interface CopyInstruction {
     type: 'COPY'
-    src: string[]
+    src:  string | string[]
     dest: string
     chown?: string
     from?: string

@@ -40,7 +40,7 @@ const checkOpenSearchVersion = () => ({
                     detach: false,
                     rm: true,
                     ports: [`127.0.0.1:${availableOpenSearchPort}:9200`],
-                    memory: '512mb'
+                    memory: '2gb'
                 })
             } catch (e) {
                 openSearchVersionResponse = e.message

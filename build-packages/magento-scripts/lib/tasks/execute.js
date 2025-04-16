@@ -102,7 +102,7 @@ const executeTask = async (argv) => {
             return result
         }
 
-        if (container.name.endsWith('php')) {
+        if (container.name.includes('php')) {
             if (process.stdout.isTTY) {
                 logger.logN(
                     `Starting container ${logger.style.misc(

@@ -9,6 +9,11 @@ const getJsonFileData = require('../../util/get-jsonfile-data')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 const { runPHPContainerCommand } = require('../php/php-container')
+const {
+    setupMagentoFilePermissions,
+    setupComposerCachePermissions
+} = require('./setup-magento/setup-file-permissions')
+const makeBinariesExecutable = require('./setup-magento/make-magento-binaries-executable')
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition'
 const magentoProductCommunityEdition = 'magento/product-community-edition'
@@ -150,7 +155,10 @@ const createMagentoProject = async (
 composer ${installCommand.join(' ')} && \
 mv ${tempDir}/composer.json ${
             ctx.config.baseConfig.containerMagentoDir
-        }/composer.json'`
+        }/composer.json'`,
+        {
+            user: 'www-data:www-data'
+        }
     )
 }
 
@@ -213,30 +221,41 @@ const installMagentoProject = () => ({
             })
         }
 
-        try {
-            await runComposerCommand(ctx, 'install', {
-                callback: !ctx.verbose
-                    ? undefined
-                    : (t) => {
-                          task.output = t
-                      }
-            })
-        } catch (e) {
-            if (
-                e instanceof UnknownError &&
-                e.message.includes('man-in-the-middle attack')
-            ) {
-                throw new KnownError(`Probably you haven't setup pubkeys in composer.
-        Please run ${logger.style.command(
-            'composer diagnose'
-        )} in cli to get mode.\n\n${e}`)
-            }
+        return task.newListr([
+            setupMagentoFilePermissions(),
+            setupComposerCachePermissions(),
+            {
+                title: 'Installing Magento dependencies',
+                task: async () => {
+                    try {
+                        await runComposerCommand(ctx, 'install', {
+                            user: 'www-data:www-data',
+                            callback: !ctx.verbose
+                                ? undefined
+                                : (t) => {
+                                      task.output = t
+                                  }
+                        })
+                    } catch (e) {
+                        if (
+                            e instanceof UnknownError &&
+                            e.message.includes('man-in-the-middle attack')
+                        ) {
+                            throw new KnownError(`Probably you haven't setup pubkeys in composer.
+                    Please run ${logger.style.command(
+                        'composer diagnose'
+                    )} in cli to get mode.\n\n${e}`)
+                        }
 
-            throw new UnknownError(
-                `Unexpected error during composer install.\n\n${e}`
-            )
-        }
-        ctx.magentoFirstInstall = true
+                        throw new UnknownError(
+                            `Unexpected error during composer install.\n\n${e}`
+                        )
+                    }
+                    ctx.magentoFirstInstall = true
+                }
+            },
+            makeBinariesExecutable()
+        ])
     },
     options: {
         bottomBar: 10

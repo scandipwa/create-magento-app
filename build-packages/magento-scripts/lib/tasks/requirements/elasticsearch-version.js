@@ -41,7 +41,7 @@ const checkElasticSearchVersion = () => ({
                     detach: false,
                     rm: true,
                     ports: [`127.0.0.1:${availableElasticSearchPort}:9200`],
-                    memory: '512mb'
+                    memory: '2gb'
                 })
             } catch (e) {
                 elasticSearchVersionResponse = e.message

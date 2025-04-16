@@ -22,7 +22,11 @@ const buildInstructions = (instructions) => {
                     addInstruction += ` --chown=${instruction.chown}`
                 }
 
-                addInstruction += ` ${instruction.src.join(' ')}`
+                addInstruction += ` ${
+                    Array.isArray(instruction.src)
+                        ? instruction.src.join(' ')
+                        : instruction.src
+                }`
                 addInstruction += ` ${instruction.dest}`
 
                 dockerFileInstructions.push(addInstruction)

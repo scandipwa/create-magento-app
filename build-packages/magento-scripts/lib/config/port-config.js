@@ -98,10 +98,30 @@ const getPortsConfig = async (ports, options = {}) => {
     if (useNonOverlappingPorts) {
         p = p.concat(await getUsedByOtherCMAProjectsPorts())
     }
+
     const availablePorts = Object.fromEntries(
         await Promise.all(
-            Object.entries(mergedPorts).map(async ([name, port]) => {
-                const availablePort = await getPort(port, {
+            Object.entries(
+                Object.entries(mergedPorts).reduce((acc, [name, port]) => {
+                    if (acc[port]) {
+                        let i = 0
+                        while (acc[port + i]) {
+                            i++
+                        }
+
+                        return {
+                            ...acc,
+                            [port + i]: name
+                        }
+                    } else {
+                        return {
+                            ...acc,
+                            [port]: name
+                        }
+                    }
+                }, {})
+            ).map(async ([port, name]) => {
+                const availablePort = await getPort(Number.parseInt(port), {
                     portIgnoreList: p
                 })
 

@@ -170,9 +170,8 @@ const buildDockerFileInstructions = async (
     }
 
     if (!ctx.isDockerDesktop) {
-        dockerFileInstructions.run(
-            `chown -R ${os.userInfo().uid}:${os.userInfo().gid} /composer/home`
-        )
+        const { uid, gid } = os.userInfo()
+        dockerFileInstructions.run(`chown -R ${uid}:${gid} /composer/home`)
     }
 
     dockerFileInstructions.workDir(ctx.config.baseConfig.containerMagentoDir)
@@ -286,58 +285,69 @@ const buildProjectImage = () => ({
     title: 'Building Project Images',
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports)
-        const [image, tag = 'latest'] =
-            ctx.config.overridenConfiguration.configuration.php.baseImage.split(
-                ':'
-            )
-        const dockerFileInstructions = await buildDockerFileInstructions(ctx, {
-            image,
-            tag,
-            ignorePHPExtensions: ['xdebug']
-        })
 
-        try {
-            await execAsyncSpawn(
-                `docker build -t ${containers.php.image} -<<EOF
+        return task.newListr([
+            {
+                title: 'Building PHP image',
+                task: async () => {
+                    const [image, tag = 'latest'] =
+                        ctx.config.overridenConfiguration.configuration.php.baseImage.split(
+                            ':'
+                        )
+                    const dockerFileInstructions =
+                        await buildDockerFileInstructions(ctx, {
+                            image,
+                            tag,
+                            ignorePHPExtensions: ['xdebug']
+                        })
+
+                    try {
+                        await execAsyncSpawn(
+                            `docker build -t ${containers.php.image} -<<EOF
 ${dockerFileInstructions}
 EOF`,
-                {
-                    callback: (r) => {
-                        task.output = r
+                            {
+                                callback: (r) => {
+                                    task.output = r
+                                }
+                            }
+                        )
+                    } catch (e) {
+                        throw new KnownError(
+                            `Unexpected error during PHP image building!\n\n${e}`
+                        )
                     }
                 }
-            )
-        } catch (e) {
-            throw new KnownError(
-                `Unexpected error during project image building!\n\n${e}`
-            )
-        }
-
-        const [phpImage, phpTag] = containers.php.image.split(':')
-        const debugImageInstructions = await buildDebugDockerFileInstructions(
-            ctx,
+            },
             {
-                image: phpImage,
-                tag: phpTag
-            }
-        )
+                title: 'Building PHP with XDebug image',
+                task: async () => {
+                    const [phpImage, phpTag] = containers.php.image.split(':')
+                    const debugImageInstructions =
+                        await buildDebugDockerFileInstructions(ctx, {
+                            image: phpImage,
+                            tag: phpTag
+                        })
 
-        try {
-            await execAsyncSpawn(
-                `docker build -t ${containers.phpWithXdebug.image} -<<EOF
+                    try {
+                        await execAsyncSpawn(
+                            `docker build -t ${containers.phpWithXdebug.image} -<<EOF
 ${debugImageInstructions}
 EOF`,
-                {
-                    callback: (r) => {
-                        task.output = r
+                            {
+                                callback: (r) => {
+                                    task.output = r
+                                }
+                            }
+                        )
+                    } catch (e) {
+                        throw new KnownError(
+                            `Unexpected error during PHP with XDebug image building!\n\n${e}`
+                        )
                     }
                 }
-            )
-        } catch (e) {
-            throw new KnownError(
-                `Unexpected error during project image building!\n\n${e}`
-            )
-        }
+            }
+        ])
     },
     options: {
         bottomBar: 10

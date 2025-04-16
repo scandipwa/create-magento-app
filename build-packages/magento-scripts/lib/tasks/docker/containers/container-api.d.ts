@@ -63,6 +63,11 @@ export interface ContainerExecOptions {
      * Allocate a pseudo-TTY
      */
     tty?: boolean
+
+    /**
+     * Keep STDIN open even if not attached
+     */
+    interactive?: boolean
 }
 
 export function exec<T>(

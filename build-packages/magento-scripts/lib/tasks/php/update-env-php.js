@@ -1,5 +1,4 @@
 const path = require('path')
-const os = require('os')
 const getJsonfileData = require('../../util/get-jsonfile-data')
 const pathExists = require('../../util/path-exists')
 const { containerApi } = require('../docker/containers')
@@ -65,21 +64,16 @@ const updateEnvPHP = () => ({
                 HOST_MACHINE: hostMachine,
                 PORTS: JSON.stringify(ctx.ports)
             },
-            command: 'php ./update-env-php.php',
+            command: 'php ./update-env.php',
             mountVolumes: [
                 `${path.join(__dirname, 'update-env.php')}:${
                     ctx.config.baseConfig.containerMagentoDir
-                }/update-env-php.php`,
+                }/update-env.php`,
                 `${envPhpPath}:${ctx.config.baseConfig.containerMagentoDir}/env.php`
             ],
             image: php.image,
             detach: false,
-            rm: true,
-            user:
-                (ctx.platform === 'linux' && isDockerDesktop) ||
-                !isDockerDesktop
-                    ? `${os.userInfo().uid}:${os.userInfo().gid}`
-                    : ''
+            rm: true
         })
 
         task.output = result
