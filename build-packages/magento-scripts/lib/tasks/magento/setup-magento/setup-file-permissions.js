@@ -10,7 +10,12 @@ const makeNewFilesCreatedInFolderUseDirectoryGroup = () => ({
     task: (ctx, task) =>
         task.newListr([
             runPHPContainerCommandTask(
-                'find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +'
+                'find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +',
+                {
+                    // should prevent command from failing the task
+                    // if the folder does not exist
+                    withCode: true
+                }
             )
         ])
 })
@@ -23,7 +28,12 @@ const makeFilesWritableForGroupMembers = () => ({
     task: (ctx, task) =>
         task.newListr([
             runPHPContainerCommandTask(
-                'find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} +'
+                'find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} +',
+                {
+                    // should prevent command from failing the task
+                    // if the folder does not exist
+                    withCode: true
+                }
             )
         ])
 })
