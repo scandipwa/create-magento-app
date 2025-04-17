@@ -13,8 +13,7 @@ const checkSearchEngineVersion = () => ({
         }
 
         return task.newListr(checkElasticSearchVersion())
-    },
-    exitOnError: false
+    }
 })
 
 module.exports = checkSearchEngineVersion

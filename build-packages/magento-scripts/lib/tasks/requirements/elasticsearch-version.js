@@ -1,4 +1,5 @@
 const { getPort } = require('../../config/port-config')
+const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 const { containerApi } = require('../docker/containers')
 
@@ -48,6 +49,22 @@ const checkElasticSearchVersion = () => ({
             }
         }
 
+        if (
+            ctx.cgroupVersion === 'v2' &&
+            elasticSearchVersionResponse.includes(
+                'Cannot invoke "jdk.internal.platform.CgroupInfo.getMountPoint()" because "anyController" is null'
+            )
+        ) {
+            throw new KnownError(`ElasticSearch failed to start up due to a JVM bug with CGroup version 2.
+Similar issue on StackOverflow: https://stackoverflow.com/q/71532170.
+
+Right now is check if OpenSearch works with your version of Magento.
+Follow the documentation: https://docs.create-magento-app.com/getting-started/config-file#searchengine-opensearch-elasticsearch
+
+If it will not help, try updating ElasticSearch image version: https://docs.create-magento-app.com/getting-started/config-file#elasticsearch
+`)
+        }
+
         const elasticSearchVersionResponseResult =
             elasticSearchVersionResponse.match(/Version:\s(\d+\.\d+\.\d+)/i)
 
@@ -64,8 +81,7 @@ const checkElasticSearchVersion = () => ({
                 `Cannot retrieve ElasticSearch Version!\n\n${elasticSearchVersionResponse}`
             )
         }
-    },
-    exitOnError: false
+    }
 })
 
 module.exports = checkElasticSearchVersion

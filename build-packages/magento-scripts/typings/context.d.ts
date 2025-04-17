@@ -24,6 +24,7 @@ export interface ListrContext {
     phpVersion: string
     elasticSearchVersion: string
     openSearchVersion: string
+    cgroupVersion: 'v1' | 'v2'
     port?: number
     ports: {
         app: number
@@ -56,8 +57,8 @@ export interface ListrContext {
     isArm: boolean
     isWsl: boolean
     isArmMac: boolean
-    platform?: NodeJS.Platform
-    platformVersion?: string
+    platform: NodeJS.Platform
+    platformVersion: string
     /**
      * Magento Edition
      *
