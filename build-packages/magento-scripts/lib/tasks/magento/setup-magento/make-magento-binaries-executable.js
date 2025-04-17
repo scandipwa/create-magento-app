@@ -30,7 +30,7 @@ const makeBinariesExecutable = () => ({
                 const filePath = path.join(directory, file.name)
                 const stats = await fs.promises.stat(filePath)
 
-                if (!filePath.startsWith('.') && stats.mode & 0o111) {
+                if (!filePath.startsWith(file.name) && stats.mode & 0o111) {
                     continue
                 }
 
