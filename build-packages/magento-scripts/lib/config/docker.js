@@ -331,7 +331,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             mariadb: {
                 _: 'MariaDB',
                 healthCheck: {
-                    cmd: 'mariadb-admin ping --silent'
+                    cmd: `${mariadb.binAdminFileName} ping --silent`
                 },
                 ports: [`127.0.0.1:${ports.mariadb}:3306`],
                 forwardedPorts: [`127.0.0.1:${ports.mariadb}:3306`],
