@@ -64,7 +64,8 @@ const adjustComposerJson = async (
                     ? undefined
                     : (t) => {
                           task.output = t
-                      }
+                      },
+                useAutomaticUser: true
             }
         )
     }
@@ -155,10 +156,7 @@ const createMagentoProject = async (
 composer ${installCommand.join(' ')} && \
 mv ${tempDir}/composer.json ${
             ctx.config.baseConfig.containerMagentoDir
-        }/composer.json'`,
-        {
-            user: 'www-data:www-data'
-        }
+        }/composer.json'`
     )
 }
 
@@ -229,7 +227,6 @@ const installMagentoProject = () => ({
                 task: async () => {
                     try {
                         await runComposerCommand(ctx, 'install', {
-                            user: 'www-data:www-data',
                             callback: !ctx.verbose
                                 ? undefined
                                 : (t) => {

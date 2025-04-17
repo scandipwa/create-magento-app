@@ -5,7 +5,7 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container')
  *
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command magento command
- * @param {Parameters<typeof import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean }} options
+ * @param {Parameters<typeof import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean, useAutomaticUser?: boolean }} options
  * @returns {Promise<{ code: number, result: string }>}
  */
 const runMagentoCommand = async (ctx, command, options = {}) => {

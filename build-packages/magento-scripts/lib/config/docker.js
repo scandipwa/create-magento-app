@@ -1,3 +1,4 @@
+const os = require('os')
 const path = require('path')
 const getPhpConfig = require('./php-config')
 const { isIpAddress } = require('../util/ip')
@@ -163,7 +164,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 remoteImages: [configuration.php.baseImage],
                 name: `${prefix}_php`,
                 connectCommand: ['/bin/sh'],
-                dependsOn: ['mariadb', 'redis', 'elasticsearch']
+                dependsOn: ['mariadb', 'redis', 'elasticsearch'],
+                user:
+                    (ctx.platform === 'linux' && isDockerDesktop) ||
+                    !isDockerDesktop
+                        ? `${os.userInfo().uid}:${os.userInfo().gid}`
+                        : ''
             },
             phpWithXdebug: {
                 _: 'PHP with Xdebug',
@@ -217,7 +223,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 pullImage: false,
                 name: `${prefix}_php_with_xdebug`,
                 connectCommand: ['/bin/sh'],
-                dependsOn: ['mariadb', 'redis', 'elasticsearch']
+                dependsOn: ['mariadb', 'redis', 'elasticsearch'],
+                user:
+                    (ctx.platform === 'linux' && isDockerDesktop) ||
+                    !isDockerDesktop
+                        ? `${os.userInfo().uid}:${os.userInfo().gid}`
+                        : ''
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',

@@ -1,9 +1,12 @@
 /* eslint-disable no-use-before-define */
+const os = require('os')
 const { deepmerge } = require('../../util/deepmerge')
 const { containerApi } = require('../docker/containers')
 
 /**
- * @type {typeof import('./php-container')['runPHPContainerCommand']}
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[0]} ctx
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[1]} command
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[2] & { useAutomaticUser?: boolean}} [options]
  */
 const runPHPContainerCommand = async (ctx, command, options = {}) => {
     const { php } = ctx.config.docker.getContainers(ctx.ports)
@@ -26,7 +29,18 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
                 rm: true,
                 command
             },
-            options.user ? { user: options.user } : {}
+            options.user
+                ? {
+                      user: options.user
+                  }
+                : {},
+            options.useAutomaticUser
+                ? {
+                      user: ctx.isDockerDesktop
+                          ? 'www-data:www-data'
+                          : `${os.userInfo().uid}:${os.userInfo().gid}`
+                  }
+                : {}
         ),
         options
     )
