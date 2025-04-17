@@ -15,6 +15,7 @@ const runMagentoCommand = async (ctx, command, options = {}) => {
         `bin/magento ${command}`,
         {
             ...options,
+            useAutomaticUser: true,
             withCode: true
         }
     )

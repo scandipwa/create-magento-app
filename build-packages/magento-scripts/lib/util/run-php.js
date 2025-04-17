@@ -13,6 +13,7 @@ const runPhpCode = async (ctx, command, options = {}) => {
         `php ${command}`,
         {
             ...options,
+            useAutomaticUser: true,
             withCode: true
         }
     )
