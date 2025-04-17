@@ -186,23 +186,38 @@ const startContainers = () => ({
                 task: async (subCtx, subTask) => {
                     const { dependsOn } = container
                     if (Array.isArray(dependsOn)) {
-                        subTask.output = `Container ${
+                        const startedContainers = []
+                        subTask.title = `Container ${
                             container._
                         } is waiting for ${dependsOn.join(', ')} to start...`
                         await Promise.all(
                             dependsOn.map(
                                 async (name) =>
                                     new Promise((resolve, reject) => {
-                                        const timeout = setTimeout(() => {
-                                            reject(
-                                                new Error(
-                                                    `Container ${name} not started in time`
+                                        const timeout = setTimeout(
+                                            () => {
+                                                reject(
+                                                    new Error(
+                                                        `Container ${name} not started in time`
+                                                    )
                                                 )
-                                            )
-                                        }, 15000)
+                                            },
+                                            // 2 minutes
+                                            1000 * 60 * 2
+                                        )
                                         containerStatuses[name].onStarted.push(
                                             () => {
-                                                subTask.output = `Dependency container ${name} started`
+                                                startedContainers.push(name)
+                                                subTask.title = `Container ${
+                                                    container._
+                                                } is waiting for ${dependsOn
+                                                    .filter(
+                                                        (d) =>
+                                                            !startedContainers.includes(
+                                                                d
+                                                            )
+                                                    )
+                                                    .join(', ')} to start...`
                                                 clearTimeout(timeout)
                                                 resolve()
                                             }
@@ -210,13 +225,11 @@ const startContainers = () => ({
                                     })
                             )
                         )
-
-                        subTask.output = `${container._} is starting...`
                     }
 
-                    await containerApi.run(container)
+                    subTask.title = `${container._} is starting...`
 
-                    subTask.output = `${container._} started`
+                    await containerApi.run(container)
 
                     containerStatuses[
                         container.nameWithoutPrefix
@@ -227,7 +240,7 @@ const startContainers = () => ({
                         cb()
                     })
 
-                    subTask.title = `${container._} deploying`
+                    subTask.output = `${container._} container started`
                 }
             })),
             {
