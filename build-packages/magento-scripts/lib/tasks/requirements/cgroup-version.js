@@ -1,6 +1,4 @@
 const semver = require('semver')
-const UnknownError = require('../../errors/unknown-error')
-const { containerApi } = require('../docker/containers')
 const { execAsync } = require('../../util/exec-async')
 const { systemApi } = require('../docker/system')
 
@@ -9,8 +7,10 @@ const { systemApi } = require('../docker/system')
  */
 const checkCGroupVersion = () => ({
     title: 'Checking CGroup version',
-    task: async (ctx) => {
+    task: async (ctx, task) => {
         ctx.cgroupVersion = 'v1'
+
+        let cgroupVersionDetected
 
         if (ctx.platform === 'linux' && !ctx.isWsl) {
             const cgroupVersion = await execAsync(`stat -fc %T /sys/fs/cgroup/`)
@@ -18,7 +18,7 @@ const checkCGroupVersion = () => ({
             if (cgroupVersion && cgroupVersion.includes('cgroup2')) {
                 ctx.cgroupVersion = 'v2'
 
-                return
+                cgroupVersionDetected = true
             } else {
                 const kernelReleaseVersionResult =
                     ctx.platformVersion.match(/(\d+\.\d+\.\d+)/)
@@ -31,28 +31,38 @@ const checkCGroupVersion = () => ({
 
                     if (semver.satisfies(kernelVersion, '>=6.12.0')) {
                         ctx.cgroupVersion = 'v2'
+
+                        cgroupVersionDetected = true
+                    } else {
+                        cgroupVersionDetected = true
                     }
                 }
             }
         }
 
-        const dockerSystemVersions = await systemApi.version({
-            formatToJSON: true
-        })
+        if (!cgroupVersionDetected) {
+            const dockerSystemVersions = await systemApi.version({
+                formatToJSON: true
+            })
 
-        const kernelReleaseVersionResult =
-            dockerSystemVersions.Server.KernelVersion.match(/(\d+\.\d+\.\d+)/)
+            const kernelReleaseVersionResult =
+                dockerSystemVersions.Server.KernelVersion.match(
+                    /(\d+\.\d+\.\d+)/
+                )
 
-        if (
-            kernelReleaseVersionResult &&
-            kernelReleaseVersionResult.length > 0
-        ) {
-            const kernelVersion = kernelReleaseVersionResult[1]
+            if (
+                kernelReleaseVersionResult &&
+                kernelReleaseVersionResult.length > 0
+            ) {
+                const kernelVersion = kernelReleaseVersionResult[1]
 
-            if (semver.satisfies(kernelVersion, '>=6.12.0')) {
-                ctx.cgroupVersion = 'v2'
+                if (semver.satisfies(kernelVersion, '>=6.12.0')) {
+                    ctx.cgroupVersion = 'v2'
+                }
             }
         }
+
+        task.title = `Using CGroup ${ctx.cgroupVersion}`
     }
 })
 
