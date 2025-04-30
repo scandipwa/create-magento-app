@@ -18,6 +18,6 @@
     },
     "dependencies": {
         "@scandipwa/magento-scripts": "2.4.0-alpha.2",
-        "@scandipwa/magento-scripts-php-extensions": "1.0.7"
+        "@scandipwa/magento-scripts-php-extensions": "1.0.8"
     }
 }
