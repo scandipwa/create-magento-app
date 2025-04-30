@@ -39,14 +39,16 @@ const copyDatabaseDumpIntoContainer = () => ({
 const runSetGlobalLogBinTrustFunctionCreatorsCommand = () => ({
     task: async (ctx, task) => {
         const {
-            config: { docker },
+            config: { docker, overridenConfiguration },
             ports
         } = ctx
         const { mariadb } = docker.getContainers(ports)
 
+        const { binFileName } = overridenConfiguration.configuration.mariadb
+
         return task.newListr(
             execCommandTask(
-                `docker exec ${mariadb.name} bash -c 'mysql -uroot -p${mariadb.env.MARIADB_ROOT_PASSWORD} -e "SET GLOBAL log_bin_trust_function_creators = 1;"'`
+                `docker exec ${mariadb.name} bash -c '${binFileName} -uroot -p${mariadb.env.MARIADB_ROOT_PASSWORD} -e "SET GLOBAL log_bin_trust_function_creators = 1;"'`
             )
         )
     }
@@ -95,10 +97,11 @@ Note that you will lose your existing database!`,
 const executeImportDumpSQL = () => ({
     task: async (ctx, task) => {
         const {
-            config: { docker },
+            config: { docker, overridenConfiguration },
             ports
         } = ctx
         const { mariadb } = docker.getContainers(ports)
+        const { binFileName } = overridenConfiguration.configuration.mariadb
 
         const userCredentialsForMariaDBCLI = await task.prompt({
             type: 'Select',
@@ -117,7 +120,7 @@ const executeImportDumpSQL = () => ({
             ]
         })
 
-        const importCommand = `docker exec ${mariadb.name} bash -c "mysql ${userCredentialsForMariaDBCLI} magento < ./dump.sql"`
+        const importCommand = `docker exec ${mariadb.name} bash -c "${binFileName} ${userCredentialsForMariaDBCLI} magento < ./dump.sql"`
 
         const startImportTime = Date.now()
         const tickInterval = setInterval(() => {
