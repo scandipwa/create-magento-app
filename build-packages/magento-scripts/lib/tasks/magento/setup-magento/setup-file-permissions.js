@@ -7,14 +7,20 @@ const {
 } = require('../../php/php-container')
 
 /**
+ * @param {string[]} directories
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const makeNewFilesCreatedInFolderUseDirectoryGroup = () => ({
+const makeNewFilesCreatedInFolderUseDirectoryGroup = (directories) => ({
     title: 'Make new files created in folder use directory group',
-    task: (ctx, task) =>
-        task.newListr([
+    task: async (ctx, task) => {
+        if (directories.length === 0) {
+            task.skip()
+            return
+        }
+
+        return task.newListr([
             runPHPContainerCommandTask(
-                'find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} +',
+                `find ${directories.join(' ')} -type d -exec chmod g+ws {} +`,
                 {
                     // should prevent command from failing the task
                     // if the folder does not exist
@@ -22,17 +28,26 @@ const makeNewFilesCreatedInFolderUseDirectoryGroup = () => ({
                 }
             )
         ])
+    }
 })
 
 /**
+ * @param {string[]} directories
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
-const makeFilesWritableForGroupMembers = () => ({
+const makeFilesWritableForGroupMembers = (directories) => ({
     title: 'Make files writable for group members',
-    task: (ctx, task) =>
-        task.newListr([
+    task: async (ctx, task) => {
+        if (directories.length === 0) {
+            task.skip()
+            return
+        }
+
+        return task.newListr([
             runPHPContainerCommandTask(
-                'find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} +',
+                `find ${directories.join(
+                    ' '
+                )} -type -type f -exec chmod g+w {} +`,
                 {
                     // should prevent command from failing the task
                     // if the folder does not exist
@@ -40,6 +55,7 @@ const makeFilesWritableForGroupMembers = () => ({
                 }
             )
         ])
+    }
 })
 
 /**
@@ -64,68 +80,100 @@ const makeFolderOwnedByUser = (folder, user, group) => ({
 })
 
 /**
- * @param {import('../../../../typings/context').ListrContext} ctx
- */
-const doesFileSystemNeedsPermissionsSetup = async (ctx) => {
-    const checkPHPPermissionsFileName = 'check-file-permissions.php'
-    const cacheDirFilePath = path.join(
-        ctx.config.baseConfig.cacheDir,
-        checkPHPPermissionsFileName
-    )
-    await fs.promises.copyFile(
-        path.join(__dirname, checkPHPPermissionsFileName),
-        cacheDirFilePath
-    )
-
-    const result = await runPHPContainerCommand(
-        ctx,
-        `php ${path.relative(process.cwd(), cacheDirFilePath)}`,
-        {
-            user: 'www-data:www-data',
-            cwd: ctx.config.baseConfig.containerMagentoDir
-        }
-    )
-
-    await fs.promises.unlink(cacheDirFilePath)
-
-    /**
-     * @type {{directory: string, exists: boolean, writable: boolean, permissions: string, directory_owner: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, directory_group: boolean, current_user: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, is_current_user_directory_owner: boolean}[]}
-     */
-    const parsedResult = JSON.parse(result)
-
-    if (parsedResult.some(({ exists, writable }) => exists && !writable)) {
-        return true
-    }
-
-    return false
-}
-
-/**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const setupMagentoFilePermissions = () => ({
     title: 'Setting Magento file permissions',
-    // skip: true,
-    skip: async (ctx) =>
-        ctx.magentoFirstInstall ||
-        !(await doesFileSystemNeedsPermissionsSetup(ctx)),
-    task: (ctx, task) =>
-        task.newListr(
-            [
-                makeNewFilesCreatedInFolderUseDirectoryGroup(),
-                makeFilesWritableForGroupMembers()
-            ].concat(
-                ctx.isDockerDesktop
-                    ? [
-                          makeFolderOwnedByUser(
-                              ctx.config.baseConfig.containerMagentoDir,
-                              'www-data',
-                              'www-data'
-                          )
-                      ]
-                    : []
-            )
+    task: async (ctx, task) => {
+        const checkPHPPermissionsFileName = 'check-file-permissions.php'
+        const cacheDirFilePath = path.join(
+            ctx.config.baseConfig.cacheDir,
+            checkPHPPermissionsFileName
         )
+        await fs.promises.copyFile(
+            path.join(__dirname, checkPHPPermissionsFileName),
+            cacheDirFilePath
+        )
+
+        const result = await runPHPContainerCommand(
+            ctx,
+            `php ${path.relative(process.cwd(), cacheDirFilePath)}`,
+            {
+                user: 'www-data:www-data',
+                cwd: ctx.config.baseConfig.containerMagentoDir
+            }
+        )
+
+        await fs.promises.unlink(cacheDirFilePath)
+
+        /**
+         * @type {{directory: string, exists: boolean, new_files_inherit_group: boolean, has_group_write_permissions: boolean, writable: boolean, permissions: string, directory_owner: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, directory_group: boolean, current_user: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, is_current_user_directory_owner: boolean}[]}
+         */
+        const parsedResult = JSON.parse(result)
+
+        const nonWritableDirectories = parsedResult.filter(
+            ({ exists, has_group_write_permissions: hgwp }) => exists && !hgwp
+        )
+
+        const tasks = []
+
+        if (!nonWritableDirectories.length === 0) {
+            const nonWritableDirectoriesPaths = nonWritableDirectories.map(
+                ({ directory }) => directory
+            )
+
+            const user = ctx.isDockerDesktop
+                ? 'www-data'
+                : `${os.userInfo().uid}`
+            const group = ctx.isDockerDesktop
+                ? 'www-data'
+                : `${os.userInfo().gid}`
+
+            tasks.push(
+                makeFilesWritableForGroupMembers(nonWritableDirectoriesPaths),
+                {
+                    task: (subCtx, subTask) =>
+                        subTask.newListr(
+                            nonWritableDirectoriesPaths.map((directory) =>
+                                makeFolderOwnedByUser(
+                                    path.join(
+                                        ctx.config.baseConfig
+                                            .containerMagentoDir,
+                                        directory
+                                    ),
+                                    user,
+                                    group
+                                )
+                            )
+                        ),
+                    options: {
+                        concurrent: true
+                    }
+                }
+            )
+        }
+
+        const directoriesThatNeedNewFilesInheritGroup = parsedResult
+            .filter(
+                ({ exists, new_files_inherit_group: nfig }) => exists && !nfig
+            )
+            .map(({ directory }) => directory)
+
+        if (directoriesThatNeedNewFilesInheritGroup.length > 0) {
+            tasks.push(
+                makeNewFilesCreatedInFolderUseDirectoryGroup(
+                    directoriesThatNeedNewFilesInheritGroup
+                )
+            )
+        }
+
+        if (tasks.length === 0) {
+            task.skip()
+            return
+        }
+
+        return task.newListr(tasks)
+    }
 })
 
 /**
