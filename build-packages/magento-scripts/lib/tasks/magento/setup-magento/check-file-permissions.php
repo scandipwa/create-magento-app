@@ -1,19 +1,12 @@
 <?php
-$directories = [
-    'var',
-    'generated',
-    'vendor',
-    'pub/static',
-    'pub/media',
-    'app/etc',
-];
+// receive directories from command line arguments
+$directories = explode(",", $argv[1]);
 
 $results = [];
 
-foreach ($directories as $dir) {
-    $directory = getcwd() . "/" . $dir;
+foreach ($directories as $directory) {
     $result = [];
-    $result['directory'] = $dir;
+    $result['directory'] = $directory;
     $result['exists'] = file_exists($directory);
     $result['writable'] = is_writable($directory);
     $result['readable'] = is_readable($directory);

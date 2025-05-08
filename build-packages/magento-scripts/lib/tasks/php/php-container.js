@@ -9,6 +9,7 @@ const { containerApi } = require('../docker/containers')
  * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[2] & { useAutomaticUser?: boolean}} [options]
  */
 const runPHPContainerCommand = async (ctx, command, options = {}) => {
+    const { useAutomaticUser = true } = options
     const { php } = ctx.config.docker.getContainers(ctx.ports)
 
     const containers = await containerApi.ls({
@@ -34,11 +35,14 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
                       user: options.user
                   }
                 : {},
-            options.useAutomaticUser
+            useAutomaticUser
                 ? {
-                      user: ctx.isDockerDesktop
-                          ? 'www-data:www-data'
-                          : `${os.userInfo().uid}:${os.userInfo().gid}`
+                      user:
+                          ctx.platform === 'linux'
+                              ? `${os.userInfo().username}:${
+                                    os.userInfo().username
+                                }`
+                              : 'www-data:www-data'
                   }
                 : {}
         ),

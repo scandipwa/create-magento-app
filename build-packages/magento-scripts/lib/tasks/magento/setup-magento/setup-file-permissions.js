@@ -6,6 +6,15 @@ const {
     runPHPContainerCommand
 } = require('../../php/php-container')
 
+const directoriesToCheck = [
+    'var',
+    'generated',
+    'vendor',
+    'pub/media',
+    'pub/static',
+    'app/etc'
+]
+
 /**
  * @param {string[]} directories
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -73,11 +82,51 @@ const makeFolderOwnedByUser = (folder, user, group) => ({
             runPHPContainerCommandTask(
                 `chown -R ${user}${group ? `:${group}` : ''} ${folder}`,
                 {
-                    user: 'root:root'
+                    user: 'root:root',
+                    useAutomaticUser: false
                 }
             )
         ])
 })
+
+/**
+ * @param {import('../../../../typings/context').ListrContext} ctx
+ * @param {string[]} directories
+ * @return {Promise<{directory: string, exists: boolean, new_files_inherit_group: boolean, has_group_write_permissions: boolean, writable: boolean, permissions: string, directory_owner: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, directory_group: boolean, current_user: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, is_current_user_directory_owner: boolean}[]>}
+ */
+const checkDirectoriesPermissions = async (ctx, directories) => {
+    const checkPHPPermissionsFileName = 'check-file-permissions.php'
+    const cacheDirFilePath = path.join(
+        ctx.config.baseConfig.cacheDir,
+        `${Date.now()}-${checkPHPPermissionsFileName}`
+    )
+    await fs.promises.copyFile(
+        path.join(__dirname, checkPHPPermissionsFileName),
+        cacheDirFilePath
+    )
+    const user =
+        ctx.platform === 'linux' ? `${os.userInfo().username}` : 'www-data'
+    const group =
+        ctx.platform === 'linux' ? `${os.userInfo().username}` : 'www-data'
+
+    const userWithGroup = `${user}:${group}`
+
+    const result = await runPHPContainerCommand(
+        ctx,
+        `php ${path.relative(
+            process.cwd(),
+            cacheDirFilePath
+        )} ${directories.join(',')}`,
+        {
+            user: userWithGroup,
+            cwd: ctx.config.baseConfig.containerMagentoDir
+        }
+    )
+
+    await fs.promises.unlink(cacheDirFilePath)
+
+    return JSON.parse(result)
+}
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -85,49 +134,30 @@ const makeFolderOwnedByUser = (folder, user, group) => ({
 const setupMagentoFilePermissions = () => ({
     title: 'Setting Magento file permissions',
     task: async (ctx, task) => {
-        const checkPHPPermissionsFileName = 'check-file-permissions.php'
-        const cacheDirFilePath = path.join(
-            ctx.config.baseConfig.cacheDir,
-            checkPHPPermissionsFileName
-        )
-        await fs.promises.copyFile(
-            path.join(__dirname, checkPHPPermissionsFileName),
-            cacheDirFilePath
-        )
-
-        const result = await runPHPContainerCommand(
+        const parsedResult = await checkDirectoriesPermissions(
             ctx,
-            `php ${path.relative(process.cwd(), cacheDirFilePath)}`,
-            {
-                user: 'www-data:www-data',
-                cwd: ctx.config.baseConfig.containerMagentoDir
-            }
+            directoriesToCheck.map((directory) =>
+                path.join(ctx.config.baseConfig.containerMagentoDir, directory)
+            )
         )
-
-        await fs.promises.unlink(cacheDirFilePath)
-
-        /**
-         * @type {{directory: string, exists: boolean, new_files_inherit_group: boolean, has_group_write_permissions: boolean, writable: boolean, permissions: string, directory_owner: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, directory_group: boolean, current_user: {name: string, passwd: string, uid: number, gid: number, gecos: string, dir: string, shell: string} | boolean, is_current_user_directory_owner: boolean}[]}
-         */
-        const parsedResult = JSON.parse(result)
-
         const nonWritableDirectories = parsedResult.filter(
-            ({ exists, has_group_write_permissions: hgwp }) => exists && !hgwp
+            ({ exists, writable }) => exists && !writable
         )
 
         const tasks = []
 
-        if (!nonWritableDirectories.length === 0) {
+        if (nonWritableDirectories.length !== 0) {
             const nonWritableDirectoriesPaths = nonWritableDirectories.map(
                 ({ directory }) => directory
             )
-
-            const user = ctx.isDockerDesktop
-                ? 'www-data'
-                : `${os.userInfo().uid}`
-            const group = ctx.isDockerDesktop
-                ? 'www-data'
-                : `${os.userInfo().gid}`
+            const user =
+                ctx.platform === 'linux'
+                    ? `${os.userInfo().username}`
+                    : 'www-data'
+            const group =
+                ctx.platform === 'linux'
+                    ? `${os.userInfo().username}`
+                    : 'www-data'
 
             tasks.push(
                 makeFilesWritableForGroupMembers(nonWritableDirectoriesPaths),
@@ -181,23 +211,25 @@ const setupMagentoFilePermissions = () => ({
  */
 const setupComposerCachePermissions = () => ({
     title: 'Setting Composer Cache permissions',
-    task: (ctx, task) =>
-        task.newListr([
-            ctx.isDockerDesktop
-                ? makeFolderOwnedByUser(
-                      '/composer/home',
-                      'www-data',
-                      'www-data'
-                  )
-                : makeFolderOwnedByUser(
-                      '/composer/home',
-                      os.userInfo().uid,
-                      os.userInfo().gid
-                  ),
+    task: async (ctx, task) => {
+        const parsedResult = await checkDirectoriesPermissions(ctx, [
+            '/composer/home'
+        ])
 
+        if (parsedResult.every((dir) => dir.writable)) {
+            task.skip()
+            return
+        }
+
+        const userAndGroup =
+            ctx.platform === 'linux' ? `${os.userInfo().username}` : 'www-data'
+
+        return task.newListr([
+            makeFolderOwnedByUser('/composer/home', userAndGroup, userAndGroup),
             runPHPContainerCommandTask('chmod g+ws /composer/home/cache'),
             runPHPContainerCommandTask('chmod g+w /composer/home/cache')
         ])
+    }
 })
 
 module.exports = {
