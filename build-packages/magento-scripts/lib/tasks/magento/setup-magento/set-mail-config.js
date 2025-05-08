@@ -10,14 +10,28 @@ const setMailConfig = () => ({
             'core_config_data',
             [
                 {
-                    path: 'smtp/configuration_option/port',
+                    path: 'system/smtp/transport',
+                    value: 'smtp'
+                },
+                {
+                    path: 'system/smtp/host',
+                    value: isDockerDesktop
+                        ? 'host.docker.internal'
+                        : '127.0.0.1'
+                },
+                {
+                    path: 'system/smtp/port',
                     value: `${ports.maildevSMTP}`
                 },
                 {
                     path: 'smtp/configuration_option/host',
                     value: isDockerDesktop
                         ? 'host.docker.internal'
-                        : 'localhost'
+                        : '127.0.0.1'
+                },
+                {
+                    path: 'smtp/configuration_option/port',
+                    value: `${ports.maildevSMTP}`
                 }
             ],
             { databaseConnection, task }
