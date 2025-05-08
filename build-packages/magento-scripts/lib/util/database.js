@@ -77,6 +77,41 @@ const updateTableValues = async (
         )
     }
 }
+/**
+ * Delete table in **magento** database
+ * @param {String} table Table name
+ * @param {{ path: string, value: string | number | null }[]} values
+ * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'], task: { skip(): void } }} param2
+ */
+const deleteTableValues = async (
+    table,
+    values,
+    { databaseConnection, task }
+) => {
+    const [rows] = await databaseConnection.query(`
+        SELECT * FROM ${table}
+        WHERE ${values.map((p) => `path = '${p.path}'`).join(' OR ')};
+    `)
+
+    if (rows.filter(Boolean).length === 0) {
+        task.skip()
+        return
+    }
+
+    const configsToDelete = rows.filter(({ path }) =>
+        values.some((p) => p.path === path)
+    )
+
+    for (const config of configsToDelete) {
+        await databaseConnection.query(
+            `
+            DELETE FROM ${table}
+            WHERE config_id = ?;
+        `,
+            [config.config_id]
+        )
+    }
+}
 
 /**
  * Insert values into table in **magento** database
@@ -213,6 +248,7 @@ const databaseQuery = async (
 module.exports = {
     updateTableValues,
     insertTableValues,
+    deleteTableValues,
     isTableExists,
     databaseQuery
 }

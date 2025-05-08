@@ -2,6 +2,7 @@ const configureElasticsearch = require('../magento/setup-magento/configure-searc
 const deleteAdminUsers = require('../magento/setup-magento/delete-admin-users')
 const deleteCustomers = require('../magento/setup-magento/delete-customers')
 const deleteOrders = require('../magento/setup-magento/delete-orders')
+const disableCustomAdminPath = require('../magento/setup-magento/disable-custom-admin-path')
 const varnishConfigSetup = require('../magento/setup-magento/varnish-config')
 
 /**
@@ -30,6 +31,7 @@ const fixDB = () => ({
             [
                 varnishConfigSetup(),
                 configureElasticsearch(),
+                disableCustomAdminPath(),
                 {
                     title: 'Deleting customers data',
                     skip: ({ withCustomersData }) => withCustomersData,
