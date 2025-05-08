@@ -1,3 +1,5 @@
+const path = require('path')
+const pathExists = require('../../../util/path-exists')
 const runMagentoCommand = require('../../../util/run-magento')
 
 /**
@@ -6,6 +8,17 @@ const runMagentoCommand = require('../../../util/run-magento')
 const disableMaintenanceMode = () => ({
     title: 'Disabling maintenance mode',
     task: async (ctx, task) => {
+        const maintenanceModeFile = `var/.maintenance.flag`
+
+        if (
+            !(await pathExists(
+                path.join(ctx.config.baseConfig.magentoDir, maintenanceModeFile)
+            ))
+        ) {
+            task.skip()
+            return
+        }
+
         const { result } = await runMagentoCommand(ctx, 'maintenance:status', {
             throwNonZeroCode: false
         })
