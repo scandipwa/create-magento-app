@@ -169,16 +169,12 @@ const buildDockerFileInstructions = async (
         }
     }
 
-    if (!ctx.isDockerDesktop) {
-        dockerFileInstructions.run(`chown -R www-data:www-data /composer/home`)
-
-        if (ctx.platform === 'linux') {
-            const { gid, username } = os.userInfo()
-            dockerFileInstructions.run(
-                `addgroup -g ${gid} ${username} && adduser -u ${gid} -G ${username} -H -s /sbin/nologin -D ${username} && \
+    if (ctx.isDockerDesktop && ctx.platform === 'linux') {
+        const { gid, username } = os.userInfo()
+        dockerFileInstructions.run(
+            `addgroup -g ${gid} ${username} && adduser -u ${gid} -G ${username} -H -s /sbin/nologin -D ${username} && \
                 addgroup www-data ${username}`
-            )
-        }
+        )
     }
 
     dockerFileInstructions.workDir(ctx.config.baseConfig.containerMagentoDir)
