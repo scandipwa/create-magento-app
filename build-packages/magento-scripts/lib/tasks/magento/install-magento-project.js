@@ -161,6 +161,46 @@ mv ${tempDir}/composer.json ${
 }
 
 /**
+ * Will check if the following conditions are met:
+ * - composer.lock file exists
+ * - vendor directory exists
+ * - all packages from composer.lock are installed in vendor directory
+ * @param {string} magentoDir
+ */
+const getIsVendorFolderCorrupted = async (magentoDir) => {
+    const composerLockFile = path.join(magentoDir, 'composer.lock')
+    const vendorDir = path.join(magentoDir, 'vendor')
+    const [vendorDirStat, composerLockFileStat] = await Promise.all([
+        pathExists(vendorDir),
+        pathExists(composerLockFile)
+    ])
+    if (!vendorDirStat || !composerLockFileStat) {
+        return true
+    }
+    /**
+     * @type {{ packages: { name: string }[] } | null}
+     */
+    const composerLockData = await getJsonFileData(composerLockFile)
+    if (!composerLockData || !composerLockData.packages) {
+        return true
+    }
+    const { packages } = composerLockData
+    const packagesNames = packages.map((pkg) => pkg.name)
+
+    const hasCorruptPackages = await Promise.all(
+        packagesNames.map(async (pkg) => {
+            const vendorPackage = path.join(vendorDir, pkg)
+            const composerJson = path.join(vendorPackage, 'composer.json')
+            if (!(await pathExists(composerJson))) {
+                return true
+            }
+        })
+    )
+
+    return hasCorruptPackages.every((result) => result === true)
+}
+
+/**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installMagentoProject = () => ({
@@ -197,7 +237,11 @@ const installMagentoProject = () => ({
             'composer.lock': true
         })
 
-        if (isFsMatching) {
+        const isVendorFolderCorrupted = await getIsVendorFolderCorrupted(
+            baseConfig.magentoDir
+        )
+
+        if (isFsMatching && !isVendorFolderCorrupted) {
             ctx.magentoFirstInstall = false
             task.skip()
             return
@@ -206,17 +250,24 @@ const installMagentoProject = () => ({
         task.title = `Installing Magento ${magentoPackageVersion}`
         task.output = `Creating Magento ${magentoPackageVersion} project`
 
-        if (!(await pathExists(path.join(process.cwd(), 'composer.json')))) {
-            await createMagentoProject(ctx, task, {
-                magentoProject,
-                magentoPackageVersion
-            })
-        }
+        if (!isFsMatching) {
+            if (
+                !(await pathExists(path.join(process.cwd(), 'composer.json')))
+            ) {
+                await createMagentoProject(ctx, task, {
+                    magentoProject,
+                    magentoPackageVersion
+                })
+            }
 
-        if (!(await pathExists(path.join(process.cwd(), 'app', 'etc')))) {
-            await fs.promises.mkdir(path.join(process.cwd(), 'app', 'etc'), {
-                recursive: true
-            })
+            if (!(await pathExists(path.join(process.cwd(), 'app', 'etc')))) {
+                await fs.promises.mkdir(
+                    path.join(process.cwd(), 'app', 'etc'),
+                    {
+                        recursive: true
+                    }
+                )
+            }
         }
 
         return task.newListr([
@@ -226,7 +277,7 @@ const installMagentoProject = () => ({
                 title: 'Installing Magento dependencies',
                 task: async () => {
                     try {
-                        await runComposerCommand(ctx, 'install', {
+                        await runComposerCommand(ctx, 'install -vvv', {
                             callback: !ctx.verbose
                                 ? undefined
                                 : (t) => {
