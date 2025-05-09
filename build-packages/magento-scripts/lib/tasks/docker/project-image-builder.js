@@ -169,7 +169,7 @@ const buildDockerFileInstructions = async (
         }
     }
 
-    if (ctx.isDockerDesktop && ctx.platform === 'linux') {
+    if (ctx.platform === 'linux') {
         const { gid, username } = os.userInfo()
         dockerFileInstructions.run(
             `addgroup -g ${gid} ${username} && adduser -u ${gid} -G ${username} -H -s /sbin/nologin -D ${username} && \
