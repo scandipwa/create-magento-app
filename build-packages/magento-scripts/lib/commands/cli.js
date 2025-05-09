@@ -132,7 +132,7 @@ module.exports = (yargs) => {
                 .addLine('1. Start debugger in VSCode or PHPStorm')
                 .addLine(
                     `2. Go to PHP container: ${logger.style.command(
-                        'exec phpWithDebug'
+                        'exec phpWithXdebug'
                     )}`
                 )
                 .addLine(
