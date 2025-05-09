@@ -33,7 +33,8 @@ const makeNewFilesCreatedInFolderUseDirectoryGroup = (directories) => ({
                 {
                     // should prevent command from failing the task
                     // if the folder does not exist
-                    withCode: true
+                    withCode: true,
+                    useAutomaticUser: false
                 }
             )
         ])
@@ -82,8 +83,7 @@ const makeFolderOwnedByUser = (folder, user, group) => ({
             runPHPContainerCommandTask(
                 `chown -R ${user}${group ? `:${group}` : ''} ${folder}`,
                 {
-                    user: 'root:root',
-                    useAutomaticUser: false
+                    user: 'root:root'
                 }
             )
         ])
@@ -218,8 +218,12 @@ const setupComposerCachePermissions = () => ({
 
         return task.newListr([
             makeFolderOwnedByUser('/composer/home', userAndGroup, userAndGroup),
-            runPHPContainerCommandTask('chmod g+ws /composer/home/cache'),
-            runPHPContainerCommandTask('chmod g+w /composer/home/cache')
+            runPHPContainerCommandTask('chmod g+ws /composer/home/cache', {
+                user: ctx.platform === 'linux' ? 'root:root' : ''
+            }),
+            runPHPContainerCommandTask('chmod g+w /composer/home/cache', {
+                user: ctx.platform === 'linux' ? 'root:root' : ''
+            })
         ])
     }
 })
