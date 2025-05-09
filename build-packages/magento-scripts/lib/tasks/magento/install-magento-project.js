@@ -277,13 +277,17 @@ const installMagentoProject = () => ({
                 title: 'Installing Magento dependencies',
                 task: async () => {
                     try {
-                        await runComposerCommand(ctx, 'install', {
-                            callback: !ctx.verbose
-                                ? undefined
-                                : (t) => {
-                                      task.output = t
-                                  }
-                        })
+                        await runComposerCommand(
+                            ctx,
+                            `install${ctx.verbose ? ' -v' : ''}`,
+                            {
+                                callback: !ctx.verbose
+                                    ? undefined
+                                    : (t) => {
+                                          task.output = t
+                                      }
+                            }
+                        )
                     } catch (e) {
                         if (
                             e instanceof UnknownError &&
