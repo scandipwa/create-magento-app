@@ -3,9 +3,20 @@ const execAsync = require('../exec-async')
 const installDependencies = require('./install-dependencies')
 
 const fedoraDependenciesCheck = async () => {
-    const installedDependencies = (await execAsync('dnf list installed'))
+    let installedDependencies
+    try {
+        installedDependencies = await execAsync('dnf list --installed')
+    } catch (error) {
+        console.error(
+            'Fedora dependencies check: Error while checking dependencies',
+            error
+        )
+
+        throw error
+    }
+
+    const formattedInstalledDependencies = installedDependencies
         .split('\n')
-        .filter((pkg) => !pkg.toLowerCase().includes('installed packages'))
         .map((pkg) => pkg.match(/^(\S+)/i))
         .filter(Boolean)
         .map((pkg) => pkg[1])
@@ -15,7 +26,7 @@ const fedoraDependenciesCheck = async () => {
 
     const dependenciesToInstall =
         dependenciesForPlatforms.Fedora.dependencies.filter(
-            (dep) => !installedDependencies.includes(dep)
+            (dep) => !formattedInstalledDependencies.includes(dep)
         )
 
     if (dependenciesToInstall.length > 0) {
