@@ -114,7 +114,7 @@ const checkDirectoriesPermissions = async (ctx, directories) => {
     const result = await runPHPContainerCommand(
         ctx,
         `php ${path.relative(
-            process.cwd(),
+            ctx.config.baseConfig.containerMagentoDir,
             cacheDirFilePath
         )} ${directories.join(',')}`,
         {
@@ -165,15 +165,7 @@ const setupMagentoFilePermissions = () => ({
                     task: (subCtx, subTask) =>
                         subTask.newListr(
                             nonWritableDirectoriesPaths.map((directory) =>
-                                makeFolderOwnedByUser(
-                                    path.join(
-                                        ctx.config.baseConfig
-                                            .containerMagentoDir,
-                                        directory
-                                    ),
-                                    user,
-                                    group
-                                )
+                                makeFolderOwnedByUser(directory, user, group)
                             )
                         ),
                     options: {
