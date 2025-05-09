@@ -30,19 +30,16 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
                 rm: true,
                 command
             },
+            useAutomaticUser && ctx.platform === 'linux'
+                ? {
+                      user: `${os.userInfo().username}:${
+                          os.userInfo().username
+                      }`
+                  }
+                : {},
             options.user
                 ? {
                       user: options.user
-                  }
-                : {},
-            useAutomaticUser
-                ? {
-                      user:
-                          ctx.platform === 'linux'
-                              ? `${os.userInfo().username}:${
-                                    os.userInfo().username
-                                }`
-                              : 'www-data:www-data'
                   }
                 : {}
         ),
