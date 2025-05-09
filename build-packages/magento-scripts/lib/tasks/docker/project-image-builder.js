@@ -175,6 +175,12 @@ const buildDockerFileInstructions = async (
             `addgroup -g ${gid} ${username} && adduser -u ${gid} -G ${username} -H -s /sbin/nologin -D ${username} && \
                 addgroup www-data ${username}`
         )
+
+        if (ctx.isDockerDesktop) {
+            dockerFileInstructions.run(
+                `chown -R ${username}:${username} /composer/home/cache`
+            )
+        }
     }
 
     dockerFileInstructions.workDir(ctx.config.baseConfig.containerMagentoDir)
