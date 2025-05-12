@@ -5,7 +5,8 @@ RUN apk add --no-cache \
 		openssh \
 		patch \
         bash \
-        git
+        git \
+        unzip
 
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && pecl install apcu \
