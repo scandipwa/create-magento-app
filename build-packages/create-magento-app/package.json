@@ -3,7 +3,7 @@
     "description": "Global command used by CMA.",
     "homepage": "https://docs.create-magento-app.com/",
     "repository": "github:scandipwa/create-magento-app",
-    "version": "1.2.9-alpha.0",
+    "version": "1.2.9",
     "main": "./index.js",
     "bin": "./index.js",
     "license": "OSL-3.0",
