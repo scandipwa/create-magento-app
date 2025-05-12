@@ -11,6 +11,9 @@ module.exports = (overridenConfiguration, baseConfig) => {
 
     const { cacheDir } = baseConfig
 
+    /**
+     * @type {import('../../typings/context').ListrContext['config']['php']}
+     */
     const phpConfiguration = {
         iniPath: path.join(cacheDir, 'php.ini'),
         iniTemplatePath: php.configTemplate,
@@ -18,6 +21,7 @@ module.exports = (overridenConfiguration, baseConfig) => {
         debugTemplatePath: php.debugTemplate,
         fpmTemplatePath: php.fpmConfigTemplate,
         fpmConfPath: path.join(cacheDir, 'php-fpm.conf'),
+        debugFpmConfPath: path.join(cacheDir, 'php-fpm-debug.conf'),
         extensions: php.extensions,
         env: php.env
     }

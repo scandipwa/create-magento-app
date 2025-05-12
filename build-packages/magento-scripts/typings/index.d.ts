@@ -30,6 +30,16 @@ export interface MariaDBConfiguration extends ServiceWithImage {
      * Allows to be boolean or custom value that will be set in the template
      */
     useOptimizerSwitch?: boolean | string
+
+    /**
+     * `mariadb` file name to be used in the shell
+     */
+    binFileName?: string
+
+    /**
+     * `mariadb-admin` file name to be used in the shell, for heathcheck
+     */
+    binAdminFileName?: string
 }
 
 export interface SSLTerminatorConfiguration extends ServiceWithImage {
@@ -188,11 +198,6 @@ export interface PHPConfiguration {
      * Base image with tag
      */
     baseImage: string
-
-    /**
-     * Image with XDebug enabled
-     */
-    debugImage: string
 
     /**
      * Configuration file template location

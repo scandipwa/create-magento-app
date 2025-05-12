@@ -13,7 +13,7 @@ const { Socket } = net
  * @param {Object} [options] - Options object.
  * @param {String} [options.host] - Host of where to scan.
  * @param {Number} [options.timeout] - Connection timeout in ms.
- * @returns {Promise<string>}
+ * @returns {Promise<'open' | 'closed'>}
  */
 const checkPortStatus = (port, options = {}) =>
     new Promise((resolve, reject) => {
@@ -23,7 +23,7 @@ const checkPortStatus = (port, options = {}) =>
 
         const socket = new Socket()
         /**
-         * @type {string}
+         * @type {'open' | 'closed'}
          */
         let status
 
@@ -80,7 +80,7 @@ const checkPortStatus = (port, options = {}) =>
 /**
  * Internal helper function used by {@link findAPortInUse} and {@link findAPortNotInUse}
  * to find a port from a range or a list with a specific status.
- * @param {String} status - Status to check.
+ * @param {'open' | 'closed'} status - Status to check.
  * @param {Object} options
  * @param {Number} options.startPort Port to begin status check on (inclusive).
  * @param {Number} options.endPort Last port to check status on (inclusive).

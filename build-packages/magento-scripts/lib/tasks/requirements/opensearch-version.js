@@ -25,10 +25,10 @@ const checkOpenSearchVersion = () => ({
             openSearchContainerRunning.length !== 0 &&
             openSearchContainerRunning[0].State === 'running'
         ) {
-            openSearchVersionResponse = await containerApi.exec(
-                'opensearch --version',
-                openSearchContainer.name
-            )
+            openSearchVersionResponse = await containerApi.exec({
+                command: 'opensearch --version',
+                container: openSearchContainer.name
+            })
         } else {
             try {
                 const availableOpenSearchPort = await getPort(
@@ -40,7 +40,7 @@ const checkOpenSearchVersion = () => ({
                     detach: false,
                     rm: true,
                     ports: [`127.0.0.1:${availableOpenSearchPort}:9200`],
-                    memory: '512mb'
+                    memory: '2gb'
                 })
             } catch (e) {
                 openSearchVersionResponse = e.message

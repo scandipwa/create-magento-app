@@ -72,6 +72,7 @@ const defaultPorts = {
     varnish: 8080,
     sslTerminator: 80,
     fpm: 9000,
+    fpmXdebug: 9001,
     mariadb: 3306,
     redis: 6379,
     elasticsearch: 9200,
@@ -97,17 +98,53 @@ const getPortsConfig = async (ports, options = {}) => {
     if (useNonOverlappingPorts) {
         p = p.concat(await getUsedByOtherCMAProjectsPorts())
     }
-    const availablePorts = Object.fromEntries(
-        await Promise.all(
-            Object.entries(mergedPorts).map(async ([name, port]) => {
-                const availablePort = await getPort(port, {
-                    portIgnoreList: p
-                })
 
-                return [name, availablePort]
-            })
-        )
+    /**
+     * @type {Record<string, string>}
+     */
+    const portsToCheck = Object.entries(mergedPorts).reduce(
+        (acc, [name, port]) => {
+            if (acc[port]) {
+                let i = 0
+                while (acc[port + i]) {
+                    i++
+                }
+
+                return {
+                    ...acc,
+                    [port + i]: name
+                }
+            } else {
+                return {
+                    ...acc,
+                    [port]: name
+                }
+            }
+        },
+        {}
     )
+
+    /**
+     * @type {Record<string, number>}
+     */
+    const availablePorts = {}
+
+    for (const [port, name] of Object.entries(portsToCheck)) {
+        const portInt = Number.parseInt(port)
+        const portIgnoreList = p.concat(
+            Object.keys(availablePorts).map((item) => Number.parseInt(item))
+        )
+
+        const getPortResult = await getPort(portInt, {
+            portIgnoreList
+        })
+
+        if (typeof getPortResult === 'number') {
+            availablePorts[name] = getPortResult
+        } else {
+            throw new Error(`No available port found for ${name} (${portInt})`)
+        }
+    }
 
     return availablePorts
 }

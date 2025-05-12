@@ -15,10 +15,7 @@ const { installMagentoProject, setupMagento } = require('./magento')
 const { pullImages, stopContainers } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const { connectToDatabase } = require('./database')
-const {
-    buildProjectImage,
-    buildDebugProjectImage
-} = require('./docker/project-image-builder')
+const { buildProjectImage } = require('./docker/project-image-builder')
 const getProjectConfiguration = require('../config/get-project-configuration')
 const { getSystemConfigTask } = require('../config/system-config')
 const setupThemes = require('./theme/setup-themes')
@@ -141,15 +138,7 @@ const configureProject = () => ({
                         }
                     )
             },
-            {
-                task: (ctx, subTask) =>
-                    subTask.newListr(
-                        [buildProjectImage(), buildDebugProjectImage()],
-                        {
-                            concurrent: true
-                        }
-                    )
-            },
+            buildProjectImage(),
             getComposerVersionTask(),
             prepareFileSystem(),
             volumes.createVolumes(),

@@ -6,7 +6,7 @@ const PHP_WORKSPACE_PROJECT_CONFIGURATION_COMPONENT_NAME =
 const interpreterNameKey = '@_interpreter_name'
 
 /**
- * @param {Array} workspaceConfigs
+ * @param {Array<Record<string, any>>} workspaceConfigs
  * @param {import('../../../../../typings/context').ListrContext} ctx
  * @returns {Promise<Boolean>}
  */
@@ -17,8 +17,9 @@ const setupPHPWorkspaceProjectConfiguration = async (workspaceConfigs, ctx) => {
             workspaceConfig[nameKey] ===
             PHP_WORKSPACE_PROJECT_CONFIGURATION_COMPONENT_NAME
     )
-    const { php } = ctx.config.docker.getContainers(ctx.ports)
-    const currentInterpreterImage = ctx.debug ? php.debugImage : php.image
+    const {
+        php: { image: currentInterpreterImage }
+    } = ctx.config.docker.getContainers(ctx.ports)
 
     if (phpWorkspaceProjectConfigurationComponent) {
         if (

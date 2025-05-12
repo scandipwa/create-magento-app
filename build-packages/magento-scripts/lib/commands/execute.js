@@ -5,10 +5,10 @@ const { executeTask } = require('../tasks/execute')
  */
 module.exports = (yargs) => {
     yargs.command(
-        'exec <container name> [commands...]',
+        'exec <container name> [command...]',
         'Execute command in docker container',
         (yargs) => {
-            yargs.usage(`Usage: npm run exec <container name> [commands...]
+            yargs.usage(`Usage: npm run exec <container name> [command...]
 
 Available containers:
 - mariadb
@@ -18,8 +18,12 @@ Available containers:
 - varnish (if enabled)
 - sslTerminator`)
         },
-        async (argv) => {
-            await executeTask(argv)
+        async () => {
+            const [containerName, ...commands] = process.argv.slice(3)
+            await executeTask({
+                containerName,
+                commands
+            })
         }
     )
 }

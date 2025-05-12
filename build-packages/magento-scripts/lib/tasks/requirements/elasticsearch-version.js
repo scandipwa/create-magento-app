@@ -1,4 +1,5 @@
 const { getPort } = require('../../config/port-config')
+const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 const { containerApi } = require('../docker/containers')
 
@@ -26,10 +27,10 @@ const checkElasticSearchVersion = () => ({
             elasticSearchContainerRunning.length !== 0 &&
             elasticSearchContainerRunning[0].State === 'running'
         ) {
-            elasticSearchVersionResponse = await containerApi.exec(
-                'elasticsearch --version',
-                elasticSearchContainer.name
-            )
+            elasticSearchVersionResponse = await containerApi.exec({
+                command: 'elasticsearch --version',
+                container: elasticSearchContainer.name
+            })
         } else {
             try {
                 const availableElasticSearchPort = await getPort(
@@ -41,11 +42,27 @@ const checkElasticSearchVersion = () => ({
                     detach: false,
                     rm: true,
                     ports: [`127.0.0.1:${availableElasticSearchPort}:9200`],
-                    memory: '512mb'
+                    memory: '2gb'
                 })
             } catch (e) {
                 elasticSearchVersionResponse = e.message
             }
+        }
+
+        if (
+            ctx.cgroupVersion === 'v2' &&
+            elasticSearchVersionResponse.includes(
+                'Cannot invoke "jdk.internal.platform.CgroupInfo.getMountPoint()" because "anyController" is null'
+            )
+        ) {
+            throw new KnownError(`ElasticSearch failed to start up due to a JVM bug with CGroup version 2.
+Similar issue on StackOverflow: https://stackoverflow.com/q/71532170.
+
+Right now is check if OpenSearch works with your version of Magento.
+Follow the documentation: https://docs.create-magento-app.com/getting-started/config-file#searchengine-opensearch-elasticsearch
+
+If it will not help, try updating ElasticSearch image version: https://docs.create-magento-app.com/getting-started/config-file#elasticsearch
+`)
         }
 
         const elasticSearchVersionResponseResult =
@@ -64,8 +81,7 @@ const checkElasticSearchVersion = () => ({
                 `Cannot retrieve ElasticSearch Version!\n\n${elasticSearchVersionResponse}`
             )
         }
-    },
-    exitOnError: false
+    }
 })
 
 module.exports = checkElasticSearchVersion

@@ -1,6 +1,8 @@
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const { Listr } = require('listr2')
 const importDump = require('../tasks/import-dump')
+const { getInstanceMetadata } = require('../util/instance-metadata')
+const ConsoleBlock = require('../util/console-block')
 
 /**
  * @param {import('yargs')} yargs
@@ -37,14 +39,45 @@ module.exports = (yargs) => {
                 }
             })
 
-            try {
-                await tasks.run()
+            /**
+             * @type {import('../../typings/context').ListrContext}
+             */
+            let ctx
 
-                process.exit(0)
+            try {
+                ctx = await tasks.run()
             } catch (e) {
                 logger.error(e.message || e)
                 process.exit(1)
             }
+
+            const instanceMetadata = getInstanceMetadata(ctx)
+
+            const block = new ConsoleBlock()
+            block.addHeader('Magento 2').addEmptyLine()
+
+            block.addLine(logger.style.misc('Frontend'))
+            instanceMetadata.frontend.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            block.addEmptyLine()
+
+            block.addLine(logger.style.misc('Admin'))
+            instanceMetadata.admin.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            block.addEmptyLine()
+
+            block.addLine(logger.style.misc('MailDev'))
+            instanceMetadata.maildev.forEach(({ title, text }) => {
+                block.addLine(`  ${title}: ${text}`)
+            })
+
+            block.log()
+
+            process.exit(0)
         }
     )
 }

@@ -91,6 +91,7 @@ const prettyStatus = async (ctx) => {
         .addLine(`Platform: ${logger.style.code(platform)}`)
         .addLine(`Platform version: ${logger.style.file(platformVersion)}`)
         .addLine(`Platform architecture: ${logger.style.file(getArchSync())}`)
+        .addLine(`CGroup version: ${logger.style.file(ctx.cgroupVersion)}`)
         .addEmptyLine()
         .addSeparator('Docker containers status')
 

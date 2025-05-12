@@ -98,7 +98,7 @@ module.exports = (yargs) => {
 
             block
                 .addLine(
-                    `Clear Magento cache: ${logger.style.command('m c:c')}`
+                    `Clear Magento cache: ${logger.style.command('m c:f')}`
                 )
                 .addLine(
                     `Magento setup upgrade: ${logger.style.command('m se:up')}`
@@ -127,24 +127,22 @@ module.exports = (yargs) => {
                 )
                 .addEmptyLine()
 
-            if (ctx.debug) {
-                block
-                    .addLine('Debug PHP in CLI:')
-                    .addLine('1. Start debugger in VSCode or PHPStorm')
-                    .addLine(
-                        `2. Go to PHP container: ${logger.style.command(
-                            'exec php'
-                        )}`
-                    )
-                    .addLine(
-                        `3. Run CLI command with ${logger.style.code(
-                            'XDEBUG_SESSION=phpstorm'
-                        )} environmental variable: ${logger.style.command(
-                            'XDEBUG_SESSION=phpstorm magento <command>'
-                        )}`
-                    )
-                    .addLine('4. Enjoy')
-            }
+            block
+                .addLine('Debug PHP in CLI:')
+                .addLine('1. Start debugger in VSCode or PHPStorm')
+                .addLine(
+                    `2. Go to PHP container: ${logger.style.command(
+                        'exec phpWithXdebug'
+                    )}`
+                )
+                .addLine(
+                    `3. Run CLI command with ${logger.style.code(
+                        'XDEBUG_SESSION=PHPSTORM'
+                    )} environmental variable: ${logger.style.command(
+                        'XDEBUG_SESSION=PHPSTORM magento <command>'
+                    )}`
+                )
+                .addLine('4. Enjoy')
 
             block.log()
 

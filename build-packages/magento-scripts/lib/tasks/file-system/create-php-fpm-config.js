@@ -1,3 +1,4 @@
+const os = require('os')
 const UnknownError = require('../../errors/unknown-error')
 const setConfigFile = require('../../util/set-config')
 
@@ -13,13 +14,17 @@ const createPhpFpmConfig = () => ({
         } = ctx
         const port = !isDockerDesktop ? ctx.ports.fpm : 9000
 
+        const user =
+            ctx.platform === 'linux' ? os.userInfo().username : 'www-data'
+
         try {
             await setConfigFile({
                 configPathname: php.fpmConfPath,
                 template: php.fpmTemplatePath,
                 overwrite: true,
                 templateArgs: {
-                    port
+                    port,
+                    user
                 }
             })
         } catch (e) {

@@ -35,6 +35,17 @@ const remoteImageReducer = (acc, val) => {
 }
 
 /**
+ * @param {{ pullImage?: boolean }} param0
+ */
+const filterNonPullableImages = ({ pullImage }) => {
+    if (typeof pullImage === 'boolean' && !pullImage) {
+        return false
+    }
+
+    return true
+}
+
+/**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 const pullImages = () => ({
@@ -45,6 +56,7 @@ const pullImages = () => ({
         if (pullImages) {
             return task.newListr(
                 containers
+                    .filter(filterNonPullableImages)
                     .reduce(remoteImageReducer, [])
                     .map((image) => {
                         const [repo, tag = 'latest'] = image.split(':')
@@ -77,6 +89,7 @@ const pullImages = () => ({
         }
 
         const imagesFilter = containers
+            .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
             .map((image) => `reference='${image}'`)
 
@@ -86,6 +99,7 @@ const pullImages = () => ({
         })
 
         const missingContainerImages = containers
+            .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
             .map((image) => {
                 const [repo, tag = 'latest'] = image.split(':')
@@ -134,48 +148,105 @@ const pullImages = () => ({
  */
 const startContainers = () => ({
     title: 'Starting containers',
-    task: async ({ ports, config: { docker }, debug }, task) => {
+    task: async ({ ports, config: { docker } }, task) => {
         const containerList = await containerApi.ls({
             formatToJSON: true,
             all: true
         })
 
-        const missingContainers = Object.values(
-            docker.getContainers(ports)
-        ).filter(({ name }) => !containerList.some((c) => c.Names === name))
+        const missingContainers = Object.entries(docker.getContainers(ports))
+            .filter(
+                ([nameWithoutPrefix, { name }]) =>
+                    !containerList.some((c) => c.Names === name)
+            )
+            .map(([nameWithoutPrefix, containerOptions]) => ({
+                ...containerOptions,
+                nameWithoutPrefix
+            }))
 
         if (missingContainers.length === 0) {
             task.skip()
             return
         }
 
-        if (debug) {
-            await Promise.all(
-                missingContainers
-                    .map((container) => {
-                        if (container.debugImage) {
-                            container.image = container.debugImage
-                        }
+        const containerStatuses = missingContainers.reduce(
+            (acc, container) => ({
+                ...acc,
+                [container.nameWithoutPrefix]: {
+                    started: false,
+                    onStarted: []
+                }
+            }),
+            {}
+        )
 
-                        return container
+        return task.newListr(
+            missingContainers.map((container) => ({
+                title: `Deploying ${logger.style.file(container._)} container`,
+                task: async (subCtx, subTask) => {
+                    const { dependsOn } = container
+                    if (Array.isArray(dependsOn)) {
+                        const startedContainers = []
+                        subTask.title = `Container ${
+                            container._
+                        } is waiting for ${dependsOn.join(', ')} to start...`
+                        await Promise.all(
+                            dependsOn.map(
+                                async (name) =>
+                                    new Promise((resolve, reject) => {
+                                        const timeout = setTimeout(
+                                            () => {
+                                                reject(
+                                                    new Error(
+                                                        `Container ${name} not started in time`
+                                                    )
+                                                )
+                                            },
+                                            // 2 minutes
+                                            1000 * 60 * 2
+                                        )
+                                        containerStatuses[name].onStarted.push(
+                                            () => {
+                                                startedContainers.push(name)
+                                                subTask.title = `Container ${
+                                                    container._
+                                                } is waiting for ${dependsOn
+                                                    .filter(
+                                                        (d) =>
+                                                            !startedContainers.includes(
+                                                                d
+                                                            )
+                                                    )
+                                                    .join(', ')} to start...`
+                                                clearTimeout(timeout)
+                                                resolve()
+                                            }
+                                        )
+                                    })
+                            )
+                        )
+                    }
+
+                    subTask.title = `${container._} is starting...`
+
+                    await containerApi.run(container)
+
+                    containerStatuses[
+                        container.nameWithoutPrefix
+                    ].started = true
+                    containerStatuses[
+                        container.nameWithoutPrefix
+                    ].onStarted.forEach((cb) => {
+                        cb()
                     })
-                    .map((container) =>
-                        containerApi.run(container).then((out) => {
-                            task.output = `From ${container._}: ${out}`
-                        })
-                    )
-            )
 
-            return
-        }
-
-        // TODO: we might stop containers here ?
-        await Promise.all(
-            missingContainers.map((container) =>
-                containerApi.run(container).then((out) => {
-                    task.output = `From ${container._}: ${out}`
-                })
-            )
+                    subTask.output = `${container._} container started`
+                }
+            })),
+            {
+                concurrent: true,
+                exitOnError: true
+            }
         )
     },
     options: {

@@ -1,11 +1,15 @@
 /* eslint-disable no-use-before-define */
+const os = require('os')
 const { deepmerge } = require('../../util/deepmerge')
 const { containerApi } = require('../docker/containers')
 
 /**
- * @type {typeof import('./php-container')['runPHPContainerCommand']}
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[0]} ctx
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[1]} command
+ * @param {Parameters<typeof import('./php-container')['runPHPContainerCommand']>[2] & { useAutomaticUser?: boolean}} [options]
  */
 const runPHPContainerCommand = async (ctx, command, options = {}) => {
+    const { useAutomaticUser = true } = options
     const { php } = ctx.config.docker.getContainers(ctx.ports)
 
     const containers = await containerApi.ls({
@@ -23,16 +27,21 @@ const runPHPContainerCommand = async (ctx, command, options = {}) => {
             php,
             {
                 detach: false,
-                rm: true
+                rm: true,
+                command
             },
-            options.useXDebugContainer
+            useAutomaticUser && ctx.platform === 'linux'
                 ? {
-                      image: php.debugImage
+                      user: `${os.userInfo().username}:${
+                          os.userInfo().username
+                      }`
                   }
                 : {},
-            {
-                command
-            }
+            options.user
+                ? {
+                      user: options.user
+                  }
+                : {}
         ),
         options
     )
@@ -70,23 +79,19 @@ const execPHPContainerCommand = async (ctx, command, options = {}) => {
     }
 
     return containerApi.exec(
-        command,
-        php.name,
-        deepmerge(
-            php,
-            options.env
-                ? {
-                      env: options.env
-                  }
-                : {}
-        ),
+        {
+            container: php.name,
+            ...deepmerge(php, options.env ? { env: options.env } : {}),
+            command,
+            ...(options.user ? { user: options.user } : {})
+        },
         options
     )
 }
 
 /**
  * @param {string} command
- * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { useXDebugContainer?: boolean, title?: string }} [options]
+ * @param {import('../../util/exec-async-command').ExecAsyncSpawnOptions<false> & { title?: string }} [options]
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const execPHPContainerCommandTask = (command, options = {}) => ({

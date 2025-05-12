@@ -4,7 +4,7 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container')
  * Execute PHP code
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command php command
- * @param {Parameters<typeof import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean }} [options]
+ * @param {Parameters<typeof import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean, useAutomaticUser?: boolean }} [options]
  */
 const runPhpCode = async (ctx, command, options = {}) => {
     const { throwNonZeroCode = true } = options
@@ -13,6 +13,7 @@ const runPhpCode = async (ctx, command, options = {}) => {
         `php ${command}`,
         {
             ...options,
+            useAutomaticUser: true,
             withCode: true
         }
     )

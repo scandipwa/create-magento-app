@@ -4,7 +4,7 @@ const { runPHPContainerCommand } = require('../tasks/php/php-container')
  * Execute composer command
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {String} command composer command
- * @param {Parameters<import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean }} [options]
+ * @param {Parameters<import('../tasks/php/php-container')['runPHPContainerCommand']>[2] & { throwNonZeroCode?: boolean, user?: string, useAutomaticUser?: boolean }} [options]
  */
 const runComposerCommand = async (ctx, command, options = {}) => {
     const { throwNonZeroCode = true } = options

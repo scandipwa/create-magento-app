@@ -1,9 +1,11 @@
 const path = require('path')
 const fs = require('fs')
+const semver = require('semver')
 const setConfigFile = require('../../util/set-config')
 const pathExists = require('../../util/path-exists')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
+const { run } = require('../docker/containers/container-api')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -13,8 +15,7 @@ const createSSLTerminatorConfig = () => ({
     task: async (ctx) => {
         const {
             ports,
-            config: { overridenConfiguration, baseConfig },
-            debug,
+            config: { overridenConfiguration, baseConfig, docker },
             isDockerDesktop
         } = ctx
 
@@ -70,10 +71,48 @@ const createSSLTerminatorConfig = () => ({
             )
         }
 
-        const hostMachine = !isDockerDesktop
-            ? '127.0.0.1'
-            : 'host.docker.internal'
+        const networkSettings = {
+            backendNetwork: '127.0.0.1',
+            backendPort: overridenConfiguration.configuration.varnish.enabled
+                ? ports.varnish
+                : ports.app
+        }
+
+        if (isDockerDesktop) {
+            const containers = docker.getContainers(ports)
+
+            if (overridenConfiguration.configuration.varnish.enabled) {
+                networkSettings.backendNetwork = containers.varnish.name
+                networkSettings.backendPort = 80
+            } else {
+                networkSettings.backendNetwork = containers.nginx.name
+                networkSettings.backendPort = 80
+            }
+        }
         const hostPort = !isDockerDesktop ? ports.sslTerminator : 80
+
+        const nginxVersionOutput = await run({
+            image: sslTerminator.image,
+            command: 'nginx -v',
+            detach: false,
+            rm: true
+        })
+
+        const nginxVersionMatch = nginxVersionOutput.match(
+            /nginx version: nginx\/(\d+\.\d+\.\d+)/
+        )
+        if (!nginxVersionMatch) {
+            throw new UnknownError(
+                `Unexpected error appeared during ssl terminator config creation\n\n${nginxVersionOutput}`
+            )
+        }
+
+        const nginxVersion = nginxVersionMatch[1]
+
+        const isSSLDirectiveDeprecated = semver.satisfies(
+            nginxVersion,
+            '>=1.25.0'
+        )
 
         try {
             await setConfigFile({
@@ -87,10 +126,10 @@ const createSSLTerminatorConfig = () => ({
                 overwrite: true,
                 templateArgs: {
                     ports,
-                    hostMachine,
+                    ...networkSettings,
                     hostPort,
                     config: overridenConfiguration,
-                    debug
+                    isSSLDirectiveDeprecated
                 }
             })
         } catch (e) {

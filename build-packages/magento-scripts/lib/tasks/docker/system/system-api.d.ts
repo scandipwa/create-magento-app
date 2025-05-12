@@ -69,3 +69,69 @@ export function df(
     options?: SystemDFOptions<true>,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<SystemDFResult>
+
+export interface SystemVersionOptions<T extends boolean = false> {
+    format?: string
+    formatToJSON?: T
+    verbose?: boolean
+}
+
+interface DockerServiceComponent {
+    Name: string;
+    Version: string;
+    Details: {
+        ApiVersion?: string;
+        Arch?: string;
+        BuildTime?: string;
+        Experimental?: string;
+        GitCommit?: string;
+        GoVersion?: string;
+        KernelVersion?: string;
+        MinAPIVersion?: string;
+        Os?: string;
+    };
+}
+interface DockerServerInfo {
+    Platform: {
+        Name: string;
+    };
+    Components: DockerServiceComponent[];
+    Version: string;
+    ApiVersion: string;
+    MinAPIVersion: string;
+    GitCommit: string;
+    GoVersion: string;
+    Os: string;
+    Arch: string;
+    KernelVersion: string;
+    BuildTime: string;
+}
+
+interface DockerClientInfo {
+    Platform: {
+        Name: string;
+    };
+    Version: string;
+    ApiVersion: string;
+    DefaultAPIVersion: string;
+    GitCommit: string;
+    GoVersion: string;
+    Os: string;
+    Arch: string;
+    BuildTime: string;
+    Context: string;
+}
+
+export interface SystemVersionResult {
+    Client: DockerClientInfo
+    Server: DockerServerInfo
+}
+
+export function version(
+    options?: SystemVersionOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>
+export function version(
+    options?: SystemVersionOptions<true>,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<SystemVersionResult>

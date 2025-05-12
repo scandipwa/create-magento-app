@@ -18,17 +18,18 @@ export interface ListrContext {
     throwMagentoVersionMissing: boolean
     projectPath: string
     systemDFData?: systemApi.SystemDFResult
-    debug: boolean
     verbose: boolean
     magentoVersion: string
     composerVersion: string
     phpVersion: string
     elasticSearchVersion: string
     openSearchVersion: string
+    cgroupVersion: 'v1' | 'v2'
     port?: number
     ports: {
         app: number
         fpm: number
+        fpmXdebug: number
         xdebug: number
         mariadb: number
         redis: number
@@ -42,6 +43,7 @@ export interface ListrContext {
     cachedPorts?: {
         app: number
         fpm: number
+        fpmXdebug: number
         xdebug: number
         mariadb: number
         redis: number
@@ -55,8 +57,8 @@ export interface ListrContext {
     isArm: boolean
     isWsl: boolean
     isArmMac: boolean
-    platform?: NodeJS.Platform
-    platformVersion?: string
+    platform: NodeJS.Platform
+    platformVersion: string
     /**
      * Magento Edition
      *
@@ -67,6 +69,11 @@ export interface ListrContext {
         php: {
             iniTemplatePath: string
             fpmConfPath: string
+            fpmTemplatePath: string
+            debugIniPath: string
+            debugTemplatePath: string
+            debugFpmConfPath: string
+            debugFpmTemplatePath: string
             extensions: PHPExtensions
             version: string
         }
@@ -91,7 +98,7 @@ export interface ListrContext {
                     }
                 }
             >
-            getContainers(ports?: ListrContext['ports']): Record<'php' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'maildev' | 'varnish',
+            getContainers(ports?: ListrContext['ports']): Record<'php' | 'phpWithXdebug' | 'sslTerminator' | 'nginx' | 'redis' | 'mariadb' | 'elasticsearch' | 'maildev' | 'varnish',
                 {
                     _: string
                     ports: string[]
@@ -100,16 +107,17 @@ export interface ListrContext {
                     }
                     env: Record<string, string>
                     mountVolumes: string[]
+                    pullImage?: boolean
                     mounts: string[]
                     restart: string
                     securityOptions: string[]
                     network: string
                     image: string
-                    debugImage?: string
                     remoteImages?: string[]
                     name: string
                     command: string
                     connectCommand: string[]
+                    dependsOn?: string[]
                 }
             >
         }

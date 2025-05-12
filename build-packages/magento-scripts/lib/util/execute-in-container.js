@@ -1,22 +1,28 @@
 const { spawn } = require('child_process')
-const { runCommand } = require('../tasks/docker/containers/container-api')
+const {
+    runCommand,
+    execCommand
+} = require('../tasks/docker/containers/container-api')
 
 /**
- * @param {{ containerName: string, commands: string[], user?: string }} param0
+ * @param {{ containerName: string, command: string, user?: string }} param0
  * @returns {Promise<never>}
  */
-const executeInContainer = ({ containerName, commands, user }) => {
+const executeInContainer = ({ containerName, command, user }) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode')
         process.exit(1)
     }
 
-    const userArg = (user && `--user=${user}`) || ''
-    const args = ['exec', '-it', userArg, containerName]
-        .filter(Boolean)
-        .concat(...commands.map((command) => command.split(' ')).flat())
+    const execArgs = execCommand({
+        container: containerName,
+        command,
+        user,
+        tty: true,
+        interactive: true
+    })
 
-    spawn('docker', args, {
+    spawn('bash', ['-c', execArgs.join(' ')], {
         stdio: [0, 1, 2]
     })
 

@@ -18,7 +18,7 @@ const defaultComposerSettingsProperties = {
 }
 
 /**
- * @param {Array} workspaceConfigs
+ * @param {Array<Record<string, any>>} workspaceConfigs
  * @param {import('../../../../../typings/context').ListrContext} ctx
  * @returns {Promise<Boolean>}
  */
@@ -32,7 +32,7 @@ const setupComposerSettings = async (workspaceConfigs, ctx) => {
     const isComposerJsonExists = await pathExists(composerJsonPath)
     const { php } = ctx.config.docker.getContainers(ctx.ports)
     const defaultInterpreterConfig = {
-        [nameKey]: ctx.debug ? php.debugImage : php.image,
+        [nameKey]: php.image,
         [composerKey]: 'composer'
     }
 

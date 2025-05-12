@@ -1,5 +1,5 @@
+const envPhpToJson = require('../../../util/env-php-json')
 const magentoTask = require('../../../util/magento-task')
-const runMagentoCommand = require('../../../util/run-magento')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -12,11 +12,14 @@ module.exports = () => ({
                 magentoConfiguration: { mode }
             }
         } = ctx
-        const { result } = await runMagentoCommand(ctx, 'deploy:mode:show', {
-            throwNonZeroCode: false
-        })
+        const envPhpData = await envPhpToJson(ctx)
+        if (!envPhpData) {
+            task.skip()
+            return
+        }
+        const { MAGE_MODE } = envPhpData
 
-        if (result.includes(mode)) {
+        if (MAGE_MODE === mode) {
             task.skip()
             return
         }

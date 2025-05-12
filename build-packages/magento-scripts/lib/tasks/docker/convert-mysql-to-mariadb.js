@@ -11,10 +11,7 @@ const {
     getCachedPorts
 } = require('../../config/get-port-config')
 const { saveConfiguration } = require('../../config/save-config')
-const {
-    buildProjectImage,
-    buildDebugProjectImage
-} = require('./project-image-builder')
+const { buildProjectImage } = require('./project-image-builder')
 const checkPHPVersion = require('../requirements/php-version')
 const { getComposerVersionTask } = require('../composer')
 const { prepareFileSystem } = require('../file-system')
@@ -190,15 +187,18 @@ Please wait, this will take some time and do not restart the MySQL container unt
                 task.output = 'Dumping MySQL database to dump file...'
 
                 await containerApi.exec(
-                    [
-                        'mysqldump',
-                        '--user=root',
-                        '--password=scandipwa',
-                        'magento',
-                        `--result-file=${path.parse(pathToMySQLDumpFile).base}`
-                    ].join(' '),
-                    containerName,
-                    {},
+                    {
+                        container: containerName,
+                        command: [
+                            'mysqldump',
+                            '--user=root',
+                            '--password=scandipwa',
+                            'magento',
+                            `--result-file=${
+                                path.parse(pathToMySQLDumpFile).base
+                            }`
+                        ].join(' ')
+                    },
                     {
                         callback: (t) => {
                             task.output = t
@@ -234,15 +234,7 @@ Please wait, this will take some time and do not restart the MySQL container unt
                     pullImages(),
                     dockerNetwork.tasks.createNetwork(),
                     createVolumes(),
-                    {
-                        task: (ctx, task) =>
-                            task.newListr(
-                                [buildProjectImage(), buildDebugProjectImage()],
-                                {
-                                    concurrent: true
-                                }
-                            )
-                    },
+                    buildProjectImage(),
                     {
                         task: (ctx, subTask) =>
                             subTask.newListr(

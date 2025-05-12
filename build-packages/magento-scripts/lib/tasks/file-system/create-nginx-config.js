@@ -10,7 +10,7 @@ const createNginxConfig = () => ({
     task: async (ctx) => {
         const {
             ports,
-            config: { overridenConfiguration, baseConfig },
+            config: { overridenConfiguration, baseConfig, docker },
             isDockerDesktop
         } = ctx
 
@@ -19,10 +19,26 @@ const createNginxConfig = () => ({
             storeDomains
         } = overridenConfiguration
 
-        const hostMachine = !isDockerDesktop
-            ? '127.0.0.1'
-            : 'host.docker.internal'
-        const hostPort = !isDockerDesktop ? ports.app : 80
+        const networkSettings = {
+            phpNetwork: '127.0.0.1',
+            phpWithXdebugNetwork: '127.0.0.1',
+            fpmPort: ports.fpm,
+            fpmXdebugPort: ports.fpmXdebug,
+            hostPort: ports.app
+        }
+
+        if (isDockerDesktop) {
+            const containers = docker.getContainers(ports)
+
+            networkSettings.phpNetwork = containers.php.name
+            networkSettings.phpWithXdebugNetwork = containers.phpWithXdebug.name
+
+            networkSettings.fpmPort = 9000
+            networkSettings.fpmXdebugPort = 9001
+
+            networkSettings.hostPort = 80
+        }
+
         const useStoreDomainMapping =
             storeDomains && Object.keys(storeDomains).length > 1
 
@@ -37,10 +53,8 @@ const createNginxConfig = () => ({
                 template: nginx.configTemplate,
                 overwrite: true,
                 templateArgs: {
-                    ports,
+                    ...networkSettings,
                     mageRoot: baseConfig.containerMagentoDir,
-                    hostMachine,
-                    hostPort,
                     config: overridenConfiguration,
                     storeDomains,
                     useStoreDomainMapping

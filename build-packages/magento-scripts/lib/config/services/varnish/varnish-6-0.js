@@ -6,7 +6,7 @@ const path = require('path')
  * @returns {import('../../../../typings/index').VarnishConfiguration}
  */
 const varnish60 = ({ templateDir }) => ({
-    enabled: true,
+    enabled: false,
     healthCheck: false,
     image: 'varnish:6.0',
     configTemplate: path.join(templateDir || '', 'varnish.template.vcl')

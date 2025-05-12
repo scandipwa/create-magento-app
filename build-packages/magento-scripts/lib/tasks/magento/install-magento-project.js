@@ -9,6 +9,11 @@ const getJsonFileData = require('../../util/get-jsonfile-data')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
 const { runPHPContainerCommand } = require('../php/php-container')
+const {
+    setupMagentoFilePermissions,
+    setupComposerCachePermissions
+} = require('./setup-magento/setup-file-permissions')
+const makeBinariesExecutable = require('./setup-magento/make-magento-binaries-executable')
 
 const magentoProductEnterpriseEdition = 'magento/product-enterprise-edition'
 const magentoProductCommunityEdition = 'magento/product-community-edition'
@@ -59,7 +64,8 @@ const adjustComposerJson = async (
                     ? undefined
                     : (t) => {
                           task.output = t
-                      }
+                      },
+                useAutomaticUser: true
             }
         )
     }
@@ -155,6 +161,46 @@ mv ${tempDir}/composer.json ${
 }
 
 /**
+ * Will check if the following conditions are met:
+ * - composer.lock file exists
+ * - vendor directory exists
+ * - all packages from composer.lock are installed in vendor directory
+ * @param {string} magentoDir
+ */
+const getIsVendorFolderCorrupted = async (magentoDir) => {
+    const composerLockFile = path.join(magentoDir, 'composer.lock')
+    const vendorDir = path.join(magentoDir, 'vendor')
+    const [vendorDirStat, composerLockFileStat] = await Promise.all([
+        pathExists(vendorDir),
+        pathExists(composerLockFile)
+    ])
+    if (!vendorDirStat || !composerLockFileStat) {
+        return true
+    }
+    /**
+     * @type {{ packages: { name: string }[] } | null}
+     */
+    const composerLockData = await getJsonFileData(composerLockFile)
+    if (!composerLockData || !composerLockData.packages) {
+        return true
+    }
+    const { packages } = composerLockData
+    const packagesNames = packages.map((pkg) => pkg.name)
+
+    const hasCorruptPackages = await Promise.all(
+        packagesNames.map(async (pkg) => {
+            const vendorPackage = path.join(vendorDir, pkg)
+            const composerJson = path.join(vendorPackage, 'composer.json')
+            if (!(await pathExists(composerJson))) {
+                return true
+            }
+        })
+    )
+
+    return hasCorruptPackages.every((result) => result === true)
+}
+
+/**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const installMagentoProject = () => ({
@@ -191,7 +237,11 @@ const installMagentoProject = () => ({
             'composer.lock': true
         })
 
-        if (isFsMatching) {
+        const isVendorFolderCorrupted = await getIsVendorFolderCorrupted(
+            baseConfig.magentoDir
+        )
+
+        if (isFsMatching && !isVendorFolderCorrupted) {
             ctx.magentoFirstInstall = false
             task.skip()
             return
@@ -200,43 +250,64 @@ const installMagentoProject = () => ({
         task.title = `Installing Magento ${magentoPackageVersion}`
         task.output = `Creating Magento ${magentoPackageVersion} project`
 
-        if (!(await pathExists(path.join(process.cwd(), 'composer.json')))) {
-            await createMagentoProject(ctx, task, {
-                magentoProject,
-                magentoPackageVersion
-            })
-        }
-
-        if (!(await pathExists(path.join(process.cwd(), 'app', 'etc')))) {
-            await fs.promises.mkdir(path.join(process.cwd(), 'app', 'etc'), {
-                recursive: true
-            })
-        }
-
-        try {
-            await runComposerCommand(ctx, 'install', {
-                callback: !ctx.verbose
-                    ? undefined
-                    : (t) => {
-                          task.output = t
-                      }
-            })
-        } catch (e) {
+        if (!isFsMatching) {
             if (
-                e instanceof UnknownError &&
-                e.message.includes('man-in-the-middle attack')
+                !(await pathExists(path.join(process.cwd(), 'composer.json')))
             ) {
-                throw new KnownError(`Probably you haven't setup pubkeys in composer.
-        Please run ${logger.style.command(
-            'composer diagnose'
-        )} in cli to get mode.\n\n${e}`)
+                await createMagentoProject(ctx, task, {
+                    magentoProject,
+                    magentoPackageVersion
+                })
             }
 
-            throw new UnknownError(
-                `Unexpected error during composer install.\n\n${e}`
-            )
+            if (!(await pathExists(path.join(process.cwd(), 'app', 'etc')))) {
+                await fs.promises.mkdir(
+                    path.join(process.cwd(), 'app', 'etc'),
+                    {
+                        recursive: true
+                    }
+                )
+            }
         }
-        ctx.magentoFirstInstall = true
+
+        return task.newListr([
+            setupMagentoFilePermissions(),
+            setupComposerCachePermissions(),
+            {
+                title: 'Installing Magento dependencies',
+                task: async () => {
+                    try {
+                        await runComposerCommand(
+                            ctx,
+                            `install${ctx.verbose ? ' -v' : ''}`,
+                            {
+                                callback: !ctx.verbose
+                                    ? undefined
+                                    : (t) => {
+                                          task.output = t
+                                      }
+                            }
+                        )
+                    } catch (e) {
+                        if (
+                            e instanceof UnknownError &&
+                            e.message.includes('man-in-the-middle attack')
+                        ) {
+                            throw new KnownError(`Probably you haven't setup pubkeys in composer.
+                    Please run ${logger.style.command(
+                        'composer diagnose'
+                    )} in cli to get mode.\n\n${e}`)
+                        }
+
+                        throw new UnknownError(
+                            `Unexpected error during composer install.\n\n${e}`
+                        )
+                    }
+                    ctx.magentoFirstInstall = true
+                }
+            },
+            makeBinariesExecutable()
+        ])
     },
     options: {
         bottomBar: 10

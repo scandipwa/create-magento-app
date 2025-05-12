@@ -11,6 +11,27 @@ const defaultMagentoUser = require('../tasks/database/default-magento-user')
 const defaultOsEnv = require('./services/opensearch/default-os-env')
 
 /**
+ * @param {Partial<Record<'rw' | 'ro' | 'cached', boolean>>} directives
+ */
+const volumeDirectives = (directives) => {
+    const directivesResult = Object.entries(directives)
+        .filter(([name, value]) => value === true)
+        .map(([name]) => name)
+        .join(',')
+
+    return directivesResult ? `:${directivesResult}` : ''
+}
+
+/**
+ * @param {{source: string, target: string, rw?: boolean, ro?: boolean, cached?: boolean}} options
+ */
+const containerVolume = (options) => {
+    const { source, target, ...directives } = options
+
+    return `${source}:${target}${volumeDirectives(directives)}`
+}
+
+/**
  * @param {import('../../typings/context').ListrContext} ctx
  * @param {import('../../typings/context').ListrContext['config']['overridenConfiguration']} overridenConfiguration
  * @param {import('../../typings/context').ListrContext['config']['baseConfig']} baseConfig
@@ -69,10 +90,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const { isDockerDesktop } = ctx
 
     if (isDockerDesktop) {
-        /**
-         * When CMA is running with Docker Desktop,
-         * we need create named volumes to avoid performance penalty
-         */
         volumes.php = {
             name: `${prefix}_project-data`,
             driver: 'local',
@@ -82,56 +99,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 o: 'bind'
             }
         }
-        volumes.nginx = {
-            name: `${prefix}_nginx-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(cacheDir, 'nginx', 'conf.d'),
-                o: 'bind'
-            }
-        }
-        volumes.appPub = {
-            name: `${prefix}_pub-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(magentoDir, 'pub'),
-                o: 'bind'
-            }
-        }
-        volumes.appSetup = {
-            name: `${prefix}_setup-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(magentoDir, 'setup'),
-                o: 'bind'
-            }
-        }
-        volumes.sslTerminator = {
-            name: `${prefix}_ssl-terminator-data`,
-            driver: 'local',
-            opt: {
-                type: 'none',
-                device: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
-                o: 'bind'
-            }
-        }
-
-        if (varnish.enabled) {
-            volumes.varnish = {
-                name: `${prefix}_varnish-data`,
-                driver: 'local',
-                opt: {
-                    type: 'none',
-                    device: path.join(cacheDir, 'varnish'),
-                    o: 'bind'
-                }
-            }
-        }
     }
-
     /**
      * @param {Record<string, number>} ports
      */
@@ -147,7 +115,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], debugImage?: string, remoteImages?: string[], connectCommand?: string[], description?: string }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[] }>}
          */
         const dockerConfig = {
             php: {
@@ -166,29 +134,96 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ],
                 network: isDockerDesktop ? network.name : 'host',
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop ? magentoDir : volumes.php.name
-                    }:${containerMagentoDir}`,
-                    `${volumes.composer_cache.name}:/composer/home/cache`,
-                    `${php.iniPath}:/usr/local/etc/php/php.ini`,
-                    `${php.fpmConfPath}:/usr/local/etc/php-fpm.d/zz-docker.conf`
-                ].concat(
-                    ctx.debug
-                        ? [
-                              `${php.debugIniPath}:/usr/local/etc/php/conf.d/00-xdebug.ini`
-                          ]
-                        : []
-                ),
+                    containerVolume({
+                        source: isDockerDesktop ? volumes.php.name : magentoDir,
+                        target: containerMagentoDir,
+                        rw: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: volumes.composer_cache.name,
+                        target: '/composer/home/cache',
+                        rw: true
+                    }),
+                    containerVolume({
+                        source: php.iniPath,
+                        target: '/usr/local/etc/php/php.ini',
+                        ro: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: php.fpmConfPath,
+                        target: '/usr/local/etc/php-fpm.d/zz-docker.conf',
+                        ro: true,
+                        cached: isDockerDesktop
+                    })
+                ],
                 env: deepmerge(composerAuthEnv, php.env || {}),
                 restart: 'on-failure:5',
                 image: `local-cma-project:${prefix}`,
-                debugImage: `local-cma-project:${prefix}.debug`,
-                remoteImages: [
-                    configuration.php.baseImage,
-                    configuration.php.debugImage
-                ],
+                remoteImages: [configuration.php.baseImage],
                 name: `${prefix}_php`,
                 connectCommand: ['/bin/sh'],
+                dependsOn: ['mariadb', 'redis', 'elasticsearch'],
+                user:
+                    (ctx.platform === 'linux' && isDockerDesktop) ||
+                    !isDockerDesktop
+                        ? `${os.userInfo().uid}:${os.userInfo().gid}`
+                        : ''
+            },
+            phpWithXdebug: {
+                _: 'PHP with Xdebug',
+                ports: isDockerDesktop
+                    ? [
+                          `${isIpAddress(host) ? host : '127.0.0.1'}:${
+                              ports.fpmXdebug
+                          }:9000`
+                      ]
+                    : [],
+                forwardedPorts: [
+                    isDockerDesktop
+                        ? `127.0.0.1:${ports.fpmXdebug}:9000`
+                        : `127.0.0.1:${ports.fpmXdebug}`
+                ],
+                network: isDockerDesktop ? network.name : 'host',
+                mountVolumes: [
+                    containerVolume({
+                        source: isDockerDesktop ? volumes.php.name : magentoDir,
+                        target: containerMagentoDir,
+                        rw: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: volumes.composer_cache.name,
+                        target: '/composer/home/cache',
+                        rw: true
+                    }),
+                    containerVolume({
+                        source: php.iniPath,
+                        target: '/usr/local/etc/php/php.ini',
+                        ro: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: php.debugFpmConfPath,
+                        target: '/usr/local/etc/php-fpm.d/zz-docker.conf',
+                        ro: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: php.debugIniPath,
+                        target: '/usr/local/etc/php/conf.d/00-xdebug.ini',
+                        ro: true,
+                        cached: isDockerDesktop
+                    })
+                ],
+                env: deepmerge(composerAuthEnv, php.env || {}),
+                restart: 'on-failure:5',
+                image: `local-cma-project:${prefix}.debug`,
+                pullImage: false,
+                name: `${prefix}_php_with_xdebug`,
+                connectCommand: ['/bin/sh'],
+                dependsOn: ['mariadb', 'redis', 'elasticsearch'],
                 user:
                     (ctx.platform === 'linux' && isDockerDesktop) ||
                     !isDockerDesktop
@@ -212,20 +247,23 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 healthCheck: {
                     cmd: 'service nginx status'
                 },
-                /**
-                 * Mount volumes directly on linux
-                 */
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop
-                            ? path.join(cacheDir, 'ssl-terminator', 'conf.d')
-                            : volumes.sslTerminator.name
-                    }:/etc/nginx/conf.d`,
-                    `${path.join(
-                        cacheDir,
-                        'ssl-terminator',
-                        'fastcgi_params'
-                    )}:/etc/nginx/fastcgi_params`
+                    containerVolume({
+                        source: path.join(cacheDir, 'ssl-terminator', 'conf.d'),
+                        target: '/etc/nginx/conf.d',
+                        ro: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: path.join(
+                            cacheDir,
+                            'ssl-terminator',
+                            'fastcgi_params'
+                        ),
+                        target: '/etc/nginx/fastcgi_params',
+                        ro: true,
+                        cached: isDockerDesktop
+                    })
                 ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
@@ -233,7 +271,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     nginx.version ? `nginx:${nginx.version}` : nginx.image
                 }`,
                 name: `${prefix}_ssl-terminator`,
-                command: "nginx -g 'daemon off;'"
+                command: "nginx -g 'daemon off;'",
+                dependsOn: ['nginx']
             },
             nginx: {
                 _: 'Nginx',
@@ -252,49 +291,38 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 healthCheck: {
                     cmd: 'service nginx status'
                 },
-                /**
-                 * Mount volumes directly on linux
-                 */
-                mountVolumes: !isDockerDesktop
-                    ? [
-                          `${cacheDir}/nginx/conf.d:/etc/nginx/conf.d`,
-                          `${path.join(magentoDir, 'pub')}:${path.join(
-                              containerMagentoDir,
-                              'pub'
-                          )}`,
-                          `${path.join(magentoDir, 'setup')}:${path.join(
-                              containerMagentoDir,
-                              'setup'
-                          )}`,
-                          `${path.join(
-                              cacheDir,
-                              'ssl-terminator',
-                              'fastcgi_params'
-                          )}:/etc/nginx/fastcgi_params`
-                      ]
-                    : [
-                          `${volumes.nginx.name}:/etc/nginx/conf.d`,
-                          `${volumes.appPub.name}:${path.join(
-                              containerMagentoDir,
-                              'pub'
-                          )}`,
-                          `${volumes.appSetup.name}:${path.join(
-                              containerMagentoDir,
-                              'setup'
-                          )}`,
-                          `${path.join(
-                              cacheDir,
-                              'ssl-terminator',
-                              'fastcgi_params'
-                          )}:/etc/nginx/fastcgi_params`
-                      ],
+                mountVolumes: [
+                    containerVolume({
+                        source: path.join(cacheDir, 'nginx', 'conf.d'),
+                        target: '/etc/nginx/conf.d',
+                        ro: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: isDockerDesktop ? volumes.php.name : magentoDir,
+                        target: containerMagentoDir,
+                        rw: true,
+                        cached: isDockerDesktop
+                    }),
+                    containerVolume({
+                        source: path.join(
+                            cacheDir,
+                            'ssl-terminator',
+                            'fastcgi_params'
+                        ),
+                        target: '/etc/nginx/fastcgi_params',
+                        ro: true,
+                        cached: isDockerDesktop
+                    })
+                ],
                 restart: 'on-failure:5',
                 network: isDockerDesktop ? network.name : 'host',
                 image: `${
                     nginx.version ? `nginx:${nginx.version}` : nginx.image
                 }`,
                 name: `${prefix}_nginx`,
-                command: "nginx -g 'daemon off;'"
+                command: "nginx -g 'daemon off;'",
+                dependsOn: ['php', 'phpWithXdebug']
             },
             redis: {
                 _: 'Redis',
@@ -314,16 +342,21 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             mariadb: {
                 _: 'MariaDB',
                 healthCheck: {
-                    cmd: 'mysqladmin ping --silent'
+                    cmd: `${mariadb.binAdminFileName} ping --silent`
                 },
                 ports: [`127.0.0.1:${ports.mariadb}:3306`],
                 forwardedPorts: [`127.0.0.1:${ports.mariadb}:3306`],
                 mountVolumes: [
-                    `${volumes.mariadb.name}:/var/lib/mysql`,
-                    `${path.join(
-                        baseConfig.cacheDir,
-                        'mariadb.cnf'
-                    )}:/etc/mysql/my.cnf`
+                    containerVolume({
+                        source: volumes.mariadb.name,
+                        target: '/var/lib/mysql'
+                    }),
+                    containerVolume({
+                        source: path.join(baseConfig.cacheDir, 'mariadb.cnf'),
+                        target: '/etc/mysql/my.cnf',
+                        ro: true,
+                        cached: isDockerDesktop
+                    })
                 ],
                 env: {
                     MARIADB_ROOT_PASSWORD: 'scandipwa'
@@ -357,10 +390,16 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 },
                 ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 forwardedPorts: [`127.0.0.1:${ports.elasticsearch}:9200`],
-                mounts: [
+                mountVolumes: [
                     searchengine === 'elasticsearch'
-                        ? `source=${volumes.elasticsearch.name},target=/usr/share/elasticsearch/data`
-                        : `source=${volumes.opensearch.name},target=/usr/share/opensearch/data`
+                        ? containerVolume({
+                              source: volumes.elasticsearch.name,
+                              target: '/usr/share/elasticsearch/data'
+                          })
+                        : containerVolume({
+                              source: volumes.opensearch.name,
+                              target: '/usr/share/opensearch/data'
+                          })
                 ],
                 env:
                     searchengine === 'elasticsearch'
@@ -403,7 +442,12 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                           `127.0.0.1:${ports.maildevWeb}`,
                           `127.0.0.1:${ports.maildevSMTP}`
                       ],
-                mountVolumes: [`${volumes.maildev.name}:/tmp/maildev`],
+                mountVolumes: [
+                    containerVolume({
+                        source: volumes.maildev.name,
+                        target: '/tmp/maildev'
+                    })
+                ],
                 env: {
                     MAILDEV_SMTP_PORT: isDockerDesktop
                         ? '1025'
@@ -434,7 +478,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             )
         }
 
-        if (!ctx.debug && varnish.enabled) {
+        if (varnish.enabled) {
             dockerConfig.varnish = {
                 _: 'Varnish',
                 image: `${
@@ -444,11 +488,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_varnish`,
                 mountVolumes: [
-                    `${
-                        !isDockerDesktop
-                            ? path.join(cacheDir, 'varnish')
-                            : volumes.varnish.name
-                    }:/etc/varnish`
+                    containerVolume({
+                        source: path.join(cacheDir, 'varnish'),
+                        target: '/etc/varnish',
+                        ro: true
+                    })
                 ],
                 ports: isDockerDesktop
                     ? [
@@ -474,8 +518,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 tmpfs: ['/var/lib/varnish/varnishd:exec'],
                 description: `Varnish HealthCheck status: ${logger.style.command(
                     varnish.healthCheck ? 'enabled' : 'disabled'
-                )}`
+                )}`,
+                dependsOn: ['nginx']
             }
+
+            dockerConfig.sslTerminator.dependsOn.push('varnish')
         }
 
         if (newRelic.enabled) {
