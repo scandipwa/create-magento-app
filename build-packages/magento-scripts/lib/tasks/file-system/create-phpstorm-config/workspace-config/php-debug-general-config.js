@@ -7,13 +7,16 @@ const xdebugDebugPortKey = '@_xdebug_debug_port'
 const ignoreConnectionsThroughUnregisteredServersKey =
     '@_ignore_connections_through_unregistered_servers'
 
-const xdebugPort = '9003'
-
 /**
  * @param {Array} workspaceConfigs
+ * @param {import('../../../../../typings/context').ListrContext} ctx
  * @returns {Promise<Boolean>}
  */
-const setupPHPDebugGeneral = async (workspaceConfigs) => {
+const setupPHPDebugGeneral = async (workspaceConfigs, ctx) => {
+    const { ports } = ctx
+
+    const xdebugPort = `${ports.xdebug}`
+
     let hasChanges = false
     const phpDebugGeneralComponent = workspaceConfigs.find(
         (workspaceConfig) =>

@@ -34,7 +34,7 @@ const createNginxConfig = () => ({
             networkSettings.phpWithXdebugNetwork = containers.phpWithXdebug.name
 
             networkSettings.fpmPort = 9000
-            networkSettings.fpmXdebugPort = 9001
+            networkSettings.fpmXdebugPort = 9000
 
             networkSettings.hostPort = 80
         }

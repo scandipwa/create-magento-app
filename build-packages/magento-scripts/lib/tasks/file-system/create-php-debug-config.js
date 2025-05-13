@@ -26,6 +26,8 @@ const createPhpDebugConfig = () => ({
             ? '127.0.0.1'
             : 'host.docker.internal'
 
+        const { xdebug: xdebugPort } = ctx.ports
+
         try {
             await setConfigFile({
                 configPathname: php.debugIniPath,
@@ -35,7 +37,8 @@ const createPhpDebugConfig = () => ({
                     debug,
                     mageRoot: baseConfig.containerMagentoDir,
                     isXDebug2,
-                    hostMachine
+                    hostMachine,
+                    xdebugPort
                 }
             })
         } catch (e) {

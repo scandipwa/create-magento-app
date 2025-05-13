@@ -7,8 +7,6 @@ const UnknownError = require('../../errors/unknown-error')
 
 const listenForXDebugConfigName = 'Listen for XDebug'
 
-const xdebugPort = 9003
-
 const vscodeLaunchConfigPath = path.join(
     process.cwd(),
     '.vscode',
@@ -19,6 +17,7 @@ const vscodeLaunchConfigPath = path.join(
  * @param {import('../../../typings/context').ListrContext} ctx
  */
 const addPHPDebugConfig = (vscodeLaunchConfig, ctx) => {
+    const { ports } = ctx
     const phpXDebugConfig = vscodeLaunchConfig.configurations.find(
         ({ name }) => name === listenForXDebugConfigName
     )
@@ -29,7 +28,8 @@ const addPHPDebugConfig = (vscodeLaunchConfig, ctx) => {
         name: listenForXDebugConfigName,
         type: 'php',
         request: 'launch',
-        port: xdebugPort,
+        // port: xdebugPort,
+        port: ports.xdebug,
         pathMappings: {
             // eslint-disable-next-line no-template-curly-in-string
             [ctx.config.baseConfig.containerMagentoDir]: '${workspaceFolder}'
@@ -52,8 +52,8 @@ const addPHPDebugConfig = (vscodeLaunchConfig, ctx) => {
         return true
     }
 
-    if (!phpXDebugConfig.port || phpXDebugConfig.port !== xdebugPort) {
-        phpXDebugConfig.port = xdebugPort
+    if (!phpXDebugConfig.port || phpXDebugConfig.port !== ports.xdebug) {
+        phpXDebugConfig.port = ports.xdebug
 
         hasChanges = true
     }
@@ -129,7 +129,7 @@ const createVSCodeConfig = () => ({
                 template: vscodeLaunchConfigTemplatePath,
                 configPathname: vscodeLaunchConfigPath,
                 templateArgs: {
-                    XDebugPort: xdebugPort,
+                    XDebugPort: ctx.ports.xdebug,
                     baseConfig: ctx.config.baseConfig
                 }
             })

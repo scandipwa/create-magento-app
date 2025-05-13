@@ -73,6 +73,8 @@ const defaultPorts = {
     sslTerminator: 80,
     fpm: 9000,
     fpmXdebug: 9001,
+    // for xdebug server running in the editor
+    xdebug: 9003,
     mariadb: 3306,
     redis: 6379,
     elasticsearch: 9200,
@@ -99,10 +101,12 @@ const getPortsConfig = async (ports, options = {}) => {
         p = p.concat(await getUsedByOtherCMAProjectsPorts())
     }
 
+    const { xdebug: _, ...portsWithoutXDebug } = mergedPorts
+
     /**
      * @type {Record<string, string>}
      */
-    const portsToCheck = Object.entries(mergedPorts).reduce(
+    const portsToCheck = Object.entries(portsWithoutXDebug).reduce(
         (acc, [name, port]) => {
             if (acc[port]) {
                 let i = 0
@@ -145,6 +149,21 @@ const getPortsConfig = async (ports, options = {}) => {
             throw new Error(`No available port found for ${name} (${portInt})`)
         }
     }
+
+    // XDebug port will be occupied by the editor
+    // so we can expect default port to be free
+    // if setup ran more than once
+    // first time: default port (9003) is free
+    // second time: default port (9003) is occupied by the editor, we choose 9004
+    // third time: default port (9004) is occupied by the editor, we choose 9003
+    // that way port number will not grow indefinitely
+    const xdebugPort = await getPort(defaultPorts.xdebug, {
+        portIgnoreList: Object.keys(availablePorts).map((item) =>
+            Number.parseInt(item)
+        )
+    })
+
+    availablePorts.xdebug = xdebugPort
 
     return availablePorts
 }
