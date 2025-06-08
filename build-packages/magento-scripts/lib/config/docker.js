@@ -448,7 +448,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 mountVolumes: [
                     containerVolume({
                         source: volumes.maildev.name,
-                        target: '/tmp/maildev'
+                        target: '/tmp'
                     })
                 ],
                 env: {
@@ -458,7 +458,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     MAILDEV_WEB_PORT: isDockerDesktop
                         ? '1080'
                         : ports.maildevWeb,
-                    MAILDEV_MAIL_DIRECTORY: '/tmp/maildev'
+                    MAILDEV_MAIL_DIRECTORY: '/tmp'
                 },
                 name: `${prefix}_maildev`,
                 network: isDockerDesktop ? network.name : 'host',
