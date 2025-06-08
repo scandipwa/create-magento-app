@@ -115,7 +115,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[] }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string }>}
          */
         const dockerConfig = {
             php: {
@@ -169,7 +169,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     (ctx.platform === 'linux' && isDockerDesktop) ||
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
-                        : ''
+                        : '',
+                serviceReadyLog: 'ready to handle connections'
             },
             phpWithXdebug: {
                 _: 'PHP with Xdebug',
@@ -228,7 +229,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     (ctx.platform === 'linux' && isDockerDesktop) ||
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
-                        : ''
+                        : '',
+                serviceReadyLog: 'ready to handle connections'
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -337,7 +339,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     redis.version ? `redis:${redis.version}` : redis.image
                 }`,
                 name: `${prefix}_redis`,
-                connectCommand: ['redis-cli']
+                connectCommand: ['redis-cli'],
+                serviceReadyLog: 'Ready to accept connections'
             },
             mariadb: {
                 _: 'MariaDB',
@@ -423,7 +426,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                             : elasticsearch.image
                         : opensearch.image
                 }`,
-                name: `${prefix}_${searchengine}`
+                name: `${prefix}_${searchengine}`,
+                serviceReadyLog:
+                    searchengine === 'elasticsearch' ? '"started"' : '] started'
             },
             maildev: {
                 _: 'MailDev',
