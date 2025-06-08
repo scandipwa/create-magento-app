@@ -316,9 +316,11 @@ const buildProjectImage = () => ({
 ${dockerFileInstructions}
 EOF`,
                             {
-                                callback: (r) => {
-                                    task.output = r
-                                }
+                                callback: !ctx.verbose
+                                    ? undefined
+                                    : (t) => {
+                                          task.output = t
+                                      }
                             }
                         )
                     } catch (e) {
@@ -344,9 +346,11 @@ EOF`,
 ${debugImageInstructions}
 EOF`,
                             {
-                                callback: (r) => {
-                                    task.output = r
-                                }
+                                callback: !ctx.verbose
+                                    ? undefined
+                                    : (t) => {
+                                          task.output = t
+                                      }
                             }
                         )
                     } catch (e) {
