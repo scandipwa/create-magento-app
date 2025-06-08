@@ -5,6 +5,7 @@ const KnownError = require('../../../errors/known-error')
 const containerApi = require('./container-api')
 const { imageApi } = require('../image')
 const { execAsyncSpawn } = require('../../../util/exec-async-command')
+const waitForLogs = require('../../../util/wait-for-logs')
 
 /**
  * @param {string[]} containers
@@ -230,6 +231,13 @@ const startContainers = () => ({
                     subTask.title = `${container._} is starting...`
 
                     await containerApi.run(container)
+
+                    if (container.serviceReadyLog) {
+                        await waitForLogs({
+                            containerName: container.name,
+                            matchText: container.serviceReadyLog
+                        })
+                    }
 
                     containerStatuses[
                         container.nameWithoutPrefix
