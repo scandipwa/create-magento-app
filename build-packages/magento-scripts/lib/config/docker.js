@@ -73,11 +73,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         redis: {
             name: `${prefix}_redis-data`
         },
-        elasticsearch: {
-            name: `${prefix}_elasticsearch-data`
-        },
         opensearch: {
-            name: `${prefix}_opensearch-data`
+            name:
+                searchengine === 'elasticsearch'
+                    ? `${prefix}_elasticsearch-data`
+                    : `${prefix}_opensearch-data`
         },
         maildev: {
             name: `${prefix}_maildev-data`
@@ -394,15 +394,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 forwardedPorts: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 mountVolumes: [
-                    searchengine === 'elasticsearch'
-                        ? containerVolume({
-                              source: volumes.elasticsearch.name,
-                              target: '/usr/share/elasticsearch/data'
-                          })
-                        : containerVolume({
-                              source: volumes.opensearch.name,
-                              target: '/usr/share/opensearch/data'
-                          })
+                    containerVolume({
+                        source: volumes.opensearch.name,
+                        target:
+                            searchengine === 'elasticsearch'
+                                ? '/usr/share/elasticsearch/data'
+                                : '/usr/share/opensearch/data'
+                    })
                 ],
                 env:
                     searchengine === 'elasticsearch'
