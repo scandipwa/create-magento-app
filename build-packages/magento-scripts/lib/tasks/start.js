@@ -129,15 +129,7 @@ const configureProject = () => ({
                         { concurrent: true }
                     )
             },
-            {
-                task: (ctx, subTask) =>
-                    subTask.newListr(
-                        [checkPHPVersion(), checkSearchEngineVersion()],
-                        {
-                            concurrent: true
-                        }
-                    )
-            },
+            checkPHPVersion(),
             buildProjectImage(),
             getComposerVersionTask(),
             prepareFileSystem(),
@@ -146,6 +138,7 @@ const configureProject = () => ({
             installMagentoProject(),
             enableMagentoComposerPlugins(),
             startServices(),
+            checkSearchEngineVersion(),
             connectToDatabase()
         ])
 })
