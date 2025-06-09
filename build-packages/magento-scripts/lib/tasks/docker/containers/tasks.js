@@ -155,7 +155,9 @@ const startContainers = () => ({
             all: true
         })
 
-        const missingContainers = Object.entries(docker.getContainers(ports))
+        const containers = docker.getContainers(ports)
+
+        const missingContainers = Object.entries(containers)
             .filter(
                 ([nameWithoutPrefix, { name }]) =>
                     !containerList.some((c) => c.Names === name)
@@ -190,7 +192,9 @@ const startContainers = () => ({
                         const startedContainers = []
                         subTask.title = `Container ${
                             container._
-                        } is waiting for ${dependsOn.join(', ')} to start...`
+                        } is waiting for ${dependsOn
+                            .map((a) => containers[a]._)
+                            .join(', ')} to start...`
                         await Promise.all(
                             dependsOn.map(
                                 async (name) =>
@@ -218,6 +222,7 @@ const startContainers = () => ({
                                                                 d
                                                             )
                                                     )
+                                                    .map((d) => containers[d]._)
                                                     .join(', ')} to start...`
                                                 clearTimeout(timeout)
                                                 resolve()
@@ -248,7 +253,7 @@ const startContainers = () => ({
                         cb()
                     })
 
-                    subTask.output = `${container._} container started`
+                    subTask.title = `${container._} container started`
                 }
             })),
             {
