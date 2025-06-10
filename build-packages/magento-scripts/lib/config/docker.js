@@ -424,9 +424,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                             : elasticsearch.image
                         : opensearch.image
                 }`,
-                name: `${prefix}_${searchengine}`,
-                serviceReadyLog:
-                    searchengine === 'elasticsearch' ? '"started"' : '] started'
+                name: `${prefix}_${searchengine}`
             },
             maildev: {
                 _: 'MailDev',

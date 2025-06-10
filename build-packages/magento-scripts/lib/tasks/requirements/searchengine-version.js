@@ -1,13 +1,28 @@
 const { request } = require('smol-request')
 const UnknownError = require('../../errors/unknown-error')
+const waitForLogs = require('../../util/wait-for-logs')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkSearchEngineVersion = () => ({
-    // title: 'Checking container SearchEngine version',
     task: async (ctx, task) => {
-        const { ports } = ctx
+        const {
+            ports,
+            config: {
+                overridenConfiguration: {
+                    configuration: { searchengine }
+                }
+            }
+        } = ctx
+
+        const { elasticsearch } = ctx.config.docker.getContainers(ports)
+
+        await waitForLogs({
+            containerName: elasticsearch.name,
+            matchText:
+                searchengine === 'elasticsearch' ? '"started"' : '] started'
+        })
 
         try {
             const response = await request(
@@ -33,13 +48,14 @@ const checkSearchEngineVersion = () => ({
                 }
             }
 
-            const openSearchVersion = response.data.version.number
-            ctx.openSearchVersion = openSearchVersion
+            const searchEngineVersion = response.data.version.number
+            if (searchengine === 'elasticsearch') {
+                ctx.elasticSearchVersion = searchEngineVersion
+            } else {
+                ctx.openSearchVersion = searchEngineVersion
+            }
         } catch (e) {
-            if (
-                ctx.config.overridenConfiguration.configuration.searchengine ===
-                'opensearch'
-            ) {
+            if (searchengine === 'opensearch') {
                 throw new UnknownError(
                     `Cannot connect to OpenSearch container!\n\n${e.message}`
                 )

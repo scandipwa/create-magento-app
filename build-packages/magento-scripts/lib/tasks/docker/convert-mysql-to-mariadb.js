@@ -24,7 +24,7 @@ const { createCacheFolder } = require('../cache')
 const { getSystemConfigTask } = require('../../config/system-config')
 const sleep = require('../../util/sleep')
 const { setProjectConfigTask } = require('../project-config')
-const checkElasticSearchVersion = require('../requirements/elasticsearch-version')
+const checkSearchEngineVersion = require('../requirements/searchengine-version')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -235,23 +235,13 @@ Please wait, this will take some time and do not restart the MySQL container unt
                     dockerNetwork.tasks.createNetwork(),
                     createVolumes(),
                     buildProjectImage(),
-                    {
-                        task: (ctx, subTask) =>
-                            subTask.newListr(
-                                [
-                                    checkPHPVersion(),
-                                    checkElasticSearchVersion()
-                                ],
-                                {
-                                    concurrent: true
-                                }
-                            )
-                    },
+                    checkPHPVersion(),
                     getComposerVersionTask(),
                     prepareFileSystem(),
                     installMagentoProject(),
                     enableMagentoComposerPlugins(),
                     startServices(),
+                    checkSearchEngineVersion(),
                     connectToDatabase(),
                     importDumpToDatabase(),
                     {

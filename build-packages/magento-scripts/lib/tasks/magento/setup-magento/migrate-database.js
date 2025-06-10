@@ -9,6 +9,7 @@ const varnishConfigSetup = require('./varnish-config')
 const pathExists = require('../../../util/path-exists')
 const updateEnvPHP = require('../../php/update-env-php')
 const UnknownError = require('../../../errors/unknown-error')
+const checkSearchEngineVersion = require('../../requirements/searchengine-version')
 
 /**
  * @param {Object} [options]
@@ -44,6 +45,7 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr(
                 [
+                    checkSearchEngineVersion(),
                     installMagento({ isDbEmpty: true }),
                     updateEnvPHP(),
                     varnishConfigSetup(),
@@ -75,7 +77,11 @@ const migrateDatabase = (options = {}) => ({
                 ctx.isSetupUpgradeNeeded = false
                 // no setup is needed, but still to be sure configure ES
                 return task.newListr(
-                    [varnishConfigSetup(), configureSearchEngine()],
+                    [
+                        checkSearchEngineVersion(),
+                        varnishConfigSetup(),
+                        configureSearchEngine()
+                    ],
                     {
                         concurrent: false,
                         exitOnError: true,
@@ -90,6 +96,7 @@ const migrateDatabase = (options = {}) => ({
                 if (options.onlyInstallMagento) {
                     ctx.isSetupUpgradeNeeded = false
                     return task.newListr([
+                        checkSearchEngineVersion(),
                         installMagentoProject(),
                         installMagento()
                     ])
@@ -97,6 +104,7 @@ const migrateDatabase = (options = {}) => ({
 
                 return task.newListr(
                     [
+                        checkSearchEngineVersion(),
                         installMagentoProject(),
                         installMagento(),
                         updateEnvPHP(),
@@ -118,6 +126,7 @@ const migrateDatabase = (options = {}) => ({
             case 2: {
                 return task.newListr(
                     [
+                        checkSearchEngineVersion(),
                         varnishConfigSetup(),
                         configureSearchEngine(),
                         upgradeMagento()
