@@ -20,6 +20,7 @@ const migrateDatabase = (options = {}) => ({
     title: 'Migrating database',
     task: async (ctx, task) => {
         const { databaseConnection } = ctx
+        const { varnish } = ctx.config.overridenConfiguration.configuration
 
         const [[{ tableCount }]] = await databaseConnection.query(`
             SELECT count(*) AS tableCount
@@ -51,7 +52,11 @@ const migrateDatabase = (options = {}) => ({
                     varnishConfigSetup(),
                     configureSearchEngine(),
                     upgradeMagento(),
-                    magentoTask('cache:enable')
+                    magentoTask(
+                        `cache:disable block_html layout${
+                            !varnish.enabled ? ' full_page' : ''
+                        }`
+                    )
                 ],
                 {
                     concurrent: false,
@@ -111,7 +116,11 @@ const migrateDatabase = (options = {}) => ({
                         varnishConfigSetup(),
                         configureSearchEngine(),
                         upgradeMagento(),
-                        magentoTask('cache:enable')
+                        magentoTask(
+                            `cache:disable block_html layout${
+                                !varnish.enabled ? ' full_page' : ''
+                            }`
+                        )
                     ],
                     {
                         concurrent: false,

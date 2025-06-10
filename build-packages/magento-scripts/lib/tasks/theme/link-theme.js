@@ -1,6 +1,6 @@
 const symlinkTheme = require('./symlink-theme')
 const installTheme = require('./install-theme')
-const adjustFullPageCache = require('../magento/setup-magento/adjust-full-page-cache')
+const enableFullPageCacheWithVarnish = require('../magento/setup-magento/enable-full-page-cache-with-varnish')
 const disablePageBuilder = require('../magento/setup-magento/disable-page-builder')
 const buildTheme = require('./build-theme')
 const upgradeMagento = require('../magento/setup-magento/upgrade-magento')
@@ -55,7 +55,7 @@ const linkTheme = () => ({
             installTheme(theme),
             updateEnvPHP(),
             upgradeMagento(),
-            adjustFullPageCache(),
+            enableFullPageCacheWithVarnish(),
             ...(isPageBuilderInstalled && Number(isPagebuilderEnabled)
                 ? [disablePageBuilder()]
                 : []),

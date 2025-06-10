@@ -9,7 +9,7 @@ const setUrlRewrite = require('./set-url-rewrite')
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime')
 const magentoTask = require('../../../util/magento-task')
 const urnHighlighter = require('./urn-highlighter')
-const adjustFullPageCache = require('./adjust-full-page-cache')
+const enableFullPageCacheWithVarnish = require('./enable-full-page-cache-with-varnish')
 const updateEnvPHP = require('../../php/update-env-php')
 const setMailConfig = require('./set-mail-config')
 const { setupMagentoFilePermissions } = require('./setup-file-permissions')
@@ -59,7 +59,7 @@ const setupMagento = (options = {}) => ({
                 disableMaintenanceMode(),
                 disable2fa(),
                 urnHighlighter(),
-                adjustFullPageCache(),
+                enableFullPageCacheWithVarnish(),
                 magentoTask('cache:flush')
             ],
             {
