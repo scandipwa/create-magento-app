@@ -6,5 +6,6 @@ module.exports = {
     varnish73: require('./varnish-7-3'),
     varnish74: require('./varnish-7-4'),
     varnish75: require('./varnish-7-5'),
-    varnish76: require('./varnish-7-6')
+    varnish76: require('./varnish-7-6'),
+    varnish77: require('./varnish-7-7')
 }
