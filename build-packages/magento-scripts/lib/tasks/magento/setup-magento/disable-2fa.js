@@ -1,36 +1,67 @@
 const configPhpToJson = require('../../../util/config-php-json')
-const runMagentoCommand = require('../../../util/run-magento')
+const getJsonfileData = require('../../../util/get-jsonfile-data')
+const path = require('path')
+const composerTask = require('../../../util/composer-task')
+const magentoTask = require('../../../util/magento-task')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
  */
 module.exports = () => ({
-    title: 'Disabling 2fa for admin',
+    title: 'Disabling 2FA module',
     task: async (ctx, task) => {
-        const { modules } = await configPhpToJson(ctx)
+        // Check if MarkShust module is already installed via composer.lock
+        const composerLockPath = path.join(
+            ctx.config.baseConfig.magentoDir,
+            'composer.lock'
+        )
+        const composerLockData = await getJsonfileData(composerLockPath)
 
-        const isMagentoTFAEnabled =
-            modules.Magento_TwoFactorAuth !== undefined &&
-            modules.Magento_TwoFactorAuth !== 0
+        const tasks = []
 
-        const isMagentoAdminAdobeImsTwoFactorAuthEnabled =
-            modules.Magento_AdminAdobeImsTwoFactorAuth !== undefined &&
-            modules.Magento_AdminAdobeImsTwoFactorAuth !== 0
+        const isModuleInstalled =
+            composerLockData &&
+            composerLockData.packages &&
+            composerLockData.packages.some(
+                /** @param {{ name: string }} pkg */ (pkg) =>
+                    pkg.name ===
+                    'markshust/magento2-module-disabletwofactorauth'
+            )
 
-        if (isMagentoAdminAdobeImsTwoFactorAuthEnabled) {
-            await runMagentoCommand(
-                ctx,
-                'module:disable Magento_AdminAdobeImsTwoFactorAuth'
+        if (!isModuleInstalled) {
+            tasks.push(
+                composerTask(
+                    'require --dev markshust/magento2-module-disabletwofactorauth'
+                )
             )
         }
-        if (isMagentoTFAEnabled) {
-            await runMagentoCommand(ctx, 'module:disable Magento_TwoFactorAuth')
+
+        const getIsModuleEnabled = async () => {
+            const configData = await configPhpToJson(ctx)
+            return (
+                configData &&
+                configData.modules &&
+                configData.modules.MarkShust_DisableTwoFactorAuth !==
+                    undefined &&
+                configData.modules.MarkShust_DisableTwoFactorAuth !== 0
+            )
         }
 
-        if (isMagentoAdminAdobeImsTwoFactorAuthEnabled || isMagentoTFAEnabled) {
+        // Check if module is enabled in Magento
+        const isModuleEnabled =
+            isModuleInstalled || (await getIsModuleEnabled())
+
+        if (!isModuleEnabled) {
+            tasks.push(
+                magentoTask('module:enable MarkShust_DisableTwoFactorAuth'),
+                magentoTask('setup:upgrade')
+            )
+        } else {
+            task.skip()
+
             return
         }
 
-        task.skip()
+        return task.newListr(tasks)
     }
 })
