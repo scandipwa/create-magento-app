@@ -6,6 +6,7 @@ const waitForLogs = require('../../util/wait-for-logs')
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const checkSearchEngineVersion = () => ({
+    title: 'Retrieving search engine version',
     task: async (ctx, task) => {
         const {
             ports,
