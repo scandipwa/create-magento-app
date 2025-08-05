@@ -142,6 +142,12 @@ const buildDockerFileInstructions = async (
             COMPOSER_HOME: '/composer/home',
             COMPOSER_CACHE_DIR: '/composer/home/cache'
         })
+        .run(
+            `curl https://composer.github.io/snapshots.pub > /composer/home/keys.dev.pub`
+        )
+        .run(
+            `curl https://composer.github.io/releases.pub > /composer/home/keys.tags.pub`
+        )
 
     if (composer.plugins && Object.values(composer.plugins).length > 0) {
         for (const [pluginName, pluginOptions] of Object.entries(
