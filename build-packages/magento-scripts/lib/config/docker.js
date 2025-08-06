@@ -137,13 +137,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({
                         source: volumes.composer_cache.name,
-                        target: '/composer/home/cache',
-                        rw: true
+                        target: '/composer/home/cache'
                     }),
                     containerVolume({
                         source: php.iniPath,
@@ -191,13 +189,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({
                         source: volumes.composer_cache.name,
-                        target: '/composer/home/cache',
-                        rw: true
+                        target: '/composer/home/cache'
                     }),
                     containerVolume({
                         source: php.iniPath,
@@ -303,7 +299,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({

@@ -32,6 +32,7 @@ const executeTask = async (argv) => {
             concurrent: false,
             exitOnError: true,
             ctx: { throwMagentoVersionMissing: true },
+            renderer: process.stdout.isTTY ? 'default' : 'silent',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )
@@ -93,9 +94,9 @@ const executeTask = async (argv) => {
                 )
             }
 
-            const result = await executeInContainer({
+            const result = executeInContainer({
                 containerName: container.name,
-                command: argv.commands.join(' '),
+                commands: argv.commands,
                 user: container.user
             })
 
@@ -113,7 +114,7 @@ const executeTask = async (argv) => {
                 )
             }
 
-            const result = await runInContainer(
+            const result = runInContainer(
                 {
                     ...container,
                     name: `${container.name}_exec-${Date.now()}`

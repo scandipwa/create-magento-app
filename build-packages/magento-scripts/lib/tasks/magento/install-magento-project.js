@@ -154,9 +154,9 @@ const createMagentoProject = async (
         ctx,
         `bash -c 'mkdir ${tempDir} && \
 composer ${installCommand.join(' ')} && \
-mv ${tempDir}/composer.json ${
-            ctx.config.baseConfig.containerMagentoDir
-        }/composer.json'`
+mv ${path.join(tempDir, 'composer.json')} ${path
+            .join(ctx.config.baseConfig.containerMagentoDir, 'composer.json')
+            .replaceAll(' ', '\\ ')}'`
     )
 }
 

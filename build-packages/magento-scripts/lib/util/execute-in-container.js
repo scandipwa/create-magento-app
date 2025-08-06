@@ -5,36 +5,36 @@ const {
 } = require('../tasks/docker/containers/container-api')
 
 /**
- * @param {{ containerName: string, command: string, user?: string }} param0
- * @returns {Promise<never>}
+ * @param {{ containerName: string, commands: string[], user?: string }} param0
  */
-const executeInContainer = ({ containerName, command, user }) => {
+const executeInContainer = ({ containerName, commands, user }) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode')
         process.exit(1)
     }
+    const [commandBin, ...commandsArgs] = commands
 
     const execArgs = execCommand({
         container: containerName,
-        command,
+        command: commandBin,
         user,
         tty: true,
         interactive: true
     })
+    const [command, ...args] = execArgs
 
-    spawn('bash', ['-c', execArgs.join(' ')], {
-        stdio: [0, 1, 2]
+    const child = spawn(command, [...args, ...commandsArgs], {
+        stdio: 'inherit'
     })
 
-    return new Promise((_resolve) => {
-        // never resolve
+    child.on('close', (code) => {
+        process.exit(code)
     })
 }
 
 /**
  * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
  * @param {string[]} commands
- * @returns {Promise<never>}
  */
 const runInContainer = (options, commands) => {
     if (!process.stdin.isTTY) {
@@ -46,14 +46,19 @@ const runInContainer = (options, commands) => {
         ...options,
         tty: true,
         detach: false,
-        rm: true,
-        command: commands.join(' ')
+        rm: true
     })
 
-    spawn('bash', ['-c', runArgs.join(' ')], { stdio: [0, 1, 2] })
+    const [commandBin, ...commandsArgs] = commands
 
-    return new Promise((_resolve) => {
-        // never resolve
+    const [command, ...args] = runArgs
+
+    const child = spawn(command, [...args, commandBin, ...commandsArgs], {
+        stdio: 'inherit'
+    })
+
+    child.on('close', (code) => {
+        process.exit(code)
     })
 }
 
