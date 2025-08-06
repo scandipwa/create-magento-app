@@ -20,12 +20,15 @@ module.exports = (yargs) => {
 
 Available scopes:
 - magento
-- mariadb
-- redis
-- nginx
-- elasticsearch
-- varnish (if enabled)
+- php
+- phpWithXdebug
 - sslTerminator
+- nginx
+- redis
+- mariadb
+- elasticsearch
+- maildev
+- varnish (if enabled)
 
 And you can use name matching:
 npm run logs ma (will match magento)
