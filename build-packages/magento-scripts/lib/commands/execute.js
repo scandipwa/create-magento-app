@@ -11,12 +11,15 @@ module.exports = (yargs) => {
             yargs.usage(`Usage: npm run exec <container name> [command...]
 
 Available containers:
-- mariadb
+- php
+- phpWithXdebug
+- sslTerminator
 - nginx
 - redis
+- mariadb
 - elasticsearch
-- varnish (if enabled)
-- sslTerminator`)
+- maildev
+- varnish (if enabled)`)
         },
         async () => {
             const [containerName, ...commands] = process.argv.slice(3)
