@@ -12,6 +12,7 @@ const {
 const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const KnownError = require('../errors/known-error')
+const { prepareFileSystem } = require('./file-system')
 
 /**
  *
@@ -26,7 +27,8 @@ const executeTask = async (argv) => {
             checkConfigurationFile(),
             getProjectConfiguration(),
             getCachedPorts(),
-            dockerNetwork.tasks.createNetwork()
+            dockerNetwork.tasks.createNetwork(),
+            prepareFileSystem()
         ],
         {
             concurrent: false,
