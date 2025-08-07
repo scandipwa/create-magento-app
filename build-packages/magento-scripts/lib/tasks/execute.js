@@ -12,6 +12,7 @@ const {
 const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const KnownError = require('../errors/known-error')
+const { prepareFileSystem } = require('./file-system')
 
 /**
  *
@@ -26,12 +27,14 @@ const executeTask = async (argv) => {
             checkConfigurationFile(),
             getProjectConfiguration(),
             getCachedPorts(),
-            dockerNetwork.tasks.createNetwork()
+            dockerNetwork.tasks.createNetwork(),
+            prepareFileSystem()
         ],
         {
             concurrent: false,
             exitOnError: true,
             ctx: { throwMagentoVersionMissing: true },
+            renderer: process.stdout.isTTY ? 'default' : 'silent',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )
@@ -93,9 +96,9 @@ const executeTask = async (argv) => {
                 )
             }
 
-            const result = await executeInContainer({
+            const result = executeInContainer({
                 containerName: container.name,
-                command: argv.commands.join(' '),
+                commands: argv.commands,
                 user: container.user
             })
 
@@ -113,7 +116,7 @@ const executeTask = async (argv) => {
                 )
             }
 
-            const result = await runInContainer(
+            const result = runInContainer(
                 {
                     ...container,
                     name: `${container.name}_exec-${Date.now()}`

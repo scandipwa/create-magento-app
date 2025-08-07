@@ -38,7 +38,6 @@ const { setProjectConfigTask } = require('./project-config')
 const {
     convertComposerHomeToComposerCacheVolume
 } = require('./docker/convert-composer-home-to-composer-cache-volume')
-const checkSearchEngineVersion = require('./requirements/searchengine-version')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -129,15 +128,7 @@ const configureProject = () => ({
                         { concurrent: true }
                     )
             },
-            {
-                task: (ctx, subTask) =>
-                    subTask.newListr(
-                        [checkPHPVersion(), checkSearchEngineVersion()],
-                        {
-                            concurrent: true
-                        }
-                    )
-            },
+            checkPHPVersion(),
             buildProjectImage(),
             getComposerVersionTask(),
             prepareFileSystem(),

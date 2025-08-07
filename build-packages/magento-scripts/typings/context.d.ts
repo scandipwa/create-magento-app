@@ -118,6 +118,7 @@ export interface ListrContext {
                     command: string
                     connectCommand: string[]
                     dependsOn?: string[]
+                    serviceReadyLog?: string
                 }
             >
         }
@@ -154,4 +155,5 @@ export interface ListrContext {
     dockerServerData?: DockerVersionResult['Server']
     dockerClientData?: DockerVersionResult['Client']
     dockerVersion?: DockerVersionResult['Server']['Version']
+    dockerMemoryLimit: number
 }

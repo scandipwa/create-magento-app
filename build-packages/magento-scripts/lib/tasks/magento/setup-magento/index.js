@@ -1,5 +1,4 @@
 const flushRedisConfig = require('./flush-redis-config')
-const waitingForRedis = require('./waiting-for-redis')
 const migrateDatabase = require('./migrate-database')
 const createAdmin = require('./create-admin')
 const setDeploymentMode = require('./set-deployment-mode')
@@ -10,7 +9,7 @@ const setUrlRewrite = require('./set-url-rewrite')
 const increaseAdminSessionLifetime = require('./increase-admin-session-lifetime')
 const magentoTask = require('../../../util/magento-task')
 const urnHighlighter = require('./urn-highlighter')
-const adjustFullPageCache = require('./adjust-full-page-cache')
+const enableFullPageCacheWithVarnish = require('./enable-full-page-cache-with-varnish')
 const updateEnvPHP = require('../../php/update-env-php')
 const setMailConfig = require('./set-mail-config')
 const { setupMagentoFilePermissions } = require('./setup-file-permissions')
@@ -27,14 +26,12 @@ const setupMagento = (options = {}) => ({
         if (options.onlyInstallMagento) {
             return task.newListr([
                 flushRedisConfig(),
-                waitingForRedis(),
                 migrateDatabase({ onlyInstallMagento: true })
             ])
         }
 
         return task.newListr(
             [
-                waitingForRedis(),
                 setupMagentoFilePermissions(),
                 updateEnvPHP(),
                 migrateDatabase(),
@@ -62,7 +59,7 @@ const setupMagento = (options = {}) => ({
                 disableMaintenanceMode(),
                 disable2fa(),
                 urnHighlighter(),
-                adjustFullPageCache(),
+                enableFullPageCacheWithVarnish(),
                 magentoTask('cache:flush')
             ],
             {

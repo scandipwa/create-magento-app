@@ -38,9 +38,15 @@ const runCommand = (options) => {
     const portsArgs =
         (ports && ports.length > 0 && ports.map((port) => `-p=${port}`)) || ''
     const mountsArgs =
-        (mounts && mounts.map((mount) => `--mount="${mount}"`)) || ''
+        (mounts &&
+            mounts.map((mount) => `--mount=${mount.replaceAll(' ', '\\ ')}`)) ||
+        ''
     const mountVolumesArgs =
-        (mountVolumes && mountVolumes.map((mount) => `-v="${mount}"`)) || ''
+        (mountVolumes &&
+            mountVolumes.map(
+                (mount) => `-v=${mount.replaceAll(' ', '\\ ')}`
+            )) ||
+        ''
     const envArgs = !env
         ? ''
         : Object.entries(env).map(([key, value]) => `--env=${key}='${value}'`)

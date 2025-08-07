@@ -28,13 +28,16 @@ const createNginxConfig = () => ({
         }
 
         if (isDockerDesktop) {
-            const containers = docker.getContainers(ports)
+            // const containers = docker.getContainers(ports)
 
-            networkSettings.phpNetwork = containers.php.name
-            networkSettings.phpWithXdebugNetwork = containers.phpWithXdebug.name
+            // networkSettings.phpNetwork = containers.php.name
+            // networkSettings.phpWithXdebugNetwork = containers.phpWithXdebug.name
 
-            networkSettings.fpmPort = 9000
-            networkSettings.fpmXdebugPort = 9000
+            networkSettings.phpNetwork = 'host.docker.internal'
+            networkSettings.phpWithXdebugNetwork = 'host.docker.internal'
+
+            // networkSettings.fpmPort = 9000
+            // networkSettings.fpmXdebugPort = 9000
 
             networkSettings.hostPort = 80
         }

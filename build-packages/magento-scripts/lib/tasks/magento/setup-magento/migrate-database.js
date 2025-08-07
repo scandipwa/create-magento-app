@@ -9,6 +9,7 @@ const varnishConfigSetup = require('./varnish-config')
 const pathExists = require('../../../util/path-exists')
 const updateEnvPHP = require('../../php/update-env-php')
 const UnknownError = require('../../../errors/unknown-error')
+const checkSearchEngineVersion = require('../../requirements/searchengine-version')
 
 /**
  * @param {Object} [options]
@@ -19,6 +20,7 @@ const migrateDatabase = (options = {}) => ({
     title: 'Migrating database',
     task: async (ctx, task) => {
         const { databaseConnection } = ctx
+        const { varnish } = ctx.config.overridenConfiguration.configuration
 
         const [[{ tableCount }]] = await databaseConnection.query(`
             SELECT count(*) AS tableCount
@@ -44,12 +46,17 @@ const migrateDatabase = (options = {}) => ({
 
             return task.newListr(
                 [
+                    checkSearchEngineVersion(),
                     installMagento({ isDbEmpty: true }),
                     updateEnvPHP(),
                     varnishConfigSetup(),
                     configureSearchEngine(),
                     upgradeMagento(),
-                    magentoTask('cache:enable')
+                    magentoTask(
+                        `cache:disable block_html layout${
+                            !varnish.enabled ? ' full_page' : ''
+                        }`
+                    )
                 ],
                 {
                     concurrent: false,
@@ -75,7 +82,11 @@ const migrateDatabase = (options = {}) => ({
                 ctx.isSetupUpgradeNeeded = false
                 // no setup is needed, but still to be sure configure ES
                 return task.newListr(
-                    [varnishConfigSetup(), configureSearchEngine()],
+                    [
+                        checkSearchEngineVersion(),
+                        varnishConfigSetup(),
+                        configureSearchEngine()
+                    ],
                     {
                         concurrent: false,
                         exitOnError: true,
@@ -90,6 +101,7 @@ const migrateDatabase = (options = {}) => ({
                 if (options.onlyInstallMagento) {
                     ctx.isSetupUpgradeNeeded = false
                     return task.newListr([
+                        checkSearchEngineVersion(),
                         installMagentoProject(),
                         installMagento()
                     ])
@@ -97,13 +109,18 @@ const migrateDatabase = (options = {}) => ({
 
                 return task.newListr(
                     [
+                        checkSearchEngineVersion(),
                         installMagentoProject(),
                         installMagento(),
                         updateEnvPHP(),
                         varnishConfigSetup(),
                         configureSearchEngine(),
                         upgradeMagento(),
-                        magentoTask('cache:enable')
+                        magentoTask(
+                            `cache:disable block_html layout${
+                                !varnish.enabled ? ' full_page' : ''
+                            }`
+                        )
                     ],
                     {
                         concurrent: false,
@@ -118,6 +135,7 @@ const migrateDatabase = (options = {}) => ({
             case 2: {
                 return task.newListr(
                     [
+                        checkSearchEngineVersion(),
                         varnishConfigSetup(),
                         configureSearchEngine(),
                         upgradeMagento()

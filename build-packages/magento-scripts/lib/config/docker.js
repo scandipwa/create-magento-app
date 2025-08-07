@@ -73,11 +73,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
         redis: {
             name: `${prefix}_redis-data`
         },
-        elasticsearch: {
-            name: `${prefix}_elasticsearch-data`
-        },
         opensearch: {
-            name: `${prefix}_opensearch-data`
+            name:
+                searchengine === 'elasticsearch'
+                    ? `${prefix}_elasticsearch-data`
+                    : `${prefix}_opensearch-data`
         },
         maildev: {
             name: `${prefix}_maildev-data`
@@ -115,7 +115,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[] }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string }>}
          */
         const dockerConfig = {
             php: {
@@ -137,13 +137,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({
                         source: volumes.composer_cache.name,
-                        target: '/composer/home/cache',
-                        rw: true
+                        target: '/composer/home/cache'
                     }),
                     containerVolume({
                         source: php.iniPath,
@@ -169,7 +167,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     (ctx.platform === 'linux' && isDockerDesktop) ||
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
-                        : ''
+                        : '',
+                serviceReadyLog: 'ready to handle connections'
             },
             phpWithXdebug: {
                 _: 'PHP with Xdebug',
@@ -190,13 +189,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({
                         source: volumes.composer_cache.name,
-                        target: '/composer/home/cache',
-                        rw: true
+                        target: '/composer/home/cache'
                     }),
                     containerVolume({
                         source: php.iniPath,
@@ -228,7 +225,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     (ctx.platform === 'linux' && isDockerDesktop) ||
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
-                        : ''
+                        : '',
+                serviceReadyLog: 'ready to handle connections'
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -301,7 +299,6 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     containerVolume({
                         source: isDockerDesktop ? volumes.php.name : magentoDir,
                         target: containerMagentoDir,
-                        rw: true,
                         cached: isDockerDesktop
                     }),
                     containerVolume({
@@ -337,7 +334,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     redis.version ? `redis:${redis.version}` : redis.image
                 }`,
                 name: `${prefix}_redis`,
-                connectCommand: ['redis-cli']
+                connectCommand: ['redis-cli'],
+                serviceReadyLog: 'Ready to accept connections'
             },
             mariadb: {
                 _: 'MariaDB',
@@ -391,15 +389,13 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 forwardedPorts: [`127.0.0.1:${ports.elasticsearch}:9200`],
                 mountVolumes: [
-                    searchengine === 'elasticsearch'
-                        ? containerVolume({
-                              source: volumes.elasticsearch.name,
-                              target: '/usr/share/elasticsearch/data'
-                          })
-                        : containerVolume({
-                              source: volumes.opensearch.name,
-                              target: '/usr/share/opensearch/data'
-                          })
+                    containerVolume({
+                        source: volumes.opensearch.name,
+                        target:
+                            searchengine === 'elasticsearch'
+                                ? '/usr/share/elasticsearch/data'
+                                : '/usr/share/opensearch/data'
+                    })
                 ],
                 env:
                     searchengine === 'elasticsearch'
@@ -445,7 +441,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 mountVolumes: [
                     containerVolume({
                         source: volumes.maildev.name,
-                        target: '/tmp/maildev'
+                        target: '/tmp'
                     })
                 ],
                 env: {
@@ -455,7 +451,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     MAILDEV_WEB_PORT: isDockerDesktop
                         ? '1080'
                         : ports.maildevWeb,
-                    MAILDEV_MAIL_DIRECTORY: '/tmp/maildev'
+                    MAILDEV_MAIL_DIRECTORY: '/tmp'
                 },
                 name: `${prefix}_maildev`,
                 network: isDockerDesktop ? network.name : 'host',

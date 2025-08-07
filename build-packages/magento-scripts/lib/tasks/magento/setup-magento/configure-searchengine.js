@@ -167,6 +167,8 @@ const configureElasticSearchInDatabase = () => ({
                 }
             }
         )
+
+        task.title = `Using Elasticsearch ${ctx.elasticSearchVersion}`
     }
 })
 
@@ -356,6 +358,8 @@ const configureOpenSearchInDatabase = () => ({
                 }
             }
         )
+
+        task.title = `Using OpenSearch ${ctx.openSearchVersion}`
     }
 })
 
