@@ -19,10 +19,7 @@ const createSSLTerminatorConfig = () => ({
             isDockerDesktop
         } = ctx
 
-        const {
-            configuration: { sslTerminator },
-            ssl
-        } = overridenConfiguration
+        const { ssl } = overridenConfiguration
 
         if (ssl.enabled && !ssl.external_provider) {
             if (!ssl.ssl_certificate) {
@@ -91,6 +88,8 @@ const createSSLTerminatorConfig = () => ({
         }
         const hostPort = !isDockerDesktop ? ports.sslTerminator : 80
 
+        const { sslTerminator } = docker.getContainers(ports)
+
         const nginxVersionOutput = await run({
             image: sslTerminator.image,
             command: 'nginx -v',
@@ -122,7 +121,9 @@ const createSSLTerminatorConfig = () => ({
                     'conf.d',
                     'default.conf'
                 ),
-                template: sslTerminator.configTemplate,
+                template:
+                    overridenConfiguration.configuration.sslTerminator
+                        .configTemplate,
                 overwrite: true,
                 templateArgs: {
                     ports,
