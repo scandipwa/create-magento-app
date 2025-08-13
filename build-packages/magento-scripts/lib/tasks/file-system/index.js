@@ -1,3 +1,4 @@
+const createGitHookNotification = require('./create-git-hook-notification')
 const createMariaDBConfig = require('./create-mariadb-config')
 const createNginxConfig = require('./create-nginx-config')
 const createPhpConfig = require('./create-php-config')
@@ -26,7 +27,8 @@ const prepareFileSystem = () => ({
                 createPhpStormConfig(),
                 createVSCodeConfig(),
                 createVarnishConfig(),
-                createMariaDBConfig()
+                createMariaDBConfig(),
+                createGitHookNotification()
             ],
             {
                 concurrent: true
