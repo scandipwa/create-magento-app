@@ -134,12 +134,10 @@ Change magento edition in config file or manually reinstall correct magento edit
 
 /**
  * @param {import('../../../typings/context').ListrContext} ctx
- * @param {import('listr2').ListrTaskWrapper<import('../../../typings/context').ListrContext, any>} task
- * @param {{ magentoProject: string, magentoPackageVersion: string }} param2
+ * @param {{ magentoProject: string, magentoPackageVersion: string }} param1
  */
 const createMagentoProject = async (
     ctx,
-    task,
     { magentoProject, magentoPackageVersion }
 ) => {
     const tempDir = `/tmp/magento-tmpdir-${Date.now()}`
@@ -178,26 +176,69 @@ const getIsVendorFolderCorrupted = async (magentoDir) => {
         return true
     }
     /**
-     * @type {{ packages: { name: string }[] } | null}
+     * @type {{ packages: { name: string }[], ['packages-dev']: { name: string }[] } | null}
      */
     const composerLockData = await getJsonFileData(composerLockFile)
     if (!composerLockData || !composerLockData.packages) {
         return true
     }
-    const { packages } = composerLockData
-    const packagesNames = packages.map((pkg) => pkg.name)
+    const { packages, 'packages-dev': packagesDev } = composerLockData
+    const packagesNames = packages
+        .filter((pkg) => pkg.type !== 'metapackage')
+        .map((pkg) => pkg.name)
+    const packagesDevNames = packagesDev
+        .filter((pkg) => pkg.type !== 'metapackage')
+        .map((pkg) => pkg.name)
 
-    const hasCorruptPackages = await Promise.all(
-        packagesNames.map(async (pkg) => {
-            const vendorPackage = path.join(vendorDir, pkg)
-            const composerJson = path.join(vendorPackage, 'composer.json')
-            if (!(await pathExists(composerJson))) {
-                return true
-            }
-        })
-    )
+    const missingPackages = (
+        await Promise.all(
+            packagesNames.map(async (pkg) => {
+                const vendorPackage = path.join(vendorDir, pkg)
+                return [pkg, await pathExists(vendorPackage)]
+            })
+        )
+    ).filter(([_, result]) => result === false)
 
-    return hasCorruptPackages.every((result) => result === true)
+    if (missingPackages.length > 0) {
+        return true
+    }
+
+    const vendorPackages = await fs.promises.readdir(vendorDir, {
+        withFileTypes: true
+    })
+
+    const extraPackages = (
+        await Promise.all(
+            vendorPackages
+                .filter((pkg) => pkg.isDirectory())
+                .flatMap(async (pkg) => {
+                    const vendorPackage = path.join(vendorDir, pkg.name)
+                    const vendorPackages = await fs.promises.readdir(
+                        vendorPackage,
+                        {
+                            withFileTypes: true
+                        }
+                    )
+                    return vendorPackages
+                        .filter((subPkg) => subPkg.isDirectory())
+                        .map((subPkg) => [
+                            `${pkg.name}/${subPkg.name}`,
+                            packagesNames.includes(
+                                `${pkg.name}/${subPkg.name}`
+                            ) ||
+                                packagesDevNames.includes(
+                                    `${pkg.name}/${subPkg.name}`
+                                )
+                        ])
+                })
+        )
+    ).filter((pkg) => pkg.some(([_, result]) => result === false))
+
+    if (extraPackages.length > 0) {
+        return true
+    }
+
+    return false
 }
 
 /**
@@ -237,9 +278,14 @@ const installMagentoProject = () => ({
             'composer.lock': true
         })
 
-        const isVendorFolderCorrupted = await getIsVendorFolderCorrupted(
-            baseConfig.magentoDir
-        )
+        let isVendorFolderCorrupted = false
+        try {
+            isVendorFolderCorrupted = await getIsVendorFolderCorrupted(
+                baseConfig.magentoDir
+            )
+        } catch (e) {
+            // ignore error just in case
+        }
 
         if (isFsMatching && !isVendorFolderCorrupted) {
             ctx.magentoFirstInstall = false
@@ -254,7 +300,7 @@ const installMagentoProject = () => ({
             if (
                 !(await pathExists(path.join(process.cwd(), 'composer.json')))
             ) {
-                await createMagentoProject(ctx, task, {
+                await createMagentoProject(ctx, {
                     magentoProject,
                     magentoPackageVersion
                 })
