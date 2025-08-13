@@ -14,13 +14,14 @@ const { valkey80 } = require('../services/redis')
 const { mariadb114 } = require('../services/mariadb/versions')
 const { elasticsearch817 } = require('../services/elasticsearch/versions')
 const { mysql80 } = require('../services/mysql/versions')
-const { opensearch219 } = require('../services/opensearch/versions')
+const { opensearch300 } = require('../services/opensearch/versions')
 
 /**
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
-    magentoVersion: '2.4.8-p1',
+    magentoVersion: '2.4.8-p2',
+    isDefault: true,
     configuration: {
         php: php83({
             templateDir,
@@ -36,7 +37,7 @@ module.exports = ({ templateDir }) => ({
         varnish: varnish76({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev(),
-        opensearch: opensearch219(),
+        opensearch: opensearch300(),
         searchengine: 'opensearch'
     }
 })

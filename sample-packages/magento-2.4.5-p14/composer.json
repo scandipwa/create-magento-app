@@ -10,24 +10,22 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "laminas/laminas-dependency-plugin": true,
-            "magento/*": true,
-            "php-http/discovery": true
+            "magento/*": true
         },
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "version": "2.4.9-alpha1",
+    "version": "2.4.5-p14",
     "require": {
+        "magento/product-community-edition": "2.4.5-p14",
         "magento/composer-dependency-version-audit-plugin": "~0.1",
-        "magento/composer-root-update-plugin": "^2.0.4",
-        "magento/product-community-edition": "2.4.9-alpha1",
-        "readymage/maintenance-page": "^1.0"
+        "magento/composer-root-update-plugin": "~2.0"
     },
     "autoload": {
         "exclude-from-classmap": [
             "**/dev/**",
             "**/update/**",
-            "*/*/Test/**/*Test"
+            "**/Test/**"
         ],
         "files": [
             "app/etc/NonComposerComponentRegistration.php"
@@ -39,23 +37,26 @@
             ]
         },
         "psr-4": {
+            "Magento\\": "app/code/Magento/",
+            "Magento\\Framework\\": "lib/internal/Magento/Framework/",
             "Magento\\Setup\\": "setup/src/Magento/Setup/"
         }
     },
     "require-dev": {
-        "allure-framework/allure-phpunit": "^3.1",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7 || ^1.0",
-        "dg/bypass-finals": "^1.4",
-        "friendsofphp/php-cs-fixer": "^3.22",
-        "magento/magento-allure-phpunit": "^3.0.2",
+        "allure-framework/allure-phpunit": "~1.5.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "friendsofphp/php-cs-fixer": "~3.4.0",
+        "lusitanian/oauth": "~0.8.10",
         "magento/magento-coding-standard": "*",
-        "magento/magento2-functional-testing-framework": "^5.0",
+        "magento/magento2-functional-testing-framework": "^3.13",
         "markshust/magento2-module-disabletwofactorauth": "^2.0",
-        "pdepend/pdepend": "3.x-dev",
-        "phpmd/phpmd": "3.x-dev",
-        "phpstan/phpstan": "^1.9",
-        "phpunit/phpunit": "^10.5",
-        "symfony/finder": "^6.4"
+        "pdepend/pdepend": "~2.10.0",
+        "phpmd/phpmd": "^2.12.0",
+        "phpstan/phpstan": "^1.6.8",
+        "phpunit/phpunit": "~9.5.20",
+        "sebastian/phpcpd": "^6.0.3",
+        "squizlabs/php_codesniffer": "~3.6.0",
+        "symfony/finder": "~5.4.0"
     },
     "conflict": {
         "gene/bluefoot": "*"
@@ -70,7 +71,7 @@
             "Magento\\Tools\\Sanity\\": "dev/build/publication/sanity/Magento/Tools/Sanity/"
         }
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": [
         {

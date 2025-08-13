@@ -16,12 +16,11 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "version": "2.4.9-alpha1",
+    "version": "2.4.8-p2",
     "require": {
+        "magento/product-community-edition": "2.4.8-p2",
         "magento/composer-dependency-version-audit-plugin": "~0.1",
-        "magento/composer-root-update-plugin": "^2.0.4",
-        "magento/product-community-edition": "2.4.9-alpha1",
-        "readymage/maintenance-page": "^1.0"
+        "magento/composer-root-update-plugin": "^2.0.4"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -44,6 +43,7 @@
     },
     "require-dev": {
         "allure-framework/allure-phpunit": "^3.1",
+        "carlos-mg89/oauth": "^0.8.17",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7 || ^1.0",
         "dg/bypass-finals": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.22",
@@ -70,7 +70,7 @@
             "Magento\\Tools\\Sanity\\": "dev/build/publication/sanity/Magento/Tools/Sanity/"
         }
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": [
         {

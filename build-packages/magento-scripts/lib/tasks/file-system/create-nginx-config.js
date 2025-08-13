@@ -10,7 +10,7 @@ const createNginxConfig = () => ({
     task: async (ctx) => {
         const {
             ports,
-            config: { overridenConfiguration, baseConfig, docker },
+            config: { overridenConfiguration, baseConfig },
             isDockerDesktop
         } = ctx
 
@@ -28,16 +28,8 @@ const createNginxConfig = () => ({
         }
 
         if (isDockerDesktop) {
-            // const containers = docker.getContainers(ports)
-
-            // networkSettings.phpNetwork = containers.php.name
-            // networkSettings.phpWithXdebugNetwork = containers.phpWithXdebug.name
-
             networkSettings.phpNetwork = 'host.docker.internal'
             networkSettings.phpWithXdebugNetwork = 'host.docker.internal'
-
-            // networkSettings.fpmPort = 9000
-            // networkSettings.fpmXdebugPort = 9000
 
             networkSettings.hostPort = 80
         }

@@ -12,7 +12,7 @@ const scandipwaMagentoVersionMapping = {
     '2.4.3': '5.0.4 - 5.2.7',
     '2.4.4': '5.3.0 - 5.3.6',
     '2.4.6': '6.2.0 - 6.3.0',
-    '2.4.7': '6.4.0+'
+    '2.4.7': '6.4.0'
 }
 
 module.exports = scandipwaMagentoVersionMapping
