@@ -5,6 +5,7 @@ const getMagentoVersionConfig = require('../config/get-magento-version-config')
 const checkConfigurationFile = require('../config/check-configuration-file')
 const getProjectConfiguration = require('../config/get-project-configuration')
 const { getCachedPorts } = require('../config/get-port-config')
+const checkPHPVersion = require('./requirements/php-version')
 const {
     executeInContainer,
     runInContainer
@@ -28,6 +29,7 @@ const executeTask = async (argv) => {
             getProjectConfiguration(),
             getCachedPorts(),
             dockerNetwork.tasks.createNetwork(),
+            checkPHPVersion(),
             prepareFileSystem()
         ],
         {
