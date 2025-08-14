@@ -119,6 +119,7 @@ export interface ListrContext {
                     connectCommand: string[]
                     dependsOn?: string[]
                     serviceReadyLog?: string
+                    platform?: string
                 }
             >
         }

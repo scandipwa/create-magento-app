@@ -9,6 +9,14 @@ const defaultEsEnv = require('./services/elasticsearch/default-es-env')
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const defaultMagentoUser = require('../tasks/database/default-magento-user')
 const defaultOsEnv = require('./services/opensearch/default-os-env')
+const { getArchSync } = require('../util/arch')
+
+const rosettaTranslatedContainers =
+    os.platform() === 'darwin' &&
+    getArchSync() === 'arm64' &&
+    process.env.CMA_USE_AMD64_CONTAINERS
+        ? process.env.CMA_USE_AMD64_CONTAINERS.split(',')
+        : []
 
 /**
  * @param {Partial<Record<'rw' | 'ro' | 'cached', boolean>>} directives
@@ -115,7 +123,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string, platform?: string }>}
          */
         const dockerConfig = {
             php: {
@@ -168,7 +176,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
                         : '',
-                serviceReadyLog: 'ready to handle connections'
+                serviceReadyLog: 'ready to handle connections',
+                platform: rosettaTranslatedContainers.includes('php')
+                    ? 'linux/amd64'
+                    : undefined
             },
             phpWithXdebug: {
                 _: 'PHP with Xdebug',
@@ -226,7 +237,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     !isDockerDesktop
                         ? `${os.userInfo().uid}:${os.userInfo().gid}`
                         : '',
-                serviceReadyLog: 'ready to handle connections'
+                serviceReadyLog: 'ready to handle connections',
+                platform: rosettaTranslatedContainers.includes('php')
+                    ? 'linux/amd64'
+                    : undefined
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -270,7 +284,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_ssl-terminator`,
                 command: "nginx -g 'daemon off;'",
-                dependsOn: ['nginx']
+                dependsOn: ['nginx'],
+                platform: rosettaTranslatedContainers.includes('nginx')
+                    ? 'linux/amd64'
+                    : undefined
             },
             nginx: {
                 _: 'Nginx',
@@ -319,7 +336,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_nginx`,
                 command: "nginx -g 'daemon off;'",
-                dependsOn: ['php', 'phpWithXdebug']
+                dependsOn: ['php', 'phpWithXdebug'],
+                platform: rosettaTranslatedContainers.includes('nginx')
+                    ? 'linux/amd64'
+                    : undefined
             },
             redis: {
                 _: 'Redis',
@@ -335,7 +355,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 }`,
                 name: `${prefix}_redis`,
                 connectCommand: ['redis-cli'],
-                serviceReadyLog: 'Ready to accept connections'
+                serviceReadyLog: 'Ready to accept connections',
+                platform: rosettaTranslatedContainers.includes('redis')
+                    ? 'linux/amd64'
+                    : undefined
             },
             mariadb: {
                 _: 'MariaDB',
@@ -376,7 +399,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     defaultMagentoUser.user
                 )} with password ${logger.style.command(
                     defaultMagentoUser.password
-                )}`
+                )}`,
+                platform: rosettaTranslatedContainers.includes('mariadb')
+                    ? 'linux/amd64'
+                    : undefined
             },
             elasticsearch: {
                 _:
@@ -419,7 +445,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                             : elasticsearch.image
                         : opensearch.image
                 }`,
-                name: `${prefix}_${searchengine}`
+                name: `${prefix}_${searchengine}`,
+                platform: rosettaTranslatedContainers.includes(searchengine)
+                    ? 'linux/amd64'
+                    : undefined
             },
             maildev: {
                 _: 'MailDev',
@@ -462,7 +491,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     cmd: `wget -O - http://127.0.0.1:${
                         isDockerDesktop ? '1080' : ports.maildevWeb
                     }/healthz || exit 1`
-                }
+                },
+                platform: rosettaTranslatedContainers.includes('maildev')
+                    ? 'linux/amd64'
+                    : undefined
             }
         }
 
@@ -515,7 +547,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 description: `Varnish HealthCheck status: ${logger.style.command(
                     varnish.healthCheck ? 'enabled' : 'disabled'
                 )}`,
-                dependsOn: ['nginx']
+                dependsOn: ['nginx'],
+                platform: rosettaTranslatedContainers.includes('varnish')
+                    ? 'linux/amd64'
+                    : undefined
             }
 
             dockerConfig.sslTerminator.dependsOn.push('varnish')
@@ -527,7 +562,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 ports: [],
                 name: `${prefix}_newrelic-php-daemon`,
                 network: isDockerDesktop ? network.name : 'host',
-                image: 'newrelic/php-daemon'
+                image: 'newrelic/php-daemon',
+                platform: rosettaTranslatedContainers.includes('newrelic')
+                    ? 'linux/amd64'
+                    : undefined
             }
         }
 

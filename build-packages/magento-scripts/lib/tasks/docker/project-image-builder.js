@@ -5,7 +5,14 @@ const { execAsyncSpawn } = require('../../util/exec-async-command')
 const KnownError = require('../../errors/known-error')
 const { runContainerImage } = require('../../util/run-container-image')
 const { imageApi } = require('./image')
+const { getArchSync } = require('../../util/arch')
 
+const rosettaTranslatedContainers =
+    os.platform() === 'darwin' &&
+    getArchSync() === 'arm64' &&
+    process.env.CMA_USE_AMD64_CONTAINERS
+        ? process.env.CMA_USE_AMD64_CONTAINERS.split(',')
+        : []
 /**
  * Get enabled extensions list with versions
  * @param {string} imageWithTag
@@ -297,13 +304,17 @@ const buildDebugDockerFileInstructions = async (ctx, { image, tag }) => {
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
 const buildProjectImage = () => ({
-    title: 'Building Project Images',
+    title: rosettaTranslatedContainers.includes('php')
+        ? 'Building Project Images (for x86)'
+        : 'Building Project Images',
     task: async (ctx, task) => {
         const containers = ctx.config.docker.getContainers(ctx.ports)
 
         return task.newListr([
             {
-                title: 'Building PHP image',
+                title: rosettaTranslatedContainers.includes('php')
+                    ? 'Building PHP image (for x86)'
+                    : 'Building PHP image',
                 task: async () => {
                     const [image, tag = 'latest'] =
                         ctx.config.overridenConfiguration.configuration.php.baseImage.split(
@@ -318,7 +329,11 @@ const buildProjectImage = () => ({
 
                     try {
                         await execAsyncSpawn(
-                            `docker build -t ${containers.php.image} -<<EOF
+                            `docker build -t ${containers.php.image}${
+                                rosettaTranslatedContainers.includes('php')
+                                    ? ' --platform linux/amd64'
+                                    : ''
+                            } -<<EOF
 ${dockerFileInstructions}
 EOF`,
                             {
@@ -337,7 +352,9 @@ EOF`,
                 }
             },
             {
-                title: 'Building PHP with XDebug image',
+                title: rosettaTranslatedContainers.includes('php')
+                    ? 'Building PHP with XDebug image (for x86)'
+                    : 'Building PHP with XDebug image',
                 task: async () => {
                     const [phpImage, phpTag] = containers.php.image.split(':')
                     const debugImageInstructions =
@@ -348,7 +365,11 @@ EOF`,
 
                     try {
                         await execAsyncSpawn(
-                            `docker build -t ${containers.phpWithXdebug.image} -<<EOF
+                            `docker build -t ${containers.phpWithXdebug.image}${
+                                rosettaTranslatedContainers.includes('php')
+                                    ? ' --platform linux/amd64'
+                                    : ''
+                            } -<<EOF
 ${debugImageInstructions}
 EOF`,
                             {
