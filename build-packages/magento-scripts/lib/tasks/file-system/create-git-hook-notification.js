@@ -36,12 +36,6 @@ const createGitHookNotification = () => ({
             })
         ])
 
-        if (currentGitHookPathResult.code !== 0) {
-            throw new UnknownError(
-                `Unexpected error accrued during git hook notification creation\n\n${currentGitHookPathResult.result}`
-            )
-        }
-
         if (gitRootResult.code !== 0) {
             throw new UnknownError(
                 `Unexpected error accrued during git hook notification creation\n\n${gitRootResult.result}`
@@ -54,18 +48,12 @@ const createGitHookNotification = () => ({
             tasks.push({
                 title: 'Setting Git Hook Path',
                 task: async () => {
-                    const { code } = await execAsyncSpawn(
+                    await execAsyncSpawn(
                         `git config core.hooksPath .git/hooks`,
                         {
                             withCode: true
                         }
                     )
-
-                    if (code !== 0) {
-                        throw new UnknownError(
-                            `Unexpected error accrued during git hook notification creation\n\n${code}`
-                        )
-                    }
 
                     currentGitHookPathResult.result = '.git/hooks'
                 }
@@ -78,33 +66,25 @@ const createGitHookNotification = () => ({
             'post-checkout'
         )
 
-        if (!(await pathExists(gitHookPath))) {
-            tasks.push({
-                title: 'Copying Git Hook Template',
-                task: async () => {
-                    await fs.promises.cp(gitHookTemplatePath, gitHookPath)
-                }
-            })
-        }
+        tasks.push({
+            title: 'Copying Git Hook Template',
+            skip: async () => !(await pathExists(gitHookPath)),
+            task: async () => {
+                await fs.promises.cp(gitHookTemplatePath, gitHookPath)
+            }
+        })
 
-        // check if gitHookPath is executable
-        const isExecutable = isExec(gitHookPath)
-        if (!isExecutable) {
-            tasks.push({
-                title: 'Making Git Hook Executable',
-                task: async () => {
-                    await execAsyncSpawn(`chmod +x ${gitHookPath}`, {
-                        withCode: true
-                    })
-                }
-            })
-        }
+        tasks.push({
+            title: 'Making Git Hook Executable',
+            skip: () => isExec(gitHookPath),
+            task: async () => {
+                await execAsyncSpawn(`chmod +x ${gitHookPath}`, {
+                    withCode: true
+                })
+            }
+        })
 
-        if (tasks.length > 0) {
-            return task.newListr(tasks)
-        }
-
-        task.skip()
+        return task.newListr(tasks)
     },
     exitOnError: false
 })
