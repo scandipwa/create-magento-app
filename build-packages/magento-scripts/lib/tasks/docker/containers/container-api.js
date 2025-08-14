@@ -26,7 +26,8 @@ const runCommand = (options) => {
         rm = false,
         tty = false,
         user,
-        memory
+        memory,
+        platform
     } = options
 
     const detachArg = (detach && '-d') || ''
@@ -49,7 +50,14 @@ const runCommand = (options) => {
         ''
     const envArgs = !env
         ? ''
-        : Object.entries(env).map(([key, value]) => `--env=${key}='${value}'`)
+        : Object.entries(env).map(
+              ([key, value]) =>
+                  `--env=${key}=${
+                      typeof value === 'string'
+                          ? value.replaceAll(' ', '\\ ')
+                          : value
+                  }`
+          )
     const nameArg = (name && `--name=${name}`) || ''
     const entrypointArg = (entrypoint && `--entrypoint="${entrypoint}"`) || ''
     const healthCheckArg =
@@ -67,6 +75,7 @@ const runCommand = (options) => {
     const userArg = (user && `--user=${user}`) || ''
     const addHostArg = (addHost && `--add-host=${addHost}`) || ''
     const memoryArg = (memory && `--memory=${memory}`) || ''
+    const platformArg = (platform && `--platform=${platform}`) || ''
 
     const dockerCommand = [
         'docker',
@@ -89,6 +98,7 @@ const runCommand = (options) => {
         userArg,
         addHostArg,
         memoryArg,
+        platformArg,
         image,
         command
     ]
@@ -113,7 +123,10 @@ const execCommand = (options) => {
     const envArgs = !env
         ? ''
         : Object.entries(env)
-              .map(([key, value]) => `--env ${key}='${value}'`)
+              .map(
+                  ([key, value]) =>
+                      `--env ${key}=${value.replaceAll(' ', '\\ ')}`
+              )
               .join(' ')
     const ttyArg = tty ? '--tty' : ''
     const userArg = user ? `--user=${user}` : ''

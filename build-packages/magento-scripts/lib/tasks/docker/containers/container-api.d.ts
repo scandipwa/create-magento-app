@@ -161,6 +161,11 @@ export interface ContainerRunOptions {
      * Memory option [docs](https://docs.docker.com/engine/reference/commandline/run/#memory)
      */
     memory?: string
+
+    /**
+     * Platform option [docs](https://docs.docker.com/engine/reference/commandline/run/#platform)
+     */
+    platform?: string
 }
 
 export function run<T>(

@@ -25,32 +25,39 @@ if [ -z "$CHANGED_FILES" ]; then
   exit 0
 fi
 
+# Extract the first directory name from changed composer files
+CHANGED_DIR=$(basename "$(git rev-parse --show-toplevel)")
+
+# Get branch names from refs
+OLD_BRANCH=$(git name-rev --name-only "$OLD_REF" 2>/dev/null | sed 's/^remotes\///' || echo "$OLD_REF")
+NEW_BRANCH=$(git name-rev --name-only "$NEW_REF" 2>/dev/null | sed 's/^remotes\///' || echo "$NEW_REF")
+
 MESSAGE_TITLE="Composer dependencies changed"
-MESSAGE_BODY="Detected changes in:\n$CHANGED_FILES\n\nPlease run: composer install"
+MESSAGE_BODY="Changes detected in: $CHANGED_DIR\nBranch: $OLD_BRANCH → $NEW_BRANCH\n\nPlease run composer install or npm run start"
 
 # Cross-platform desktop notification with multiple fallbacks
 send_notification() {
   local title="$1"
   local body="$2"
-  
+
   # Try Linux notify-send first
   if command -v notify-send >/dev/null 2>&1; then
     notify-send -u normal -t 8000 "$title" "$body"
     return 0
   fi
-  
+
   # Try macOS terminal-notifier
   if command -v terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "$title" -message "$body" -timeout 8
     return 0
   fi
-  
+
   # Try macOS osascript (AppleScript) as fallback
   if command -v osascript >/dev/null 2>&1; then
     osascript -e "display notification \"$body\" with title \"$title\""
     return 0
   fi
-  
+
   # Final fallback to stdout
   echo "$title"
   echo "$body"
