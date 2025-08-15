@@ -62,7 +62,7 @@ const updateEnvPHP = () => ({
                 REDIS_PORT: ctx.ports.redis,
                 ADMIN_URI: ctx.config.overridenConfiguration.magento.adminuri,
                 HOST_MACHINE: hostMachine,
-                PORTS: JSON.stringify(ctx.ports)
+                PORTS: `'${JSON.stringify(ctx.ports)}'`
             },
             command: 'php ./update-env.php',
             mountVolumes: [
@@ -72,6 +72,7 @@ const updateEnvPHP = () => ({
                 `${envPhpPath}:${ctx.config.baseConfig.containerMagentoDir}/env.php`
             ],
             image: php.image,
+            platform: php.platform,
             detach: false,
             rm: true
         })
