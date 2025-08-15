@@ -125,7 +125,11 @@ const execCommand = (options) => {
         : Object.entries(env)
               .map(
                   ([key, value]) =>
-                      `--env ${key}=${value.replaceAll(' ', '\\ ')}`
+                      `--env=${key}=${
+                          typeof value === 'string'
+                              ? value.replaceAll(' ', '\\ ')
+                              : value
+                      }`
               )
               .join(' ')
     const ttyArg = tty ? '--tty' : ''
