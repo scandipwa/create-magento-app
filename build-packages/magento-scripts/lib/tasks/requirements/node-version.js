@@ -9,7 +9,7 @@ const checkNodeVersion = () => ({
     task: (ctx, task) => {
         const { node } = process.versions
 
-        if (!semver.gte(node, '12.0.0')) {
+        if (!semver.gte(node, '16.0.0')) {
             throw new KnownError(
                 `Your Node.js version is out of date!
 You need to upgrade Node.js to at lease version 12 to work with this software!`
