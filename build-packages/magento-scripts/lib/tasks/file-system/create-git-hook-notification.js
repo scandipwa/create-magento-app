@@ -68,7 +68,7 @@ const createGitHookNotification = () => ({
 
         tasks.push({
             title: 'Copying Git Hook Template',
-            skip: async () => !(await pathExists(gitHookPath)),
+            skip: async () => await pathExists(gitHookPath),
             task: async () => {
                 await fs.promises.cp(gitHookTemplatePath, gitHookPath)
             }
