@@ -36,6 +36,11 @@ const createGitHookNotification = () => ({
             })
         ])
 
+        if (gitRootResult.code === 128) {
+            task.skip('not a git repository')
+            return
+        }
+
         if (gitRootResult.code !== 0) {
             throw new UnknownError(
                 `Unexpected error accrued during git hook notification creation\n\n${gitRootResult.result}`
@@ -68,7 +73,7 @@ const createGitHookNotification = () => ({
 
         tasks.push({
             title: 'Copying Git Hook Template',
-            skip: async () => !(await pathExists(gitHookPath)),
+            skip: async () => await pathExists(gitHookPath),
             task: async () => {
                 await fs.promises.cp(gitHookTemplatePath, gitHookPath)
             }
