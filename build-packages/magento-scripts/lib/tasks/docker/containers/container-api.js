@@ -2,6 +2,30 @@
 const { execAsyncSpawn } = require('../../../util/exec-async-command')
 
 /**
+ * @param {Record<string, unknown> | undefined} value
+ */
+const transformEnvValue = (value) => {
+    if (!value) {
+        return ''
+    }
+
+    // Yes, it is made using for loop for better readability
+
+    /** @type {string[]} */
+    const envArguments = []
+
+    for (const [key, val] of Object.entries(value)) {
+        if (typeof val === 'string') {
+            envArguments.push(`--env ${key}='${val.replaceAll("'", "\\'")}'`)
+        } else {
+            envArguments.push(`--env ${key}=${val}`)
+        }
+    }
+
+    return envArguments
+}
+
+/**
  * @param {import('./container-api').ContainerRunOptions} options
  * @returns {string[]}
  */
@@ -48,16 +72,7 @@ const runCommand = (options) => {
                 (mount) => `-v=${mount.replaceAll(' ', '\\ ')}`
             )) ||
         ''
-    const envArgs = !env
-        ? ''
-        : Object.entries(env).map(
-              ([key, value]) =>
-                  `--env=${key}=${
-                      typeof value === 'string'
-                          ? value.replaceAll(' ', '\\ ')
-                          : value
-                  }`
-          )
+    const envArgs = transformEnvValue(env)
     const nameArg = (name && `--name=${name}`) || ''
     const entrypointArg = (entrypoint && `--entrypoint="${entrypoint}"`) || ''
     const healthCheckArg =
@@ -120,18 +135,7 @@ const run = (options, execOptions = {}) =>
  */
 const execCommand = (options) => {
     const { command, container, env, tty, user, workdir, interactive } = options
-    const envArgs = !env
-        ? ''
-        : Object.entries(env)
-              .map(
-                  ([key, value]) =>
-                      `--env=${key}=${
-                          typeof value === 'string'
-                              ? value.replaceAll(' ', '\\ ')
-                              : value
-                      }`
-              )
-              .join(' ')
+    const envArgs = transformEnvValue(env)
     const ttyArg = tty ? '--tty' : ''
     const userArg = user ? `--user=${user}` : ''
     const workdirArg = workdir ? `--workdir=${workdir}` : ''

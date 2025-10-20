@@ -114,11 +114,11 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
     const getContainers = (ports = {}) => {
         const composerAuthEnv = process.env.COMPOSER_AUTH
             ? {
-                  COMPOSER_AUTH: `'${JSON.stringify(
+                  COMPOSER_AUTH: `${JSON.stringify(
                       JSON.parse(process.env.COMPOSER_AUTH),
                       null,
                       0
-                  )}'`
+                  )}`
               }
             : {}
 
