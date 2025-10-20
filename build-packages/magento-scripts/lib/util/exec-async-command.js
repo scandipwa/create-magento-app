@@ -12,6 +12,7 @@ const execAsyncSpawn = (
     {
         callback,
         pipeInput,
+        pipeOutput,
         logOutput = false,
         cwd,
         withCode = false,
@@ -23,7 +24,11 @@ const execAsyncSpawn = (
      * @type {import('child_process').SpawnOptionsWithoutStdio}
      */
     const spawnOptions = {
-        stdio: pipeInput ? ['inherit', 'pipe', 'pipe'] : 'pipe',
+        stdio: pipeInput
+            ? ['inherit', 'pipe', 'pipe']
+            : pipeOutput
+            ? 'inherit'
+            : 'pipe',
         cwd,
         env
     }
@@ -74,8 +79,10 @@ const execAsyncSpawn = (
             }
         }
 
-        childProcess.stdout.on('data', addChunk)
-        childProcess.stderr.on('data', addChunk)
+        if (!pipeOutput) {
+            childProcess.stdout.on('data', addChunk)
+            childProcess.stderr.on('data', addChunk)
+        }
 
         childProcess.on('error', (error) => {
             reject(error)
