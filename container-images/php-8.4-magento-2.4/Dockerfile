@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine3.21
+FROM php:8.4-fpm-alpine3.22
 
 RUN apk add --no-cache \
 		linux-headers \
