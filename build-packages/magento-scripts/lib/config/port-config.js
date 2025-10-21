@@ -161,9 +161,7 @@ const getPortsConfig = async (ports, options = {}) => {
 
     for (const [port, name] of Object.entries(portsToCheck)) {
         const portInt = Number.parseInt(port)
-        const portIgnoreList = p.concat(
-            Object.keys(availablePorts).map((item) => Number.parseInt(item))
-        )
+        const portIgnoreList = p.concat(Object.values(availablePorts))
 
         const getPortResult = await getPort(portInt, {
             portIgnoreList
