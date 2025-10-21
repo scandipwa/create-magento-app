@@ -12,7 +12,7 @@ const checkNodeVersion = () => ({
         if (!semver.gte(node, '16.0.0')) {
             throw new KnownError(
                 `Your Node.js version is out of date!
-You need to upgrade Node.js to at lease version 12 to work with this software!`
+You need to upgrade Node.js to at lease version 16 to work with this software!`
             )
         }
 
