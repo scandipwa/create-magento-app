@@ -1,8 +1,5 @@
 const { spawn } = require('child_process')
-const {
-    runCommand,
-    execCommand
-} = require('../tasks/docker/containers/container-api')
+const { execCommand, run } = require('../tasks/docker/containers/container-api')
 
 /**
  * @param {{ containerName: string, commands: string[], user?: string }} param0
@@ -36,30 +33,29 @@ const executeInContainer = ({ containerName, commands, user }) => {
  * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
  * @param {string[]} commands
  */
-const runInContainer = (options, commands) => {
+const runInContainer = async (options, commands) => {
     if (!process.stdin.isTTY) {
         process.stderr.write('This app works only in TTY mode')
         process.exit(1)
     }
 
-    const runArgs = runCommand({
-        ...options,
-        tty: true,
-        detach: false,
-        rm: true
-    })
-
     const [commandBin, ...commandsArgs] = commands
 
-    const [command, ...args] = runArgs
+    const runResult = await run(
+        {
+            ...options,
+            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            tty: true,
+            detach: false,
+            rm: true
+        },
+        {
+            withCode: true,
+            pipeOutput: true
+        }
+    )
 
-    const child = spawn(command, [...args, commandBin, ...commandsArgs], {
-        stdio: 'inherit'
-    })
-
-    child.on('close', (code) => {
-        process.exit(code)
-    })
+    process.exit(runResult.code)
 }
 
 module.exports = {

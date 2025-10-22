@@ -15,8 +15,8 @@ alias c="composer"
 <% if (it.varnishEnabled) { %>
 alias cvc="exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache cleared!'"
 <% } %>
-alias mariadb="exec mariadb 'mysql -umagento -pmagento'"
-alias mariadbroot="exec mariadb 'mysql -uroot -pscandipwa'"
+alias mariadb="exec mariadb <%~ it.databaseBinFile %> -umagento -pmagento"
+alias mariadbroot="exec mariadb <%~ it.databaseBinFile %> -uroot -pscandipwa"
 
 # silence warning on macos
 export BASH_SILENCE_DEPRECATION_WARNING=1

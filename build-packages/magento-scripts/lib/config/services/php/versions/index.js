@@ -4,5 +4,6 @@ module.exports = {
     php74: require('./php-7.4'),
     php81: require('./php-8.1'),
     php82: require('./php-8.2'),
-    php83: require('./php-8.3')
+    php83: require('./php-8.3'),
+    php84: require('./php-8.4')
 }

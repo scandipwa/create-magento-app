@@ -35,6 +35,30 @@ const getUsedByOtherCMAProjectsPorts = async () => {
     )
 }
 
+const getUsedByOtherCMAProjectsXDebugPorts = async () => {
+    const portConfigs = await Promise.all(
+        Object.keys(getProjects())
+            .filter((projectPath) => projectPath !== process.cwd())
+            .map((projectPath) =>
+                getJsonfileData(
+                    path.join(
+                        projectPath,
+                        'node_modules',
+                        '.create-magento-app-cache',
+                        'port-config.json'
+                    )
+                )
+            )
+    )
+
+    const xdebugPorts = portConfigs
+        .filter(Boolean)
+        .map((portConfig) => portConfig.xdebug)
+        .filter(Boolean)
+
+    return Array.from(new Set(xdebugPorts))
+}
+
 /**
  * @param {Number} port
  * @param {Object} [options]
@@ -99,6 +123,8 @@ const getPortsConfig = async (ports, options = {}) => {
 
     if (useNonOverlappingPorts) {
         p = p.concat(await getUsedByOtherCMAProjectsPorts())
+    } else {
+        p = p.concat(await getUsedByOtherCMAProjectsXDebugPorts())
     }
 
     const { xdebug: _, ...portsWithoutXDebug } = mergedPorts
@@ -135,9 +161,7 @@ const getPortsConfig = async (ports, options = {}) => {
 
     for (const [port, name] of Object.entries(portsToCheck)) {
         const portInt = Number.parseInt(port)
-        const portIgnoreList = p.concat(
-            Object.keys(availablePorts).map((item) => Number.parseInt(item))
-        )
+        const portIgnoreList = p.concat(Object.values(availablePorts))
 
         const getPortResult = await getPort(portInt, {
             portIgnoreList

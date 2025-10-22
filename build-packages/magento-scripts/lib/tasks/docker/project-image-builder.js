@@ -189,11 +189,9 @@ const buildDockerFileInstructions = async (
                 addgroup www-data ${username}`
         )
 
-        if (ctx.isDockerDesktop) {
-            dockerFileInstructions.run(
-                `chown -R ${username}:${username} /composer/home/cache`
-            )
-        }
+        dockerFileInstructions.run(
+            `chown -R ${username}:${username} /composer/home/cache`
+        )
     }
 
     dockerFileInstructions.workDir(ctx.config.baseConfig.containerMagentoDir)

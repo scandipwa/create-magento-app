@@ -6,6 +6,7 @@ import { ListrContext } from '../../typings/context'
 interface ExecAsyncSpawnOptions<T extends boolean> {
     callback?: (result: string) => void
     pipeInput?: boolean
+    pipeOutput?: boolean
     logOutput?: boolean
     cwd?: string
     withCode?: T

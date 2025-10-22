@@ -13,6 +13,10 @@ const createBashrcConfigFile = () => ({
         } = ctx
         const varnishEnabled =
             overridenConfiguration.configuration.varnish.enabled
+
+        const databaseBinFile = `${
+            overridenConfiguration.configuration.mariadb.binFileName ?? 'mysql'
+        }`
         try {
             await setConfigFile({
                 configPathname: path.join(baseConfig.cacheDir, '.magentorc'),
@@ -25,7 +29,8 @@ const createBashrcConfigFile = () => ({
                     php,
                     varnishEnabled,
                     config: ctx.config,
-                    magentoVersion: ctx.magentoVersion
+                    magentoVersion: ctx.magentoVersion,
+                    databaseBinFile
                 }
             })
         } catch (e) {

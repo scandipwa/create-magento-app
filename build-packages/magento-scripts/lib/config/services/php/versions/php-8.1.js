@@ -22,7 +22,7 @@ const php81 = ({
     extensions: {
         xdebug: {
             ...xdebug,
-            version: '3.4.2'
+            version: '3.4.6'
         },
         ...extensions
     },
