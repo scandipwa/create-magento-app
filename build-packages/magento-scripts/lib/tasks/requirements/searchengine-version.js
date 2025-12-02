@@ -92,11 +92,38 @@ const checkSearchEngineVersion = () => ({
                 }
             )
         } else {
-            await waitForLogs({
-                containerName: elasticsearch.name,
-                matchText:
-                    searchengine === 'elasticsearch' ? '"started"' : '] started'
-            })
+            await waitForLogs(
+                searchengine === 'elasticsearch'
+                    ? {
+                          containerName: elasticsearch.name,
+                          customLineParser: (line) => {
+                              try {
+                                  const logObject = JSON.parse(line)
+
+                                  return logObject.message.startsWith('started')
+                              } catch {
+                                  return false
+                              }
+                          }
+                      }
+                    : {
+                          containerName: elasticsearch.name,
+                          customLineParser: (line) => {
+                              if (!line.startsWith('[')) {
+                                  return false
+                              }
+                              try {
+                                  const message = line
+                                      .replaceAll(/\[[\s\S]+\]/g, '')
+                                      .trim()
+
+                                  return message.startsWith('started')
+                              } catch {
+                                  return false
+                              }
+                          }
+                      }
+            )
 
             try {
                 const response = await request(

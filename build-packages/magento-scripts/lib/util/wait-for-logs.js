@@ -2,10 +2,15 @@ const { execAsyncSpawn } = require('./exec-async-command')
 const sleep = require('./sleep')
 
 /**
- * @param {{ containerName: string, timeout?: number, matchText: string }} param0
+ * @param {{ containerName: string, timeout?: number, matchText?: string | string[], customLineParser?: (line: string) => boolean }} param0
  * @returns {Promise<void>}
  */
-const waitForLogs = ({ containerName, timeout = 30 * 1000, matchText }) =>
+const waitForLogs = ({
+    containerName,
+    timeout = 30 * 1000,
+    matchText,
+    customLineParser
+}) =>
     // eslint-disable-next-line no-async-promise-executor
     new Promise(async (resolve, reject) => {
         let matched = false
@@ -26,9 +31,22 @@ const waitForLogs = ({ containerName, timeout = 30 * 1000, matchText }) =>
                     }
 
                     result.split('\n').forEach((line) => {
-                        if (line.includes(matchText)) {
-                            matched = true
-                            resolve()
+                        if (customLineParser) {
+                            if (customLineParser(line)) {
+                                matched = true
+                                resolve()
+                            }
+                        } else if (matchText) {
+                            if (
+                                Array.isArray(matchText)
+                                    ? matchText.some((text) =>
+                                          line.includes(text)
+                                      )
+                                    : line.includes(matchText)
+                            ) {
+                                matched = true
+                                resolve()
+                            }
                         }
                     })
 
