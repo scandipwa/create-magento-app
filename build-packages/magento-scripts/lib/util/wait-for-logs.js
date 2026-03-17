@@ -2,12 +2,13 @@ const { execAsyncSpawn } = require('./exec-async-command')
 const sleep = require('./sleep')
 
 /**
- * @param {{ containerName: string, timeout?: number, matchText?: string | string[], customLineParser?: (line: string) => boolean }} param0
+ * @param {{ containerName: string, timeout?: number, matchText?: string | string[], customLineParser?: (line: string) => boolean, successOnTimeout?: boolean }} param0
  * @returns {Promise<void>}
  */
 const waitForLogs = ({
     containerName,
     timeout = 30 * 1000,
+    successOnTimeout = false,
     matchText,
     customLineParser
 }) =>
@@ -58,8 +59,10 @@ const waitForLogs = ({
             })
         ])
 
-        if (timeoutExceeded) {
+        if (timeoutExceeded && !successOnTimeout) {
             reject(new Error('Timeout exception'))
+        } else {
+            resolve()
         }
     })
 

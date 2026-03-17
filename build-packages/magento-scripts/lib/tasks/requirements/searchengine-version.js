@@ -92,38 +92,33 @@ const checkSearchEngineVersion = () => ({
                 }
             )
         } else {
-            await waitForLogs(
-                searchengine === 'elasticsearch'
-                    ? {
-                          containerName: elasticsearch.name,
-                          customLineParser: (line) => {
-                              try {
-                                  const logObject = JSON.parse(line)
+            /** @param {string} line */
+            const legacyMatcher = (line) => {
+                if (!line.startsWith('[')) {
+                    return false
+                }
+                try {
+                    const message = line.replaceAll(/\[[\s\S]+\]/g, '').trim()
 
-                                  return logObject.message.startsWith('started')
-                              } catch {
-                                  return false
-                              }
-                          }
-                      }
-                    : {
-                          containerName: elasticsearch.name,
-                          customLineParser: (line) => {
-                              if (!line.startsWith('[')) {
-                                  return false
-                              }
-                              try {
-                                  const message = line
-                                      .replaceAll(/\[[\s\S]+\]/g, '')
-                                      .trim()
+                    return message.startsWith('started')
+                } catch {
+                    return false
+                }
+            }
 
-                                  return message.startsWith('started')
-                              } catch {
-                                  return false
-                              }
-                          }
-                      }
-            )
+            await waitForLogs({
+                containerName: elasticsearch.name,
+                customLineParser: (line) => {
+                    try {
+                        const logObject = JSON.parse(line)
+
+                        return logObject.message.startsWith('started')
+                    } catch {
+                        return legacyMatcher(line)
+                    }
+                },
+                successOnTimeout: true
+            })
 
             try {
                 const response = await request(
