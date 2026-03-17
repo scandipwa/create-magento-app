@@ -92,10 +92,32 @@ const checkSearchEngineVersion = () => ({
                 }
             )
         } else {
+            /** @param {string} line */
+            const legacyMatcher = (line) => {
+                if (!line.startsWith('[')) {
+                    return false
+                }
+                try {
+                    const message = line.replaceAll(/\[[\s\S]+\]/g, '').trim()
+
+                    return message.startsWith('started')
+                } catch {
+                    return false
+                }
+            }
+
             await waitForLogs({
                 containerName: elasticsearch.name,
-                matchText:
-                    searchengine === 'elasticsearch' ? '"started"' : '] started'
+                customLineParser: (line) => {
+                    try {
+                        const logObject = JSON.parse(line)
+
+                        return logObject.message.startsWith('started')
+                    } catch {
+                        return legacyMatcher(line)
+                    }
+                },
+                successOnTimeout: true
             })
 
             try {
