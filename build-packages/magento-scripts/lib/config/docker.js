@@ -179,7 +179,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 serviceReadyLog: 'ready to handle connections',
                 platform: rosettaTranslatedContainers.includes('php')
                     ? 'linux/amd64'
-                    : undefined
+                    : php.platform
             },
             phpWithXdebug: {
                 _: 'PHP with Xdebug',
@@ -240,7 +240,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 serviceReadyLog: 'ready to handle connections',
                 platform: rosettaTranslatedContainers.includes('php')
                     ? 'linux/amd64'
-                    : undefined
+                    : php.platform
             },
             sslTerminator: {
                 _: 'SSL Terminator (Nginx)',
@@ -287,7 +287,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 dependsOn: ['nginx'],
                 platform: rosettaTranslatedContainers.includes('nginx')
                     ? 'linux/amd64'
-                    : undefined
+                    : nginx.platform
             },
             nginx: {
                 _: 'Nginx',
@@ -339,7 +339,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 dependsOn: ['php', 'phpWithXdebug'],
                 platform: rosettaTranslatedContainers.includes('nginx')
                     ? 'linux/amd64'
-                    : undefined
+                    : nginx.platform
             },
             redis: {
                 _: 'Redis',
@@ -358,7 +358,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 serviceReadyLog: 'Ready to accept connections',
                 platform: rosettaTranslatedContainers.includes('redis')
                     ? 'linux/amd64'
-                    : undefined
+                    : redis.platform
             },
             mariadb: {
                 _: 'MariaDB',
@@ -402,7 +402,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 )}`,
                 platform: rosettaTranslatedContainers.includes('mariadb')
                     ? 'linux/amd64'
-                    : undefined
+                    : mariadb.platform
             },
             elasticsearch: {
                 _:
@@ -448,7 +448,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 name: `${prefix}_${searchengine}`,
                 platform: rosettaTranslatedContainers.includes(searchengine)
                     ? 'linux/amd64'
-                    : undefined
+                    : searchengine === 'elasticsearch'
+                    ? elasticsearch.platform
+                    : opensearch.platform
             },
             maildev: {
                 _: 'MailDev',
@@ -494,7 +496,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 },
                 platform: rosettaTranslatedContainers.includes('maildev')
                     ? 'linux/amd64'
-                    : undefined
+                    : maildev.platform
             }
         }
 
@@ -550,7 +552,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 dependsOn: ['nginx'],
                 platform: rosettaTranslatedContainers.includes('varnish')
                     ? 'linux/amd64'
-                    : undefined
+                    : varnish.platform
             }
 
             dockerConfig.sslTerminator.dependsOn.push('varnish')

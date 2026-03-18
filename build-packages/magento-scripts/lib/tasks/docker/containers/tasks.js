@@ -16,23 +16,28 @@ const stopAndRemoveContainers = async (containers) => {
 }
 
 /**
- * @param {string} image
- */
-const pull = async (image) => execAsyncSpawn(`docker pull ${image}`)
-
-/**
- * @param {string[]} acc
- * @param {{ remoteImages?: string[], image: string }} val
+ * @param {{ image: string, platform?: string }[]} acc
+ * @param {{ remoteImages?: string[], image: string, platform?: string }} val
  */
 const remoteImageReducer = (acc, val) => {
     if (
         Array.isArray(val.remoteImages) &&
         val.remoteImages.every((image) => typeof image === 'string')
     ) {
-        return acc.concat(val.remoteImages)
+        return acc.concat(
+            val.remoteImages.map((image) => ({
+                image,
+                platform: val.platform
+            }))
+        )
     }
 
-    return acc.concat([val.image])
+    return acc.concat([
+        {
+            image: val.image,
+            platform: val.platform
+        }
+    ])
 }
 
 /**
@@ -59,10 +64,10 @@ const pullImages = () => ({
                 containers
                     .filter(filterNonPullableImages)
                     .reduce(remoteImageReducer, [])
-                    .map((image) => {
+                    .map(({ image, platform }) => {
                         const [repo, tag = 'latest'] = image.split(':')
 
-                        return { repo, tag }
+                        return { repo, tag, platform }
                     })
                     .reduce(
                         (acc, val) =>
@@ -76,11 +81,15 @@ const pullImages = () => ({
                             ),
                         []
                     )
-                    .map(({ repo, tag }) => ({
+                    .map(({ repo, tag, platform }) => ({
                         title: `Pulling ${logger.style.file(
                             `${repo}:${tag}`
                         )} image`,
-                        task: () => pull(`${repo}:${tag}`)
+                        task: () =>
+                            imageApi.pull({
+                                image: `${repo}:${tag}`,
+                                platform
+                            })
                     })),
                 {
                     concurrent: true,
@@ -92,7 +101,7 @@ const pullImages = () => ({
         const imagesFilter = containers
             .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
-            .map((image) => `reference='${image}'`)
+            .map(({ image }) => `reference='${image}'`)
 
         const existingImages = await imageApi.ls({
             formatToJSON: true,
@@ -102,10 +111,10 @@ const pullImages = () => ({
         const missingContainerImages = containers
             .filter(filterNonPullableImages)
             .reduce(remoteImageReducer, [])
-            .map((image) => {
+            .map(({ image, platform }) => {
                 const [repo, tag = 'latest'] = image.split(':')
 
-                return { repo, tag }
+                return { repo, tag, platform }
             })
             .filter(
                 ({ repo, tag }) =>
@@ -132,9 +141,13 @@ const pullImages = () => ({
         }
 
         return task.newListr(
-            missingContainerImages.map(({ repo, tag }) => ({
+            missingContainerImages.map(({ repo, tag, platform }) => ({
                 title: `Pulling ${logger.style.file(`${repo}:${tag}`)} image`,
-                task: () => pull(`${repo}:${tag}`)
+                task: () =>
+                    imageApi.pull({
+                        image: `${repo}:${tag}`,
+                        platform
+                    })
             })),
             {
                 concurrent: true,

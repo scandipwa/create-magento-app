@@ -5,7 +5,8 @@ const defaultEnv = require('../default-es-env')
  */
 const elasticsearch76 = () => ({
     image: 'elasticsearch:7.6.2',
-    env: defaultEnv
+    env: defaultEnv,
+    platform: 'linux/amd64'
 })
 
 module.exports = elasticsearch76

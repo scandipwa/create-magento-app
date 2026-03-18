@@ -67,15 +67,16 @@ export interface ListrContext {
     edition?: 'community' | 'enterprise'
     config: {
         php: {
+            iniPath: string
             iniTemplatePath: string
             fpmConfPath: string
             fpmTemplatePath: string
             debugIniPath: string
             debugTemplatePath: string
             debugFpmConfPath: string
-            debugFpmTemplatePath: string
             extensions: PHPExtensions
-            version: string
+            env: Record<string, unknown>
+            platform?: 'linux/amd64' | 'linux/arm64' | (string & {})
         }
         composer: {
             dirPath: string
