@@ -8,7 +8,7 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish76 } = require('../services/varnish')
 const { repo } = require('../services/php/base-repo')
 const { nginx128 } = require('../services/nginx/versions')
-const { composer28 } = require('../services/composer/versions')
+const { composer29 } = require('../services/composer/versions')
 const { maildev } = require('../services/maildev')
 const { valkey80 } = require('../services/redis')
 const { mariadb114 } = require('../services/mariadb/versions')
@@ -21,7 +21,6 @@ const { opensearch300 } = require('../services/opensearch/versions')
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.8-p3',
-    isDefault: true,
     configuration: {
         php: php83({
             templateDir,
@@ -33,7 +32,7 @@ module.exports = ({ templateDir }) => ({
         mysql: mysql80(),
         mariadb: mariadb114(),
         elasticsearch: elasticsearch817(),
-        composer: composer28(),
+        composer: composer29(),
         varnish: varnish76({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev(),

@@ -5,8 +5,9 @@ const path = require('path')
  * @returns {import('../../../../../typings/index').NginxConfiguration}
  */
 const nginx128 = ({ templateDir }) => ({
-    image: 'nginx:1.28.0',
-    configTemplate: path.join(templateDir || '', 'nginx.template.conf')
+    image: 'nginx:1.28.2',
+    configTemplate: path.join(templateDir || '', 'nginx.template.conf'),
+    runType: 'website'
 })
 
 module.exports = nginx128

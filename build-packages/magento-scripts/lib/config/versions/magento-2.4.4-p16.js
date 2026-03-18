@@ -19,7 +19,7 @@ const { opensearch219 } = require('../services/opensearch/versions')
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
-    magentoVersion: '2.4.4-p15',
+    magentoVersion: '2.4.4-p16',
     configuration: {
         php: php81({
             templateDir,

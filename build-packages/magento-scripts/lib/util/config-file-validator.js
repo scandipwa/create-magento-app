@@ -101,7 +101,8 @@ const phpConfigurationSchema = Joi.object({
     extensions: phpExtensionConfiguration.optional(),
     env: Joi.object()
         .pattern(Joi.string(), [Joi.string(), Joi.number()])
-        .optional()
+        .optional(),
+    platform: Joi.string().optional()
 })
 
 /**
@@ -109,7 +110,9 @@ const phpConfigurationSchema = Joi.object({
  */
 const nginxConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
-    configTemplate: Joi.string().optional().custom(fileExistsValidator)
+    configTemplate: Joi.string().optional().custom(fileExistsValidator),
+    platform: Joi.string().optional(),
+    runType: Joi.string().valid('website', 'store').optional()
 })
 
 /**
@@ -119,14 +122,16 @@ const varnishConfigurationSchema = Joi.object({
     enabled: Joi.boolean().optional(),
     healthCheck: Joi.boolean().optional(),
     image: Joi.string().optional(),
-    configTemplate: Joi.string().optional().custom(fileExistsValidator)
+    configTemplate: Joi.string().optional().custom(fileExistsValidator),
+    platform: Joi.string().optional()
 })
 
 /**
  * @type {Joi.ObjectSchema<import('../../typings').ServiceWithImage>}
  */
 const serviceConfigurationSchema = Joi.object({
-    image: Joi.string().optional()
+    image: Joi.string().optional(),
+    platform: Joi.string().optional()
 })
 
 /**
@@ -136,7 +141,8 @@ const mariadbConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
     useOptimizerSwitch: Joi.alternatives()
         .try(Joi.string(), Joi.boolean())
-        .optional()
+        .optional(),
+    platform: Joi.string().optional()
 })
 
 /**
@@ -144,12 +150,14 @@ const mariadbConfigurationSchema = Joi.object({
  */
 const elasticsearchConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
-    env: Joi.object().optional()
+    env: Joi.object().optional(),
+    platform: Joi.string().optional()
 })
 
 const opensearchConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
-    env: Joi.object().optional()
+    env: Joi.object().optional(),
+    platform: Joi.string().optional()
 })
 
 const searchEngineConfiguration = Joi.string().valid(

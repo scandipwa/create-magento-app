@@ -10,5 +10,13 @@ module.exports = {
         mode: 'developer',
         edition: 'community'
     },
-    configuration: {}
-};
+    configuration: {
+        php: {
+            extensions: {
+                xdebug: {
+                    version: '2.9.8'
+                }
+            }
+        }
+    }
+}

@@ -75,3 +75,15 @@ export function inspect(
     options?: ImagesInspectOptions<true>,
     execOptions?: ExecAsyncSpawnOptions<false>
 ): Promise<ImagesInspectResult>
+
+export interface ImagesPullOptions {
+    image: string
+    allTags?: boolean
+    platform?: string
+    quiet?: boolean
+}
+
+export function pull(
+    options?: ImagesPullOptions,
+    execOptions?: ExecAsyncSpawnOptions<false>
+): Promise<string>

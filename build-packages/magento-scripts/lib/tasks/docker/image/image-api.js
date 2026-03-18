@@ -78,7 +78,28 @@ const inspect = async (options, execOptions = {}) => {
     return execAsyncSpawn(`docker image inspect ${args}`, execOptions)
 }
 
+/**
+ * @param {import('./image-api').ImagesPullOptions} options
+ * @param {import('../../../util/exec-async-command').ExecAsyncSpawnOptions} execOptions
+ */
+const pull = async (options, execOptions = {}) => {
+    const { image, allTags, platform, quiet } = options
+
+    const allTagsArg = typeof allTags === 'boolean' ? '--all-tags' : ''
+    const platformArg =
+        typeof platform === 'string' ? `--platform=${platform}` : ''
+
+    const quietArg = typeof quiet === 'boolean' ? '--quiet' : ''
+
+    const args = [allTagsArg, platformArg, quietArg, image]
+        .filter(Boolean)
+        .join(' ')
+
+    return execAsyncSpawn(`docker image pull ${args}`, execOptions)
+}
+
 module.exports = {
     ls,
-    inspect
+    inspect,
+    pull
 }

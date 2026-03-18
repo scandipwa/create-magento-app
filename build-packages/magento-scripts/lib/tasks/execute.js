@@ -101,7 +101,8 @@ const executeTask = async (argv) => {
             const result = executeInContainer({
                 containerName: container.name,
                 commands: argv.commands,
-                user: container.user
+                user: container.user,
+                env: container.execCommandEnv
             })
 
             return result

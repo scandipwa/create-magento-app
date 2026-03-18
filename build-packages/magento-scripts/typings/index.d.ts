@@ -14,6 +14,11 @@ export interface ServiceWithImage {
      * Service Docker image
      */
     image: string
+
+    /**
+     * Service platform
+     */
+    platform?: 'linux/amd64' | 'linux/arm64' | (string & {})
 }
 
 export interface ServiceWithoutImage {
@@ -21,6 +26,11 @@ export interface ServiceWithoutImage {
      * Service Docker image
      */
     image: string
+
+    /**
+     * Service platform
+     */
+    platform?: 'linux/amd64' | 'linux/arm64' | (string & {})
 }
 
 export interface MariaDBConfiguration extends ServiceWithImage {
@@ -58,6 +68,13 @@ export interface NginxConfiguration extends ServiceWithImage {
      * @example ./my-nginx-config.conf
      */
     configTemplate: string
+
+    /**
+     * Magento run type for nginx configuration
+     *
+     * @default 'website'
+     */
+    runType?: 'website' | 'store' | (string & {})
 }
 
 export interface ElasticSearchConfiguration extends ServiceWithImage {
@@ -228,6 +245,11 @@ export interface PHPConfiguration {
      * Environmental variables used for PHP container
      */
     env: Record<string, unknown>
+
+    /**
+     * Service platform
+     */
+    platform?: 'linux/amd64' | 'linux/arm64' | (string & {})
 }
 export interface SSLConfiguration {
     /**

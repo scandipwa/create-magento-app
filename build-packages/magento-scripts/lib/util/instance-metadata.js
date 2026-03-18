@@ -24,7 +24,11 @@ const getInstanceMetadata = (ctx) => {
         ports,
         config: {
             magentoConfiguration,
-            overridenConfiguration: { ssl, storeDomains }
+            overridenConfiguration: {
+                ssl,
+                storeDomains,
+                magento: { adminuri }
+            }
         }
     } = ctx
 
@@ -66,14 +70,16 @@ const getInstanceMetadata = (ctx) => {
         })
     }
 
-    const webLocation = frontend.find((u) => u.title === WEB_LOCATION_TITLE)
-
-    if (webLocation) {
-        admin.push({
-            title: WEB_ADMIN_LOCATION_TITLE,
-            text: logger.style.link(`${webLocation.text}admin`)
-        })
-    }
+    admin.push({
+        title: WEB_ADMIN_LOCATION_TITLE,
+        text: logger.style.link(
+            `${ssl.enabled ? 'https' : 'http'}://${storeDomains.admin}${
+                ssl.enabled || ports.sslTerminator === 80
+                    ? ''
+                    : `:${ports.sslTerminator}`
+            }/${adminuri}/`
+        )
+    })
 
     admin.push({
         title: WEB_ADMIN_CREDENTIALS_TITLE,

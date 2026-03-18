@@ -5,6 +5,7 @@ const magento24RequiredPHPExtensions = [
     'dom',
     'fileinfo',
     'filter',
+    'ftp',
     'gd',
     'hash',
     'iconv',
