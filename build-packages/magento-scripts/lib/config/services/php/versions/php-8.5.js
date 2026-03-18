@@ -10,10 +10,10 @@ const defaultPhpEnv = require('../default-php-env')
  * @param {string} [param0.baseImage]
  * @returns {import('../../../../../typings/index').PHPConfiguration}
  */
-const php84 = ({
+const php85 = ({
     templateDir,
     extensions = {},
-    baseImage = `${repo}:php-8.4`
+    baseImage = `${repo}:php-8.5`
 }) => ({
     baseImage,
     configTemplate: path.join(templateDir || '', 'php.template.ini'),
@@ -29,4 +29,4 @@ const php84 = ({
     env: defaultPhpEnv
 })
 
-module.exports = php84
+module.exports = php85

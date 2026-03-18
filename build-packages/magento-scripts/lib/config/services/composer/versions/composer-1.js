@@ -5,7 +5,7 @@ const composer1 = () => ({
     version: 'latest-1.x',
     plugins: {
         'hirak/prestissimo': {
-            enabled: true
+            enabled: false
         }
     }
 })

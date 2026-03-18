@@ -7,7 +7,7 @@ const { sslTerminator } = require('../services/ssl-terminator')
 const { varnish74 } = require('../services/varnish')
 const { repo } = require('../services/php/base-repo')
 const { nginx124 } = require('../services/nginx/versions')
-const { composer27 } = require('../services/composer/versions')
+const { composer29 } = require('../services/composer/versions')
 const { maildev } = require('../services/maildev')
 const { redis72 } = require('../services/redis')
 const { mariadb106 } = require('../services/mariadb/versions')
@@ -31,7 +31,7 @@ module.exports = ({ templateDir }) => ({
         mysql: mysql80(),
         mariadb: mariadb106(),
         elasticsearch: elasticsearch811(),
-        composer: composer27(),
+        composer: composer29(),
         varnish: varnish74({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev(),

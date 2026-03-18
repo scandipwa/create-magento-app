@@ -4,5 +4,6 @@ module.exports = {
     composer22: require('./composer-2.2'),
     composer26: require('./composer-2.6'),
     composer27: require('./composer-2.7'),
-    composer28: require('./composer-2.8')
+    composer28: require('./composer-2.8'),
+    composer29: require('./composer-2.9')
 }
