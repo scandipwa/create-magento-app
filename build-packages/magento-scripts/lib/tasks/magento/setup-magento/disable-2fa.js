@@ -1,6 +1,7 @@
 const configPhpToJson = require('../../../util/config-php-json')
 const getJsonfileData = require('../../../util/get-jsonfile-data')
 const path = require('path')
+const semver = require('semver')
 const composerTask = require('../../../util/composer-task')
 const magentoTask = require('../../../util/magento-task')
 
@@ -9,6 +10,18 @@ const magentoTask = require('../../../util/magento-task')
  */
 module.exports = () => ({
     title: 'Disabling 2FA module',
+    // this module is only for magento 2.4 or newer
+    skip: (ctx) => {
+        const { magentoVersion } = ctx
+
+        const pureMagentoVersion = magentoVersion.match(
+            /^([0-9]+\.[0-9]+\.[0-9]+)/
+        )[1]
+
+        const isMagento24 = semver.satisfies(pureMagentoVersion, '>=2.4.0')
+
+        return !isMagento24
+    },
     task: async (ctx, task) => {
         // Check if MarkShust module is already installed via composer.lock
         const composerLockPath = path.join(
