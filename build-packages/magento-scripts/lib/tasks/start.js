@@ -38,6 +38,7 @@ const { setProjectConfigTask } = require('./project-config')
 const {
     convertComposerHomeToComposerCacheVolume
 } = require('./docker/convert-composer-home-to-composer-cache-volume')
+const clearLogs = require('./magento/setup-magento/clear-logs')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -148,7 +149,7 @@ const finishProjectConfiguration = () => ({
     title: 'Finishing project configuration',
     skip: ({ skipSetup }) => Boolean(skipSetup),
     task: (ctx, task) =>
-        task.newListr([setupThemes(), waitingForVarnish()], {
+        task.newListr([setupThemes(), waitingForVarnish(), clearLogs()], {
             rendererOptions: {
                 collapse: false
             }
