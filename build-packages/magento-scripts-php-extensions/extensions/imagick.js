@@ -7,6 +7,12 @@ module.exports = {
     && pecl install imagick${version ? `-${version}` : ''} \
     && docker-php-ext-enable imagick \
     && apk del -f .build-deps`,
-    dependencies: ['imagemagick-dev', 'libgomp'],
-    version: '3.7.0'
+    dependencies: [
+        'imagemagick',
+        'imagemagick-dev',
+        'libjpeg-turbo',
+        'libjpeg-turbo-dev',
+        'libgomp'
+    ],
+    version: '3.8.1'
 }
