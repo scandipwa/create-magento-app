@@ -16,9 +16,9 @@ const transformEnvValue = (value) => {
 
     for (const [key, val] of Object.entries(value)) {
         if (typeof val === 'string' && val) {
-            envArguments.push(`--env ${key}='${val.replaceAll("'", "\\'")}'`)
+            envArguments.push(`--env=${key}='${val.replaceAll("'", "\\'")}'`)
         } else if (String(val)) {
-            envArguments.push(`--env ${key}=${val}`)
+            envArguments.push(`--env=${key}=${val}`)
         }
     }
 

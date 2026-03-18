@@ -121,6 +121,7 @@ export interface ListrContext {
                     dependsOn?: string[]
                     serviceReadyLog?: string
                     platform?: string
+                    execCommandEnv?: Record<string, string>
                 }
             >
         }

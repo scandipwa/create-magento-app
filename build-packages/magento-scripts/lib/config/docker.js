@@ -123,7 +123,7 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
             : {}
 
         /**
-         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string, platform?: string }>}
+         * @type {Record<string, import('../tasks/docker/containers/container-api').ContainerRunOptions & { _?: string, forwardedPorts?: string[], remoteImages?: string[], connectCommand?: string[], description?: string, pullImage?: boolean, dependsOn?: string[], serviceReadyLog?: string, platform?: string, execCommandEnv?: Record<string, string> }>}
          */
         const dockerConfig = {
             php: {
@@ -231,6 +231,9 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 pullImage: false,
                 name: `${prefix}_php_with_xdebug`,
                 connectCommand: ['/bin/sh'],
+                execCommandEnv: {
+                    XDEBUG_TRIGGER: 'PHPSTORM'
+                },
                 dependsOn: ['mariadb', 'redis', 'elasticsearch'],
                 user:
                     (ctx.platform === 'linux' && isDockerDesktop) ||

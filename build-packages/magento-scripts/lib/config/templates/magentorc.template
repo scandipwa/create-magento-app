@@ -17,6 +17,7 @@ alias cvc="exec varnish varnishadm ban req.url '~ /' && echo 'Varnish cache clea
 <% } %>
 alias mariadb="exec mariadb <%~ it.databaseBinFile %> -umagento -pmagento"
 alias mariadbroot="exec mariadb <%~ it.databaseBinFile %> -uroot -pscandipwa"
+alias debugphp="exec phpWithXdebug"
 
 # silence warning on macos
 export BASH_SILENCE_DEPRECATION_WARNING=1
