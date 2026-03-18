@@ -111,7 +111,8 @@ const phpConfigurationSchema = Joi.object({
 const nginxConfigurationSchema = Joi.object({
     image: Joi.string().optional(),
     configTemplate: Joi.string().optional().custom(fileExistsValidator),
-    platform: Joi.string().optional()
+    platform: Joi.string().optional(),
+    runType: Joi.string().valid('website', 'store').optional()
 })
 
 /**

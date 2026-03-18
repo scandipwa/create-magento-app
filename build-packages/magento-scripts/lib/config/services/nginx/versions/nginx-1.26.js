@@ -6,7 +6,8 @@ const path = require('path')
  */
 const nginx126 = ({ templateDir }) => ({
     image: 'nginx:1.26.3',
-    configTemplate: path.join(templateDir || '', 'nginx.template.conf')
+    configTemplate: path.join(templateDir || '', 'nginx.template.conf'),
+    runType: 'website'
 })
 
 module.exports = nginx126

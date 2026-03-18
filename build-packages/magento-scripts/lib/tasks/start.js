@@ -27,7 +27,7 @@ const getIsWsl = require('../util/is-wsl')
 const checkForXDGOpen = require('../util/xdg-open-exists')
 const {
     getInstanceMetadata,
-    constants: { WEB_LOCATION_TITLE }
+    constants: { WEB_ADMIN_LOCATION_TITLE }
 } = require('../util/instance-metadata')
 const waitingForVarnish = require('./magento/setup-magento/waiting-for-varnish')
 const checkPHPVersion = require('./requirements/php-version')
@@ -191,9 +191,12 @@ const start = () => ({
                     },
                     task: (ctx) => {
                         const instanceMetadata = getInstanceMetadata(ctx)
-                        const locationOnTheWeb = instanceMetadata.frontend.find(
-                            ({ title }) => title === WEB_LOCATION_TITLE
-                        )
+                        const locationOnTheWeb =
+                            instanceMetadata.frontend[0] ||
+                            instanceMetadata.admin.find(
+                                (u) => u.title === WEB_ADMIN_LOCATION_TITLE
+                            )
+
                         if (locationOnTheWeb) {
                             openBrowser(locationOnTheWeb.text)
                         }

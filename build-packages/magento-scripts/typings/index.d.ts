@@ -68,6 +68,13 @@ export interface NginxConfiguration extends ServiceWithImage {
      * @example ./my-nginx-config.conf
      */
     configTemplate: string
+
+    /**
+     * Magento run type for nginx configuration
+     *
+     * @default 'website'
+     */
+    runType?: 'website' | 'store' | (string & {})
 }
 
 export interface ElasticSearchConfiguration extends ServiceWithImage {
