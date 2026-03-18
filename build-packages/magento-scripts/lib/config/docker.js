@@ -555,10 +555,10 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                     : varnish.platform
             }
 
-            dockerConfig.sslTerminator.dependsOn.push('varnish')
+            dockerConfig.sslTerminator.dependsOn?.push('varnish')
         }
 
-        if (newRelic.enabled) {
+        if (newRelic?.enabled) {
             dockerConfig.newRelicPHPDaemon = {
                 _: 'New Relic PHP daemon',
                 ports: [],
