@@ -4,7 +4,7 @@
     "license": "OSL-3.0",
     "dependencies": {
         "@scandipwa/scandipwa": "4.5.1",
-        "@scandipwa/scandipwa-scripts": "2.4.9",
+        "@scandipwa/scandipwa-scripts": "2.4.10",
         "@scandipwa/eslint-config": "0.1.25",
         "@tilework/mosaic": "0.1.4"
     },
