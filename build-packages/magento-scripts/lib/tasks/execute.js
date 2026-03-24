@@ -8,7 +8,9 @@ const { getCachedPorts } = require('../config/get-port-config')
 const checkPHPVersion = require('./requirements/php-version')
 const {
     executeInContainer,
-    runInContainer
+    executeInContainerNonInteractive,
+    runInContainer,
+    runInContainerNonInteractive
 } = require('../util/execute-in-container')
 const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
@@ -137,6 +139,110 @@ const executeTask = async (argv) => {
     process.exit(1)
 }
 
+/**
+ * Non-interactive version of executeTask for AI terminals and scripts.
+ * @param {{ containerName: string, commands: string[] }} argv
+ * @returns {Promise<void>}
+ */
+const executeTaskNonInteractive = async (argv) => {
+    const tasks = new Listr(
+        [
+            checkRequirements(),
+            getMagentoVersionConfig(),
+            checkConfigurationFile(),
+            getProjectConfiguration(),
+            getCachedPorts(),
+            dockerNetwork.tasks.createNetwork(),
+            checkPHPVersion(),
+            prepareFileSystem()
+        ],
+        {
+            concurrent: false,
+            exitOnError: true,
+            ctx: { throwMagentoVersionMissing: true },
+            renderer: 'silent',
+            rendererOptions: { collapse: false, clearOutput: true }
+        }
+    )
+
+    let ctx
+    try {
+        ctx = await tasks.run()
+    } catch (e) {
+        logger.error(e.message || e)
+        process.exit(1)
+    }
+    const containers = ctx.config.docker.getContainers(ctx.ports)
+    const services = Object.keys(containers)
+
+    if (
+        services.includes(argv.containerName) ||
+        services.some((service) => service.includes(argv.containerName))
+    ) {
+        const containerResult = containers[argv.containerName]
+            ? containers[argv.containerName]
+            : Object.entries(containers).find(([key]) =>
+                  key.includes(argv.containerName)
+              )
+
+        if (!containerResult) {
+            logger.error(`No container found "${argv.containerName}"`)
+            process.exit(1)
+        }
+
+        const container =
+            containerResult && Array.isArray(containerResult)
+                ? containerResult[1]
+                : containerResult
+
+        if (argv.commands.length === 0) {
+            logger.error('Non-interactive mode requires a command to execute')
+            process.exit(1)
+        }
+
+        const containerList = await containerApi.ls({
+            formatToJSON: true,
+            all: true,
+            filter: `name=${container.name}`
+        })
+
+        if (containerList.length > 0) {
+            const result = await executeInContainerNonInteractive({
+                containerName: container.name,
+                commands: argv.commands,
+                user: container.user,
+                env: container.execCommandEnv
+            })
+
+            if (result.result) {
+                process.stdout.write(`${result.result}\n`)
+            }
+            process.exit(result.code)
+        }
+
+        if (container.name.includes('php')) {
+            const result = await runInContainerNonInteractive(
+                {
+                    ...container,
+                    name: `${container.name}_exec-${Date.now()}`
+                },
+                argv.commands
+            )
+
+            if (result.result) {
+                process.stdout.write(`${result.result}\n`)
+            }
+            process.exit(result.code)
+        }
+
+        throw new KnownError(`Container ${container.name} is not running!`)
+    }
+
+    logger.error(`No container found "${argv.containerName}"`)
+    process.exit(1)
+}
+
 module.exports = {
-    executeTask
+    executeTask,
+    executeTaskNonInteractive
 }
