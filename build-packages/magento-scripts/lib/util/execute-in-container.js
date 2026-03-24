@@ -62,11 +62,12 @@ const executeInContainerNonInteractive = async ({
     env
 }) => {
     const [commandBin, ...commandsArgs] = commands
+    const fullCommand = joinCommandArgs([commandBin, ...commandsArgs])
 
     return exec(
         {
             container: containerName,
-            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            command: fullCommand,
             user,
             workdir,
             tty: false,
@@ -120,7 +121,7 @@ const runInContainerNonInteractive = async (options, commands) => {
     return run(
         {
             ...options,
-            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            command: joinCommandArgs([commandBin, ...commandsArgs]),
             tty: false,
             detach: false,
             rm: true
