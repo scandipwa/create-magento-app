@@ -1,5 +1,5 @@
 const { spawn } = require('child_process')
-const { execCommand, run } = require('../tasks/docker/containers/container-api')
+const { execCommand, run, exec } = require('../tasks/docker/containers/container-api')
 
 /**
  * @param {{ containerName: string, commands: string[], user?: string, env?: Record<string, string> }} param0
@@ -31,6 +31,36 @@ const executeInContainer = ({ containerName, commands, user, env }) => {
 }
 
 /**
+ * Non-interactive version of executeInContainer for AI terminals and scripts.
+ * @param {{ containerName: string, commands: string[], user?: string, workdir?: string, env?: Record<string, string> }} param0
+ * @returns {Promise<{ code: number, result: string }>}
+ */
+const executeInContainerNonInteractive = async ({
+    containerName,
+    commands,
+    user,
+    workdir,
+    env
+}) => {
+    const [commandBin, ...commandsArgs] = commands
+
+    return exec(
+        {
+            container: containerName,
+            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            user,
+            workdir,
+            tty: false,
+            interactive: false,
+            env: env || {}
+        },
+        {
+            withCode: true
+        }
+    )
+}
+
+/**
  * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
  * @param {string[]} commands
  */
@@ -59,7 +89,32 @@ const runInContainer = async (options, commands) => {
     process.exit(runResult.code)
 }
 
+/**
+ * Non-interactive version of runInContainer for AI terminals and scripts.
+ * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
+ * @param {string[]} commands
+ * @returns {Promise<{ code: number, result: string }>}
+ */
+const runInContainerNonInteractive = async (options, commands) => {
+    const [commandBin, ...commandsArgs] = commands
+
+    return run(
+        {
+            ...options,
+            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            tty: false,
+            detach: false,
+            rm: true
+        },
+        {
+            withCode: true
+        }
+    )
+}
+
 module.exports = {
     executeInContainer,
-    runInContainer
+    executeInContainerNonInteractive,
+    runInContainer,
+    runInContainerNonInteractive
 }
