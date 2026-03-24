@@ -2,6 +2,25 @@ const { spawn } = require('child_process')
 const { execCommand, run } = require('../tasks/docker/containers/container-api')
 
 /**
+ * Escape an argument for use in a shell command string.
+ * Wrap in single quotes and escape single quotes inside.
+ * @param {string} arg
+ * @returns {string}
+ */
+const shellEscapeArg = (arg) => "'" + String(arg).replace(/'/g, "'\\''") + "'"
+
+/**
+ * Join command args to survive shell re-parsing in `docker run`.
+ * @param {string[]} args
+ * @returns {string}
+ */
+const joinCommandArgs = (args) =>
+    args.map((arg) => {
+        const value = String(arg)
+        return /[\s'"\\$`]/.test(value) ? shellEscapeArg(value) : value
+    }).join(' ')
+
+/**
  * @param {{ containerName: string, commands: string[], user?: string, env?: Record<string, string> }} param0
  */
 const executeInContainer = ({ containerName, commands, user, env }) => {
@@ -45,7 +64,7 @@ const runInContainer = async (options, commands) => {
     const runResult = await run(
         {
             ...options,
-            command: `${commandBin} ${commandsArgs.join(' ')}`,
+            command: joinCommandArgs([commandBin, ...commandsArgs]),
             tty: true,
             detach: false,
             rm: true
