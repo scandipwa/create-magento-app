@@ -19,11 +19,13 @@ const sshDb = () => ({
         ctx.ssh = ssh
 
         if (!password) {
-            const privateKey = await task.prompt({
-                type: 'Input',
-                message: `Please enter your private key location to connect to ${hostname}\n`,
-                initial: `${os.homedir()}/.ssh/id_rsa`
-            })
+            const privateKey = ctx.nonInteractive
+                ? `${os.homedir()}/.ssh/id_rsa`
+                : await task.prompt({
+                      type: 'Input',
+                      message: `Please enter your private key location to connect to ${hostname}\n`,
+                      initial: `${os.homedir()}/.ssh/id_rsa`
+                  })
 
             if (!(await pathExists(privateKey))) {
                 throw new KnownError(`Private key not found: ${privateKey}`)
@@ -31,11 +33,13 @@ const sshDb = () => ({
 
             ctx.privateKey = privateKey
 
-            const passphrase = await task.prompt({
-                type: 'Input',
-                message:
-                    'Please enter your private key passphrase (if you have it)'
-            })
+            const passphrase = ctx.nonInteractive
+                ? undefined
+                : await task.prompt({
+                      type: 'Input',
+                      message:
+                          'Please enter your private key passphrase (if you have it)'
+                  })
 
             ctx.passphrase = passphrase || undefined
 
@@ -67,14 +71,16 @@ const sshDb = () => ({
         const remoteFiles = remoteFilesOutput.split('\n')
 
         if (dumpFileNames.every((dumpFile) => remoteFiles.includes(dumpFile))) {
-            ctx.makeRemoteDumps = await task.prompt({
-                type: 'Toggle',
-                enabled: 'Yes!',
-                disabled: 'No, just download and import them.',
-                message: `We found dump files on remote server.
+            ctx.makeRemoteDumps = ctx.nonInteractive
+                ? true
+                : await task.prompt({
+                      type: 'Toggle',
+                      enabled: 'Yes!',
+                      disabled: 'No, just download and import them.',
+                      message: `We found dump files on remote server.
   Do you want to replace them with new dump files or use existing ones?
 `
-            })
+                  })
         } else {
             ctx.makeRemoteDumps = true
         }

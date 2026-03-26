@@ -8,6 +8,7 @@ import { PHPStormConfig } from './phpstorm'
 
 export interface ListrContext {
     noOpen?: boolean
+    open?: boolean
     skipSetup?: boolean
     resetGlobalConfig?: boolean
     withCustomersData?: boolean
@@ -159,4 +160,14 @@ export interface ListrContext {
     dockerClientData?: DockerVersionResult['Client']
     dockerVersion?: DockerVersionResult['Server']['Version']
     dockerMemoryLimit: number
+    silent?: boolean
+    nonInteractive?: boolean
+    deleteDb?: 'always' | 'never' | 'ask'
+    dbUser?: 'root' | 'magento'
+    fixCollation?: 'auto' | 'never' | 'ask'
+    installMagentoEmptyDb?: 'yes' | 'no' | 'ask'
+    privateKey?: string
+    passphrase?: string
+    makeRemoteDumps?: boolean
+    remoteDumpCommand?: string
 }

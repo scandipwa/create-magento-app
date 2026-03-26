@@ -51,22 +51,24 @@ const importDump = () => ({
                     },
                     task: async (subCtx, subTask) => {
                         const doYouWantToRunSetupOnEmptyDB =
-                            await subTask.prompt({
-                                type: 'Select',
-                                message: `We detected that Magento is not installed in database. Do you want to install Magento in database BEFORE importing database dump?`,
-                                choices: [
-                                    {
-                                        name: 'try-install',
-                                        message:
-                                            'Try installing Magento before importing database'
-                                    },
-                                    {
-                                        name: 'skip',
-                                        message:
-                                            'Skip installing Magento and import database dump right away!'
-                                    }
-                                ]
-                            })
+                            subCtx.nonInteractive
+                                ? 'skip'
+                                : await subTask.prompt({
+                                      type: 'Select',
+                                      message: `We detected that Magento is not installed in database. Do you want to install Magento in database BEFORE importing database dump?`,
+                                      choices: [
+                                          {
+                                              name: 'try-install',
+                                              message:
+                                                  'Try installing Magento before importing database'
+                                          },
+                                          {
+                                              name: 'skip',
+                                              message:
+                                                  'Skip installing Magento and import database dump right away!'
+                                          }
+                                      ]
+                                  })
 
                         if (doYouWantToRunSetupOnEmptyDB === 'skip') {
                             subTask.skip()

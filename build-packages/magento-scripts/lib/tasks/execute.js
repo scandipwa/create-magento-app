@@ -17,7 +17,7 @@ const { prepareFileSystem } = require('./file-system')
 
 /**
  *
- * @param {{ containerName: string, commands: string[] }} argv
+ * @param {{ containerName: string, commands: string[], silent?: boolean }} argv
  * @returns
  */
 const executeTask = async (argv) => {
@@ -35,8 +35,9 @@ const executeTask = async (argv) => {
         {
             concurrent: false,
             exitOnError: true,
-            ctx: { throwMagentoVersionMissing: true },
-            renderer: process.stdout.isTTY ? 'default' : 'silent',
+            ctx: { throwMagentoVersionMissing: true, silent: argv.silent },
+            renderer:
+                argv.silent || !process.stdout.isTTY ? 'silent' : 'default',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )
