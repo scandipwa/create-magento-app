@@ -110,7 +110,10 @@ module.exports = (yargs) => {
                 ctx: args,
                 concurrent: false,
                 renderer:
-                    /** @type {boolean} */ (args.silent) || !process.stdout.isTTY ? 'silent' : 'default',
+                    /** @type {boolean} */ (args.silent) ||
+                    !process.stdout.isTTY
+                        ? 'silent'
+                        : 'default',
                 rendererOptions: {
                     showErrorMessage: false,
                     showTimer: true

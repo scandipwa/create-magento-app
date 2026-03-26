@@ -38,9 +38,7 @@ module.exports = (yargs) => {
                         silent
                     },
                     renderer:
-                        silent || !process.stdout.isTTY
-                            ? 'silent'
-                            : 'default',
+                        silent || !process.stdout.isTTY ? 'silent' : 'default',
                     rendererOptions: { collapse: false, clearOutput: true }
                 }
             )

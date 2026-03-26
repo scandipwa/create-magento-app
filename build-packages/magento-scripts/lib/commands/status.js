@@ -61,9 +61,7 @@ module.exports = (yargs) => {
                     exitOnError: false,
                     ctx: { throwMagentoVersionMissing: true, ...args, silent },
                     renderer:
-                        silent || !process.stdout.isTTY
-                            ? 'silent'
-                            : 'default',
+                        silent || !process.stdout.isTTY ? 'silent' : 'default',
                     rendererOptions: { collapse: false, clearOutput: false }
                 }
             )

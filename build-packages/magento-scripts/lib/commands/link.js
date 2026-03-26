@@ -18,14 +18,17 @@ module.exports = (yargs) => {
             }),
         async (args) => {
             const silent = /** @type {boolean} */ (args.silent)
-            const tasks = new Listr(linkTask(/** @type {string} */ (args.themepath)), {
-                concurrent: false,
-                exitOnError: true,
-                ctx: { throwMagentoVersionMissing: true, silent },
-                renderer:
-                    silent || !process.stdout.isTTY ? 'silent' : 'default',
-                rendererOptions: { collapse: false }
-            })
+            const tasks = new Listr(
+                linkTask(/** @type {string} */ (args.themepath)),
+                {
+                    concurrent: false,
+                    exitOnError: true,
+                    ctx: { throwMagentoVersionMissing: true, silent },
+                    renderer:
+                        silent || !process.stdout.isTTY ? 'silent' : 'default',
+                    rendererOptions: { collapse: false }
+                }
+            )
 
             try {
                 await tasks.run()
