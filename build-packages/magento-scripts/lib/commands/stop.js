@@ -10,16 +10,20 @@ module.exports = (yargs) => {
         'Stop the application.',
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {},
-        async () => {
+        async (args) => {
+            const silent = /** @type {boolean} */ (args.silent)
             const tasks = new Listr(stop(), {
                 concurrent: false,
                 exitOnError: true,
-                rendererOptions: {
-                    collapse: false
-                },
                 ctx: {
                     throwMagentoVersionMissing: true,
-                    projectPath: process.cwd()
+                    projectPath: process.cwd(),
+                    silent
+                },
+                renderer:
+                    silent || !process.stdout.isTTY ? 'silent' : 'default',
+                rendererOptions: {
+                    collapse: false
                 }
             })
 

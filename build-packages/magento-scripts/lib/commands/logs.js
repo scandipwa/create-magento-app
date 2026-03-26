@@ -70,6 +70,7 @@ npm run logs re (will match redis)`)
             })
         },
         async (argv) => {
+            const silent = /** @type {boolean} */ (argv.silent)
             const tasks = new Listr(
                 [
                     checkRequirements(),
@@ -82,7 +83,14 @@ npm run logs re (will match redis)`)
                 {
                     concurrent: false,
                     exitOnError: true,
-                    ctx: { throwMagentoVersionMissing: true },
+                    ctx: {
+                        throwMagentoVersionMissing: true,
+                        silent
+                    },
+                    renderer:
+                        silent || !process.stdout.isTTY
+                            ? 'silent'
+                            : 'default',
                     rendererOptions: { collapse: false, clearOutput: true }
                 }
             )

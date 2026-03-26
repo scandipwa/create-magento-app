@@ -176,7 +176,7 @@ const start = () => ({
                 {
                     title: 'Opening browser',
                     skip: async (ctx) => {
-                        if (ctx.noOpen) {
+                        if (ctx.open === false) {
                             return true
                         }
 

@@ -21,11 +21,12 @@ Available containers:
 - maildev
 - varnish (if enabled)`)
         },
-        async () => {
+        async (args) => {
             const [containerName, ...commands] = process.argv.slice(3)
             await executeTask({
                 containerName,
-                commands
+                commands,
+                silent: /** @type {boolean} */ (args.silent)
             })
         }
     )

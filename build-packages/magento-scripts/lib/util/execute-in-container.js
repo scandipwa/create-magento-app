@@ -1,22 +1,23 @@
 const { spawn } = require('child_process')
-const { execCommand, run } = require('../tasks/docker/containers/container-api')
+const {
+    execCommand,
+    runCommand
+} = require('../tasks/docker/containers/container-api')
 
 /**
  * @param {{ containerName: string, commands: string[], user?: string, env?: Record<string, string> }} param0
  */
 const executeInContainer = ({ containerName, commands, user, env }) => {
-    if (!process.stdin.isTTY) {
-        process.stderr.write('This app works only in TTY mode')
-        process.exit(1)
-    }
     const [commandBin, ...commandsArgs] = commands
+
+    const isTTY = process.stdin.isTTY
 
     const execArgs = execCommand({
         container: containerName,
         command: commandBin,
         user,
-        tty: true,
-        interactive: true,
+        tty: isTTY,
+        interactive: isTTY,
         env: env || {}
     })
     const [command, ...args] = execArgs
@@ -34,29 +35,27 @@ const executeInContainer = ({ containerName, commands, user, env }) => {
  * @param {import('../tasks/docker/containers/container-api').ContainerRunOptions} options
  * @param {string[]} commands
  */
-const runInContainer = async (options, commands) => {
-    if (!process.stdin.isTTY) {
-        process.stderr.write('This app works only in TTY mode')
-        process.exit(1)
-    }
-
+const runInContainer = (options, commands) => {
+    const isTTY = process.stdin.isTTY
     const [commandBin, ...commandsArgs] = commands
 
-    const runResult = await run(
-        {
-            ...options,
-            command: `${commandBin} ${commandsArgs.join(' ')}`,
-            tty: true,
-            detach: false,
-            rm: true
-        },
-        {
-            withCode: true,
-            pipeOutput: true
-        }
-    )
+    const runArgs = runCommand({
+        ...options,
+        command: commandBin,
+        tty: isTTY,
+        detach: false,
+        rm: true
+    })
 
-    process.exit(runResult.code)
+    const [cmd, ...args] = runArgs
+
+    const child = spawn(cmd, [...args, ...commandsArgs], {
+        stdio: 'inherit'
+    })
+
+    child.on('close', (code) => {
+        process.exit(code)
+    })
 }
 
 module.exports = {

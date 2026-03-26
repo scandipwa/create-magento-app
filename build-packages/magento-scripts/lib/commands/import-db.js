@@ -27,12 +27,21 @@ module.exports = (yargs) => {
                 type: 'boolean',
                 default: false
             })
+            yargs.option('non-interactive', {
+                alias: 'y',
+                describe:
+                    'Skip all interactive prompts using sensible defaults',
+                type: 'boolean',
+                default: false
+            })
         },
         async (args) => {
             const tasks = new Listr(importDump(), {
                 exitOnError: true,
                 ctx: args,
                 concurrent: false,
+                renderer:
+                    /** @type {boolean} */ (args.silent) || !process.stdout.isTTY ? 'silent' : 'default',
                 rendererOptions: {
                     showErrorMessage: false,
                     showTimer: true

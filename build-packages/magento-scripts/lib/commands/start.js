@@ -64,11 +64,11 @@ module.exports = (yargs) => {
                     type: 'number',
                     nargs: 1
                 })
-                .option('no-open', {
+                .option('open', {
                     alias: 'n',
-                    describe: 'Do not open browser after command finished',
+                    describe: 'Open browser after command finished',
                     type: 'boolean',
-                    default: false
+                    default: true
                 })
                 .option('skip-setup', {
                     alias: 's',
@@ -109,6 +109,8 @@ module.exports = (yargs) => {
                 exitOnError: true,
                 ctx: args,
                 concurrent: false,
+                renderer:
+                    /** @type {boolean} */ (args.silent) || !process.stdout.isTTY ? 'silent' : 'default',
                 rendererOptions: {
                     showErrorMessage: false,
                     showTimer: true

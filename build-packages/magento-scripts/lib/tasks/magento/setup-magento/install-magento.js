@@ -183,7 +183,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --cache-backend='redis' \
                 --cache-backend-redis-server='${hostMachine}' \
                 --cache-backend-redis-port='${ports.redis}' \
-                --cache-backend-redis-db='0't \
+                --cache-backend-redis-db='0' \
                 --db-host='${hostMachine}:${ports.mariadb}' \
                 --db-name='${defaultMagentoDatabase}' \
                 --db-user='${defaultMagentoUser.user}' \
