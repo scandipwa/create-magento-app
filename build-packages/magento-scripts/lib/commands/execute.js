@@ -1,4 +1,4 @@
-const { executeTask, executeTaskNonInteractive } = require('../tasks/execute')
+const { executeTask } = require('../tasks/execute')
 
 /**
  * @param {import('yargs')} yargs
@@ -32,21 +32,14 @@ Options:
   --non-interactive, -n  Run in non-interactive mode (no TTY required)`)
         },
         async (argv) => {
-            const [containerName, ...commands] = process.argv.slice(3).filter(
-                (arg) => arg !== '--non-interactive' && arg !== '-n'
-            )
-
-            if (argv.nonInteractive || argv.n) {
-                await executeTaskNonInteractive({
-                    containerName,
-                    commands
-                })
-                return
-            }
+            const [containerName, ...commands] = process.argv
+                .slice(3)
+                .filter((arg) => arg !== '--non-interactive' && arg !== '-n')
 
             await executeTask({
                 containerName,
-                commands
+                commands,
+                nonInteractive: !!(argv.nonInteractive || argv.n)
             })
         }
     )

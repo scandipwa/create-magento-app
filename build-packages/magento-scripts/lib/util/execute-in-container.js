@@ -1,5 +1,9 @@
 const { spawn } = require('child_process')
-const { execCommand, run, exec } = require('../tasks/docker/containers/container-api')
+const {
+    execCommand,
+    run,
+    exec
+} = require('../tasks/docker/containers/container-api')
 
 /**
  * Escape an argument for use in a shell command string.
@@ -14,11 +18,13 @@ const shellEscapeArg = (arg) => "'" + String(arg).replace(/'/g, "'\\''") + "'"
  * @param {string[]} args
  * @returns {string}
  */
-const joinCommandArgs = (args) =>
-    args.map((arg) => {
-        const value = String(arg)
-        return /[\s'"\\$`]/.test(value) ? shellEscapeArg(value) : value
-    }).join(' ')
+const joinCommandArgs = (...args) =>
+    args
+        .map((arg) => {
+            const value = String(arg)
+            return /[\s'"\\$`]/.test(value) ? shellEscapeArg(value) : value
+        })
+        .join(' ')
 
 /**
  * @param {{ containerName: string, commands: string[], user?: string, env?: Record<string, string> }} param0
@@ -62,7 +68,7 @@ const executeInContainerNonInteractive = async ({
     env
 }) => {
     const [commandBin, ...commandsArgs] = commands
-    const fullCommand = joinCommandArgs([commandBin, ...commandsArgs])
+    const fullCommand = joinCommandArgs(commandBin, ...commandsArgs)
 
     return exec(
         {
@@ -95,7 +101,7 @@ const runInContainer = async (options, commands) => {
     const runResult = await run(
         {
             ...options,
-            command: joinCommandArgs([commandBin, ...commandsArgs]),
+            command: joinCommandArgs(commandBin, ...commandsArgs),
             tty: true,
             detach: false,
             rm: true
@@ -121,7 +127,7 @@ const runInContainerNonInteractive = async (options, commands) => {
     return run(
         {
             ...options,
-            command: joinCommandArgs([commandBin, ...commandsArgs]),
+            command: joinCommandArgs(commandBin, ...commandsArgs),
             tty: false,
             detach: false,
             rm: true

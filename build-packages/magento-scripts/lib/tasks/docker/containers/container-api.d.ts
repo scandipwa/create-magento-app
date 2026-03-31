@@ -70,10 +70,10 @@ export interface ContainerExecOptions {
     interactive?: boolean
 }
 
-export function exec<T>(
+export function exec<T extends boolean = false>(
     options: ContainerExecOptions,
     execOptions?: ExecAsyncSpawnOptions<T>
-): Promise<string>
+): Promise<T extends true ? { code: number; result: string } : string>
 
 export function execCommand(options: ContainerExecOptions): string[]
 
@@ -168,10 +168,10 @@ export interface ContainerRunOptions {
     platform?: string
 }
 
-export function run<T>(
+export function run<T extends boolean = false>(
     containerOptions: ContainerRunOptions,
     execOptions?: ExecAsyncSpawnOptions<T>
-): Promise<string>
+): Promise<T extends true ? { code: number; result: string } : string>
 
 export function runCommand(options: ContainerRunOptions): string[]
 
