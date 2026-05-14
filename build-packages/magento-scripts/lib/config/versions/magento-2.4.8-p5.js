@@ -5,7 +5,7 @@ const {
 } = require('../magento/required-php-extensions')
 const { php83 } = require('../services/php/versions')
 const { sslTerminator } = require('../services/ssl-terminator')
-const { varnish76 } = require('../services/varnish')
+const { varnish80 } = require('../services/varnish')
 const { repo } = require('../services/php/base-repo')
 const { nginx128 } = require('../services/nginx/versions')
 const { composer29 } = require('../services/composer/versions')
@@ -20,7 +20,7 @@ const { opensearch300 } = require('../services/opensearch/versions')
  * @type {import('../../../typings/common').MagentoVersionConfigurationFunction}
  */
 module.exports = ({ templateDir }) => ({
-    magentoVersion: '2.4.8-p4',
+    magentoVersion: '2.4.8-p5',
     configuration: {
         php: php83({
             templateDir,
@@ -33,7 +33,7 @@ module.exports = ({ templateDir }) => ({
         mariadb: mariadb114(),
         elasticsearch: elasticsearch817(),
         composer: composer29(),
-        varnish: varnish76({ templateDir }),
+        varnish: varnish80({ templateDir }),
         sslTerminator: sslTerminator({ templateDir }),
         maildev: maildev(),
         opensearch: opensearch300(),

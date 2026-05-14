@@ -5,5 +5,6 @@ module.exports = {
     mariadb106: require('./mariadb-10.6'),
     mariadb1011: require('./mariadb-10.11'),
     mariadb114: require('./mariadb-11.4'),
-    mariadb116: require('./mariadb-11.6')
+    mariadb116: require('./mariadb-11.6'),
+    mariadb118: require('./mariadb-11.8')
 }
