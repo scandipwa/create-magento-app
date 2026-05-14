@@ -26,7 +26,21 @@ const setupMagento = (options = {}) => ({
         if (options.onlyInstallMagento) {
             return task.newListr([
                 flushRedisConfig(),
-                migrateDatabase({ onlyInstallMagento: true })
+                migrateDatabase({ onlyInstallMagento: true }),
+                {
+                    title: 'Disabling Magento caches',
+                    task: (ctx, task) => {
+                        const { varnish } =
+                            ctx.config.overridenConfiguration.configuration
+                        return task.newListr(
+                            magentoTask(
+                                `cache:disable block_html layout${
+                                    !varnish.enabled ? ' full_page' : ''
+                                }`
+                            )
+                        )
+                    }
+                }
             ])
         }
 
@@ -35,6 +49,20 @@ const setupMagento = (options = {}) => ({
                 setupMagentoFilePermissions(),
                 updateEnvPHP(),
                 migrateDatabase(),
+                {
+                    title: 'Disabling Magento caches',
+                    task: (ctx, task) => {
+                        const { varnish } =
+                            ctx.config.overridenConfiguration.configuration
+                        return task.newListr(
+                            magentoTask(
+                                `cache:disable block_html layout${
+                                    !varnish.enabled ? ' full_page' : ''
+                                }`
+                            )
+                        )
+                    }
+                },
                 flushRedisConfig(),
                 {
                     title: 'Configuring Magento settings',

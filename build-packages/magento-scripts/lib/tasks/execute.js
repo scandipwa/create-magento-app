@@ -8,7 +8,9 @@ const { getCachedPorts } = require('../config/get-port-config')
 const checkPHPVersion = require('./requirements/php-version')
 const {
     executeInContainer,
-    runInContainer
+    executeInContainerNonInteractive,
+    runInContainer,
+    runInContainerNonInteractive
 } = require('../util/execute-in-container')
 const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
@@ -17,10 +19,11 @@ const { prepareFileSystem } = require('./file-system')
 
 /**
  *
- * @param {{ containerName: string, commands: string[] }} argv
+ * @param {{ containerName: string, commands: string[], nonInteractive?: boolean }} argv
  * @returns
  */
 const executeTask = async (argv) => {
+    const { nonInteractive = false } = argv
     const tasks = new Listr(
         [
             checkRequirements(),
@@ -35,8 +38,12 @@ const executeTask = async (argv) => {
         {
             concurrent: false,
             exitOnError: true,
-            ctx: { throwMagentoVersionMissing: true },
-            renderer: process.stdout.isTTY ? 'default' : 'silent',
+            ctx: /** @type {any} */ ({ throwMagentoVersionMissing: true }),
+            renderer: nonInteractive
+                ? 'silent'
+                : process.stdout.isTTY
+                ? 'default'
+                : 'silent',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )
@@ -45,10 +52,12 @@ const executeTask = async (argv) => {
     try {
         ctx = await tasks.run()
     } catch (e) {
-        logger.error(e.message || e)
+        logger.error(e instanceof Error ? e.message : String(e))
         process.exit(1)
     }
-    const containers = ctx.config.docker.getContainers(ctx.ports)
+    const containers = /** @type {Record<string, any>} */ (
+        ctx.config.docker.getContainers(ctx.ports)
+    )
     const services = Object.keys(containers)
 
     if (
@@ -71,6 +80,11 @@ const executeTask = async (argv) => {
                 ? containerResult[1]
                 : containerResult
 
+        if (nonInteractive && argv.commands.length === 0) {
+            logger.error('Non-interactive mode requires a command to execute')
+            process.exit(1)
+        }
+
         if (argv.commands.length === 0) {
             // if we have default connect command then use it
             if (container.connectCommand) {
@@ -88,6 +102,20 @@ const executeTask = async (argv) => {
         })
 
         if (containerList.length > 0) {
+            if (nonInteractive) {
+                const result = await executeInContainerNonInteractive({
+                    containerName: container.name,
+                    commands: argv.commands,
+                    user: container.user,
+                    env: container.execCommandEnv
+                })
+
+                if (result.result) {
+                    process.stdout.write(`${result.result}\n`)
+                }
+                process.exit(result.code)
+            }
+
             if (process.stdout.isTTY) {
                 logger.logN(
                     `Executing container ${logger.style.misc(
@@ -109,6 +137,21 @@ const executeTask = async (argv) => {
         }
 
         if (container.name.includes('php')) {
+            if (nonInteractive) {
+                const result = await runInContainerNonInteractive(
+                    {
+                        ...container,
+                        name: `${container.name}_exec-${Date.now()}`
+                    },
+                    argv.commands
+                )
+
+                if (result.result) {
+                    process.stdout.write(`${result.result}\n`)
+                }
+                process.exit(result.code)
+            }
+
             if (process.stdout.isTTY) {
                 logger.logN(
                     `Starting container ${logger.style.misc(

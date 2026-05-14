@@ -8,6 +8,13 @@ module.exports = (yargs) => {
         'exec <container name> [command...]',
         'Execute command in docker container',
         (yargs) => {
+            yargs.option('non-interactive', {
+                alias: 'n',
+                type: 'boolean',
+                default: false,
+                description:
+                    'Run in non-interactive mode (for AI terminals and scripts)'
+            })
             yargs.usage(`Usage: npm run exec <container name> [command...]
 
 Available containers:
@@ -19,13 +26,20 @@ Available containers:
 - mariadb
 - elasticsearch
 - maildev
-- varnish (if enabled)`)
+- varnish (if enabled)
+
+Options:
+  --non-interactive, -n  Run in non-interactive mode (no TTY required)`)
         },
-        async () => {
-            const [containerName, ...commands] = process.argv.slice(3)
+        async (argv) => {
+            const [containerName, ...commands] = process.argv
+                .slice(3)
+                .filter((arg) => arg !== '--non-interactive' && arg !== '-n')
+
             await executeTask({
                 containerName,
-                commands
+                commands,
+                nonInteractive: !!(argv.nonInteractive || argv.n)
             })
         }
     )
