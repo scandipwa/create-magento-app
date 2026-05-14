@@ -1,5 +1,6 @@
 const valkey80 = require('./valkey-8.0')
 const valkey81 = require('./valkey-8.1')
+const valkey90 = require('./valkey-9.0')
 
 module.exports = {
     redis50: require('./redis-5.0'),
@@ -8,5 +9,6 @@ module.exports = {
     redis70: require('./redis-7.0'),
     redis72: require('./redis-7.2'),
     valkey80,
-    valkey81
+    valkey81,
+    valkey90
 }
