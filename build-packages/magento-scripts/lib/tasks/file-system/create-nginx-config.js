@@ -1,6 +1,9 @@
 const path = require('path')
 const setConfigFile = require('../../util/set-config')
 const UnknownError = require('../../errors/unknown-error')
+const {
+    shouldUseStoreDomainMapping
+} = require('../../util/store-domains')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -35,7 +38,7 @@ const createNginxConfig = () => ({
         }
 
         const useStoreDomainMapping =
-            storeDomains && Object.keys(storeDomains).length > 1
+            shouldUseStoreDomainMapping(storeDomains)
 
         try {
             await setConfigFile({
