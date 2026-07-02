@@ -20,7 +20,8 @@ module.exports = (yargs) => {
         'Enter CLI (magento, php, composer).',
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {},
-        async () => {
+        async (args) => {
+            const silent = /** @type {boolean} */ (args.silent)
             const tasks = new Listr(
                 [
                     getMagentoVersionConfig(),
@@ -33,8 +34,11 @@ module.exports = (yargs) => {
                     concurrent: false,
                     exitOnError: true,
                     ctx: {
-                        throwMagentoVersionMissing: true
+                        throwMagentoVersionMissing: true,
+                        silent
                     },
+                    renderer:
+                        silent || !process.stdout.isTTY ? 'silent' : 'default',
                     rendererOptions: { collapse: false, clearOutput: true }
                 }
             )

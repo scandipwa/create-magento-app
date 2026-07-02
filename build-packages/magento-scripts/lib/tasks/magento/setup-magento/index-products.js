@@ -22,21 +22,23 @@ const indexProducts = () => ({
             ({ status }) => status !== 'valid'
         )
 
-        const doYouWantToSkipIndexingPart = await task.prompt({
-            type: 'Select',
-            message: `Do you want to index the products? (There are ${invalidIndexers.length} invalid indexers, total indexers: ${data[0].length})\n`,
-            choices: [
-                {
-                    name: 'index',
-                    message: 'Yes, index them please'
-                },
-                {
-                    name: 'skip',
-                    message:
-                        'Skip, do not index them. I will do it later myself'
-                }
-            ]
-        })
+        const doYouWantToSkipIndexingPart = ctx.nonInteractive
+            ? 'index'
+            : await task.prompt({
+                  type: 'Select',
+                  message: `Do you want to index the products? (There are ${invalidIndexers.length} invalid indexers, total indexers: ${data[0].length})\n`,
+                  choices: [
+                      {
+                          name: 'index',
+                          message: 'Yes, index them please'
+                      },
+                      {
+                          name: 'skip',
+                          message:
+                              'Skip, do not index them. I will do it later myself'
+                      }
+                  ]
+              })
 
         if (doYouWantToSkipIndexingPart === 'skip') {
             task.skip()

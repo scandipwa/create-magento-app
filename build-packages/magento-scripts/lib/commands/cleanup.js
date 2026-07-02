@@ -18,12 +18,16 @@ module.exports = (yargs) => {
             }),
         async (args) => {
             logger.warn('you should not use this command.')
+            const silent = /** @type {boolean} */ (args.silent)
             const tasks = new Listr(cleanup(), {
                 concurrent: false,
                 exitOnError: true,
                 ctx: {
-                    force: args.force
+                    force: args.force,
+                    silent
                 },
+                renderer:
+                    silent || !process.stdout.isTTY ? 'silent' : 'default',
                 rendererOptions: { collapse: false }
             })
 

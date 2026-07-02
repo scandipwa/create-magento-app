@@ -30,18 +30,16 @@ const joinCommandArgs = (...args) =>
  * @param {{ containerName: string, commands: string[], user?: string, env?: Record<string, string> }} param0
  */
 const executeInContainer = ({ containerName, commands, user, env }) => {
-    if (!process.stdin.isTTY) {
-        process.stderr.write('This app works only in TTY mode')
-        process.exit(1)
-    }
     const [commandBin, ...commandsArgs] = commands
+
+    const isTTY = process.stdin.isTTY
 
     const execArgs = execCommand({
         container: containerName,
         command: commandBin,
         user,
-        tty: true,
-        interactive: true,
+        tty: isTTY,
+        interactive: isTTY,
         env: env || {}
     })
     const [command, ...args] = execArgs
@@ -91,18 +89,14 @@ const executeInContainerNonInteractive = async ({
  * @param {string[]} commands
  */
 const runInContainer = async (options, commands) => {
-    if (!process.stdin.isTTY) {
-        process.stderr.write('This app works only in TTY mode')
-        process.exit(1)
-    }
-
+    const isTTY = process.stdin.isTTY
     const [commandBin, ...commandsArgs] = commands
 
     const runResult = await run(
         {
             ...options,
             command: joinCommandArgs(commandBin, ...commandsArgs),
-            tty: true,
+            tty: isTTY,
             detach: false,
             rm: true
         },

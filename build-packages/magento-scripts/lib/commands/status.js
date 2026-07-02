@@ -23,6 +23,7 @@ module.exports = (yargs) => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {},
         async (args) => {
+            const silent = /** @type {boolean} */ (args.silent)
             const tasks = new Listr(
                 [
                     checkRequirements(),
@@ -58,7 +59,9 @@ module.exports = (yargs) => {
                 {
                     concurrent: false,
                     exitOnError: false,
-                    ctx: { throwMagentoVersionMissing: true, ...args },
+                    ctx: { throwMagentoVersionMissing: true, ...args, silent },
+                    renderer:
+                        silent || !process.stdout.isTTY ? 'silent' : 'default',
                     rendererOptions: { collapse: false, clearOutput: false }
                 }
             )

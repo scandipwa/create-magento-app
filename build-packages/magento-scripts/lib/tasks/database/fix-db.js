@@ -36,11 +36,13 @@ const fixDB = () => ({
                     title: 'Deleting customers data',
                     skip: ({ withCustomersData }) => withCustomersData,
                     task: async (ctx, subTask) => {
-                        const deleteCustomerData = await subTask.prompt({
-                            type: 'Confirm',
-                            message: `Do you want to delete customers data (orders, customers and admin users) from this dump?
+                        const deleteCustomerData = ctx.nonInteractive
+                            ? false
+                            : await subTask.prompt({
+                                  type: 'Confirm',
+                                  message: `Do you want to delete customers data (orders, customers and admin users) from this dump?
 This will reduce database size and remove possible interference for your setup.`
-                        })
+                              })
 
                         if (!deleteCustomerData) {
                             subTask.skip()

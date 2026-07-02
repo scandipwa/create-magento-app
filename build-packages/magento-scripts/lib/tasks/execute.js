@@ -38,12 +38,9 @@ const executeTask = async (argv) => {
         {
             concurrent: false,
             exitOnError: true,
-            ctx: /** @type {any} */ ({ throwMagentoVersionMissing: true }),
-            renderer: nonInteractive
-                ? 'silent'
-                : process.stdout.isTTY
-                ? 'default'
-                : 'silent',
+            ctx: { throwMagentoVersionMissing: true, nonInteractive },
+            renderer:
+                nonInteractive || !process.stdout.isTTY ? 'silent' : 'default',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )

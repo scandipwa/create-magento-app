@@ -48,6 +48,8 @@ const getMagentoVersion = () => ({
                     const { magentoVersion: defaultMagentoVersion } =
                         defaultConfiguration
                     magentoVersion = defaultMagentoVersion
+                } else if (ctx.nonInteractive) {
+                    magentoVersion = defaultConfiguration.magento
                 } else {
                     let promptSkipper = false
                     const timer = async () => {

@@ -51,26 +51,28 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 response && response.length > 0 && response[0]
 
             if (usersWithUsernameAdmin && usersWithUsernameAdmin.length > 0) {
-                const confirmDeleteAdminUsers = await task.prompt({
-                    type: 'Select',
-                    message: `In order to install Magento in database you will need to delete admin user with username ${logger.style.command(
-                        'admin'
-                    )}`,
-                    choices: [
-                        {
-                            name: 'delete-all',
-                            message: `Delete all admin users (${logger.style.code(
-                                'Recommended'
-                            )})`
-                        },
-                        {
-                            name: 'delete-only-admin',
-                            message: `Delete only admin user with ${logger.style.command(
-                                'admin'
-                            )} username`
-                        }
-                    ]
-                })
+                const confirmDeleteAdminUsers = ctx.nonInteractive
+                    ? 'delete-all'
+                    : await task.prompt({
+                          type: 'Select',
+                          message: `In order to install Magento in database you will need to delete admin user with username ${logger.style.command(
+                              'admin'
+                          )}`,
+                          choices: [
+                              {
+                                  name: 'delete-all',
+                                  message: `Delete all admin users (${logger.style.code(
+                                      'Recommended'
+                                  )})`
+                              },
+                              {
+                                  name: 'delete-only-admin',
+                                  message: `Delete only admin user with ${logger.style.command(
+                                      'admin'
+                                  )} username`
+                              }
+                          ]
+                      })
 
                 await databaseConnection.query('SET FOREIGN_KEY_CHECKS = 0;')
 
@@ -183,7 +185,7 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                 --cache-backend='redis' \
                 --cache-backend-redis-server='${hostMachine}' \
                 --cache-backend-redis-port='${ports.redis}' \
-                --cache-backend-redis-db='0't \
+                --cache-backend-redis-db='0' \
                 --db-host='${hostMachine}:${ports.mariadb}' \
                 --db-name='${defaultMagentoDatabase}' \
                 --db-user='${defaultMagentoUser.user}' \
@@ -219,21 +221,23 @@ const installMagento = ({ isDbEmpty = false } = {}) => ({
                     )
                 )
             ) {
-                const confirmToWipeEnvPhp = await task.prompt({
-                    type: 'Confirm',
-                    message: `We detected that your encryption key in ${logger.style.file(
-                        'app/etc/env.php'
-                    )} file is not accepted by Magento installer.
+                const confirmToWipeEnvPhp = ctx.nonInteractive
+                    ? true
+                    : await task.prompt({
+                          type: 'Confirm',
+                          message: `We detected that your encryption key in ${logger.style.file(
+                              'app/etc/env.php'
+                          )} file is not accepted by Magento installer.
 To fix this issue we will need to ${logger.style.misc(
-                        'DELETE'
-                    )} ${logger.style.file(
-                        'app/etc/env.php'
-                    )} file. It will be recreated but existing encryption key but if you any custom configuration in it will be lost.
+                              'DELETE'
+                          )} ${logger.style.file(
+                              'app/etc/env.php'
+                          )} file. It will be recreated but existing encryption key but if you any custom configuration in it will be lost.
 
 Without this you will not be able to install Magento at this moment.
 
 Do you want to continue?`
-                })
+                      })
 
                 if (confirmToWipeEnvPhp) {
                     try {
