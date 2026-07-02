@@ -21,7 +21,6 @@ const { opensearch300 } = require('../services/opensearch/versions')
  */
 module.exports = ({ templateDir }) => ({
     magentoVersion: '2.4.8-p4',
-    isDefault: true,
     configuration: {
         php: php83({
             templateDir,
