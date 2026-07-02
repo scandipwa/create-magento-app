@@ -209,23 +209,25 @@ const checkComposerCredentials = () => ({
 
                 if (composerAuthInRcFile) {
                     doConfigure = false
-                    const loadCredentialsFrom = await task.prompt({
-                        type: 'Confirm',
-                        message: `We detected that you have ${logger.style.misc(
-                            'COMPOSER_AUTH'
-                        )} environment variable set in ${logger.style.file(
-                            shellConfigFilePath
-                        )} file,
+                    const loadCredentialsFrom = ctx.nonInteractive
+                        ? true
+                        : await task.prompt({
+                              type: 'Confirm',
+                              message: `We detected that you have ${logger.style.misc(
+                                  'COMPOSER_AUTH'
+                              )} environment variable set in ${logger.style.file(
+                                  shellConfigFilePath
+                              )} file,
 but we do not see this variable inside ${logger.style.code(
-                            'magento-scripts'
-                        )} process.
+                                  'magento-scripts'
+                              )} process.
 
 ${logger.style.misc(
     "! Don't forget to reload your shell after process is finished !"
 )}
 
 Would you like to load them now?`
-                    })
+                          })
 
                     if (loadCredentialsFrom) {
                         const credentialsLine = lines.find((line) =>
@@ -249,6 +251,19 @@ Would you like to load them now?`
             }
 
             if (doConfigure) {
+                if (ctx.nonInteractive) {
+                    throw new KnownError(
+                        `Composer credentials are required but were not found in ${logger.style.misc(
+                            '$COMPOSER_AUTH'
+                        )} or ${logger.style.file('./auth.json')}.
+
+Provide them non-interactively by setting the ${logger.style.misc(
+                            '$COMPOSER_AUTH'
+                        )} environment variable or by creating an ${logger.style.file(
+                            './auth.json'
+                        )} file, then run the command again.`
+                    )
+                }
                 return task.newListr(configureComposerCredentials())
             }
         }
@@ -306,20 +321,22 @@ Do you want to remove them now? File will be overwritten.`
                         : null
 
                 if (message) {
-                    const response = await task.prompt({
-                        message,
-                        type: 'Select',
-                        choices: [
-                            {
-                                name: 'overwrite',
-                                message: 'Yes, please!'
-                            },
-                            {
-                                name: 'skip',
-                                message: "No, I know what I'm doing"
-                            }
-                        ]
-                    })
+                    const response = ctx.nonInteractive
+                        ? 'skip'
+                        : await task.prompt({
+                              message,
+                              type: 'Select',
+                              choices: [
+                                  {
+                                      name: 'overwrite',
+                                      message: 'Yes, please!'
+                                  },
+                                  {
+                                      name: 'skip',
+                                      message: "No, I know what I'm doing"
+                                  }
+                              ]
+                          })
 
                     if (response === 'overwrite') {
                         if (repoMagentoCredentials.username) {

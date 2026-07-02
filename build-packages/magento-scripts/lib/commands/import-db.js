@@ -42,6 +42,7 @@ module.exports = (yargs) => {
                 concurrent: false,
                 renderer:
                     /** @type {boolean} */ (args.silent) ||
+                    /** @type {boolean} */ (args.nonInteractive) ||
                     !process.stdout.isTTY
                         ? 'silent'
                         : 'default',
