@@ -68,7 +68,7 @@ module.exports = (yargs) => {
                     alias: 'n',
                     describe: 'Open browser after command finished',
                     type: 'boolean',
-                    default: true
+                    default: false
                 })
                 .option('skip-setup', {
                     alias: 's',
