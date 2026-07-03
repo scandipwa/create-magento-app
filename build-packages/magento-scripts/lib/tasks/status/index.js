@@ -8,6 +8,16 @@ const { getArchSync } = require('../../util/arch')
 const ConsoleBlock = require('../../util/console-block')
 const { getInstanceMetadata } = require('../../util/instance-metadata')
 
+// eslint-disable-next-line no-control-regex
+const consoleStyleReplacer = /[]\[\S+?m/g
+
+/**
+ * chalk already drops styling when stdout is not a TTY, but strip defensively
+ * so the plain output stays clean even under FORCE_COLOR.
+ * @param {string} str
+ */
+const stripStyle = (str) => String(str).replace(consoleStyleReplacer, '')
+
 /**
  * @param {any} str
  * @returns {str is string}
@@ -230,9 +240,10 @@ const prettyStatus = async (ctx) => {
 
     Object.values(volumes)
         .map((volume) => {
-            volume.volumeData = systemDFData.Volumes.find(
-                (v) => v.Name === volume.name
-            )
+            volume.volumeData =
+                systemDFData &&
+                systemDFData.Volumes &&
+                systemDFData.Volumes.find((v) => v.Name === volume.name)
 
             return volume
         })
@@ -273,4 +284,174 @@ const prettyStatus = async (ctx) => {
     block.log()
 }
 
-module.exports = { prettyStatus }
+/**
+ * Plain-text status summary for non-interactive environments (AI agents, CI,
+ * pipes). No box drawing or ANSI styling — just the facts an agent needs to
+ * act, plus the commands to run next.
+ * @param {import('../../../typings/context').ListrContext & { containers: ReturnType<Awaited<ReturnType<import('../../config/docker')>>['getContainers']> }} ctx
+ */
+const simpleStatus = (ctx) => {
+    const {
+        config: { baseConfig },
+        magentoVersion,
+        composerVersion,
+        dockerVersion,
+        containers,
+        systemDFData,
+        verbose
+    } = ctx
+
+    const lines = []
+
+    lines.push(
+        `magento-scripts ${packageVersion} — status (non-interactive)`,
+        '',
+        `Project: ${baseConfig.prefix}`,
+        `Location: ${process.cwd()}`,
+        `Magento: ${magentoVersion || 'unknown'}`,
+        `PHP: ${ctx.phpVersion || 'unknown'}`,
+        `Composer: ${composerVersion || 'unknown'}`,
+        `Docker: ${dockerVersion || 'unknown'}`,
+        `Platform: ${ctx.platform} (${getArchSync()})`
+    )
+
+    lines.push(
+        `Platform version: ${ctx.platformVersion || 'unknown'}`,
+        `CGroup version: ${ctx.cgroupVersion || 'unknown'}`
+    )
+
+    const projectCreatedAt = getProjectCreatedAt()
+    if (projectCreatedAt) {
+        lines.push(
+            `Project created: ${projectCreatedAt.toDateString()} ${projectCreatedAt.toTimeString()}`
+        )
+    }
+
+    lines.push('', 'Containers:')
+
+    let anyRunning = false
+
+    Object.values(containers).forEach((container) => {
+        const state = container.status && container.status.State
+        let status
+
+        if (state && state.Health && state.Status === 'running') {
+            status = `running (${state.Health.Status})`
+            anyRunning = true
+        } else if (state && state.Status && state.Status !== 'exited') {
+            status = state.Status
+            if (state.Status === 'running') {
+                anyRunning = true
+            }
+        } else {
+            status = 'not running'
+        }
+
+        lines.push(`  ${container._ || container.name}: ${status}`)
+
+        lines.push(`    Name: ${container.name}`)
+
+        const image =
+            container.status &&
+            container.status.Config &&
+            container.status.Config.Image
+                ? container.status.Config.Image
+                : container.image
+        lines.push(`    Image: ${image}`, `    Network: ${container.network}`)
+
+        if (
+            status !== 'not running' &&
+            container.forwardedPorts &&
+            container.forwardedPorts.length > 0
+        ) {
+            lines.push('    Port forwarding:')
+            container.forwardedPorts.forEach((port) => {
+                const { host, hostPort, containerPort } = parsePort(port)
+                if (container.network !== 'host') {
+                    lines.push(
+                        `      ${host}:${hostPort} -> ${containerPort} (host -> container)`
+                    )
+                } else {
+                    lines.push(
+                        `      Running on host network - ${host}:${hostPort}`
+                    )
+                }
+            })
+        }
+
+        if (container.env && Object.keys(container.env).length > 0) {
+            lines.push('    Environment variables:')
+            for (const [envName, envValue] of Object.entries(container.env)) {
+                lines.push(`      ${envName}=${envValue}`)
+            }
+        }
+
+        if (container.description) {
+            lines.push('    Description:')
+            container.description.split('\n').forEach((line) => {
+                lines.push(`      ${stripStyle(line)}`)
+            })
+        }
+    })
+
+    lines.push('', 'Volumes:')
+
+    const { volumes } = ctx.config.docker
+
+    Object.values(volumes).forEach((volume) => {
+        const volumeData =
+            systemDFData &&
+            systemDFData.Volumes &&
+            systemDFData.Volumes.find((v) => v.Name === volume.name)
+
+        lines.push(`  ${volume.name}`)
+
+        if (volumeData) {
+            lines.push(`    Size: ${volumeData.Size}`)
+        }
+
+        if (ctx.isDockerDesktop && volume.opt && volume.opt.device) {
+            lines.push(
+                `    Mountpoint: ${volume.opt.device.replace(
+                    process.cwd(),
+                    '<project location>'
+                )}`
+            )
+        }
+    })
+
+    if (!verbose) {
+        lines.push('  (volume sizes omitted — pass --verbose to include them)')
+    }
+
+    const instanceMetadata = getInstanceMetadata(ctx)
+
+    lines.push('', 'Frontend:')
+    instanceMetadata.frontend.forEach(({ title, text }) => {
+        lines.push(`  ${stripStyle(title)}: ${stripStyle(text)}`)
+    })
+
+    lines.push('', 'Admin:')
+    instanceMetadata.admin.forEach(({ title, text }) => {
+        lines.push(`  ${stripStyle(title)}: ${stripStyle(text)}`)
+    })
+
+    lines.push('', 'MailDev:')
+    instanceMetadata.maildev.forEach(({ title, text }) => {
+        lines.push(`  ${stripStyle(title)}: ${stripStyle(text)}`)
+    })
+
+    lines.push('')
+    if (!anyRunning) {
+        lines.push(
+            'Environment is not running. Start it with: magento-scripts start'
+        )
+    }
+    lines.push(
+        'Run Magento CLI: magento-scripts exec php bin/magento <command>'
+    )
+
+    logger.log(lines.join('\n'))
+}
+
+module.exports = { prettyStatus, simpleStatus }
