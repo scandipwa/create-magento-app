@@ -53,6 +53,10 @@ sample-packages/*/app/functions.php
 !sample-packages/*/package.json
 !sample-packages/*/README.md
 !sample-packages/*/.gitignore
+!sample-packages/*/CLAUDE.md
+!sample-packages/*/AGENTS.md
+!sample-packages/*/.agents
+!sample-packages/*/.claude
 
 !**/composer.*
 # !**/cma.js
