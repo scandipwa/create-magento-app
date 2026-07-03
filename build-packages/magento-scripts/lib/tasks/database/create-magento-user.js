@@ -1,4 +1,5 @@
 const mysql2 = require('mysql2/promise')
+const sleep = require('../../util/sleep')
 const defaultMagentoUser = require('./default-magento-user')
 
 /**
@@ -8,12 +9,31 @@ const createMagentoUser = () => ({
     title: 'Creating Magento user',
     task: async (ctx, task) => {
         const { mariadb } = ctx.config.docker.getContainers()
-        const connection = await mysql2.createConnection({
-            host: '127.0.0.1',
-            port: ctx.ports.mariadb,
-            user: 'root',
-            password: mariadb.env.MARIADB_ROOT_PASSWORD
-        })
+
+        /** @type {import('mysql2/promise').Connection | undefined} */
+        let connection
+        const maxTries = 20
+
+        for (let tries = 1; tries <= maxTries; tries++) {
+            try {
+                connection = await mysql2.createConnection({
+                    host: '127.0.0.1',
+                    port: ctx.ports.mariadb,
+                    user: 'root',
+                    password: mariadb.env.MARIADB_ROOT_PASSWORD
+                })
+                break
+            } catch (e) {
+                if (tries === maxTries) {
+                    throw e
+                }
+                await sleep(1000)
+            }
+        }
+
+        if (!connection) {
+            throw new Error('Failed to connect to MariaDB')
+        }
 
         const result = await connection.query(
             'select Host, User from mysql.user;'

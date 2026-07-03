@@ -89,14 +89,19 @@ const createApp = async (options) => {
         destination,
         path.join(__dirname, 'template'),
         (filesystem, templatePath, destinationPath) => {
+            // copy the entire template tree verbatim, including dotfiles and
+            // directories like .claude and .agents. `dot: true` is required for
+            // globby to pick up the dot-prefixed entries. Files are copied as-is
+            // (no EJS processing), so docs that contain template-like syntax are
+            // preserved.
+            filesystem.copy(templatePath(), destinationPath(), {
+                globOptions: { dot: true }
+            })
+
+            // render the files that use EJS placeholders on top of the copies
             filesystem.copyTpl(
                 templatePath('package.json'),
                 destinationPath('package.json'),
-                templateOptions
-            )
-            filesystem.copyTpl(
-                templatePath('cma.js'),
-                destinationPath('cma.js'),
                 templateOptions
             )
         }

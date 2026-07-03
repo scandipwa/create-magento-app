@@ -180,16 +180,18 @@ const enableMagentoComposerPlugins = () => ({
                 })
             }
 
-            const answerForEnablingPlugins = await task.prompt({
-                type: 'Select',
-                message: `Composer 2.2 requires manually allowing composer-plugins to run.
+            const answerForEnablingPlugins = ctx.nonInteractive
+                ? 'all-individual'
+                : await task.prompt({
+                      type: 'Select',
+                      message: `Composer 2.2 requires manually allowing composer-plugins to run.
 Magento requires the following plugins to correctly operate:
 
 ${missingPluginsFromAllowPlugins.map((p) => logger.style.code(p)).join('\n')}
 
 Do you want to enable them all or disable some of them?`,
-                choices: pluginOptions
-            })
+                      choices: pluginOptions
+                  })
 
             switch (answerForEnablingPlugins.toLowerCase()) {
                 case 'all': {

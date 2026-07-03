@@ -49,13 +49,15 @@ const checkConfigurationFile = () => ({
             }
 
             if (!magentoConfiguration) {
-                const magentoEdition = await task.prompt({
-                    type: 'Select',
-                    message: `Please select Magento edition you want to install.
+                const magentoEdition = ctx.nonInteractive
+                    ? 'Community'
+                    : await task.prompt({
+                          type: 'Select',
+                          message: `Please select Magento edition you want to install.
 
 Note that Enterprise edition requires Magento Enterprise License keys.`,
-                    choices: ['Community', 'Enterprise']
-                })
+                          choices: ['Community', 'Enterprise']
+                      })
 
                 magentoConfiguration = deepmerge(defaultMagentoConfig, {
                     edition: magentoEdition.toLowerCase()

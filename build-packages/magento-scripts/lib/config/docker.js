@@ -232,7 +232,8 @@ module.exports = async (ctx, overridenConfiguration, baseConfig) => {
                 name: `${prefix}_php_with_xdebug`,
                 connectCommand: ['/bin/sh'],
                 execCommandEnv: {
-                    XDEBUG_TRIGGER: 'PHPSTORM'
+                    XDEBUG_TRIGGER: 'PHPSTORM',
+                    XDEBUG_SESSION: 'PHPSTORM'
                 },
                 dependsOn: ['mariadb', 'redis', 'elasticsearch'],
                 user:

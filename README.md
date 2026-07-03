@@ -19,7 +19,7 @@ The powerful [XDebug tool](https://docs.create-magento-app.com/usage-guide/enabl
 
 ## Creating an App
 
-**You’ll need to have Node >= 12 on your local development machine**. You can use [n](https://www.npmjs.com/package/n) to switch Node versions between different projects.
+**You’ll need to have Node >= 16 on your local development machine**. You can use [n](https://www.npmjs.com/package/n) to switch Node versions between different projects.
 
 **You’ll need to install platform specific dependencies** for [Linux](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-linux), [MacOS](https://docs.create-magento-app.com/getting-started/prerequisites/installation-on-macos) and [Windows](https://docs.create-magento-app.com/getting-started/prerequisites/windows-requirements).
 
@@ -49,6 +49,15 @@ yarn create magento-app my-app
 
 `yarn create` is available in Yarn 0.25+
 
+## AI agent skill 🤖
+
+Working on a Create Magento App project with an AI coding agent (Claude Code, Cursor, etc.)? Install the **`magento-scripts`** skill so the agent knows to run every PHP/Composer/`bin/magento`/SQL command through Docker via the project's `exec` script — never on the host.
+
+Using [`skills`](https://github.com/vercel-labs/skills):
+
+```bash
+npx skills@latest add scandipwa/create-magento-app
+```
 
 ## Contribution
 

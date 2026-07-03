@@ -123,6 +123,14 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
     yargs.scriptName('magento-scripts')
     yargs.version(false)
 
+    yargs.option('silent', {
+        alias: 'q',
+        describe:
+            'Suppress all task progress output (Listr silent renderer). Enabled automatically when stdout is not a TTY.',
+        type: 'boolean',
+        default: false
+    })
+
     // Initialize program commands
     commands.forEach((command) => command(yargs))
 
