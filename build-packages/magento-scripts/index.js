@@ -6,7 +6,6 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const semver = require('semver')
 const isInstalledGlobally = require('is-installed-globally')
 const isRunningRoot = require('./lib/util/is-running-root')
-const ensureAgentsMd = require('./lib/util/ensure-agents-md')
 
 if (isRunningRoot()) {
     logger.error('Root privileges detected!')
@@ -27,8 +26,6 @@ If you are experiencing problems with ${logger.style.misc(
 
     process.exit(1)
 }
-
-ensureAgentsMd()
 
 const commands = [
     require('./lib/commands/link'),
