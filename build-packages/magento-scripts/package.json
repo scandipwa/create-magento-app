@@ -58,5 +58,8 @@
     "devDependencies": {
         "@types/node": "^20.14.11",
         "@types/yargs": "^17.0.32"
+    },
+    "scripts": {
+        "test:store-domains": "node lib/util/store-domains.test.js"
     }
 }

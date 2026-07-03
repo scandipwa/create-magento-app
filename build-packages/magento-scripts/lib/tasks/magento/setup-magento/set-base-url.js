@@ -1,5 +1,8 @@
 const { updateTableValues, databaseQuery } = require('../../../util/database')
 const KnownError = require('../../../errors/known-error')
+const {
+    resolveStoreDomainsForScopes
+} = require('../../../util/store-domains')
 
 /**
  * @param {number} scopeId
@@ -129,25 +132,10 @@ const setBaseUrl = () => ({
             )
         }
 
-        const storeDomainsWithMapping = Object.entries(storeDomains).reduce(
-            (acc, [key, val]) => {
-                const entity = entities.find(
-                    /** @param {{ code: string }} entity */
-                    (entity) => entity.code === key
-                )
-                if (entity) {
-                    return {
-                        ...acc,
-                        [entity.code]: {
-                            scopeId: entity[idField],
-                            domain: val
-                        }
-                    }
-                }
-
-                return acc
-            },
-            {}
+        const storeDomainsWithMapping = resolveStoreDomainsForScopes(
+            storeDomains,
+            entities,
+            idField
         )
 
         // Check for missing store codes when runType is 'store'
