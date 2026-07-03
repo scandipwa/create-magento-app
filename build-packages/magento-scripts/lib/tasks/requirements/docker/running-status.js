@@ -94,7 +94,7 @@ const checkDockerStatusMacOS = () => ({
                             } else {
                                 ready = true
                             }
-                        } catch (e) {
+                        } catch {
                             //
                         }
                     }

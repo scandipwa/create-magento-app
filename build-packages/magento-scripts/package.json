@@ -60,6 +60,7 @@
         "@types/yargs": "^17.0.32"
     },
     "scripts": {
+        "lint": "oxlint",
         "test:store-domains": "node lib/util/store-domains.test.js"
     }
 }

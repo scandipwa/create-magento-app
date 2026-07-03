@@ -1,0 +1,32 @@
+{
+    "$schema": "../../node_modules/oxlint/configuration_schema.json",
+    "env": {
+        "node": true,
+        "es2022": true
+    },
+    "globals": {
+        "verbose": "readonly",
+        "NodeJS": "readonly",
+        "BufferEncoding": "readonly"
+    },
+    "categories": {
+        "correctness": "error"
+    },
+    "ignorePatterns": [
+        "**/node_modules/**",
+        "**/lib/config/templates/**",
+        "**/typings/**",
+        "**/*.d.ts"
+    ],
+    "rules": {
+        "no-unused-vars": [
+            "warn",
+            {
+                "argsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_"
+            }
+        ],
+        "unicorn/no-useless-fallback-in-spread": "off"
+    }
+}

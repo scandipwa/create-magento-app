@@ -7,7 +7,7 @@ const fs = require('fs')
 const pathExistsSync = (path) => {
     try {
         fs.accessSync(path, fs.constants.F_OK)
-    } catch (e) {
+    } catch {
         return false
     }
 

@@ -3,68 +3,20 @@
     "name": "create-magento-app",
     "scripts": {
         "check-types": "tsc --noemit --project ./build-packages/magento-scripts",
-        "lint-eslint": "eslint ./build-packages --cache --no-error-on-unmatched-pattern --ext .js",
-        "lint": "npm run lint-eslint",
+        "lint": "oxlint --config build-packages/magento-scripts/.oxlintrc.json build-packages/magento-scripts",
         "publish": "lerna publish --exact --no-private",
         "publish:alpha": "lerna publish --preid alpha --no-private --dist-tag alpha",
-        "postinstall": "lerna bootstrap && husky install",
+        "postinstall": "lerna bootstrap",
         "clean": "lerna clean --yes",
-        "generate-changelog": "gren changelog --override",
-        "prepare": "husky install"
+        "generate-changelog": "gren changelog --override"
     },
     "devDependencies": {
         "github-release-notes": "^0.17.3",
-        "husky": "^7.0.0",
         "lerna": "^4.0.0",
         "@types/node": "^18.11.7",
-        "@typescript-eslint/eslint-plugin": "^5.41.0",
-        "@typescript-eslint/parser": "^5.41.0",
-        "eslint": "^8.26.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-config-standard": "^17.0.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-n": "^15.3.0",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "eslint-plugin-promise": "^6.1.1",
+        "oxlint": "1.60.0",
         "prettier": "^2.7.1",
-        "standard": "^17.0.0",
         "typescript": "^4.8.4"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run lint"
-        }
-    },
-    "eslintConfig": {
-        "root": true,
-        "env": {
-            "node": true
-        },
-        "extends": [
-            "eslint:recommended",
-            "plugin:@typescript-eslint/recommended",
-            "standard",
-            "plugin:prettier/recommended"
-        ],
-        "parser": "@typescript-eslint/parser",
-        "parserOptions": {
-            "ecmaVersion": 2022,
-            "sourceType": "module"
-        },
-        "ignorePatterns": [
-            "./sample-packages/**",
-            "./container-images/**",
-            "./docker-actions/**",
-            "**/node_modules/**",
-            "build-packages/magento-scripts/lib/config/templates/**",
-            "**/*.d.ts"
-        ],
-        "rules": {
-            "no-unused-vars": "off",
-            "@typescript-eslint/no-unused-vars": "warn",
-            "@typescript-eslint/no-var-requires": "off"
-        }
     },
     "workspaces": [
         "build-packages/*",

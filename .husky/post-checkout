@@ -33,12 +33,13 @@ OLD_BRANCH=$(git name-rev --name-only "$OLD_REF" 2>/dev/null | sed 's/^remotes\/
 NEW_BRANCH=$(git name-rev --name-only "$NEW_REF" 2>/dev/null | sed 's/^remotes\///' || echo "$NEW_REF")
 
 MESSAGE_TITLE="Composer dependencies changed"
-MESSAGE_BODY="Changes detected in: $CHANGED_DIR\nBranch: $OLD_BRANCH → $NEW_BRANCH\n\nPlease run composer install or npm run start"
+MESSAGE_BODY="Changes detected in: $CHANGED_DIR\nBranch: $OLD_BRANCH → $NEW_BRANCH\n\nPlease run composer install (in CLI) or npm run start"
 
 # Cross-platform desktop notification with multiple fallbacks
 send_notification() {
   local title="$1"
   local body="$2"
+  local mac_alert_file="/tmp/.git_postcheckout_alert_shown"
 
   # Try Linux notify-send first
   if command -v notify-send >/dev/null 2>&1; then
@@ -46,15 +47,25 @@ send_notification() {
     return 0
   fi
 
-  # Try macOS terminal-notifier
+  # Try macOS terminal-notifier (alert once, then notification)
   if command -v terminal-notifier >/dev/null 2>&1; then
-    terminal-notifier -title "$title" -message "$body" -timeout 8
+    if [ ! -f "$mac_alert_file" ]; then
+      terminal-notifier -title "$title" -message "$body" -sound Basso
+      touch "$mac_alert_file"
+    else
+      terminal-notifier -title "$title" -message "$body" -timeout 8
+    fi
     return 0
   fi
 
-  # Try macOS osascript (AppleScript) as fallback
+  # Try macOS osascript (AppleScript) as fallback (alert once, then notification)
   if command -v osascript >/dev/null 2>&1; then
-    osascript -e "display notification \"$body\" with title \"$title\""
+    if [ ! -f "$mac_alert_file" ]; then
+      osascript -e "display alert \"$title\" message \"$body\""
+      touch "$mac_alert_file"
+    else
+      osascript -e "display notification \"$body\" with title \"$title\""
+    fi
     return 0
   fi
 
@@ -64,3 +75,8 @@ send_notification() {
 }
 
 send_notification "$MESSAGE_TITLE" "$MESSAGE_BODY"
+
+echo ""
+echo "$MESSAGE_TITLE"
+echo ""
+echo "$MESSAGE_BODY"

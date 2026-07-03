@@ -23,7 +23,7 @@ const rosettaTranslatedContainers =
  */
 const volumeDirectives = (directives) => {
     const directivesResult = Object.entries(directives)
-        .filter(([name, value]) => value === true)
+        .filter(([, value]) => value === true)
         .map(([name]) => name)
         .join(',')
 

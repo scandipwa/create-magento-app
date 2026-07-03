@@ -38,7 +38,8 @@ const readymageSSH = () => ({
                     ...databaseDumpCommandWithOptions,
                     '--no-data',
                     '--result-file=dump-1.sql',
-                    ...[...orderTables, ...customerTables]
+                    ...orderTables,
+                    ...customerTables
                 ].join(' ')
 
                 await ssh.execCommand(secondCommand)

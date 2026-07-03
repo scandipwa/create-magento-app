@@ -67,7 +67,7 @@ const execAsyncSpawn = (
                 .split('\n')
                 .map((str) => str.trim())
                 .forEach((str) => {
-                    callback && callback(str)
+                    callback?.(str)
                 })
             if (logOutput) {
                 newData

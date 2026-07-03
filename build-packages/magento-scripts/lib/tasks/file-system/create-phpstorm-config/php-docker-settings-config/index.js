@@ -18,14 +18,12 @@ const setupPhpDockerSettingsConfig = () => ({
             )
             const phpDockerSettingsConfigs =
                 phpDockerSettingsConfigContent.project.component
-            const hasChanges = await Promise.all([
-                setupPHPDockerContainerSettingsConfig(
-                    phpDockerSettingsConfigs,
-                    ctx
-                )
-            ])
+            const hasChanges = await setupPHPDockerContainerSettingsConfig(
+                phpDockerSettingsConfigs,
+                ctx
+            )
 
-            if (hasChanges.includes(true)) {
+            if (hasChanges === true) {
                 await buildXmlFile(
                     phpDockerSettingsConfig.path,
                     phpDockerSettingsConfigContent
@@ -41,9 +39,7 @@ const setupPhpDockerSettingsConfig = () => ({
         const phpDockerSettingsConfigs =
             phpDockerSettingsConfigContent.project.component
 
-        await Promise.all([
-            setupPHPDockerContainerSettingsConfig(phpDockerSettingsConfigs, ctx)
-        ])
+        await setupPHPDockerContainerSettingsConfig(phpDockerSettingsConfigs, ctx)
 
         await buildXmlFile(
             phpDockerSettingsConfig.path,

@@ -28,7 +28,7 @@ const isJSON = (str) => {
         if (typeof result === 'object') {
             return true
         }
-    } catch (e) {
+    } catch {
         //
     }
 

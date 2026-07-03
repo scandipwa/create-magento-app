@@ -1,0 +1,64 @@
+# Lint the magento-scripts package with oxlint on pull requests.
+#
+# Only files changed in the PR are linted (fast, focused). oxlint runs from the
+# repo root with `--format=github`, so its annotations carry repo-root-relative
+# paths and land directly on the PR diff — no path rewriting needed. Errors
+# (the `correctness` category) fail the job; `no-unused-vars` is a warning, so it
+# annotates the diff without failing.
+name: Lint
+
+on:
+  pull_request:
+    paths:
+      - 'build-packages/magento-scripts/**'
+      - '.github/workflows/lint.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  oxlint:
+    name: oxlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # need the PR base commit to diff changed files
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24' # current Active LTS; pinned so a future LTS bump can't break CI
+
+      - name: Oxlint (changed files)
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          # Keep in sync with the "oxlint" devDependency in the root package.json.
+          OXLINT_VERSION: '1.60.0'
+        run: |
+          # Files changed in this PR under the package, repo-root-relative. The
+          # extra greps mirror the ignorePatterns in .oxlintrc.json so we never
+          # hand oxlint a list of only-ignored files (that exits non-zero with
+          # "No files found to lint").
+          mapfile -t files < <(
+            git diff --name-only --diff-filter=d "${BASE_SHA}" -- build-packages/magento-scripts \
+              | grep -E '\.(js|cjs|mjs|jsx|ts|tsx|mts|cts)$' \
+              | grep -vE '\.d\.ts$' \
+              | grep -vE '(^|/)(node_modules|typings)/' \
+              | grep -vE '(^|/)lib/config/templates/' \
+              || true
+          )
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No changed lintable files in build-packages/magento-scripts — nothing to lint."
+            exit 0
+          fi
+          printf 'Linting: %s\n' "${files[@]}"
+          npx --yes "oxlint@${OXLINT_VERSION}" \
+            --config build-packages/magento-scripts/.oxlintrc.json \
+            --format=github \
+            "${files[@]}"
