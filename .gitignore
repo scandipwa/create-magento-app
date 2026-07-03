@@ -13,7 +13,6 @@
 
 # AI/planning local dirs
 .planning/
-.claude/
 
 # misc
 .DS_Store
