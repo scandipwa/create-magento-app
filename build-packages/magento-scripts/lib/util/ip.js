@@ -39,7 +39,7 @@ const getExternalIpAddress = async () => {
                 ip = response.data
                 break
             }
-        } catch (e) {
+        } catch {
             //
         }
     }

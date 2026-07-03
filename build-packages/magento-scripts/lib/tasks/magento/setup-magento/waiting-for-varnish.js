@@ -80,7 +80,7 @@ const waitingForVarnish = () => ({
                 } else {
                     break
                 }
-            } catch (e) {
+            } catch {
                 tries++
                 await sleep(200)
             }
@@ -155,7 +155,7 @@ Do you want to try resolving this issue by replacing ${logger.style.file(
                                 connectionFixed = true
                                 break
                             }
-                        } catch (e) {
+                        } catch {
                             await sleep(200)
                         }
                     }

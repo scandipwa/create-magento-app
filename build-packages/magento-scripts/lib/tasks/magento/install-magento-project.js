@@ -283,7 +283,7 @@ const installMagentoProject = () => ({
             isVendorFolderCorrupted = await getIsVendorFolderCorrupted(
                 baseConfig.magentoDir
             )
-        } catch (e) {
+        } catch {
             // ignore error just in case
         }
 

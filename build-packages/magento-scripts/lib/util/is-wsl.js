@@ -22,7 +22,7 @@ const getIsWsl = async () => {
         const procVersion = await fs.promises.readFile('/proc/version', 'utf8')
 
         return procVersion.toLowerCase().includes('microsoft')
-    } catch (e) {
+    } catch {
         return false
     }
 }

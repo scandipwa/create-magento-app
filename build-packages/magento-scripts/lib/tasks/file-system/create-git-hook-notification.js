@@ -11,7 +11,7 @@ function isExec(p) {
     try {
         fs.accessSync(p, fs.constants.X_OK)
         return true
-    } catch (e) {
+    } catch {
         return false
     }
 }

@@ -168,7 +168,7 @@ class Analytics {
 
         try {
             this.setClientIdentifier(generateUUID())
-        } catch (e) {
+        } catch {
             this.setClientIdentifier(`${Date.now()}`)
         }
     }
@@ -233,7 +233,7 @@ class Analytics {
             analyticsParameters.session = {
                 ipOverride: await getExternalIpAddress()
             }
-        } catch (e) {
+        } catch {
             // Do nothing
         }
 

@@ -172,7 +172,7 @@ const startContainers = () => ({
 
         const missingContainers = Object.entries(containers)
             .filter(
-                ([nameWithoutPrefix, { name }]) =>
+                ([, { name }]) =>
                     !containerList.some((c) => c.Names === name)
             )
             .map(([nameWithoutPrefix, containerOptions]) => ({

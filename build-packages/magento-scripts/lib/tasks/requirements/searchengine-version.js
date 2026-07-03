@@ -79,7 +79,7 @@ const checkSearchEngineVersion = () => ({
                                             : 'OpenSearch'
                                     } version ${searchEngineVersion} in container`
                                 }
-                            } catch (e) {
+                            } catch {
                                 subTask.skip()
                             }
                         }

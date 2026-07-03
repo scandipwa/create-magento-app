@@ -66,7 +66,7 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
                 ...options
             })
             return result.includes('enabled')
-        } catch (e) {
+        } catch {
             return false
         }
     },
@@ -81,7 +81,7 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
             })
 
             return result.includes('active (running)')
-        } catch (e) {
+        } catch {
             return false
         }
     },
@@ -101,7 +101,7 @@ const systemctlControl = (serviceName, defaultOptions = {}) => ({
             const result = await execAsyncSpawn(command)
 
             return result === '1'
-        } catch (e) {
+        } catch {
             return false
         }
     }

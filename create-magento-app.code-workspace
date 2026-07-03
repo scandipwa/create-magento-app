@@ -19,7 +19,7 @@
 	],
 	"settings": {
 		"editor.codeActionsOnSave": {
-			"source.fixAll.eslint": "explicit"
+			"source.fixAll.oxc": "explicit"
 		},
 		"debug.javascript.autoAttachFilter": "onlyWithFlag",
 		"debug.javascript.terminalOptions": {

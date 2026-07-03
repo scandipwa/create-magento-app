@@ -25,7 +25,7 @@ const getSystemConfig = async ({ validate = true } = {}) => {
         let userSystemConfigParsed
         try {
             userSystemConfigParsed = JSON.parse(userSystemConfig)
-        } catch (e) {
+        } catch {
             throw new KnownError(
                 `System configuration file is not a valid JSON!\n\nFile location: ${systemConfigPath}`
             )
@@ -61,7 +61,7 @@ const getSystemConfigSync = ({ validate = true } = {}) => {
         let userSystemConfigParsed
         try {
             userSystemConfigParsed = JSON.parse(userSystemConfig)
-        } catch (e) {
+        } catch {
             throw new KnownError(
                 `System configuration file is not a valid JSON!\n\nFile location: ${systemConfigPath}`
             )

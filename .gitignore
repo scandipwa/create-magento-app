@@ -26,12 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 
 runtime-packages
-.eslintcache
 themes/*
 
 # build specifc files
 lerna-debug.log
-.eslintcache
 
 **/Magento_Theme/
 **/vendor

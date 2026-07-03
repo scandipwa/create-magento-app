@@ -30,7 +30,7 @@ const buildTheme = ({ themePath }) => ({
                               task.output = t
                           }
                 })
-            } catch (e) {
+            } catch {
                 throw new UnknownError(`We were unable to install theme dependencies in ${themePath} using ${logger.style.code(
                     commandToInstallDependencies
                 )} command!

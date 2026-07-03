@@ -115,7 +115,7 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
             process.isOutOfDateVersion = true
             process.isOutOfDateVersionMessage = message
         }
-    } catch (e) {
+    } catch {
         logger.warn(`Package ${logger.style.misc(name)} is not yet published.`)
         logger.log() // add empty line
     }
