@@ -15,6 +15,9 @@ const shouldUseYarn = require('@scandipwa/scandipwa-dev-utils/should-use-yarn')
 // @ts-ignore
 const installDeps = require('@scandipwa/scandipwa-dev-utils/install-deps')
 const { checkDependencies } = require('./lib/dependency')
+const { detectProject } = require('./lib/adopt/detect-project')
+const { adoptProject } = require('./lib/adopt/adopt-project')
+const { getProjectName, toPackageName } = require('./lib/project-name')
 
 /**
  * @param {string} name
@@ -60,24 +63,115 @@ const greet = (name, pathname) => {
 }
 
 /**
- * @param {{ name: string, path: string }} options
+ * `create-magento-app .` is the common way to adopt a project, and `./.` reads
+ * badly — collapse a self-referencing destination to `.`.
+ * @param {string} pathname
+ * @returns {string}
  */
-const createApp = async (options) => {
-    const { name, path: pathname } = options
+const getDisplayPath = (pathname) => {
+    const relativePathname = path.relative(
+        process.cwd(),
+        path.resolve(process.cwd(), pathname)
+    )
 
-    const destination = path.join(process.cwd(), pathname)
+    return relativePathname === '' ? '.' : `./${relativePathname}`
+}
 
-    let latestVersion = '0.0.0'
+/**
+ * @param {import('./lib/adopt/adopt-project').AdoptReport} report
+ * @param {string} pathname
+ * @param {boolean} isMagento
+ */
+const greetAdopted = (report, pathname, isMagento) => {
+    const relativePathname = getDisplayPath(pathname)
+    const displayedCommand = shouldUseYarn() ? 'yarn' : 'npm run'
 
+    logger.logN(
+        `Success! Added Create Magento App to the existing ${
+            isMagento ? 'Magento 2 ' : ''
+        }project at ${logger.style.file(relativePathname)}!`
+    )
+
+    if (report.created.length > 0) {
+        logger.log('Created:')
+        report.created.forEach((file) => logger.logT(logger.style.file(file)))
+        logger.log()
+    }
+
+    if (report.refreshed.length > 0) {
+        logger.log('Updated, because CMA manages them:')
+        report.refreshed.forEach((file) => logger.logT(logger.style.file(file)))
+        logger.log()
+    }
+
+    if (report.addedScripts.length > 0) {
+        logger.log('Added to your existing package.json:')
+        report.addedScripts.forEach((script) =>
+            logger.logT(logger.style.command(script))
+        )
+        logger.log()
+    }
+
+    if (report.preserved.length > 0) {
+        logger.log('Left untouched, because your project already has them:')
+        report.preserved.forEach((file) => logger.logT(logger.style.file(file)))
+        logger.log()
+    }
+
+    if (report.conflictingScripts.length > 0) {
+        logger.warn(
+            'Some package.json scripts already exist with a different value, so they were not changed:'
+        )
+        report.conflictingScripts.forEach((script) =>
+            logger.logT(logger.style.command(script))
+        )
+        logger.log(
+            `Run those through ${logger.style.command(
+                'npx magento-scripts <command>'
+            )}, or rename your own scripts and re-run this command.`
+        )
+        logger.log()
+    }
+
+    logger.log('We suggest that you begin by typing:')
+
+    if (relativePathname !== '.') {
+        logger.logT(logger.style.command('cd'), relativePathname)
+    }
+
+    logger.logT(logger.style.command(`${displayedCommand} start`))
+
+    logger.log() // add empty line
+
+    logger.logN('Happy coding! <3')
+}
+
+/**
+ * @returns {Promise<string>}
+ */
+const getMagentoScriptsVersion = async () => {
     try {
-        latestVersion = await getLatestVersion('@scandipwa/magento-scripts')
+        return await getLatestVersion('@scandipwa/magento-scripts')
     } catch (e) {
         logger.warn(
             `Package ${logger.style.misc(
                 '@scandipwa/magento-scripts'
             )} is not yet published.`
         )
+
+        return '0.0.0'
     }
+}
+
+/**
+ * @param {{ name: string, path: string }} options
+ */
+const createApp = async (options) => {
+    const { name, path: pathname } = options
+
+    const destination = path.resolve(process.cwd(), pathname)
+
+    const latestVersion = await getMagentoScriptsVersion()
 
     const templateOptions = {
         scandipwaBeScriptsVersion: latestVersion,
@@ -112,6 +206,35 @@ const createApp = async (options) => {
 
     // greet the user
     greet(name, pathname)
+}
+
+/**
+ * Add CMA to a project that already exists, merging into it instead of copying
+ * the template over the top of it.
+ * @param {{ name: string, path: string }} options
+ * @param {import('./lib/adopt/detect-project').ProjectDescriptor} project
+ */
+const addToExistingApp = async (options, project) => {
+    const { name, path: pathname } = options
+
+    const destination = path.resolve(process.cwd(), pathname)
+
+    logger.note(
+        `Found an existing ${
+            project.isMagento ? 'Magento 2 project' : 'project'
+        } at ${logger.style.file(getDisplayPath(pathname))}.`,
+        'Adding Create Magento App to it — your existing files will not be overwritten.'
+    )
+
+    const report = await adoptProject({
+        destination,
+        name,
+        magentoScriptsVersion: await getMagentoScriptsVersion()
+    })
+
+    await installDeps(destination)
+
+    greetAdopted(report, pathname, project.isMagento)
 }
 
 /**
@@ -153,6 +276,15 @@ const init = async (options) => {
         )
     }
 
+    const project = await detectProject(
+        path.resolve(process.cwd(), options.path)
+    )
+
+    if (project.isExisting) {
+        await addToExistingApp(options, project)
+        return
+    }
+
     await createApp(options)
 }
 
@@ -161,21 +293,24 @@ yargs.command(
     '$0 <destination>',
     'Create Magento App',
     (yargs) =>
-        yargs.example(
-            '$0 my-app',
-            'Creates a new Magento 2 application in the "my-app" folder relative to current working directory.'
-        ),
+        yargs
+            .example(
+                '$0 my-app',
+                'Creates a new Magento 2 application in the "my-app" folder relative to current working directory.'
+            )
+            .example(
+                '$0 .',
+                'Adds Create Magento App to the existing Magento 2 project in the current directory.'
+            ),
     /**
      * @arg {import('yargs').ArgumentsCamelCase<{ destination: string }>} args
      */
     async (args) => {
         const { destination } = args
 
-        const pathArr = destination.split(path.sep)
-        const name = pathArr.slice(-1)[0]
-
         await init({
-            name, // we do not care about organization it is or not
+            // we do not care about organization it is or not
+            name: toPackageName(getProjectName(destination)),
             path: destination
         })
     }
