@@ -11,7 +11,7 @@ const { startServices } = require('./docker')
 const { checkRequirements } = require('./requirements')
 const { createCacheFolder } = require('./cache')
 const { prepareFileSystem } = require('./file-system')
-const { installMagentoProject, setupMagento } = require('./magento')
+const { installMagentoProject, setupMagento, ensureConfigPhpTracked } = require('./magento')
 const { pullImages, stopContainers } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const { connectToDatabase } = require('./database')
@@ -137,6 +137,7 @@ const configureProject = () => ({
             convertComposerHomeToComposerCacheVolume(),
             installMagentoProject(),
             enableMagentoComposerPlugins(),
+            ensureConfigPhpTracked(),
             startServices(),
             connectToDatabase()
         ])
@@ -172,6 +173,7 @@ const start = () => ({
                 retrieveFreshProjectConfiguration(),
                 configureProject(),
                 setupMagento(),
+                ensureConfigPhpTracked(),
                 finishProjectConfiguration(),
                 {
                     title: 'Opening browser',
