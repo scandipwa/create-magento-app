@@ -1,4 +1,5 @@
 const { executeTask } = require('../tasks/execute')
+const { parseExecArgs } = require('../util/parse-exec-args')
 
 /**
  * @param {import('yargs')} yargs
@@ -15,6 +16,12 @@ module.exports = (yargs) => {
                 description:
                     'Run in non-interactive mode (for AI terminals and scripts)'
             })
+            yargs.option('dry-run', {
+                type: 'boolean',
+                default: false,
+                description:
+                    'Print the target container, user and mode as JSON without running anything'
+            })
             yargs.usage(`Usage: npm run exec <container name> [command...]
 
 Available containers:
@@ -29,18 +36,15 @@ Available containers:
 - varnish (if enabled)
 
 Options:
-  --non-interactive, -n  Run in non-interactive mode (no TTY required)`)
-        },
-        async (argv) => {
-            const [containerName, ...commands] = process.argv
-                .slice(3)
-                .filter((arg) => arg !== '--non-interactive' && arg !== '-n')
+  --non-interactive, -n  Run in non-interactive mode (no TTY required)
+  --dry-run              Print the target container, user and mode as JSON
 
-            await executeTask({
-                containerName,
-                commands,
-                nonInteractive: !!(argv.nonInteractive || argv.n)
-            })
+Options are only read before the command, so the command keeps its own flags.`)
+        },
+        async () => {
+            // yargs would also read flags meant for the command itself
+            // (`exec php grep -n foo`), so parse the raw arguments
+            await executeTask(parseExecArgs(process.argv.slice(3)))
         }
     )
 }

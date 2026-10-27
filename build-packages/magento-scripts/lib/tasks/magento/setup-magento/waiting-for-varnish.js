@@ -7,6 +7,7 @@ const KnownError = require('../../../errors/known-error')
 const { NginxParser } = require('../../../util/nginx-logs-parser')
 const sleep = require('../../../util/sleep')
 const { containerApi } = require('../../docker/containers')
+const { prompt } = require('../../../util/prompt')
 
 const pathToWorkingHealthCheckPhp = path.join(
     __dirname,
@@ -90,7 +91,7 @@ const waitingForVarnish = () => ({
             const isHealthCheckRequestBroken =
                 await getIsHealthCheckRequestBroken(ctx)
             if (isHealthCheckRequestBroken) {
-                const confirm = await task.prompt({
+                const confirm = await prompt(task, ctx, {
                     type: 'Select',
                     message: `We detected that your Magento instance is experiencing problems with Varnish server.
 Health Check request is returning status 500.
@@ -162,7 +163,7 @@ Do you want to try resolving this issue by replacing ${logger.style.file(
 
                     if (connectionFixed) {
                         task.output = 'Connection looks good!'
-                        const secondConfirm = await task.prompt({
+                        const secondConfirm = await prompt(task, ctx, {
                             type: 'Select',
                             message: `Okay, looks like it helped!
 Do you want to keep backed up ${logger.style.file('health_check.php')} file?`,

@@ -4,6 +4,7 @@ const sleep = require('./sleep')
 const { execCommandTask } = require('./exec-async-command')
 const dependenciesForPlatforms = require('../config/dependencies-for-platforms')
 const KnownError = require('../errors/known-error')
+const { prompt } = require('./prompt')
 
 /**
  * Install dependencies
@@ -55,7 +56,7 @@ const installDependenciesTask = (options) => ({
         }
 
         const installAnswer = await Promise.race([
-            task.prompt({
+            prompt(task, ctx, {
                 type: 'Select',
                 message: `Do you want to install missing ${dependenciesWordFormatter} now?`,
                 name: 'installAnswer',

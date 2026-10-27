@@ -16,17 +16,19 @@ const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const KnownError = require('../errors/known-error')
 const { prepareFileSystem } = require('./file-system')
+const { isNonInteractive } = require('../util/is-non-interactive')
 
 /**
  *
- * @param {{ containerName: string, commands: string[], nonInteractive?: boolean }} argv
+ * @param {{ containerName: string, commands: string[], nonInteractive?: boolean, dryRun?: boolean }} argv
  * @returns
  */
 const executeTask = async (argv) => {
-    const { nonInteractive = false } = argv
+    // --dry-run prints JSON, so it must never render tasks or prompt
+    const nonInteractive = isNonInteractive(argv.nonInteractive || argv.dryRun)
     const tasks = new Listr(
         [
-            checkRequirements(),
+            checkRequirements({ requireComposerCredentials: false }),
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
@@ -39,8 +41,7 @@ const executeTask = async (argv) => {
             concurrent: false,
             exitOnError: true,
             ctx: { throwMagentoVersionMissing: true, nonInteractive },
-            renderer:
-                nonInteractive || !process.stdout.isTTY ? 'silent' : 'default',
+            renderer: nonInteractive ? 'silent' : 'default',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )
@@ -62,7 +63,7 @@ const executeTask = async (argv) => {
         services.some((service) => service.includes(argv.containerName))
     ) {
         const containerResult = containers[argv.containerName]
-            ? containers[argv.containerName]
+            ? [argv.containerName, containers[argv.containerName]]
             : Object.entries(containers).find(([key]) =>
                   key.includes(argv.containerName)
               )
@@ -72,12 +73,10 @@ const executeTask = async (argv) => {
             process.exit(1)
         }
 
-        const container =
-            containerResult && Array.isArray(containerResult)
-                ? containerResult[1]
-                : containerResult
+        const [service, container] = containerResult
 
-        if (nonInteractive && argv.commands.length === 0) {
+        // a dry run reports the default connect command instead
+        if (nonInteractive && !argv.dryRun && argv.commands.length === 0) {
             logger.error('Non-interactive mode requires a command to execute')
             process.exit(1)
         }
@@ -98,7 +97,37 @@ const executeTask = async (argv) => {
             filter: `name=${container.name}`
         })
 
-        if (containerList.length > 0) {
+        const running = containerList.length > 0
+
+        if (argv.dryRun) {
+            // Describes what exec would do, for tools that wrap it. Env values
+            // are left out on purpose: they carry COMPOSER_AUTH credentials.
+            const mode = running
+                ? 'exec'
+                : container.name.includes('php')
+                ? 'run'
+                : null
+            const env = running ? container.execCommandEnv : container.env
+            process.stdout.write(
+                `${JSON.stringify(
+                    {
+                        service,
+                        container: container.name,
+                        image: container.image,
+                        user: container.user || null,
+                        running,
+                        mode,
+                        command: argv.commands,
+                        env: Object.keys(env || {})
+                    },
+                    null,
+                    2
+                )}\n`
+            )
+            process.exit(mode ? 0 : 1)
+        }
+
+        if (running) {
             if (nonInteractive) {
                 const result = await executeInContainerNonInteractive({
                     containerName: container.name,

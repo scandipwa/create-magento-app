@@ -25,6 +25,7 @@ const { getSystemConfigTask } = require('../../config/system-config')
 const sleep = require('../../util/sleep')
 const { setProjectConfigTask } = require('../project-config')
 const checkSearchEngineVersion = require('../requirements/searchengine-version')
+const { prompt } = require('../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -83,7 +84,7 @@ const convertMySQLDatabaseToMariaDB = () => ({
             )
         ) {
             task.title = 'Converting MySQL database to MariaDB'
-            const confirmConvert = await task.prompt({
+            const confirmConvert = await prompt(task, ctx, {
                 type: 'Select',
                 message: `We see that you have old mysql-data volume in the project!
 Since ${logger.style.code('magento-scripts@2.0.0')} ${logger.style.misc(
@@ -246,7 +247,9 @@ Please wait, this will take some time and do not restart the MySQL container unt
                     importDumpToDatabase(),
                     {
                         task: async (subCtx, subTask) => {
-                            const confirmDeleteOldVolume = await subTask.prompt(
+                            const confirmDeleteOldVolume = await prompt(
+                                subTask,
+                                subCtx,
                                 {
                                     type: 'Select',
                                     message:
@@ -269,24 +272,29 @@ Please wait, this will take some time and do not restart the MySQL container unt
                                     `docker volume rm ${mysqlVolumeName}`
                                 )
 
-                                const confirmDeleteDump = await subTask.prompt({
-                                    type: 'Select',
-                                    message: `Last question for today.
+                                const confirmDeleteDump = await prompt(
+                                    subTask,
+                                    subCtx,
+                                    {
+                                        type: 'Select',
+                                        message: `Last question for today.
 Do you want to keep database dump created during conversion process? (${logger.style.file(
-                                        pathToMySQLDumpFile
-                                    )})`,
-                                    choices: [
-                                        {
-                                            name: 'yes',
-                                            message: "I don't need it, thanks"
-                                        },
-                                        {
-                                            name: 'no',
-                                            message:
-                                                'I would like to keep it, thanks'
-                                        }
-                                    ]
-                                })
+                                            pathToMySQLDumpFile
+                                        )})`,
+                                        choices: [
+                                            {
+                                                name: 'yes',
+                                                message:
+                                                    "I don't need it, thanks"
+                                            },
+                                            {
+                                                name: 'no',
+                                                message:
+                                                    'I would like to keep it, thanks'
+                                            }
+                                        ]
+                                    }
+                                )
 
                                 if (confirmDeleteDump === 'yes') {
                                     await fs.promises.rm(pathToMySQLDumpFile)

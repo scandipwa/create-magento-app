@@ -9,6 +9,7 @@ const {
 const pathExists = require('../../util/path-exists')
 const connectToDatabase = require('./connect-to-database')
 const defaultMagentoUser = require('./default-magento-user')
+const { prompt } = require('../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -60,27 +61,30 @@ const runSetGlobalLogBinTrustFunctionCreatorsCommand = () => ({
 const deleteDatabaseBeforeImportingDumpPrompt = () => ({
     title: 'Deleting magento database before importing dump',
     task: async (ctx, task) => {
-        const deleteDatabaseMagentoChoice = ctx.nonInteractive
-            ? 'delete'
-            : await task.prompt({
-                  type: 'Select',
-                  message: `Before importing database dump, would you like to delete existing database?
+        const deleteDatabaseMagentoChoice = await prompt(
+            task,
+            ctx,
+            {
+                type: 'Select',
+                message: `Before importing database dump, would you like to delete existing database?
 
 It is possible that dump might interfere with existing data in database.
 
 Note that you will lose your existing database!`,
-                  choices: [
-                      {
-                          name: 'delete',
-                          message: 'YES I WANT TO DELETE magento DATABASE!'
-                      },
-                      {
-                          name: 'skip',
-                          message:
-                              "NO I DON'T WANT TO DELETE magento DATABASE! (Skip this step)"
-                      }
-                  ]
-              })
+                choices: [
+                    {
+                        name: 'delete',
+                        message: 'YES I WANT TO DELETE magento DATABASE!'
+                    },
+                    {
+                        name: 'skip',
+                        message:
+                            "NO I DON'T WANT TO DELETE magento DATABASE! (Skip this step)"
+                    }
+                ]
+            },
+            { answer: 'delete' }
+        )
 
         if (deleteDatabaseMagentoChoice === 'delete') {
             await ctx.databaseConnection.query(
@@ -105,24 +109,29 @@ const executeImportDumpSQL = () => ({
         const { mariadb } = docker.getContainers(ports)
         const { binFileName } = overridenConfiguration.configuration.mariadb
 
-        const userCredentialsForMariaDBCLI = ctx.nonInteractive
-            ? `--user=root --password=${mariadb.env.MARIADB_ROOT_PASSWORD}`
-            : await task.prompt({
-                  type: 'Select',
-                  message: `Which user do you want to use to import db in ${mariadb._} client?`,
-                  choices: [
-                      {
-                          name: `--user=root --password=${mariadb.env.MARIADB_ROOT_PASSWORD}`,
-                          message: `root (${logger.style.command(
-                              'Probably safest option'
-                          )})`
-                      },
-                      {
-                          name: `--user=${defaultMagentoUser.user} --password=${defaultMagentoUser.password}`,
-                          message: `${defaultMagentoUser.user}`
-                      }
-                  ]
-              })
+        const userCredentialsForMariaDBCLI = await prompt(
+            task,
+            ctx,
+            {
+                type: 'Select',
+                message: `Which user do you want to use to import db in ${mariadb._} client?`,
+                choices: [
+                    {
+                        name: `--user=root --password=${mariadb.env.MARIADB_ROOT_PASSWORD}`,
+                        message: `root (${logger.style.command(
+                            'Probably safest option'
+                        )})`
+                    },
+                    {
+                        name: `--user=${defaultMagentoUser.user} --password=${defaultMagentoUser.password}`,
+                        message: `${defaultMagentoUser.user}`
+                    }
+                ]
+            },
+            {
+                answer: `--user=root --password=${mariadb.env.MARIADB_ROOT_PASSWORD}`
+            }
+        )
 
         const importCommand = `docker exec ${mariadb.name} bash -c "${binFileName} ${userCredentialsForMariaDBCLI} magento < ./dump.sql"`
 
@@ -141,13 +150,14 @@ const executeImportDumpSQL = () => ({
             })
         } catch (e) {
             if (e.message.includes("Unknown collation: 'utf8mb4_0900_ai_ci'")) {
-                const confirmFixingCollation = ctx.nonInteractive
-                    ? 'yes'
-                    : await task.prompt({
-                          type: 'Select',
-                          message: `We got the following error while trying to import ${logger.style.file(
-                              'dump.sql'
-                          )}!
+                const confirmFixingCollation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Select',
+                        message: `We got the following error while trying to import ${logger.style.file(
+                            'dump.sql'
+                        )}!
 
 ${e.message}
 
@@ -156,19 +166,21 @@ ${logger.style.command(
     "sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g' dump.sql"
 )}
 `,
-                          choices: [
-                              {
-                                  name: 'yes',
-                                  message:
-                                      'Yes, run the following commands, I reaaaalllyy want dump to work! (this will not edit original dump.sql)'
-                              },
-                              {
-                                  name: 'no',
-                                  message:
-                                      'Okay, I got it. Will try to fix myself'
-                              }
-                          ]
-                      })
+                        choices: [
+                            {
+                                name: 'yes',
+                                message:
+                                    'Yes, run the following commands, I reaaaalllyy want dump to work! (this will not edit original dump.sql)'
+                            },
+                            {
+                                name: 'no',
+                                message:
+                                    'Okay, I got it. Will try to fix myself'
+                            }
+                        ]
+                    },
+                    { answer: 'yes' }
+                )
 
                 if (confirmFixingCollation === 'yes') {
                     task.output = 'Running fix command...'

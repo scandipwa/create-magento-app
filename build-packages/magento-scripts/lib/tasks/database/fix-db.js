@@ -4,6 +4,7 @@ const deleteCustomers = require('../magento/setup-magento/delete-customers')
 const deleteOrders = require('../magento/setup-magento/delete-orders')
 const disableCustomAdminPath = require('../magento/setup-magento/disable-custom-admin-path')
 const varnishConfigSetup = require('../magento/setup-magento/varnish-config')
+const { prompt } = require('../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -36,13 +37,16 @@ const fixDB = () => ({
                     title: 'Deleting customers data',
                     skip: ({ withCustomersData }) => withCustomersData,
                     task: async (ctx, subTask) => {
-                        const deleteCustomerData = ctx.nonInteractive
-                            ? false
-                            : await subTask.prompt({
-                                  type: 'Confirm',
-                                  message: `Do you want to delete customers data (orders, customers and admin users) from this dump?
+                        const deleteCustomerData = await prompt(
+                            subTask,
+                            ctx,
+                            {
+                                type: 'Confirm',
+                                message: `Do you want to delete customers data (orders, customers and admin users) from this dump?
 This will reduce database size and remove possible interference for your setup.`
-                              })
+                            },
+                            { answer: false }
+                        )
 
                         if (!deleteCustomerData) {
                             subTask.skip()

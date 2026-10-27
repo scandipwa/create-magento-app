@@ -16,6 +16,7 @@ const {
 } = require('./start')
 const importRemoteDb = require('./database/import-remote-db')
 const matchFilesystem = require('../util/match-filesystem')
+const { prompt } = require('../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -50,25 +51,27 @@ const importDump = () => ({
                         return tableCount !== 0 || !isFsMatching
                     },
                     task: async (subCtx, subTask) => {
-                        const doYouWantToRunSetupOnEmptyDB =
-                            subCtx.nonInteractive
-                                ? 'skip'
-                                : await subTask.prompt({
-                                      type: 'Select',
-                                      message: `We detected that Magento is not installed in database. Do you want to install Magento in database BEFORE importing database dump?`,
-                                      choices: [
-                                          {
-                                              name: 'try-install',
-                                              message:
-                                                  'Try installing Magento before importing database'
-                                          },
-                                          {
-                                              name: 'skip',
-                                              message:
-                                                  'Skip installing Magento and import database dump right away!'
-                                          }
-                                      ]
-                                  })
+                        const doYouWantToRunSetupOnEmptyDB = await prompt(
+                            subTask,
+                            subCtx,
+                            {
+                                type: 'Select',
+                                message: `We detected that Magento is not installed in database. Do you want to install Magento in database BEFORE importing database dump?`,
+                                choices: [
+                                    {
+                                        name: 'try-install',
+                                        message:
+                                            'Try installing Magento before importing database'
+                                    },
+                                    {
+                                        name: 'skip',
+                                        message:
+                                            'Skip installing Magento and import database dump right away!'
+                                    }
+                                ]
+                            },
+                            { answer: 'skip' }
+                        )
 
                         if (doYouWantToRunSetupOnEmptyDB === 'skip') {
                             subTask.skip()

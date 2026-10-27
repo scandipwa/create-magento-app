@@ -2,6 +2,7 @@ const { allVersions, defaultConfiguration } = require('./versions')
 const getInstalledMagentoVersion = require('../util/get-installed-magento-version')
 const sleep = require('../util/sleep')
 const scandipwaMagentoVersionMapping = require('./scandipwa-versions')
+const { prompt } = require('../util/prompt')
 
 const longestMagentoName = allVersions
     .map(({ name }) => name)
@@ -65,7 +66,7 @@ const getMagentoVersion = () => ({
                     }
 
                     magentoVersion = await Promise.race([
-                        task.prompt({
+                        prompt(task, ctx, {
                             type: 'Select',
                             message: 'Choose Magento Version',
                             name: 'magentoVersion',
