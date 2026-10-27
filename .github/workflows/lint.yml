@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - 'build-packages/magento-scripts/**'
+      - 'build-packages/magento-scripts-tests/**'
       - '.github/workflows/lint.yml'
 
 permissions:
@@ -66,4 +67,4 @@ jobs:
       # Every prompt must go through lib/util/prompt.js so none can hang
       # without a TTY; this fails on any raw task.prompt() call. No deps needed.
       - name: Prompt guard
-        run: node build-packages/magento-scripts/lib/util/prompt.test.js
+        run: node build-packages/magento-scripts-tests/tests/prompt.test.js

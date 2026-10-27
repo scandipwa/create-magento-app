@@ -1,8 +1,9 @@
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const KnownError = require('../errors/known-error')
-const { prompt } = require('./prompt')
+const { libDir } = require('../magento-scripts')
+const KnownError = require(path.join(libDir, 'errors/known-error'))
+const { prompt } = require(path.join(libDir, 'util/prompt'))
 
 const setTTY = (/** @type {boolean} */ isTTY) => {
     process.stdin.isTTY = isTTY
@@ -94,8 +95,7 @@ const question = { type: 'Confirm', message: 'Delete everything?' }
     }
 
     // every prompt goes through the helper, so none can hang without a TTY
-    const libDir = path.join(__dirname, '..')
-    const helper = path.join(__dirname, 'prompt.js')
+    const helper = path.join(libDir, 'util', 'prompt.js')
     /** @type {string[]} */
     const offenders = []
     const walk = (/** @type {string} */ dir) => {
@@ -106,7 +106,6 @@ const question = { type: 'Confirm', message: 'Delete everything?' }
             } else if (
                 file.endsWith('.js') &&
                 file !== helper &&
-                file !== __filename &&
                 /\.prompt\(/.test(fs.readFileSync(file, 'utf-8'))
             ) {
                 offenders.push(path.relative(libDir, file))

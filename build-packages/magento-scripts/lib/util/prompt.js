@@ -59,7 +59,7 @@ const prompt = async (task, ctx, options, nonInteractive = {}) => {
         )
     }
 
-    // the one sanctioned call site, see prompt.test.js
+    // the one sanctioned call site, see magento-scripts-tests/tests/prompt.test.js
     return task.prompt(options)
 }
 
