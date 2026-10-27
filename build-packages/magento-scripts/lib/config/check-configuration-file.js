@@ -6,6 +6,7 @@ const { deepmerge } = require('../util/deepmerge')
 const { defaultMagentoConfig } = require('./magento-config')
 const setConfigFile = require('../util/set-config')
 const getJsonfileData = require('../util/get-jsonfile-data')
+const { prompt } = require('../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../typings/context').ListrContext>}
@@ -49,15 +50,18 @@ const checkConfigurationFile = () => ({
             }
 
             if (!magentoConfiguration) {
-                const magentoEdition = ctx.nonInteractive
-                    ? 'Community'
-                    : await task.prompt({
-                          type: 'Select',
-                          message: `Please select Magento edition you want to install.
+                const magentoEdition = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Select',
+                        message: `Please select Magento edition you want to install.
 
 Note that Enterprise edition requires Magento Enterprise License keys.`,
-                          choices: ['Community', 'Enterprise']
-                      })
+                        choices: ['Community', 'Enterprise']
+                    },
+                    { answer: 'Community' }
+                )
 
                 magentoConfiguration = deepmerge(defaultMagentoConfig, {
                     edition: magentoEdition.toLowerCase()

@@ -15,6 +15,7 @@ const {
 } = require('./running-status')
 const getDockerVersion = require('./version')
 const getIsWsl = require('../../../util/is-wsl')
+const { prompt } = require('../../../util/prompt')
 
 const USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER =
     'useDockerEngineWithDockerDesktop'
@@ -40,12 +41,17 @@ const setVersionInContextTask = (task) => ({
 
 /**
  * @param {import('listr2').ListrTaskWrapper<import('../../../../typings/context').ListrContext, any>} task
+ * @param {import('../../../../typings/context').ListrContext} ctx
  * @param {{ skipPrompt?: boolean }} param1
  */
-const dockerInstallPromptLinux = async (task, { skipPrompt = false } = {}) => {
+const dockerInstallPromptLinux = async (
+    task,
+    ctx,
+    { skipPrompt = false } = {}
+) => {
     const automaticallyInstallDocker = skipPrompt
         ? 'yes'
-        : await task.prompt({
+        : await prompt(task, ctx, {
               type: 'Select',
               message: `You don't have Docker installed!
 Do you want to install it automatically?
@@ -75,7 +81,7 @@ Do you want to install it automatically?
                 task: async (ctx) => {
                     task.title = `Using docker version ${ctx.dockerVersion}`
 
-                    const confirmLogOut = await task.prompt({
+                    const confirmLogOut = await prompt(task, ctx, {
                         type: 'Select',
                         message: 'Docker installed successfully!\n',
                         choices: [
@@ -131,9 +137,10 @@ ${logger.style.link(
 
 /**
  * @param {import('listr2').ListrTaskWrapper<import('../../../../typings/context').ListrContext, any>} task
+ * @param {import('../../../../typings/context').ListrContext} ctx
  */
-const dockerInstallPromptMacOS = async (task) => {
-    const confirmationToInstallDocker = await task.prompt({
+const dockerInstallPromptMacOS = async (task, ctx) => {
+    const confirmationToInstallDocker = await prompt(task, ctx, {
         type: 'Select',
         message: `You don't have Docker installed!
 Would you like to install it automatically using brew cask or you prefer to install it manually?
@@ -187,7 +194,7 @@ const checkDocker = () => ({
                     const { engine } =
                         await getDockerEngineAndDesktopServiceStatus()
                     if (!engine.exists) {
-                        const result = await dockerInstallPromptLinux(task)
+                        const result = await dockerInstallPromptLinux(task, ctx)
                         if (result) {
                             return result
                         }
@@ -196,7 +203,7 @@ const checkDocker = () => ({
                     dockerInstallPromptWindows()
                 }
             } else {
-                const result = await dockerInstallPromptMacOS(task)
+                const result = await dockerInstallPromptMacOS(task, ctx)
                 if (result) {
                     return result
                 }
@@ -211,27 +218,32 @@ const checkDocker = () => ({
                     USE_DOCKER_ENGINE_WITH_DOCKER_DESKTOP_ANSWER
                 ) !== false
             ) {
-                const confirmInstallingDockerEngine = await task.prompt({
-                    type: 'Select',
-                    message: `Looks like you have Docker Desktop installed on Linux system, but Docker Engine is not installed.
+                const confirmInstallingDockerEngine = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Select',
+                        message: `Looks like you have Docker Desktop installed on Linux system, but Docker Engine is not installed.
 Do you want to install it and use it's context together with Docker Desktop?
 `,
-                    choices: [
-                        {
-                            name: 'yes',
-                            message:
-                                'Sure, if it means I will have less issues with my setup!'
-                        },
-                        {
-                            name: 'no',
-                            message: 'No. But you can ask me again later.'
-                        },
-                        {
-                            name: 'skip',
-                            message: "No. And don't ask me again."
-                        }
-                    ]
-                })
+                        choices: [
+                            {
+                                name: 'yes',
+                                message:
+                                    'Sure, if it means I will have less issues with my setup!'
+                            },
+                            {
+                                name: 'no',
+                                message: 'No. But you can ask me again later.'
+                            },
+                            {
+                                name: 'skip',
+                                message: "No. And don't ask me again."
+                            }
+                        ]
+                    },
+                    { answer: 'no' }
+                )
 
                 if (confirmInstallingDockerEngine === 'skip') {
                     cmaGlobalConfig.set(
@@ -239,7 +251,7 @@ Do you want to install it and use it's context together with Docker Desktop?
                         false
                     )
                 } else if (confirmInstallingDockerEngine === 'yes') {
-                    const result = await dockerInstallPromptLinux(task, {
+                    const result = await dockerInstallPromptLinux(task, ctx, {
                         skipPrompt: true
                     })
 

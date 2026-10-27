@@ -62,3 +62,8 @@ jobs:
             --config build-packages/magento-scripts/.oxlintrc.json \
             --format=github \
             "${files[@]}"
+
+      # Every prompt must go through lib/util/prompt.js so none can hang
+      # without a TTY; this fails on any raw task.prompt() call. No deps needed.
+      - name: Prompt guard
+        run: node build-packages/magento-scripts/lib/util/prompt.test.js

@@ -16,6 +16,7 @@ const { containerApi } = require('./docker/containers')
 const dockerNetwork = require('./docker/network')
 const KnownError = require('../errors/known-error')
 const { prepareFileSystem } = require('./file-system')
+const { isNonInteractive } = require('../util/is-non-interactive')
 
 /**
  *
@@ -23,10 +24,10 @@ const { prepareFileSystem } = require('./file-system')
  * @returns
  */
 const executeTask = async (argv) => {
-    const { nonInteractive = false } = argv
+    const nonInteractive = isNonInteractive(argv.nonInteractive)
     const tasks = new Listr(
         [
-            checkRequirements(),
+            checkRequirements({ requireComposerCredentials: false }),
             getMagentoVersionConfig(),
             checkConfigurationFile(),
             getProjectConfiguration(),
@@ -39,8 +40,7 @@ const executeTask = async (argv) => {
             concurrent: false,
             exitOnError: true,
             ctx: { throwMagentoVersionMissing: true, nonInteractive },
-            renderer:
-                nonInteractive || !process.stdout.isTTY ? 'silent' : 'default',
+            renderer: nonInteractive ? 'silent' : 'default',
             rendererOptions: { collapse: false, clearOutput: true }
         }
     )

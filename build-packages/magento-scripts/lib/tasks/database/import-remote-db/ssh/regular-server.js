@@ -3,6 +3,7 @@ const { orderTables, customerTables } = require('../../magento-tables')
 const { execAsyncSpawn } = require('../../../../util/exec-async-command')
 const databaseDumpCommandWithOptions = require('./database-dump-command')
 const KnownError = require('../../../../errors/known-error')
+const { prompt } = require('../../../../util/prompt')
 /**
  * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext & { ssh: import('node-ssh-no-cpu-features').NodeSSH }>}
  */
@@ -20,17 +21,20 @@ const regularSSHServer = () => ({
             /**
              * @type {string}
              */
-            const dumpCommand = ctx.nonInteractive
-                ? databaseDumpCommandWithOptions.join(' ')
-                : await task.prompt({
-                      type: 'Input',
-                      message: `Edit (if needed) command to connect to remote mysql server and create dump files.
+            const dumpCommand = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Input',
+                    message: `Edit (if needed) command to connect to remote mysql server and create dump files.
 Do not enter "--result-file" option, we need to control that part.
 
 (documentation reference available here: https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html)
 `,
-                      initial: databaseDumpCommandWithOptions.join(' ')
-                  })
+                    initial: databaseDumpCommandWithOptions.join(' ')
+                },
+                { answer: databaseDumpCommandWithOptions.join(' ') }
+            )
 
             if (dumpCommand.includes('--result-file')) {
                 throw new KnownError(

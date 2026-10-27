@@ -4,6 +4,7 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const semver = require('semver')
 const pathExists = require('../../util/path-exists')
 const getJsonfileData = require('../../util/get-jsonfile-data')
+const { prompt } = require('../../util/prompt')
 
 const vendorPath = path.join(process.cwd(), 'vendor')
 const composerJsonPath = path.join(process.cwd(), 'composer.json')
@@ -180,18 +181,21 @@ const enableMagentoComposerPlugins = () => ({
                 })
             }
 
-            const answerForEnablingPlugins = ctx.nonInteractive
-                ? 'all-individual'
-                : await task.prompt({
-                      type: 'Select',
-                      message: `Composer 2.2 requires manually allowing composer-plugins to run.
+            const answerForEnablingPlugins = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Select',
+                    message: `Composer 2.2 requires manually allowing composer-plugins to run.
 Magento requires the following plugins to correctly operate:
 
 ${missingPluginsFromAllowPlugins.map((p) => logger.style.code(p)).join('\n')}
 
 Do you want to enable them all or disable some of them?`,
-                      choices: pluginOptions
-                  })
+                    choices: pluginOptions
+                },
+                { answer: 'all-individual' }
+            )
 
             switch (answerForEnablingPlugins.toLowerCase()) {
                 case 'all': {
@@ -234,7 +238,7 @@ Do you want to enable them all or disable some of them?`,
                     break
                 }
                 case 'manual': {
-                    const userEnabledPlugins = await task.prompt({
+                    const userEnabledPlugins = await prompt(task, ctx, {
                         type: 'MultiSelect',
                         message: 'Please pick plugins you want to enable!',
                         choices: missingPluginsFromAllowPlugins.map((p) => ({

@@ -13,6 +13,7 @@ const getMagentoVersionConfig = require('../../../config/get-magento-version-con
 const checkConfigurationFile = require('../../../config/check-configuration-file')
 const getProjectConfiguration = require('../../../config/get-project-configuration')
 const getDockerVersion = require('./version')
+const { prompt } = require('../../../util/prompt')
 
 const USE_DEFAULT_DOCKER_DESKTOP_CONTEXT_ANSWER =
     'useDefaultDockerDesktopContext'
@@ -48,31 +49,34 @@ const checkDockerDesktopContext = () => ({
                 return
             }
 
-            const confirmContextChange = ctx.nonInteractive
-                ? 'no'
-                : await task.prompt({
-                      type: 'Select',
-                      message: `Do you want to change current Docker Desktop context (${logger.style.code(
-                          currentlyUsedContext.Name
-                      )}) to ${logger.style.code('default')}?`,
-                      choices: [
-                          {
-                              name: 'yes',
-                              message: 'Yes'
-                          },
-                          {
-                              name: 'no',
-                              message:
-                                  "No, I don't know what this means, but you can ask again on next start."
-                          },
-                          {
-                              name: 'skip',
+            const confirmContextChange = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Select',
+                    message: `Do you want to change current Docker Desktop context (${logger.style.code(
+                        currentlyUsedContext.Name
+                    )}) to ${logger.style.code('default')}?`,
+                    choices: [
+                        {
+                            name: 'yes',
+                            message: 'Yes'
+                        },
+                        {
+                            name: 'no',
+                            message:
+                                "No, I don't know what this means, but you can ask again on next start."
+                        },
+                        {
+                            name: 'skip',
 
-                              message:
-                                  "I do know what this means and I DON'T want to change context for Docker. Also, save this answer to never ask again."
-                          }
-                      ]
-                  })
+                            message:
+                                "I do know what this means and I DON'T want to change context for Docker. Also, save this answer to never ask again."
+                        }
+                    ]
+                },
+                { answer: 'no' }
+            )
 
             if (confirmContextChange === 'skip') {
                 cmaGlobalConfig.set(

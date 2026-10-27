@@ -61,6 +61,7 @@
     },
     "scripts": {
         "lint": "oxlint",
-        "test:store-domains": "node lib/util/store-domains.test.js"
+        "test:store-domains": "node lib/util/store-domains.test.js",
+        "test:prompt": "node lib/util/prompt.test.js"
     }
 }

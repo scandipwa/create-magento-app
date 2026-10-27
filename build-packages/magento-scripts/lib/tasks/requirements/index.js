@@ -7,9 +7,11 @@ const checkRosetta = require('./rosetta')
 const checkCGroupVersion = require('./cgroup-version')
 
 /**
+ * @param {{ requireComposerCredentials?: boolean }} param0 pass `false` for
+ * commands that run against an existing project and don't install packages
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkRequirements = () => ({
+const checkRequirements = ({ requireComposerCredentials = true } = {}) => ({
     title: 'Checking requirements',
     task: (ctx, task) =>
         task.newListr(
@@ -26,7 +28,9 @@ const checkRequirements = () => ({
                 checkNodeVersion(),
                 // check for COMPOSER_AUTH or auth.json
                 localAuthJson(),
-                checkComposerCredentials()
+                checkComposerCredentials({
+                    optional: !requireComposerCredentials
+                })
             ],
             {
                 concurrent: false,

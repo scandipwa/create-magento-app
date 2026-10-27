@@ -7,6 +7,8 @@ const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const pathExists = require('../../util/path-exists')
 const KnownError = require('../../errors/known-error')
 const UnknownError = require('../../errors/unknown-error')
+const { prompt } = require('../../util/prompt')
+const { canPrompt } = require('../../util/is-non-interactive')
 
 const authJsonPath = path.join(process.cwd(), 'auth.json')
 const shellName = process.env.SHELL.split('/').pop()
@@ -25,7 +27,7 @@ const MISSING_AUTH_JSON = 'missing auth.json file'
 const configureComposerCredentials = () => ({
     title: 'Configuring Composer Credentials',
     task: async (ctx, task) => {
-        const configureLocation = await task.prompt({
+        const configureLocation = await prompt(task, ctx, {
             type: 'Select',
             message: `We didn't find Composer credentials in your ${logger.style.misc(
                 '$COMPOSER_AUTH'
@@ -54,7 +56,7 @@ Where do you want to store them?`,
             ]
         })
 
-        const usernameCredentials = await task.prompt({
+        const usernameCredentials = await prompt(task, ctx, {
             type: 'Input',
             message: `Please enter your username key.
 
@@ -81,7 +83,7 @@ ${logger.style.misc('Username')} (${logger.style.misc('Public key')}):`,
             }
         })
 
-        const passwordCredentials = await task.prompt({
+        const passwordCredentials = await prompt(task, ctx, {
             type: 'Input',
             message: `Please enter your password key.
 
@@ -161,7 +163,7 @@ Add following string to your shell configuration file: ${logger.style.code()}`
             }
         }
 
-        await task.prompt({
+        await prompt(task, ctx, {
             type: 'Confirm',
             message: `Before we continue with installation...
 
@@ -177,11 +179,16 @@ Press ${logger.style.misc('Y')} to continue`
 })
 
 /**
+ * @param {{ optional?: boolean }} param0 `optional` loads credentials when
+ * they are available but never prompts for or configures them, for commands
+ * that only forward them into containers (`exec`, `status`, `logs`).
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const checkComposerCredentials = () => ({
+const checkComposerCredentials = ({ optional = false } = {}) => ({
     title: 'Checking Composer credentials',
     task: async (ctx, task) => {
+        // an optional check answers every question with its non-interactive default
+        const promptCtx = optional ? { nonInteractive: true } : ctx
         const problems = new Map()
         if (!process.env.COMPOSER_AUTH) {
             problems.set(MISSING_COMPOSER_AUTH_ENV, true)
@@ -209,25 +216,28 @@ const checkComposerCredentials = () => ({
 
                 if (composerAuthInRcFile) {
                     doConfigure = false
-                    const loadCredentialsFrom = ctx.nonInteractive
-                        ? true
-                        : await task.prompt({
-                              type: 'Confirm',
-                              message: `We detected that you have ${logger.style.misc(
-                                  'COMPOSER_AUTH'
-                              )} environment variable set in ${logger.style.file(
-                                  shellConfigFilePath
-                              )} file,
+                    const loadCredentialsFrom = await prompt(
+                        task,
+                        promptCtx,
+                        {
+                            type: 'Confirm',
+                            message: `We detected that you have ${logger.style.misc(
+                                'COMPOSER_AUTH'
+                            )} environment variable set in ${logger.style.file(
+                                shellConfigFilePath
+                            )} file,
 but we do not see this variable inside ${logger.style.code(
-                                  'magento-scripts'
-                              )} process.
+                                'magento-scripts'
+                            )} process.
 
 ${logger.style.misc(
     "! Don't forget to reload your shell after process is finished !"
 )}
 
 Would you like to load them now?`
-                          })
+                        },
+                        { answer: true }
+                    )
 
                     if (loadCredentialsFrom) {
                         const credentialsLine = lines.find((line) =>
@@ -251,7 +261,11 @@ Would you like to load them now?`
             }
 
             if (doConfigure) {
-                if (ctx.nonInteractive) {
+                if (optional) {
+                    task.skip('Composer credentials not found, skipping')
+                    return
+                }
+                if (ctx.nonInteractive || !canPrompt()) {
                     throw new KnownError(
                         `Composer credentials are required but were not found in ${logger.style.misc(
                             '$COMPOSER_AUTH'
@@ -321,22 +335,25 @@ Do you want to remove them now? File will be overwritten.`
                         : null
 
                 if (message) {
-                    const response = ctx.nonInteractive
-                        ? 'skip'
-                        : await task.prompt({
-                              message,
-                              type: 'Select',
-                              choices: [
-                                  {
-                                      name: 'overwrite',
-                                      message: 'Yes, please!'
-                                  },
-                                  {
-                                      name: 'skip',
-                                      message: "No, I know what I'm doing"
-                                  }
-                              ]
-                          })
+                    const response = await prompt(
+                        task,
+                        promptCtx,
+                        {
+                            message,
+                            type: 'Select',
+                            choices: [
+                                {
+                                    name: 'overwrite',
+                                    message: 'Yes, please!'
+                                },
+                                {
+                                    name: 'skip',
+                                    message: "No, I know what I'm doing"
+                                }
+                            ]
+                        },
+                        { answer: 'skip' }
+                    )
 
                     if (response === 'overwrite') {
                         if (repoMagentoCredentials.username) {
