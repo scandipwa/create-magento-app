@@ -6,6 +6,7 @@ const semver = require('semver')
 const isInstalledGlobally = require('is-installed-globally')
 const isRunningRoot = require('./lib/util/is-running-root')
 const { executeTask } = require('./lib/tasks/execute')
+const { parseExecArgs } = require('./lib/util/parse-exec-args')
 
 if (isRunningRoot()) {
     logger.error('Root privileges detected!')
@@ -98,10 +99,5 @@ const newVersionIsAPatch = (latestVersion, currentVersion) => {
         logger.log() // add empty line
     }
 
-    const [containerName, ...commands] = process.argv.slice(2)
-
-    return executeTask({
-        containerName,
-        commands
-    })
+    return executeTask(parseExecArgs(process.argv.slice(2)))
 })()

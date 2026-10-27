@@ -68,3 +68,6 @@ jobs:
       # without a TTY; this fails on any raw task.prompt() call. No deps needed.
       - name: Prompt guard
         run: node build-packages/magento-scripts-tests/tests/prompt.test.js
+
+      - name: exec argument parsing
+        run: node build-packages/magento-scripts-tests/tests/parse-exec-args.test.js
