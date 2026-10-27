@@ -10,6 +10,7 @@ const pathExists = require('../../util/path-exists')
 const connectToDatabase = require('./connect-to-database')
 const defaultMagentoUser = require('./default-magento-user')
 const { prompt } = require('../../util/prompt')
+const { stripDefinersSedScript } = require('./dump-definers')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -29,6 +30,27 @@ const copyDatabaseDumpIntoContainer = () => ({
                 {
                     logOutput: true
                 }
+            )
+        )
+    }
+})
+
+/**
+ * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
+ */
+const stripDefinersFromDump = () => ({
+    title: 'Removing DEFINER clauses from database dump',
+    task: async (ctx, task) => {
+        const {
+            config: { docker },
+            ports
+        } = ctx
+        const { mariadb } = docker.getContainers(ports)
+
+        // edits the copy inside the container, the original dump is untouched
+        return task.newListr(
+            execCommandTask(
+                `docker exec ${mariadb.name} sed -i -E '${stripDefinersSedScript}' /dump.sql`
             )
         )
     }
@@ -243,6 +265,7 @@ const importDumpToDatabase = () => ({
         return task.newListr(
             [
                 copyDatabaseDumpIntoContainer(),
+                stripDefinersFromDump(),
                 deleteDatabaseBeforeImportingDumpPrompt(),
                 runSetGlobalLogBinTrustFunctionCreatorsCommand(),
                 executeImportDumpSQL(),

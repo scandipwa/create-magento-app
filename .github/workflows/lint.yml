@@ -71,3 +71,6 @@ jobs:
 
       - name: exec argument parsing
         run: node build-packages/magento-scripts-tests/tests/parse-exec-args.test.js
+
+      - name: Dump DEFINER stripping
+        run: node build-packages/magento-scripts-tests/tests/dump-definers.test.js
