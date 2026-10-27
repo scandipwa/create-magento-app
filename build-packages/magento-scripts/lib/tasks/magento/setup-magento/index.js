@@ -1,4 +1,5 @@
 const flushRedisConfig = require('./flush-redis-config')
+const cleanGeneratedCode = require('./clean-generated-code')
 const migrateDatabase = require('./migrate-database')
 const createAdmin = require('./create-admin')
 const setDeploymentMode = require('./set-deployment-mode')
@@ -47,6 +48,7 @@ const setupMagento = (options = {}) => ({
         return task.newListr(
             [
                 setupMagentoFilePermissions(),
+                cleanGeneratedCode(),
                 updateEnvPHP(),
                 migrateDatabase(),
                 {

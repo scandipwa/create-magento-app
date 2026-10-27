@@ -1,8 +1,6 @@
 const { updateTableValues, databaseQuery } = require('../../../util/database')
 const KnownError = require('../../../errors/known-error')
-const {
-    resolveStoreDomainsForScopes
-} = require('../../../util/store-domains')
+const { resolveStoreDomainsForScopes } = require('../../../util/store-domains')
 
 /**
  * @param {number} scopeId
@@ -114,6 +112,20 @@ const setBaseUrl = () => ({
                 { path: 'web/cookie/cookie_domain', value: null }
             ],
             { databaseConnection, task }
+        )
+
+        // imported dumps can have static and media urls pointing to production domain,
+        // without them Magento derives these urls from base_url
+        await databaseConnection.query(
+            `DELETE FROM core_config_data WHERE path IN (?);`,
+            [
+                [
+                    'web/unsecure/base_static_url',
+                    'web/secure/base_static_url',
+                    'web/unsecure/base_media_url',
+                    'web/secure/base_media_url'
+                ]
+            ]
         )
 
         const scopeType = runType === 'store' ? 'stores' : 'websites'
