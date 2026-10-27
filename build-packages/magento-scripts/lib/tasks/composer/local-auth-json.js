@@ -8,9 +8,11 @@ const KnownError = require('../../errors/known-error')
 const authJsonPath = path.join(process.cwd(), 'auth.json')
 
 /**
+ * @param {{ optional?: boolean }} param0 `optional` skips an unusable
+ * auth.json instead of failing, see checkComposerCredentials
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
  */
-const localAuthJson = () => ({
+const localAuthJson = ({ optional = false } = {}) => ({
     task: async (ctx, task) => {
         if (await pathExists(authJsonPath)) {
             task.title = 'Using local auth.json'
@@ -20,6 +22,10 @@ const localAuthJson = () => ({
             try {
                 localAuthJsonContent = JSON.parse(localAuthJson)
             } catch (e) {
+                if (optional) {
+                    task.skip('Could not parse ./auth.json, skipping')
+                    return
+                }
                 throw new UnknownError(
                     `Could not parse ./auth.json file as JSON!\n\n${e}`
                 )
@@ -30,6 +36,12 @@ const localAuthJson = () => ({
                 !localAuthJsonContent['http-basic'] ||
                 !localAuthJsonContent['http-basic']['repo.magento.com']
             ) {
+                if (optional) {
+                    task.skip(
+                        'No repo.magento.com credentials in ./auth.json, skipping'
+                    )
+                    return
+                }
                 throw new KnownError(
                     `Your ./auth.json file does not contain the ${logger.style.misc(
                         "{ 'http-basic': { 'repo.magento.com': <> } }"

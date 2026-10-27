@@ -382,6 +382,10 @@ Do you want to remove them now? File will be overwritten.`
 
                 process.env.COMPOSER_AUTH = composerAuthFileContent
             } catch (e) {
+                if (optional) {
+                    task.skip('Could not parse ./auth.json, skipping')
+                    return
+                }
                 throw new UnknownError(
                     `We found an error in your ${logger.style.file(
                         './auth.json'
@@ -402,6 +406,10 @@ Error message that we got: ${e}`
             try {
                 composerAuthContent = JSON.parse(process.env.COMPOSER_AUTH)
             } catch (e) {
+                if (optional) {
+                    task.skip('Could not parse $COMPOSER_AUTH, skipping')
+                    return
+                }
                 throw new UnknownError(
                     `We found an error in your ${logger.style.misc(
                         '$COMPOSER_AUTH'

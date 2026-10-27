@@ -27,7 +27,7 @@ const checkRequirements = ({ requireComposerCredentials = true } = {}) => ({
                 // check for Node.js version
                 checkNodeVersion(),
                 // check for COMPOSER_AUTH or auth.json
-                localAuthJson(),
+                localAuthJson({ optional: !requireComposerCredentials }),
                 checkComposerCredentials({
                     optional: !requireComposerCredentials
                 })
