@@ -3,7 +3,8 @@ const sleep = require('../../../util/sleep')
 const KnownError = require('../../../errors/known-error')
 const UnknownError = require('../../../errors/unknown-error')
 
-const HEALTH_CHECK_ATTEMPTS = 60
+// search engine can take a while to boot, especially on first start or with a large data volume
+const HEALTH_CHECK_TIMEOUT = 5 * 60 * 1000
 
 /**
  * Search engines reject HTTP request lines longer than 4096 bytes
@@ -72,7 +73,9 @@ const deleteIndices = async (containerName, indices) => {
  * @param {string} containerName
  */
 const waitForSearchEngine = async (containerName) => {
-    for (let attempt = 0; attempt < HEALTH_CHECK_ATTEMPTS; attempt++) {
+    const deadline = Date.now() + HEALTH_CHECK_TIMEOUT
+
+    while (Date.now() < deadline) {
         const { code } = await execAsyncSpawn(
             `docker exec ${containerName} curl --silent --fail localhost:9200/_cluster/health`,
             { withCode: true }
@@ -86,7 +89,9 @@ const waitForSearchEngine = async (containerName) => {
     }
 
     throw new KnownError(
-        `Search engine in container ${containerName} did not become available in ${HEALTH_CHECK_ATTEMPTS} seconds`
+        `Search engine in container ${containerName} did not become available in ${
+            HEALTH_CHECK_TIMEOUT / 1000
+        } seconds`
     )
 }
 
