@@ -10,6 +10,7 @@ const getProjectConfiguration = require('../config/get-project-configuration')
 const checkConfigurationFile = require('../config/check-configuration-file')
 const checkPHPVersion = require('../tasks/requirements/php-version')
 const checkSearchEngineVersion = require('../tasks/requirements/searchengine-version')
+const { isNonInteractive } = require('../util/is-non-interactive')
 const { getComposerVersionTask } = require('../tasks/composer')
 const { systemApi } = require('../tasks/docker/system')
 
@@ -39,10 +40,11 @@ module.exports = (yargs) => {
         },
         async (args) => {
             const silent = /** @type {boolean} */ (args.silent)
-            // A non-TTY stdout (pipe, CI, AI terminal) is inherently
+            // A missing TTY (pipe, CI, AI terminal) is inherently
             // non-interactive; the -n flag forces it even inside a TTY.
-            const nonInteractive =
-                !!(args.nonInteractive || args.n) || !process.stdout.isTTY
+            const nonInteractive = isNonInteractive(
+                args.nonInteractive || args.n
+            )
             // Enumerating per-image/-volume sizes shells out to
             // `docker system df --verbose`, which is slow; skip it by default.
             // The non-interactive report already prints the full status; the
@@ -51,7 +53,7 @@ module.exports = (yargs) => {
             const verbose = !!(args.verbose || args.v)
             const tasks = new Listr(
                 [
-                    checkRequirements(),
+                    checkRequirements({ requireComposerCredentials: false }),
                     getMagentoVersionConfig(),
                     checkConfigurationFile(),
                     getProjectConfiguration(),

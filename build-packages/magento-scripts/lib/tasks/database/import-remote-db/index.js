@@ -1,5 +1,6 @@
 const UnknownError = require('../../../errors/unknown-error')
 const sshDb = require('./ssh')
+const { prompt } = require('../../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -10,7 +11,7 @@ const importRemoteDbSSH = () => ({
         task.title = 'Importing database from remote server'
 
         if (!ctx.remoteDb) {
-            ctx.remoteDb = await task.prompt({
+            ctx.remoteDb = await prompt(task, ctx, {
                 type: 'Input',
                 message: `Please enter a remote server connection string.
 It can be a SSH (ssh://<url>) connection or mysql (mysql://<url>) connection.

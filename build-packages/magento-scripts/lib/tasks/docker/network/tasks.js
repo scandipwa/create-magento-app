@@ -3,6 +3,7 @@ const KnownError = require('../../../errors/known-error')
 const UnknownError = require('../../../errors/unknown-error')
 const { execAsyncSpawn } = require('../../../util/exec-async-command')
 const networkApi = require('./network-api')
+const { prompt } = require('../../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../typings/context').ListrContext>}
@@ -17,7 +18,8 @@ const pruneNetworks = () => ({
  */
 const createNetwork = () => ({
     title: 'Deploying Docker network',
-    task: async ({ config: { docker } }, task) => {
+    task: async (ctx, task) => {
+        const { docker } = ctx.config
         const networkList = await networkApi.ls({ formatToJSON: true })
 
         if (
@@ -37,7 +39,7 @@ const createNetwork = () => ({
                     'could not find an available, non-overlapping IPv4 address pool'
                 )
             ) {
-                const doPruneNetworks = await task.prompt({
+                const doPruneNetworks = await prompt(task, ctx, {
                     type: 'Confirm',
                     message: `You don't have available, non-overlapping IPv4 address pool on you system.
 Do you want remove all custom networks not used by at least one container?`

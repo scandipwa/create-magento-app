@@ -1,4 +1,5 @@
 const magentoTask = require('../../../util/magento-task')
+const { prompt } = require('../../../util/prompt')
 // const runMagentoCommand = require('../../../util/run-magento')
 
 /**
@@ -22,23 +23,26 @@ const indexProducts = () => ({
             ({ status }) => status !== 'valid'
         )
 
-        const doYouWantToSkipIndexingPart = ctx.nonInteractive
-            ? 'index'
-            : await task.prompt({
-                  type: 'Select',
-                  message: `Do you want to index the products? (There are ${invalidIndexers.length} invalid indexers, total indexers: ${data[0].length})\n`,
-                  choices: [
-                      {
-                          name: 'index',
-                          message: 'Yes, index them please'
-                      },
-                      {
-                          name: 'skip',
-                          message:
-                              'Skip, do not index them. I will do it later myself'
-                      }
-                  ]
-              })
+        const doYouWantToSkipIndexingPart = await prompt(
+            task,
+            ctx,
+            {
+                type: 'Select',
+                message: `Do you want to index the products? (There are ${invalidIndexers.length} invalid indexers, total indexers: ${data[0].length})\n`,
+                choices: [
+                    {
+                        name: 'index',
+                        message: 'Yes, index them please'
+                    },
+                    {
+                        name: 'skip',
+                        message:
+                            'Skip, do not index them. I will do it later myself'
+                    }
+                ]
+            },
+            { answer: 'index' }
+        )
 
         if (doYouWantToSkipIndexingPart === 'skip') {
             task.skip()

@@ -22,8 +22,8 @@ Examples below write `<pm> run` — substitute your manager, and **on npm add th
 
 ## Two rules that never change
 
-- **Everything goes through `exec`.** `<pm> run exec <container> <command>`. Never run `php`, `composer`, or `bin/magento` on the host — the host has the wrong (or no) PHP. Never call `docker exec` directly either; `exec` resolves the right container name, user, and working directory for you.
-- **You are non-interactive.** In a non-TTY terminal (agent, CI, pipe), magento-scripts detects it and switches to plain output with no prompts — you need no flag. Always give `exec` a command; never use the `cli` script (an interactive shell — it hangs without a TTY). Pass a non-interactive flag only to *force* the mode inside a real TTY: `exec -n`, `status -n`, `import-db -y` (on npm, `-- -n` etc.).
+- **Everything goes through `exec`.** `<pm> run exec <container> <command>`. Never run `php`, `composer`, or `bin/magento` on the host — the host has the wrong (or no) PHP. Never call `docker exec` directly or wrap `exec` in your own script either; `exec` resolves the right container name, user, and environment for you. If a tool needs to know the target, `<pm> run exec <container> --dry-run` prints it as JSON.
+- **You are non-interactive.** In a non-TTY terminal (agent, CI, pipe), magento-scripts detects it and switches to plain output with no prompts — you need no flag. A question without a safe default fails the command with the question in the error instead of waiting; `exec` never asks anything and does not need Composer credentials. Always give `exec` a command; never use the `cli` script (an interactive shell — it hangs without a TTY). Pass a non-interactive flag only to *force* the mode inside a real TTY: `exec -n`, `status -n`, `import-db -y` (on npm, `-- -n` etc.).
 
 ## Commands
 
@@ -34,7 +34,7 @@ Each is `<pm> run <script>`:
 | `start` | Build + start the Docker stack | `--skip-setup`/`-s`, `--port`/`-p`. ⚠ `-n`/`--open` means *open browser*, not non-interactive |
 | `stop` | Stop all containers | |
 | `status` | Container + DB status | `-n` plain text, `--verbose` add image/volume sizes (slower) |
-| `exec <container> <cmd>` | Run a command in a container | `-n` force non-interactive |
+| `exec <container> <cmd>` | Run a command in a container | `-n` force non-interactive, `--dry-run` print target container/user as JSON. Flags go before `<cmd>`; anything after it belongs to the command |
 | `import-db [file]` | Import a SQL dump into MariaDB | `-y` skip prompts, `--remote-db=ssh://user@host` |
 | `logs <container>` | Stream logs | `--tail N`, `--follow` |
 | `cli` | Interactive shell — TTY only, never in automation | |

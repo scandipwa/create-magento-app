@@ -6,6 +6,7 @@ const getDockerConfig = require('../../config/docker')
 const { execAsyncSpawn } = require('../../util/exec-async-command')
 const { folderName, legacyFolderName } = require('../../util/prefix')
 const { volumeApi } = require('./volume')
+const { prompt } = require('../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -88,7 +89,7 @@ const convertLegacyVolumes = () => ({
                                 process.cwd()
                             )
 
-                            const doDelete = await subTask.prompt({
+                            const doDelete = await prompt(subTask, subCtx, {
                                 type: 'Toggle',
                                 message: `Good news! We successfully moved your data from legacy volumes ${legacyVolumeNames.join(
                                     ', '

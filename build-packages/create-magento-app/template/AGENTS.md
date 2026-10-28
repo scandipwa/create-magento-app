@@ -8,7 +8,8 @@
 
 - **Everything runs via `<pm> run`** — `magento-scripts` is never called directly; use the `package.json` scripts through npm / yarn / pnpm / bun. Pass args after the script name; **npm needs one `--`** (`npm run exec -- php bin/magento cache:flush`), yarn / pnpm / bun don't. Never add a second `--`.
 - **Cannot run as root** — exits immediately with code 1, no override.
-- **Non-TTY safe** — silent renderer activates automatically in CI/pipes; no `-q` needed.
+- **Non-TTY safe** — without a TTY (CI, pipes, agents) output is plain and nothing prompts: a question either takes its safe default or fails the command with the question in the error. No `-q` or `-n` needed; `-n`/`-y` only force this inside a TTY.
+- **Use `exec`, don't reimplement it** — never call `docker exec` yourself; `exec` resolves the container name, user and environment, and needs no Composer credentials. If a tool needs the target, `exec <container> --dry-run` prints it as JSON.
 - **`cli` is TTY-only** — use `<pm> run exec php bin/magento <cmd>` in automation instead.
 - **`import-db` is self-contained** — it stops running containers, assigns ports, starts services, waits for MariaDB, and imports. Do NOT run `start` before or between `import-db` attempts — that creates port conflicts. Just run `import-db` directly.
 - **Long-running commands** — `start` and `import-db` can take 10+ minutes (container setup, large dumps). Set timeouts to at least 600000ms (10 min) or run without a timeout.
@@ -23,7 +24,7 @@ Each runs as `<pm> run <script>`:
 | `start` | Start Docker environment | `--skip-setup`, `--port`. ⚠ `-n`/`--open` = open browser, not non-interactive |
 | `stop` | Stop all containers | — |
 | `status` | Show container/DB status | `-n` (plain text), `--verbose` (image/volume sizes) |
-| `exec <container> [cmd...]` | Run command in container | `-n` forces non-interactive |
+| `exec <container> [cmd...]` | Run command in container | `-n` forces non-interactive, `--dry-run` prints target as JSON; flags go before `cmd` |
 | `import-db [file]` | Import SQL dump into MariaDB | `-y` (skip prompts), `--remote-db=ssh://user@host` |
 | `logs <container>` | Stream container logs | `--tail N`, `--follow` |
 | `cli` | Interactive shell (TTY only) | — |

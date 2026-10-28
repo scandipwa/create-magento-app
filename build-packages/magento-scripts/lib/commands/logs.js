@@ -73,7 +73,7 @@ npm run logs re (will match redis)`)
             const silent = /** @type {boolean} */ (argv.silent)
             const tasks = new Listr(
                 [
-                    checkRequirements(),
+                    checkRequirements({ requireComposerCredentials: false }),
                     getMagentoVersionConfig(),
                     checkConfigurationFile(),
                     getProjectConfiguration(),

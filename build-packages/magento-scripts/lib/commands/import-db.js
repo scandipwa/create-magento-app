@@ -3,6 +3,7 @@ const { Listr } = require('listr2')
 const importDump = require('../tasks/import-dump')
 const { getInstanceMetadata } = require('../util/instance-metadata')
 const ConsoleBlock = require('../util/console-block')
+const { isNonInteractive } = require('../util/is-non-interactive')
 
 /**
  * @param {import('yargs')} yargs
@@ -36,14 +37,13 @@ module.exports = (yargs) => {
             })
         },
         async (args) => {
+            args.nonInteractive = isNonInteractive(args.nonInteractive)
             const tasks = new Listr(importDump(), {
                 exitOnError: true,
                 ctx: args,
                 concurrent: false,
                 renderer:
-                    /** @type {boolean} */ (args.silent) ||
-                    /** @type {boolean} */ (args.nonInteractive) ||
-                    !process.stdout.isTTY
+                    /** @type {boolean} */ (args.silent) || args.nonInteractive
                         ? 'silent'
                         : 'default',
                 rendererOptions: {

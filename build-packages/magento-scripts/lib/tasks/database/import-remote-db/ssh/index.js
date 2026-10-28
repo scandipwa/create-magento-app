@@ -4,6 +4,7 @@ const pathExists = require('../../../../util/path-exists')
 const regularSSHServer = require('./regular-server')
 const readymageSSH = require('./readymage')
 const KnownError = require('../../../../errors/known-error')
+const { prompt } = require('../../../../util/prompt')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../../../typings/context').ListrContext>}
@@ -19,13 +20,16 @@ const sshDb = () => ({
         ctx.ssh = ssh
 
         if (!password) {
-            const privateKey = ctx.nonInteractive
-                ? `${os.homedir()}/.ssh/id_rsa`
-                : await task.prompt({
-                      type: 'Input',
-                      message: `Please enter your private key location to connect to ${hostname}\n`,
-                      initial: `${os.homedir()}/.ssh/id_rsa`
-                  })
+            const privateKey = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Input',
+                    message: `Please enter your private key location to connect to ${hostname}\n`,
+                    initial: `${os.homedir()}/.ssh/id_rsa`
+                },
+                { answer: `${os.homedir()}/.ssh/id_rsa` }
+            )
 
             if (!(await pathExists(privateKey))) {
                 throw new KnownError(`Private key not found: ${privateKey}`)
@@ -33,13 +37,16 @@ const sshDb = () => ({
 
             ctx.privateKey = privateKey
 
-            const passphrase = ctx.nonInteractive
-                ? undefined
-                : await task.prompt({
-                      type: 'Input',
-                      message:
-                          'Please enter your private key passphrase (if you have it)'
-                  })
+            const passphrase = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Input',
+                    message:
+                        'Please enter your private key passphrase (if you have it)'
+                },
+                { answer: undefined }
+            )
 
             ctx.passphrase = passphrase || undefined
 
@@ -71,16 +78,19 @@ const sshDb = () => ({
         const remoteFiles = remoteFilesOutput.split('\n')
 
         if (dumpFileNames.every((dumpFile) => remoteFiles.includes(dumpFile))) {
-            ctx.makeRemoteDumps = ctx.nonInteractive
-                ? true
-                : await task.prompt({
-                      type: 'Toggle',
-                      enabled: 'Yes!',
-                      disabled: 'No, just download and import them.',
-                      message: `We found dump files on remote server.
+            ctx.makeRemoteDumps = await prompt(
+                task,
+                ctx,
+                {
+                    type: 'Toggle',
+                    enabled: 'Yes!',
+                    disabled: 'No, just download and import them.',
+                    message: `We found dump files on remote server.
   Do you want to replace them with new dump files or use existing ones?
 `
-                  })
+                },
+                { answer: true }
+            )
         } else {
             ctx.makeRemoteDumps = true
         }

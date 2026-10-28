@@ -3,6 +3,7 @@ const { execAsyncSpawn } = require('../../../util/exec-async-command')
 const pathExists = require('../../../util/path-exists')
 const sleep = require('../../../util/sleep')
 const { systemctlControl } = require('../../../util/systemctl')
+const { prompt } = require('../../../util/prompt')
 
 const pathToDockerApplication = '/Applications/Docker.app'
 
@@ -61,13 +62,16 @@ const checkDockerStatusMacOS = () => ({
                 result.includes('Is the docker daemon running?') ||
                 result.includes('docker: command not found')
             ) {
-                const dockerOpenAppConfirmation = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message:
-                              'Looks like Docker is not running, would you like us to open a Docker for Mac application and wait for it to start up?'
-                      })
+                const dockerOpenAppConfirmation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message:
+                            'Looks like Docker is not running, would you like us to open a Docker for Mac application and wait for it to start up?'
+                    },
+                    { answer: false }
+                )
 
                 if (
                     dockerOpenAppConfirmation &&
@@ -138,14 +142,17 @@ const checkDockerStatusLinux = () => ({
 
         if (engine.exists) {
             if (!engine.isEnabled && !engine.isRunning) {
-                const dockerStartConfirmation = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message: `Looks like Docker Engine is not enabled and not running, would you like to enable and run it?
+                const dockerStartConfirmation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message: `Looks like Docker Engine is not enabled and not running, would you like to enable and run it?
 
     This action requires root privileges.`
-                      })
+                    },
+                    { answer: false }
+                )
 
                 if (dockerStartConfirmation) {
                     await engine.service.enableAndStart()
@@ -154,14 +161,17 @@ const checkDockerStatusLinux = () => ({
                 }
                 task.skip('User skipped running Docker')
             } else if (!engine.isRunning) {
-                const dockerStartConfirmation = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message: `Looks like Docker Engine is not running, would you like to run it?
+                const dockerStartConfirmation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message: `Looks like Docker Engine is not running, would you like to run it?
 
     This action requires root privileges.`
-                      })
+                    },
+                    { answer: false }
+                )
 
                 if (dockerStartConfirmation) {
                     await engine.service.start()
@@ -172,14 +182,17 @@ const checkDockerStatusLinux = () => ({
             }
         } else if (desktop.exists) {
             if (!desktop.isEnabled && !desktop.isRunning) {
-                const dockerStartConfirmation = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message: `Looks like Docker Desktop is not enabled and not running, would you like to enable and run it?
+                const dockerStartConfirmation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message: `Looks like Docker Desktop is not enabled and not running, would you like to enable and run it?
 
     This action requires root privileges.`
-                      })
+                    },
+                    { answer: false }
+                )
 
                 if (dockerStartConfirmation) {
                     await desktop.service.enableAndStart()
@@ -188,14 +201,17 @@ const checkDockerStatusLinux = () => ({
                 }
                 task.skip('User skipped running Docker')
             } else if (!desktop.isRunning) {
-                const dockerStartConfirmation = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message: `Looks like Docker Desktop is not running, would you like to run it?
+                const dockerStartConfirmation = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message: `Looks like Docker Desktop is not running, would you like to run it?
 
     This action requires root privileges.`
-                      })
+                    },
+                    { answer: false }
+                )
 
                 if (dockerStartConfirmation) {
                     await desktop.service.start()

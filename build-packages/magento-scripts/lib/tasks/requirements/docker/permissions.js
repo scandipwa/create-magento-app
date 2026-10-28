@@ -3,6 +3,7 @@ const fs = require('fs')
 const logger = require('@scandipwa/scandipwa-dev-utils/logger')
 const pathExists = require('../../../util/path-exists')
 const executeSudoCommand = require('../../../util/execute-sudo-command')
+const { prompt } = require('../../../util/prompt')
 
 const dockerSocketPath = '/var/run/docker.sock'
 
@@ -21,24 +22,27 @@ const checkDockerSocketPermissions = () => ({
         } catch (e) {
             // check for permission
             if (Math.abs(e.errno) === Math.abs(os.constants.errno.EACCES)) {
-                const confirmPrompt = ctx.nonInteractive
-                    ? false
-                    : await task.prompt({
-                          type: 'Confirm',
-                          message: `We detected that your Docker socket, located in ${logger.style.file(
-                              dockerSocketPath
-                          )}, have permissions set, that prevents user (${logger.style.misc(
-                              os.userInfo().username
-                          )}) from accessing it.
+                const confirmPrompt = await prompt(
+                    task,
+                    ctx,
+                    {
+                        type: 'Confirm',
+                        message: `We detected that your Docker socket, located in ${logger.style.file(
+                            dockerSocketPath
+                        )}, have permissions set, that prevents user (${logger.style.misc(
+                            os.userInfo().username
+                        )}) from accessing it.
 
 We can fix it by running the following command: ${logger.style.command(
-                              fixCommand
-                          )}
+                            fixCommand
+                        )}
 
 Would you like to fix this permission issue?
 
 Otherwise installation will likely fail.`
-                      })
+                    },
+                    { answer: false }
+                )
 
                 if (confirmPrompt) {
                     return task.newListr(executeSudoCommand(fixCommand))
