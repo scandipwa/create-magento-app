@@ -5,9 +5,10 @@
     "description": "Tests for @scandipwa/magento-scripts, kept out of the published package",
     "license": "OSL-3.0",
     "scripts": {
-        "test": "yarn test:prompt && yarn test:parse-exec-args",
+        "test": "yarn test:prompt && yarn test:parse-exec-args && yarn test:dump-definers",
         "test:prompt": "node tests/prompt.test.js",
         "test:parse-exec-args": "node tests/parse-exec-args.test.js",
+        "test:dump-definers": "node tests/dump-definers.test.js",
         "test:exec": "node tests/execute.test.js"
     }
 }
