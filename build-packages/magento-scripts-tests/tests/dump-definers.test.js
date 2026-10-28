@@ -60,10 +60,26 @@ assert.strictEqual(
     '/*!50017 */\n'
 )
 
-// row data is never rewritten
-const insert =
-    "INSERT INTO `cms_block` VALUES (1,'note','DEFINER=`x`@`y` in content');\n"
-assert.strictEqual(strip(insert), insert)
+// view, full statement form
+assert.strictEqual(
+    strip(
+        '/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`app_role` SQL SECURITY DEFINER VIEW `v` AS select 1 AS `x` */;\n'
+    ),
+    '/*!50001 CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW `v` AS select 1 AS `x` */;\n'
+)
+
+// row data is never rewritten, in any layout the dump tools emit
+for (const insert of [
+    // mysqldump, mariadb-dump < 10.11
+    "INSERT INTO `cms_block` VALUES (1,'DEFINER=`x`@`y` in content');\n",
+    // --insert-ignore, --replace
+    "INSERT IGNORE INTO `cms_block` VALUES (1,'DEFINER=`x`@`y`');\n",
+    "REPLACE INTO `cms_block` VALUES (1,'DEFINER=`x`@`y`');\n",
+    // mariadb-dump >= 10.11 puts each row on its own line
+    "INSERT INTO `cms_block` VALUES\n(1,'DEFINER=`x`@`y`'),\n(2,'CREATE DEFINER=`x`@`y`');\n"
+]) {
+    assert.strictEqual(strip(insert), insert)
+}
 
 // lines without a definer pass through
 const table = 'CREATE TABLE `store` (\n  `store_id` smallint(5) unsigned\n);\n'
