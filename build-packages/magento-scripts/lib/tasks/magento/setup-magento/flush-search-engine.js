@@ -4,7 +4,7 @@ const KnownError = require('../../../errors/known-error')
 const UnknownError = require('../../../errors/unknown-error')
 
 // search engine can take a while to boot, especially on first start or with a large data volume
-const HEALTH_CHECK_TIMEOUT = 5 * 60 * 1000
+const HEALTH_CHECK_TIMEOUT = 3 * 60 * 1000
 
 /**
  * Search engines reject HTTP request lines longer than 4096 bytes
