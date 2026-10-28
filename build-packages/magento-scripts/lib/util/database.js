@@ -80,7 +80,7 @@ const updateTableValues = async (
 /**
  * Delete table in **magento** database
  * @param {String} table Table name
- * @param {{ path: string, value: string | number | null }[]} values
+ * @param {{ path: string }[]} values
  * @param {{ databaseConnection: import('../../typings/context').ListrContext['databaseConnection'], task: { skip(): void } }} param2
  */
 const deleteTableValues = async (

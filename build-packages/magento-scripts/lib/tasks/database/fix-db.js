@@ -4,6 +4,7 @@ const deleteCustomers = require('../magento/setup-magento/delete-customers')
 const deleteOrders = require('../magento/setup-magento/delete-orders')
 const disableCustomAdminPath = require('../magento/setup-magento/disable-custom-admin-path')
 const varnishConfigSetup = require('../magento/setup-magento/varnish-config')
+const resetStaticMediaUrls = require('../magento/setup-magento/reset-static-media-urls')
 
 /**
  * @returns {import('listr2').ListrTask<import('../../../typings/context').ListrContext>}
@@ -32,6 +33,7 @@ const fixDB = () => ({
                 varnishConfigSetup(),
                 configureElasticsearch(),
                 disableCustomAdminPath(),
+                resetStaticMediaUrls(),
                 {
                     title: 'Deleting customers data',
                     skip: ({ withCustomersData }) => withCustomersData,
