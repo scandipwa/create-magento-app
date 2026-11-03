@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const { DockerFileBuilder } = require('../../util/dockerfile-builder')
@@ -6,6 +7,9 @@ const KnownError = require('../../errors/known-error')
 const { runContainerImage } = require('../../util/run-container-image')
 const { imageApi } = require('./image')
 const { getArchSync } = require('../../util/arch')
+
+const composerPatchScriptPath = path.join(__dirname, 'cma-patch-composer.php')
+const containerComposerPatchScriptPath = '/usr/local/bin/cma-patch-composer.php'
 
 const rosettaTranslatedContainers =
     os.platform() === 'darwin' &&
@@ -154,6 +158,23 @@ const buildDockerFileInstructions = async (
         )
         .run(
             `curl https://composer.github.io/releases.pub > /composer/home/keys.tags.pub`
+        )
+
+    // On some hosts opendir() intermittently reports ENOENT for a directory that
+    // exists, which makes Composer\Util\Filesystem::isDirEmpty() throw and aborts
+    // `composer install` with a misleading "Install of <package> failed".
+    // Rewrite isDirEmpty() inside composer.phar so that it retries instead.
+    const composerPatchScript = fs
+        .readFileSync(composerPatchScriptPath)
+        .toString('base64')
+
+    dockerFileInstructions
+        .comment('make composer resilient to spurious filesystem errors')
+        .run(
+            `echo '${composerPatchScript}' | base64 -d > ${containerComposerPatchScriptPath}`
+        )
+        .run(
+            `php -d phar.readonly=0 ${containerComposerPatchScriptPath} /usr/local/bin/composer`
         )
 
     if (composer.plugins && Object.values(composer.plugins).length > 0) {
